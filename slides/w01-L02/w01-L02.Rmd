@@ -231,7 +231,7 @@ knitr::include_graphics("img/rmarkdownlogo.png")
 
 
 ```{r echo=FALSE, out.width="80%", fig.align="center"}
-knitr::include_graphics("img/markdown_eg.PNG")
+knitr::include_graphics("img/markdown_eg.png")
 ```
 
 ---
@@ -365,7 +365,7 @@ Under the _Git_ tab (top-right panel), click 'Commit' button
 - _Push_ commits to Gitub by clicking '`r fontawesome::fa("arrow-up")` Push' button
 
 ```{r echo=FALSE, out.width="60%", fig.align="center"}
-knitr::include_graphics("img/RStudio_git_commit.PNG")
+knitr::include_graphics("img/RStudio_git_commit.png")
 ```
 
 
