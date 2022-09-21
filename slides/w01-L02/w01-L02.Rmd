@@ -83,7 +83,7 @@ Installation: [link](https://cloud.r-project.org/)
 
 .pull-left[
 ```{r echo=FALSE, out.width="100%", fig.align="center"}
-knitr::include_graphics("img/Rgui.png")
+knitr::include_graphics("img/Rgui2.png")
 ```
 ]
 .pull-right[
@@ -181,7 +181,7 @@ Installation: [link](https://www.rstudio.com/products/rstudio/download/)
 
 &emsp; Script editor `r emo::ji("point_down")` &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; `r emo::ji("point_down")` Environment/History/Git
 ```{r echo=FALSE, out.width="70%", fig.align="center"}
-knitr::include_graphics("img/Rstudio.png")
+knitr::include_graphics("img/Rstudio2.png")
 ```
 &emsp;&emsp;&emsp; Console `r emo::ji("point_up_2")`        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; `r emo::ji("point_up_2")` Files/Plots/Packages/Help
 
@@ -231,7 +231,7 @@ knitr::include_graphics("img/rmarkdownlogo.png")
 
 
 ```{r echo=FALSE, out.width="80%", fig.align="center"}
-knitr::include_graphics("img/markdown_eg.png")
+knitr::include_graphics("img/markdown_eg2.png")
 ```
 
 ---
@@ -365,7 +365,7 @@ Under the _Git_ tab (top-right panel), click 'Commit' button
 - _Push_ commits to Gitub by clicking '`r fontawesome::fa("arrow-up")` Push' button
 
 ```{r echo=FALSE, out.width="60%", fig.align="center"}
-knitr::include_graphics("img/RStudio_git_commit.png")
+knitr::include_graphics("img/RStudio_git_commit2.png")
 ```
 
 
