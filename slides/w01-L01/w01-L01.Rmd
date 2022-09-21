@@ -372,7 +372,7 @@ knitr::include_graphics("img/website.png")
   - links to join Piazza and Zoom
   
 ```{r echo=FALSE, out.width="50%", fig.align="center"}
-knitr::include_graphics("img/learn.PNG")
+knitr::include_graphics("img/learn.png")
 ```
 
 ---
