@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Course Toolkit</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Course Toolkit
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/2023
+]
+
+---
+
+
+
+
+## Course toolkit
+
+.pull-left-narrow[
+
+`$$\\[3ex]$$`
+
+- R
+
+- RStudio
+
+- tidyverse
+
+- R Markdown
+
+- GitHub
+]
+.pull-right-wide[
+
+.pull-left[
+
+&lt;img src="img/Rlogo.svg" width="45%" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="img/tidyverse_logo.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="img/Rstudiologo_white.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="img/rmarkdownlogo.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+.center[<svg aria-hidden="true" role="img" viewBox="0 0 496 512" style="height:10ex;width:9.69ex;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>]
+
+]
+
+---
+
+class: middle
+
+# R programming language
+
+
+&lt;img src="img/Rlogo.svg" width="30%" style="display: block; margin: auto;" /&gt;
+
+Installation: [link](https://cloud.r-project.org/)
+
+---
+
+## RGui console
+
+.pull-left[
+&lt;img src="img/Rgui.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;br&gt;
+
+| Code     | Definition     |
+| -------- | -------------- |
+| `2 + 3`  | Addition       |
+| `2 - 3`  | Subtraction    |
+| `2 * 3`  | Multiplication |
+| `2 / 3`  | Division       |
+| `2^3`    | Exponents      |
+| `pi`     | `\(\pi\)` constant |
+| `# text` | Commenting     |
+]
+
+
+---
+
+## Assigning to memory `&lt;-`
+
+.pull-left[
+- `\(f(x) = (2x-1)(x^2+\frac{2}{3})\)` at `\(x = 2\)`
+
+```r
+x &lt;- 2           # Assignment to memory
+f &lt;- (2*x - 1) * (x^2 + 2/3)
+f
+```
+
+```
+## [1] 14
+```
+]
+.pull-right[
+- `\(g(x) = e^x\sin(x)\)` at `\(x = \frac{\pi}{3}\)`
+
+```r
+x &lt;- pi/2        # re-defining x
+g &lt;- exp(x) * sin(x)
+g
+```
+
+```
+## [1] 4.810477
+```
+]
+
+
+
+---
+
+## Assigning to memory `&lt;-`
+
+.pull-left[
+- `\(f(x) = (2x-1)(x^2+\frac{2}{3})\)` at `\(x = 2\)`
+
+```r
+x &lt;- 2           # Assignment to memory
+f &lt;- (2*x - 1) * (x^2 + 2/3)
+f
+```
+
+```
+## [1] 14
+```
+
+
+- `\(f(2) + g(\frac{\pi}{3})\)`
+
+```r
+f + g
+```
+
+```
+## [1] 18.81048
+```
+
+- Keep code clean and readable
+- Add spaces and newlines
+]
+.pull-right[
+- `\(g(x) = e^x\sin(x)\)` at `\(x = \frac{\pi}{3}\)`
+
+```r
+x &lt;- pi/2        # re-defining x
+g &lt;- exp(x) * sin(x)
+g
+```
+
+```
+## [1] 4.810477
+```
+
+- `\(f(-4) + g(\frac{\pi}{4})\)`
+
+```r
+#?!
+```
+
+&lt;br&gt;
+- Max 80 characters per line
+- Use the coding [syntax guidelines](https://style.tidyverse.org/syntax.html)
+]
+
+
+
+---
+
+class: middle
+
+# RStudio integrated development environment (IDE)
+
+&lt;img src="img/Rstudiologo_white.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+Installation: [link](https://www.rstudio.com/products/rstudio/download/)
+
+---
+
+&amp;emsp; Script editor 👇 &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp; 👇 Environment/History/Git
+&lt;img src="img/Rstudio.png" width="70%" style="display: block; margin: auto;" /&gt;
+&amp;emsp;&amp;emsp;&amp;emsp; Console 👆        &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp; 👆 Files/Plots/Packages/Help
+
+---
+
+class: middle
+
+# `tidyverse` package 
+
+&lt;img src="img/tidyverse_logo.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+- Downloading and installing `tidyverse` package, on the console:
+
+```r
+install.package("tidyverse")
+```
+
+
+- Importing package for use, in your script:
+
+```r
+library(tidyverse)
+```
+
+- `tidyverse` depends on many other packages that will automatically installed.
+
+&lt;img src="img/tidyverse2_logo.png" width="25%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+#R markdown for reproducible documents
+
+&lt;img src="img/rmarkdownlogo.png" width="320" height="20%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## R markdown script (`.Rmd` extension)
+
+
+&lt;img src="img/markdown_eg.PNG" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## R markdown code
+
+.pull-left[
+Preamble:
+
+```markdown
+---
+title: "Lab 00"
+author: "Ms Data"
+data: "2022-09-23"
+output: html_document
+---
+```
+
+Headings:
+
+```markdown
+# Heading
+## Sub-heading
+### Sub-sub-heading
+```
+
+]
+.pull-right[
+
+Bulleted list:
+
+```markdown
+- item 1
+- item 2
+- item 3
+```
+
+Embedded R chunk:
+Headings:
+
+````markdown
+```{r}
+log(5)
+```
+````
+
+LaTeX maths expressions:
+
+```markdown
+$$ y = 2x + 1 $$
+```
+
+
+]
+
+[Rmarkdown cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+---
+
+class: middle
+
+# GitHub for version control
+.center[<svg aria-hidden="true" role="img" viewBox="0 0 496 512" style="height:25ex;width:24.22ex;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>]
+
+---
+
+## GitHub
+
+.pull-left[
+What is GitHub is used for?
+- Tracking code changes/version control
+- Code collaboration (useful for projects!)
+- Reproducibility
+]
+.pull-right[
+&lt;img src="img/GitHub_process.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+What does GitHub do?
+- Manage projects with **Repositories**
+- **Clone** a project to work on a local copy (accessing lab worksheets)
+- Control and track changes with **Staging** and **Committing**
+- **Branch** and **Merge** to allow for work on different pars and versions of a project
+- **Pull** the latest version of the project to a local copy
+- **Pull** local updates to the main project
+
+---
+
+## Set-up on GitHub
+
+Create or sign-in to your GitHub account: [[Link](https://github.com/)]
+
+Creating a new repository:
+- From your profile, go to '<svg aria-hidden="true" role="img" viewBox="0 0 448 512" style="height:1em;width:0.88em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M448 336v-288C448 21.49 426.5 0 400 0H352v191.1c0 13.41-15.52 20.88-25.1 12.49L272 160L217.1 204.5C207.5 212.8 192 205.4 192 191.1V0H96C42.98 0 0 42.98 0 96v320c0 53.02 42.98 96 96 96h320c17.67 0 32-14.33 32-32c0-11.72-6.607-21.52-16-27.1v-81.36C441.8 362.8 448 350.2 448 336zM384 448H96c-17.67 0-32-14.33-32-32c0-17.67 14.33-32 32-32h288V448z"/></svg> Repositories'
+- Click '<svg aria-hidden="true" role="img" viewBox="0 0 448 512" style="height:1em;width:0.88em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M448 336v-288C448 21.49 426.5 0 400 0H352v191.1c0 13.41-15.52 20.88-25.1 12.49L272 160L217.1 204.5C207.5 212.8 192 205.4 192 191.1V0H96C42.98 0 0 42.98 0 96v320c0 53.02 42.98 96 96 96h320c17.67 0 32-14.33 32-32c0-11.72-6.607-21.52-16-27.1v-81.36C441.8 362.8 448 350.2 448 336zM384 448H96c-17.67 0-32-14.33-32-32c0-17.67 14.33-32 32-32h288V448z"/></svg> New' button
+- If importing homework or lab template:
+  - Click 'Import a repository'
+  - Copy URL of template repository to clone
+- Add a Repository name (no spaces, use "_" or "-" instead)
+- Set repository visability: generally 'Public' but make **Homework** repos Private!
+- Click green button 'Create repository' (or 'Begin import' if cloning)
+
+
+---
+
+## Linking GitHub repo to RStudio
+
+In your repository on GitHub:
+- Click the green 'Code <svg aria-hidden="true" role="img" viewBox="0 0 320 512" style="height:1em;width:0.62em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"/></svg>' button
+- Copy the repository's 'HTTPS' URL
+
+
+In RStudio, create a new version control project:
+- _File_ &gt; _New Project ..._
+- Click _Version Control_, then Click _Git_
+- Paste the copied repository URL from GitHub
+- Browse a local subdirectory for your project
+- Click _Create Project_ button
+
+
+
+---
+
+## The process
+
+Under the _Git_ tab (top-right panel), click 'Commit' button
+
+- _Pull_ by clicking the '<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z"/></svg> Pull' button
+- _Stage_ by ticking the boxes, <svg aria-hidden="true" role="img" viewBox="0 0 448 512" style="height:1em;width:0.88em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M0 96C0 60.65 28.65 32 64 32H384C419.3 32 448 60.65 448 96V416C448 451.3 419.3 480 384 480H64C28.65 480 0 451.3 0 416V96z"/></svg> `\(\rightarrow\)` <svg aria-hidden="true" role="img" viewBox="0 0 448 512" style="height:1em;width:0.88em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M384 32C419.3 32 448 60.65 448 96V416C448 451.3 419.3 480 384 480H64C28.65 480 0 451.3 0 416V96C0 60.65 28.65 32 64 32H384zM339.8 211.8C350.7 200.9 350.7 183.1 339.8 172.2C328.9 161.3 311.1 161.3 300.2 172.2L192 280.4L147.8 236.2C136.9 225.3 119.1 225.3 108.2 236.2C97.27 247.1 97.27 264.9 108.2 275.8L172.2 339.8C183.1 350.7 200.9 350.7 211.8 339.8L339.8 211.8z"/></svg>
+- Add a commit message (short yet informative)
+- _Commit_ by pressing the 'Commit' button
+- If working collaborativly:
+  - _Pull_ again for updates, there may be merge conflicts to resolve!
+- _Push_ commits to Gitub by clicking '<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M374.6 246.6C368.4 252.9 360.2 256 352 256s-16.38-3.125-22.62-9.375L224 141.3V448c0 17.69-14.33 31.1-31.1 31.1S160 465.7 160 448V141.3L54.63 246.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0l160 160C387.1 213.9 387.1 234.1 374.6 246.6z"/></svg> Push' button
+
+&lt;img src="img/RStudio_git_commit.PNG" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
