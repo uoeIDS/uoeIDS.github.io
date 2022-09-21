@@ -357,7 +357,7 @@ On completion of this course, the student will be able to:
 ## Course operation resources- Website
 
 ```{r echo=FALSE, out.width="70%", fig.align="center"}
-knitr::include_graphics("img/website.png")
+knitr::include_graphics("img/website2.png")
 ```
 
 ---
@@ -372,7 +372,7 @@ knitr::include_graphics("img/website.png")
   - links to join Piazza and Zoom
   
 ```{r echo=FALSE, out.width="50%", fig.align="center"}
-knitr::include_graphics("img/learn.png")
+knitr::include_graphics("img/learn2.png")
 ```
 
 ---
