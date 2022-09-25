@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Visualising data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Visualising data
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/2023
+]
+
+---
+
+
+
+
+class: middle
+
+# What is data and datasets?
+
+---
+
+## Dataset
+- **Data** are observations or measurements (unprocessed or processed) represented as text, numbers, or multimedia.
+- A **dataset** is a structured collection of data generally associated with a unique body of work.
+- Majority of datasets are structured in a tabular or rectangular form where:
+  - Each row is an **observation**
+  - Each column is a **variable**
+
+
+---
+
+## Data: Palmer Penguins
+
+Measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.
+
+.pull-left-narrow[
+&lt;img src="img/penguins.png" width="80%" /&gt;
+]
+
+.pull-right-wide[
+
+```r
+library(palmerpenguins)
+penguins
+```
+
+.small[
+
+```
+## # A tibble: 344 × 8
+##    species island    bill_length_mm bill_depth_mm flipper_…¹ body_…² sex    year
+##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;      &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+##  1 Adelie  Torgersen           39.1          18.7        181    3750 male   2007
+##  2 Adelie  Torgersen           39.5          17.4        186    3800 fema…  2007
+##  3 Adelie  Torgersen           40.3          18          195    3250 fema…  2007
+##  4 Adelie  Torgersen           NA            NA           NA      NA &lt;NA&gt;   2007
+##  5 Adelie  Torgersen           36.7          19.3        193    3450 fema…  2007
+##  6 Adelie  Torgersen           39.3          20.6        190    3650 male   2007
+##  7 Adelie  Torgersen           38.9          17.8        181    3625 fema…  2007
+##  8 Adelie  Torgersen           39.2          19.6        195    4675 male   2007
+##  9 Adelie  Torgersen           34.1          18.1        193    3475 &lt;NA&gt;   2007
+## 10 Adelie  Torgersen           42            20.2        190    4250 &lt;NA&gt;   2007
+## # … with 334 more rows, and abbreviated variable names ¹​flipper_length_mm,
+## #   ²​body_mass_g
+```
+]
+]
+
+
+---
+
+.question[
+How many rows and columns does this dataset have?
+What does each row represent?
+What does each column represent?
+]
+
+Look at the documentation for the dataset
+
+
+```r
+help(penguins)     #or simply ?penguins
+```
+
+&lt;img src="img/penguins_man.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.question[
+How many rows and columns does this dataset have?
+]
+
+
+```r
+nrow(penguins) # number of rows
+```
+
+```
+## [1] 344
+```
+
+```r
+ncol(penguins) # number of columns
+```
+
+```
+## [1] 8
+```
+
+```r
+dim(penguins)  # dimensions (row column)
+```
+
+```
+## [1] 344   8
+```
+
+
+&lt;br&gt;
+
+Hint: Use `help(&lt;function_name&gt;)` to view the documentation for any `R` function.
+
+---
+
+class: middle
+
+# Exploratory data analysis
+
+---
+
+## What is EDA?
+
+- Exploratory data analysis (EDA) is the first step in **understanding** the main features and structures of a data set.
+&lt;br&gt;
+- Many statistical tools and techniques are used when performing EDA, but crucially they are **simple** to allow the data __speak__ for itself.
+&lt;br&gt;
+- Tools that a data scientist may use are:
+  - Graphical or visual representations -- this is what we'll focus on first
+  - Calculation of simple summary statistics (mean, median, variance, correlation, etc.)
+  - Data transformation/wrangling
+  - Tabulation
+  - etc.
+
+&gt; *"Although we ofter hear that data speak for themselves, their voices can be soft and sly." --- Mosteller et al. (1983)*
+
+---
+
+class: middle
+
+# Data visualization
+
+---
+
+## Data visualization
+
+&gt; *"The simple graph has brought more information to the data analyst's mind than any other device." --- John Tukey*
+
+&lt;br&gt;
+- Data visualization is the creation and study of the visual representation of data.
+&lt;br&gt;
+- There are many tools for visualizing data, `R` is one of them.
+&lt;br&gt;
+- There are many tools within `R` for making data visualizations
+  - The library **ggplot2** is one of them, and that's what we're going to use
+
+---
+
+class: middle
+
+# Why do we visualize?
+
+Three motivating examples:
+- Anscombe's quartet.
+- Randu random number generation.
+- Facebook views.
+
+---
+
+## Anscombe's quartet
+
+Anscombe, F.J. (1973) Graphs in statistical analysis. _The American Statistician_, __27__: 17--21.
+
+
+
+.pull-left[
+.pull-left[
+
+```
+##    set  x     y
+## 1    I 10  8.04
+## 2    I  8  6.95
+## 3    I 13  7.58
+## 4    I  9  8.81
+## 5    I 11  8.33
+## 6    I 14  9.96
+## 7    I  6  7.24
+## 8    I  4  4.26
+## 9    I 12 10.84
+## 10   I  7  4.82
+## 11   I  5  5.68
+```
+]
+.pull-right[
+
+```
+##    set  x    y
+## 12  II 10 9.14
+## 13  II  8 8.14
+## 14  II 13 8.74
+## 15  II  9 8.77
+## 16  II 11 9.26
+## 17  II 14 8.10
+## 18  II  6 6.13
+## 19  II  4 3.10
+## 20  II 12 9.13
+## 21  II  7 7.26
+## 22  II  5 4.74
+```
+]
+]
+
+.pull-right[
+.pull-left[
+
+```
+##    set  x     y
+## 23 III 10  7.46
+## 24 III  8  6.77
+## 25 III 13 12.74
+## 26 III  9  7.11
+## 27 III 11  7.81
+## 28 III 14  8.84
+## 29 III  6  6.08
+## 30 III  4  5.39
+## 31 III 12  8.15
+## 32 III  7  6.42
+## 33 III  5  5.73
+```
+]
+.pull-right[
+
+```
+##    set  x     y
+## 34  IV  8  6.58
+## 35  IV  8  5.76
+## 36  IV  8  7.71
+## 37  IV  8  8.84
+## 38  IV  8  8.47
+## 39  IV  8  7.04
+## 40  IV  8  5.25
+## 41  IV 19 12.50
+## 42  IV  8  5.56
+## 43  IV  8  7.91
+## 44  IV  8  6.89
+```
+]
+]
+
+
+---
+
+## Summarising Anscombe's quartet
+
+
+.panelset[
+.panel[.panel-name[Plot]
+
+```
+## # A tibble: 4 × 7
+##   set       n mean_x mean_y  sd_x  sd_y     r
+##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 I        11      9   7.50  3.32  2.03 0.816
+## 2 II       11      9   7.50  3.32  2.03 0.816
+## 3 III      11      9   7.5   3.32  2.03 0.816
+## 4 IV       11      9   7.50  3.32  2.03 0.817
+```
+
+&lt;br&gt;
+
+- What is the structure of the 4 datasets?
+- Are they the same?
+
+
+]
+.panel[.panel-name[Code]
+Code used to calculate summary statistics. Details will be covered later in the course.
+
+```r
+library(Tmisc)
+quartet %&gt;%
+  group_by(set) %&gt;%
+  summarise(
+    n = n(),
+    mean_x = mean(x), 
+    mean_y = mean(y),
+    sd_x = sd(x),
+    sd_y = sd(y),
+    r = cor(x, y)
+  )
+```
+]
+]
+
+---
+
+## Visualizing Anscombe's quartet
+
+&lt;img src="w02-L03_files/figure-html/quartet-plot-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+- Is this what you expected from the summary statistics?
+
+---
+
+## Randu
+
+- Pseudo-random number generators are algorithms that generate a sequence of numbers that satisfy important statistical properties of randomness.
+- **Randu** was a popular algorithm for generating random numbers in 1960s &amp; 1970s.
+- However, Randu has a major flaw.
+  - Do the points look random or do you see any patterns?
+
+
+&lt;img src="img/randu-2d.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## Randu
+
+- How about now?
+
+&lt;img src="img/randu-3d.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+
+- Use visualisations to **explore** the data. You may need more than one perspective.
+
+---
+
+## Facebook visits
+
+.question[ 
+How many times do you go on Facebook per day?
+]
+
+.pull-left[
+![](w02-L03_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+.pull-right[
+- What insights does this plot give about:
+  - how frequent participants are viewing Facebook?
+  - how the participants are answering the question?
+
+
+]
+
+- You may need to iterate between visualisation and data transform.
+
+
+---
+
+## The good, the bad and the ugly 🤠
+
+&lt;br&gt;
+
+
+&lt;img src="img/good_bad_ugly_plots.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## The Four respects:
+
+1. **Respect the people**
+  - Who are the target audience?
+  - Respect users perception and cognitive capabilities.
+  - Is your visualisation inclusive?
+2. **Respect the data**
+  - Let the data speak for itself!
+  - Use an appropriate visualisation style for the data type.
+  - Don't "massage" the data for a particular narrative.
+  - Use an informative title and axis labels.
+3. **Respect the mathematics**
+  - Use of appropriateness geometric attribute (eg, length vs area)
+  - Is the geometry of the visualisation correct?
+  - Scale and range of the axes.
+4. **Respect the computers**
+  - Don't overtax the computer
+
+---
+
+class: middle
+
+# ggplot2 
+
+---
+
+## ggplot2 `\(\in\)` tidyverse
+
+.pull-left[
+&lt;img src="img/ggplot2-part-of-tidyverse.png" width="80%" /&gt;
+] 
+.pull-right[ 
+- **ggplot2** is tidyverse's data visualization package 
+- `gg` in "ggplot2" stands for *Grammar of Graphics* from the book by Leland Wilkinson
+
+&lt;img src="img/grammar-of-graphics.png" width="100%" /&gt;
+]
+
+---
+
+## Structure of creating a plot
+
+- `ggplot()` is the main function in ggplot2
+- Construct plots by _adding_ (`+`) layers
+- Structure of the code for plots can be summarized as:
+
+
+```r
+ggplot(data = [dataset],                                         # Data
+       mapping = aes(x = [x-variable], y = [y-variable])) +      # Aesthetics
+   geom_[*]() +                                                  # Geometries
+   other options                                                 # ...
+```
+
+
+- Many types of geometries:
+  - `geom_points()`, `geom_histogram()`, `geom_line()`, `geom_boxplot()`, etc.
+
+- [ggplot2 cheat sheet](https://www.rstudio.com/resources/cheatsheets/)
+
+---
+
+## Example: Penguins dataset
+
+
+&lt;img src="w02-L03_files/figure-html/penguins-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Coding narative
+
+.midi[
+&gt; **Start with the `penguins` data frame,**
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+*ggplot(data = penguins)
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-15-1.png" width="80%" /&gt;
+]
+
+---
+
+## Coding narative
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; **map bill depth to the x-axis**
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+*      mapping = aes(x = bill_depth_mm))
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-16-1.png" width="80%" /&gt;
+]
+
+---
+
+## Coding narative
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; **and map bill length to the y-axis.** 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+*                    y = bill_length_mm))
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-17-1.png" width="80%" /&gt;
+]
+
+
+---
+
+## Coding narative
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; **Represent each observation with a point**
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm)) + 
+* geom_point()
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-18-1.png" width="80%" /&gt;
+]
+
+---
+
+## Coding narative
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; **and map species to the colour of each point.**
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+*                    colour = species)) +
+  geom_point()
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-19-1.png" width="80%" /&gt;
+]
+
+---
+
+## Coding narative
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; **Title the plot "Penguin bill depth and length", **
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) +
+  geom_point() +
+* labs(title = "Penguin bill depth and length")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-20-1.png" width="80%" /&gt;
+]
+
+---
+
+
+## Coding narative
+
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; **label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,**
+&gt; and label the legend "Species".
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+*      x = "Bill depth (mm)",
+*      y = "Bill length (mm)")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-21-1.png" width="80%" /&gt;
+]
+
+---
+
+## Coding narative
+
+
+.midi[
+&gt; Start with the `penguins` data frame,
+&gt; map bill depth to the x-axis
+&gt; and map bill length to the y-axis. 
+&gt; Represent each observation with a point
+&gt; and map species to the colour of each point.
+&gt; Title the plot "Penguin bill depth and length", 
+&gt; label the x and y axes as "Bill depth (mm)" and "Bill length (mm)", respectively,
+&gt; **and label the legend "Species".**
+]
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+*      colour = "Species")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-22-1.png" width="80%" /&gt;
+]
+
+---
+
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-23-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Code]
+
+
+```r
+ggplot(data = penguins, 
+       mapping = aes(x = bill_depth_mm, y = bill_length_mm,
+                     colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species")
+```
+
+
+]
+]
+
+
+---
+
+
+class: middle
+
+# And iterate ...
+
+
+---
+
+## Aesthetics options
+
+.panelset[
+.panel[.panel-name[colour]
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+*                    colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-24-1.png" width="80%" /&gt;
+]
+]
+
+.panel[.panel-name[shape]
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+*                    shape = sex)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-25-1.png" width="80%" /&gt;
+]
+]
+
+
+
+.panel[.panel-name[size]
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+                     shape = sex,
+*                    size = body_mass_g)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex",
+       size = "Body mass (g)")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-26-1.png" width="80%" /&gt;
+]
+]
+
+
+.panel[.panel-name[alpha (transparency)]
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+                     shape = sex,
+                     size = body_mass_g,
+*                    alpha = flipper_length_mm)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex",
+       size = "Body mass (g)",
+       alpha = "Flipper length (mm)")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-27-1.png" width="80%" /&gt;
+]
+
+- Is this plot easy to understand?! Don't over-burden plots, keep them simple.
+
+]
+
+]
+
+---
+
+## Fix graphical options
+
+- Graphical options can be used within the `geom_[*]()` function to be applied across all cases.  
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm)) +
+* geom_point(colour = "blue",
+*            size = 2,
+*            shape = "square",
+*            alpha = 0.5) +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)")
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-28-1.png" width="80%" /&gt;
+]
+
+---
+
+## Co-ordinate limits
+
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) + 
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species") + 
+* coord_cartesian(xlim = c(10, 25),
+*                 ylim = c(30, 60))
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-29-1.png" width="80%" /&gt;
+]
+
+
+---
+
+## Faceting
+
+- Smaller plots that display different subsets of the data
+- Useful for exploring conditional relationships and large data
+
+.panelset[
+.panel[.panel-name[grid]
+.pull-left[
+
+- 2D grid by stated variables
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm)) + 
+  geom_point() +
+* facet_grid(species ~ sex)
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-30-1.png" width="90%" /&gt;
+]
+]
+
+.panel[.panel-name[wrap v1]
+.pull-left[
+- 1D ribbon
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm)) + 
+  geom_point() +
+* facet_wrap(~ species)
+```
+
+
+- equivalent to:
+  - `facet_grid(. ~ species)`
+
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-31-1.png" width="90%" /&gt;
+]
+
+
+]
+
+
+
+.panel[.panel-name[wrap v2]
+.pull-left[
+
+- wrapped 1D ribbon according to the specifed number of rows/columns
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm)) + 
+  geom_point() +
+* facet_wrap(~ species, ncol = 2)
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-32-1.png" width="90%" /&gt;
+]
+]
+
+
+]
+
+
+---
+
+## Accessibility
+
+- Colours are very useful tool in visualising data, but some people are colour blind.
+- `viridis` is one of the colour blind friendly palettes in `ggplot2`.
+
+.pull-left[
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill depth and length",
+       x = "Bill depth (mm)", 
+       y = "Bill length (mm)",
+       colour = "Species") + 
+* scale_colour_viridis_d()
+```
+]
+.pull-right[
+&lt;img src="w02-L03_files/figure-html/unnamed-chunk-33-1.png" width="80%" /&gt;
+]
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

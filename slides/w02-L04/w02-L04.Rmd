@@ -1,0 +1,669 @@
+---
+title: "Types of visualisations"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2022/2023 "
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+---
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(xaringanExtra)
+library(Tmisc)
+library(dsbox)
+xaringanExtra::use_panelset()
+
+library(openintro)
+loans_full_schema <- loans_full_schema %>%
+  mutate(grade = factor(grade, ordered = TRUE))
+```
+
+class: middle
+
+# Terminology
+
+---
+
+## Types of variables
+
+- **Quantitative variables** are variables whose data are numerical values
+  - **Discrete variables** describes count data, typically non-negative integer values <br />
+    &emsp; Eg, Number of IDS students or number of election votes
+  - **Continuous variables** are typically real-valued measurements, rounded to a specified number of decimal places or significant figures <br />
+    &emsp; Eg, Penguin bill length, body mass and flipper length
+
+<br>
+
+- **Qualitative variable** are variables that are descriptive
+  - **Categorical variables** usually identify one option from a set of possible cases <br />
+    &emsp; Eg, Penguin breeds (Adelie, Chinstrap or Gentoo)
+  - **Ordinal variables** are categorical variables that have a natural ordering <br />
+    &emsp; Degree grades: First, upper-second, lower-second and third
+
+---
+
+## Number of variables involved
+
+- Univariate data analysis
+  - Investigating a single variable
+  - What is the _location_, _spread_ and _shape_ of the data?
+  - Types of visualisations: Bar plot, histogram, density plot.
+- Bivariate data analysis 
+  - Investigating the relationship between two variables
+  - Positive/negative correlation? Linear or non-linear relationship?
+  - Types of visualisations: Stacked bar plots, box plots, scatter plots.
+- Multivariate data analysis
+  - Investigating the relationship between many variables simultaneously
+  - Does the structure of the relationship between two variables change depending on the value of a third?
+  - Use of colour, style and faceting - be creative!
+  - YouTube: Hans Rosling, The Joy of Stats, BBC - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=jbkSRLYSojo)
+
+
+---
+
+class: middle
+
+# Data
+
+---
+
+## Data: Lending Club
+
+.pull-left-wide[
+
+- Thousands of loans made through the Lending Club, which is a platform that allows individuals to lend to other individuals
+
+- Not all loans are created equal -- ease of getting a loan depends on (apparent) ability to pay back the loan
+
+- Data includes loans *made*, these are not loan applications
+]
+.pull-right-narrow[
+```{r echo=FALSE, out.width = "100%"}
+knitr::include_graphics("img/lending-club.png")
+```
+]
+
+---
+
+## Take a peek at data (selected variables)
+
+.panelset[
+.panel[.panel-name[console]
+
+```{r loan_code3, echo=FALSE}
+library(openintro)
+loans <- loans_full_schema %>%
+  select(loan_amount, interest_rate, term, grade, 
+         state, annual_income, homeownership, debt_to_income)
+glimpse(loans)
+```
+
+
+- What are the variable types?
+]
+
+.panel[.panel-name[code]
+
+```{r loan_code1}
+library(openintro)
+ncol(loans_full_schema)   # Total number of variables
+```
+
+<br>
+
+Select specific variables:
+```{r loan_code2, eval=FALSE}
+library(tidyverse)
+loans <- loans_full_schema %>%
+  select(loan_amount, interest_rate, term, grade, 
+         state, annual_income, homeownership, debt_to_income)
+glimpse(loans)       # Output on 'console' tab
+```
+]
+
+]
+
+---
+
+
+## Selected variables
+
+<br>
+
+.midi[
+variable        | description
+----------------|-------------
+`loan_amount`   |	Amount of the loan received, in US dollars
+`interest_rate` |	Interest rate on the loan, in an annual percentage
+`term`	        | The length of the loan, which is always set as a whole number of months
+`grade`	        | Loan grade, which takes a values A through G and represents the quality of the loan and its likelihood of being repaid
+`state`         |	US state where the borrower resides
+`annual_income` |	Borrower’s annual income, including any second income, in US dollars
+`homeownership`	| Indicates whether the person owns, owns but has a mortgage, or rents
+`debt_to_income` | Debt-to-income ratio
+]
+
+---
+
+## Variable types
+
+<br>
+
+variable        | type
+----------------|-------------
+`loan_amount`   |	numerical, continuous
+`interest_rate` |	numerical, continuous
+`term`	        | numerical, discrete
+`grade`	        | categorical, ordinal
+`state`         |	categorical, not ordinal
+`annual_income` |	numerical, continuous
+`homeownership`	| categorical, not ordinal
+`debt_to_income` | numerical, continuous
+
+---
+
+
+class: middle
+
+# Visualizing numerical data
+
+---
+
+## Describing shapes of numerical distributions
+
+- center: mean (`mean`), median (`median`), mode (not always useful)
+- spread: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
+- shape:
+    - skewness: right-skewed, left-skewed, symmetric (skew is to the side of the longer tail)
+    - modality: unimodal, bimodal, multimodal, uniform
+- unusual observations, aka outliers.
+
+```{r, echo = FALSE, out.width = "70%", fig.width=8, fig.height=3, fig.align='center'}
+alpha <- 4
+beta <- 5
+avg <- alpha/beta
+med <- qgamma(0.5, alpha, beta)
+x <- seq(0, 2, by=0.01)
+y <- dgamma(x, alpha, beta)
+par(mfrow = c(1, 2), mar = c(1,1,1,1), fg = "white", bg = NA)
+plot(-x, y, xaxt = "n", yaxt = "n", type = "l", lwd = 2, ylim = c(0, 1.5*max(y)),
+     xlab = "", ylab = "", frame = FALSE, main = "Left (Negative) Skewness",
+     col.main = "white", cex.main = 1.5)
+abline(h = 0, lwd = 1)
+segments(x0 = -avg, x1 = -avg, y0 = -1, y1 = 1.3*max(y),  lty = 2, lwd = 2)
+text(labels = "mean", -avg+0.1, 1.25*max(y), pos = 4, cex = 1.5)
+segments(x0 = -med, x1 = -med, y0 = -1, y1 = 1.3*max(y),  lty = 3, lwd = 2)
+text(labels = "median", -med-0.1, 1.25*max(y), pos = 2, cex = 1.5)
+plot(x, y, xaxt = "n", yaxt = "n", type = "l", lwd = 2,  ylim = c(0, 1.5*max(y)),
+     xlab = "", ylab = "", frame = FALSE, main = "Right (Positive) Skewness",
+     col.main = "white", cex.main = 1.5)
+abline(h = 0, lwd = 1)
+segments(x0 = avg, x1 = avg, y0 = -1, y1 = 1.3*max(y),  lty = 2, lwd = 2)
+text(labels = "mean", avg-0.1, 1.25*max(y), pos = 2, cex = 1.5)
+segments(x0 = med, x1 = med, y0 = -1, y1 = 1.3*max(y),  lty = 3, lwd = 2)
+text(labels = "median", med+0.1, 1.25*max(y), pos = 4, cex = 1.5)
+
+```
+
+
+---
+
+class: middle
+
+# Histogram - `geom_histogram()`
+
+---
+
+## Histogram
+
+```{r message = TRUE, out.width = "50%", fig.height = 5, fig.width = 8, fig.align='center'}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_histogram()
+```
+
+---
+
+## Histograms and binwidth
+
+.panelset[
+.panel[.panel-name[binwidth = 1000]
+```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_histogram(binwidth = 1000)
+```
+]
+.panel[.panel-name[binwidth = 5000]
+```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_histogram(binwidth = 5000)
+```
+]
+.panel[.panel-name[binwidth = 20000]
+```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_histogram(binwidth = 20000)
+```
+]
+]
+
+---
+
+## Customizing histograms
+
+.panelset[
+
+.panel[.panel-name[labs]
+.pull-left[
+```{r ref.label = "hist-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-custom, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_histogram(binwidth = 5000) +
+  labs( #<<
+    x = "Loan amount ($)", #<<
+    y = "Frequency", #<<
+    title = "Amounts of Lending Club loans" #<<
+  ) #<<
+```
+]
+]
+
+.panel[.panel-name[fill]
+.pull-left[
+```{r ref.label = "hist-fill", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-fill, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = loan_amount, 
+                  fill = homeownership)) + #<<
+  geom_histogram(binwidth = 5000,
+                 alpha = 0.5) + #<<
+  labs(
+    x = "Loan amount ($)",
+    y = "Frequency",
+    title = "Amounts of Lending Club loans"
+  )
+```
+]
+]
+
+
+.panel[.panel-name[facet]
+.pull-left[
+```{r ref.label = "hist-facet", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-facet, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = loan_amount, 
+                  fill = homeownership)) + 
+  geom_histogram(binwidth = 5000) +
+  labs(
+    x = "Loan amount ($)",
+    y = "Frequency",
+    title = "Amounts of Lending Club loans"
+  ) +
+  facet_wrap(~ homeownership, nrow = 3) #<<
+```
+]
+]
+
+]
+
+---
+
+class: middle
+
+# Density plot - `geom_density()`
+
+---
+
+## Density plot
+
+```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_density()
+```
+
+---
+
+## Adjusting bandwidth
+
+.panelset[
+.panel[.panel-name[adjust = 0.5]
+```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_density(adjust = 0.5)
+```
+]
+.panel[.panel-name[adjust = 1]
+```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_density(adjust = 1) # default bandwidth
+```
+]
+.panel[.panel-name[adjust = 2]
+```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_density(adjust = 2)
+```
+]
+]
+
+---
+
+## Customizing density plots
+
+.panelset[
+.panel[.panel-name[labs]
+.pull-left[
+```{r ref.label = "density-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r density-custom, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = loan_amount)) +
+  geom_density(adjust = 2) +
+  labs( #<<
+    x = "Loan amount ($)", #<<
+    y = "Density", #<<
+    title = "Amounts of Lending Club loans" #<<
+  ) #<<
+```
+]
+]
+
+.panel[.panel-name[fill]
+.pull-left[
+```{r ref.label = "density-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r density-cat, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = loan_amount, 
+                  fill = homeownership)) + #<<
+  geom_density(adjust = 2, 
+               alpha = 0.5) + #<<
+  labs(
+    x = "Loan amount ($)",
+    y = "Density",
+    title = "Amounts of Lending Club loans", 
+    fill = "Homeownership" #<<
+  )
+```
+]
+]
+
+]
+
+---
+
+class: middle
+
+# Box plot - `geom_boxplot()`
+
+---
+
+## Box plot
+
+```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = interest_rate)) +
+  geom_boxplot()
+```
+
+---
+
+## Customizing box plots
+
+.panelset[
+.panel[.panel-name[labs & axes]
+.pull-left[
+```{r ref.label = "box-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-custom, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = interest_rate)) +
+  geom_boxplot() +
+  labs(
+    x = "Interest rate (%)",
+    y = NULL,
+    title = "Interest rates of Lending Club loans"
+  ) +
+  theme( #<<
+    axis.ticks.y = element_blank(), #<<
+    axis.text.y = element_blank() #<<
+  ) #<<
+```
+]
+]
+
+.panel[.panel-name[categories]
+.pull-left[
+```{r ref.label = "box-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-cat, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = interest_rate,
+                  y = grade)) + #<<
+  geom_boxplot() +
+  labs(
+    x = "Interest rate (%)",
+    y = "Grade",
+    title = "Interest rates of Lending Club loans",
+    subtitle = "by grade of loan" #<<
+  )
+```
+]
+]
+
+.panel[.panel-name[orientation]
+.pull-left[
+```{r ref.label = "box-cat2", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-cat2, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = grade,  #<<
+                  y = interest_rate)) +  #<<
+  geom_boxplot() +
+  labs(
+    x = "Grade",   #<<
+    y = "Interest rate (%)",    #<<
+    title = "Interest rates of Lending Club loans",
+    subtitle = "by grade of loan" 
+  )
+```
+]
+]
+
+
+]
+
+---
+
+class: middle
+
+# Relationships numerical variables - `geom_point()` and `geom_hex()`
+
+---
+
+## Scatterplot
+
+```{r warning = FALSE, fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = debt_to_income, y = interest_rate)) +
+  geom_point()
+```
+
+---
+
+## Hex plot
+
+```{r warning = FALSE, fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = debt_to_income, y = interest_rate)) +
+  geom_hex()
+```
+
+---
+
+class: middle
+
+# Visualizing qualitative/categorical data
+
+---
+
+# Describing shapes of categorical distributions
+
+- Standard summary statistics of mean, median and standard deviation does not apply.
+  - Question: what is your favourite pet?
+  - Data: {"cat", "dog", "cat", "snake", "rabbit"}
+  - What does the average 'favourite pet' mean?!
+- Count/tabulate the frequency of each category (`table`)
+
+<table align="center">
+    <tr>
+        <td align="center">Pet</td>
+        <td align="center">cat</td>
+        <td align="center">dog</td>
+        <td align="center">rabit</td>
+        <td align="center">snake</td>
+    </tr>
+    <tr>
+        <td align="center">Frequency</td>
+        <td align="center">2</td>
+        <td align="center">1</td>
+        <td align="center">1</td>
+        <td align="center">1</td>
+    </tr>
+</table>
+
+
+- Identify the mode (most frequent) category, eg. "cat"
+- Compute proportions, eg 40% "Cat" and 20% "rabbit".
+
+---
+
+class: middle
+
+# Bar plot - `geom_bar()`
+
+---
+
+## Bar plot
+
+```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = homeownership)) +
+  geom_bar()
+```
+
+---
+
+## Segmented bar plot
+
+```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = homeownership, 
+                  fill = grade)) + #<<
+  geom_bar()
+```
+
+---
+
+## Segmented bar plot (proportions)
+
+```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
+ggplot(loans, aes(x = homeownership, fill = grade)) +
+  geom_bar(position = "fill") #<<
+```
+
+---
+
+.question[
+Which bar plot is a more useful representation for visualizing the relationship between homeownership and grade?
+]
+
+.pull-left[
+```{r echo=FALSE, out.width = "90%", fig.align='center'}
+ggplot(loans, aes(x = homeownership, fill = grade)) +
+  geom_bar()
+```
+]
+.pull-right[
+```{r echo=FALSE, out.width = "90%", fig.align='center'}
+ggplot(loans, aes(x = homeownership, fill = grade)) +
+  geom_bar(position = "fill")
+```
+]
+
+---
+
+class: middle
+
+# Relationships between numerical and categorical variables
+
+Already talked about...
+
+- Colouring and faceting histograms and density plots
+- Side-by-side box plots
+
+What other ways can visualize this?
+
+---
+
+## Violin plots - `geom_violin()`
+
+.pull-left[
+```{r violin, fig.show = "hide", warning = FALSE}
+ggplot(loans, aes(x = homeownership, 
+                  y = loan_amount)) +
+  geom_violin()
+```
+]
+.pull-right[
+```{r ref.label = "violin", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```
+]
+
+
+---
+
+## Ridge plots - `geom_density_ridges()`
+
+
+.pull-left[
+```{r ridge1, fig.show = "hide", warning = FALSE, eval = FALSE}
+#install.packages("ggridges")
+library(ggridges)    
+ggplot(loans, aes(x = loan_amount, 
+                  y = grade, 
+                  fill = grade, 
+                  color = grade)) + 
+  geom_density_ridges(alpha = 0.5)
+```
+]
+.pull-right[
+```{r ridge2, echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+#install.packages("ggridges")
+library(ggridges)    
+p <- ggplot(loans, aes(x = loan_amount, 
+                  y = grade, 
+                  fill = grade, 
+                  color = grade)) + 
+  geom_density_ridges(alpha = 0.5)
+suppressMessages(print(p))
+```
+]
+
+.footnote[Looks like the album art of "Unknown Pleasures" by Joy Division.]
