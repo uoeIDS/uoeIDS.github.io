@@ -37,11 +37,11 @@ Before we get stated, please ensure that you have RStudio installed, a GitHub ac
 
 # Getting started
 
-Create a new repository on GitHub and clone today's lab worksheet from [https://github.com/uoeIDS/lab-01-worksheet](https://github.com/uoeIDS/lab-01-worksheet). To remind you of the step:
+Create a new repository on GitHub and clone today's lab worksheet from [https://github.com/uoeIDS/lab-01-template](https://github.com/uoeIDS/lab-01-template). To remind you of the step:
 
 -    Go to *Your repositories* in your GitHub account and then click on the *New* button.
 
--    Click on *Import a repository* and type the URL of today's lab worksheet: [https://github.com/uoeIDS/lab-01-worksheet](https://github.com/uoeIDS/lab-01-worksheet)
+-    Click on *Import a repository* and type the URL of today's lab template worksheet: [https://github.com/uoeIDS/lab-01-template](https://github.com/uoeIDS/lab-01-template)
 
 -    Add an appropriate name to your worksheet, say `lab-01`, and click on *Begin import*.
 
@@ -54,7 +54,7 @@ Now open RStudio to begin a new version control project and link it to the repos
 -    Browse an appropriate location for the project and then click on *Create Project*.
 
 
-First, open the R Markdown document `lab-01.Rmd`, change the author to your name and then *Knit* it. Make sure that it compiles without errors. Remember to periodically keep your version control up to date by staging and committing any substantial changes, and push them to GitHub.
+First, open the R Markdown document `lab-01-plastic-waste.Rmd`, change the author to your name and then *Knit* it. Make sure that it compiles without errors. Remember to periodically keep your version control up to date by staging and committing any substantial changes, and push them to GitHub.
 
 
 
