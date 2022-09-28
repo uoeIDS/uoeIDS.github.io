@@ -381,6 +381,35 @@ tutor for help.</p>
 </div>
 <div id="getting-started" class="section level1">
 <h1>Getting started</h1>
+<div id="meet-your-group" class="section level2">
+<h2>Meet your group</h2>
+<p>Find your workshop group. If you do not know what group you are in,
+go to your course timetable and you will see that the title of this
+class is “Introduction to Data Science - Workshop/&lt;nn&gt;” where
+“&lt;nn&gt;” is your group number.</p>
+<p>Each workshop session will start with a brief introduction to the
+whole class and then you will work in your groups for the rest of the
+workshop. Ideally, you will stay in the same team for the entire
+semester and work together for the final project.</p>
+<ol style="list-style-type: decimal">
+<li><p>Take turns to introduce yourself to your team (e.g. your name,
+where are you from, what degree programme you are taking, etc.). Tell
+the rest of your team a boring fact and an interesting fact about
+yourself (For example, “I decided to walk to class this morning rather
+than taking the bus” and “I play the guitar in a band with my
+friends”.)</p></li>
+<li><p>Discuss in your group when was the last time you saw a data
+visualisation that was outside of this course (e.g. in a different
+course, on a poster/flyer, in the news, etc.). Would you say that this
+data visualisation was good or bad, discuss why?</p></li>
+</ol>
+<p>Please help each other in your group in answering the workshop
+exercises and de-bugging each other’s code. If you are stuck or unsure
+as to what you need to do, raise your hand and a tutor will come over to
+help you.</p>
+</div>
+<div id="accessing" class="section level2">
+<h2>Accessing</h2>
 <p>Create a new repository on GitHub and clone today’s lab worksheet
 from <a href="https://github.com/uoeIDS/lab-01-template">https://github.com/uoeIDS/lab-01-template</a>.
 To remind you of the step:</p>
@@ -424,9 +453,10 @@ First, open the R Markdown document `lab-01.Rmd` and Knit it.
 Make sure it compiles without errors.
 The output will be in the file markdown `.md` file with the same name.
 -->
+</div>
 <div id="packages" class="section level2">
 <h2>Packages</h2>
-<p>We’ll use the <strong>tidyverse</strong> package for this analysis.
+<p>We will use the <strong>tidyverse</strong> package for this analysis.
 Run the following code in the Console to load this package.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
 </div>
@@ -471,8 +501,8 @@ the dataset in the Environment will allow you to inspect it more
 carefully. Alternatively, you can type <code>View(plastic_waste)</code>
 into the Console to do this.</p>
 <p><label for="tufte-mn-2" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-2" class="margin-toggle"><span class="marginnote"><span style="display: block;"><strong>HINT:</strong>
-If you’re not sure, run the command <code>?NA</code> which will lead you
-to the documentation.</span></span></p>
+If you are not sure, run the command <code>?NA</code> which will lead
+you to the documentation.</span></span></p>
 <p><strong>Warm up 3:</strong> Have a quick look at the data and notice
 that there are cells taking the value <code>NA</code> – what does this
 mean?</p>
@@ -541,7 +571,7 @@ fill the curves in with colors as well.</p>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">color =</span> continent, </span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">fill =</span> continent)) <span class="sc">+</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()</span></code></pre></div>
-<p>The overlapping colors make it difficult to tell what’s happening
+<p>The overlapping colors make it difficult to tell what is happening
 with the distributions in continents plotted first, and hence coverred
 by continents plotted over them. We can change the transparency level of
 the fill color to help with this. The <code>alpha</code> argument takes
@@ -553,7 +583,7 @@ you just need to try a few.</p>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">color =</span> continent, </span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">fill =</span> continent)) <span class="sc">+</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>)</span></code></pre></div>
-<p>This still doesn’t look great…</p>
+<p>This still does not look great…</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Recreate the density plots above using a different (lower) alpha
 level that works better for displaying the density curves for all
@@ -610,11 +640,11 @@ so that your Git pane is cleared up afterwards.</em></p>
 </div>
 <div id="wrapping-up" class="section level1">
 <h1>Wrapping up</h1>
-<p>We don’t expect you to complete all of the exercises within the time
+<p>We do not expect you to complete all of the exercises within the time
 reserved for the live workshop. Ideally, you should have got to this
 point. If you still have some time left, move on to the remaining
 exercises below. If not, you should find a time to meet with your team
-and complete them after the workshop. If you haven’t had time to finish
+and complete them after the workshop. If you have not had time to finish
 the exercises above, please ask for help before you leave!</p>
 <p><label for="tufte-mn-6" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-6" class="margin-toggle"><span class="marginnote"><span style="display: block;"><strong>HINT:</strong>
 The <em>x</em>-axis is a calculated variable. One country with plastic
@@ -636,7 +666,7 @@ this code will be dicussed in week 3.)</li>
 commit message again. Make sure to commit and push all changed files
 (that is, make sure every file has a tick next to it) so that your Git
 pane is cleared up afterwards.</em></p>
-<p>Once you’re done, check to make sure your latest changes are on
+<p>Once you are done, check to make sure your latest changes are on
 GitHub.
 <!-- and all your code is inside the .md file (created by pressing "knit").--></p>
 </div>
