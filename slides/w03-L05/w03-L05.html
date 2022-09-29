@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Tidy Data and Data Wrangling</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Tidy Data and Data Wrangling
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/2023
+]
+
+---
+
+
+
+
+
+## Tidy data
+
+&gt;Happy families are all alike; every unhappy family is unhappy in its own way. 
+&gt;
+&gt;Leo Tolstoy
+
+
+.pull-left[
+**Characteristics of tidy data:**
+
+- Each variable forms a column.
+- Each observation forms a row.
+- Each type of observational unit forms a table.
+]
+
+.pull-right[
+**Characteristics of untidy data:**
+
+- Merged cells.
+- Repeated or non-informative variable/column names.
+- Cell comments or superfluous information.
+- Empty or total/subtotal rows.
+- ... 
+]
+
+---
+
+## 
+
+.question[
+What makes this data not tidy?
+]
+
+&lt;img src="img/hyperwar-airplanes-on-hand.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+Source: [Army Air Forces Statistical Digest, WW II](https://www.ibiblio.org/hyperwar/AAF/StatDigest/aafsd-3.html)
+]
+
+---
+
+.question[
+What makes this data not tidy?
+]
+
+&lt;br&gt;
+
+&lt;img src="img/hiv-est-prevalence-15-49.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+Source: [Gapminder, Estimated HIV prevalence among 15-49 year olds](https://www.gapminder.org/data)
+]
+
+---
+
+## Displaying vs. summarising data
+
+
+
+.panelset[
+.panel[
+.panel-name[Tables]
+
+.pull-left[
+
+| Name | Species | Height | Mass |
+|:----|----:|----:|---:|
+| Luke Skywalker      | Human |  172 |    77 |
+| C-3PO               | Droid |  167 |    75 |
+| R2-D2               | Droid |   96 |    32 |
+| Darth Vader         | Human |  202 |   136 |
+| Leia Organa         | Human |  150 |    49 |
+| ... | ... | ... | ... |
+]
+
+.pull-right[
+
+| Species | Count | Average Height |
+|:----|----:|----:|
+| Droid | 6   | 131 |
+| Human | 35  | 177 |
+| Other | 46  | 178 |
+
+
+
+<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:4em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:none;overflow:visible;position:relative;"><path d="M342.6 182.6C336.4 188.9 328.2 192 319.1 192s-16.38-3.125-22.62-9.375L224 109.3V432c0 44.13-35.89 80-80 80H32c-17.67 0-32-14.31-32-32s14.33-32 32-32h112C152.8 448 160 440.8 160 432V109.3L86.62 182.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l127.1-128c12.5-12.5 32.75-12.5 45.25 0l128 128C355.1 149.9 355.1 170.1 342.6 182.6z"/></svg>
+
+<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M342.6 182.6C336.4 188.9 328.2 192 319.1 192s-16.38-3.125-22.62-9.375L224 109.3V432c0 44.13-35.89 80-80 80H32c-17.67 0-32-14.31-32-32s14.33-32 32-32h112C152.8 448 160 440.8 160 432V109.3L86.62 182.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l127.1-128c12.5-12.5 32.75-12.5 45.25 0l128 128C355.1 149.9 355.1 170.1 342.6 182.6z"/></svg>
+
+]
+
+]
+
+.panel[
+.panel-name[Code]
+
+
+```r
+library(tidyverse)
+```
+
+.pull-left[
+
+```r
+starwars %&gt;%
+  select(species, height, mass)
+```
+]
+
+.pull-right[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+  group_by(species_group) %&gt;%
+  summarise(
+    count = n(),
+    avg_height = mean(height, na.rm = TRUE)
+  )
+```
+]
+
+]
+
+]
+
+
+---
+
+
+
+class: middle
+
+# Grammar of data wrangling
+
+---
+
+## A grammar of data wrangling...
+
+... based on the concepts of functions as verbs that manipulate data frames
+
+.pull-left[
+&lt;img src="img/dplyr-part-of-tidyverse.png" width="70%" /&gt;
+]
+.pull-right[
+.midi[
+- `select`: pick columns by name
+- `arrange`: reorder rows
+- `slice`: pick rows using index(es)
+- `filter`: pick rows matching criteria
+- `distinct`: filter for unique rows
+- `mutate`: add new variables
+- `summarise`: reduce variables to values
+- `group_by`: for grouped operations
+- ... (many more)
+]
+
+
+```r
+&lt;function_name&gt;(&lt;dataset_name&gt;, ...)
+```
+
+
+```r
+help(select)
+```
+]
+
+---
+
+## `select` specific variables
+
+.pull-left[
+
+```r
+select(starwars, name, height, mass)
+```
+
+```
+## # A tibble: 87 × 3
+##    name               height  mass
+##    &lt;chr&gt;               &lt;int&gt; &lt;dbl&gt;
+##  1 Luke Skywalker        172    77
+##  2 C-3PO                 167    75
+##  3 R2-D2                  96    32
+##  4 Darth Vader           202   136
+##  5 Leia Organa           150    49
+##  6 Owen Lars             178   120
+##  7 Beru Whitesun lars    165    75
+##  8 R5-D4                  97    32
+##  9 Biggs Darklighter     183    84
+## 10 Obi-Wan Kenobi        182    77
+## # … with 77 more rows
+```
+]
+
+.pull-right[
+
+```r
+select(starwars, -name)
+```
+
+```
+## # A tibble: 87 × 13
+##    height  mass hair_c…¹ skin_…² eye_c…³
+##     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;  
+##  1    172    77 blond    fair    blue   
+##  2    167    75 &lt;NA&gt;     gold    yellow 
+##  3     96    32 &lt;NA&gt;     white,… red    
+##  4    202   136 none     white   yellow 
+##  5    150    49 brown    light   brown  
+##  6    178   120 brown, … light   blue   
+##  7    165    75 brown    light   blue   
+##  8     97    32 &lt;NA&gt;     white,… red    
+##  9    183    84 black    light   brown  
+## 10    182    77 auburn,… fair    blue-g…
+## # … with 77 more rows, 8 more
+## #   variables: birth_year &lt;dbl&gt;,
+## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
+## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated
+## #   variable names ¹​hair_color, …
+```
+]
+
+---
+
+
+## Select helper functions
+
+.pull-left[
+
+```r
+select(starwars, ends_with("color"))
+```
+
+```
+## # A tibble: 87 × 3
+##    hair_color    skin_color  eye_color
+##    &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
+##  1 blond         fair        blue     
+##  2 &lt;NA&gt;          gold        yellow   
+##  3 &lt;NA&gt;          white, blue red      
+##  4 none          white       yellow   
+##  5 brown         light       brown    
+##  6 brown, grey   light       blue     
+##  7 brown         light       blue     
+##  8 &lt;NA&gt;          white, red  red      
+##  9 black         light       brown    
+## 10 auburn, white fair        blue-gray
+## # … with 77 more rows
+```
+]
+
+.pull-right[
+&lt;br&gt;
+.small[
+*   `starts_with()`: Starts with a prefix
+*   `ends_with()`: Ends with a suffix
+*   `contains()`: Contains a literal string
+*   `num_range()`: Match a numerical range like x01, x02, x03
+*   `one_of()`: Matches variable names in a character vector
+*   `everything()`: Matches all variables
+*   `last_col()`: Select last variable, possibly with an offset
+*   `matches()`: Matches a regular expression (a sequence of symbols/characters expressing a string/pattern to be searched for within text)
+
+See the help page for more info on these functions.
+]
+]
+
+
+
+---
+
+## `arrange` mass in numerical order
+
+.pull-left[
+Ascending order:
+
+```r
+arrange(starwars, mass)
+```
+
+```
+## # A tibble: 87 × 14
+##    name     height  mass hair_…¹ skin_…²
+##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+##  1 Ratts T…     79    15 none    grey, …
+##  2 Yoda         66    17 white   green  
+##  3 Wicket …     88    20 brown   brown  
+##  4 R2-D2        96    32 &lt;NA&gt;    white,…
+##  5 R5-D4        97    32 &lt;NA&gt;    white,…
+##  6 Sebulba     112    40 none    grey, …
+##  7 Dud Bolt     94    45 none    blue, …
+...
+```
+]
+
+.pull-right[
+Descending order:
+
+```r
+arrange(starwars, desc(mass))
+```
+
+```
+## # A tibble: 87 × 14
+##    name     height  mass hair_…¹ skin_…²
+##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+##  1 Jabba D…    175  1358 &lt;NA&gt;    green-…
+##  2 Grievous    216   159 none    brown,…
+##  3 IG-88       200   140 none    metal  
+##  4 Darth V…    202   136 none    white  
+##  5 Tarfful     234   136 brown   brown  
+##  6 Owen La…    178   120 brown,… light  
+##  7 Bossk       190   113 none    green  
+...
+```
+]
+
+
+---
+
+## `slice` for cetain row numbers
+
+.pull-left[
+
+```r
+slice(starwars, 1:4)
+```
+
+```
+## # A tibble: 4 × 14
+##   name      height  mass hair_…¹ skin_…²
+##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1 Luke Sky…    172    77 blond   fair   
+## 2 C-3PO        167    75 &lt;NA&gt;    gold   
+## 3 R2-D2         96    32 &lt;NA&gt;    white,…
+## 4 Darth Va…    202   136 none    white  
+## # … with 9 more variables:
+## #   eye_color &lt;chr&gt;, birth_year &lt;dbl&gt;,
+## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
+## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated
+## #   variable names ¹​hair_color, …
+```
+]
+
+.pull-right[
+
+```r
+slice(starwars, c(2,4,6,8))
+```
+
+```
+## # A tibble: 4 × 14
+##   name      height  mass hair_…¹ skin_…²
+##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1 C-3PO        167    75 &lt;NA&gt;    gold   
+## 2 Darth Va…    202   136 none    white  
+## 3 Owen Lars    178   120 brown,… light  
+## 4 R5-D4         97    32 &lt;NA&gt;    white,…
+## # … with 9 more variables:
+## #   eye_color &lt;chr&gt;, birth_year &lt;dbl&gt;,
+## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
+## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated
+## #   variable names ¹​hair_color, …
+```
+]
+---
+
+## `filter` for the droids
+
+
+```r
+filter(starwars, species == "Droid")
+```
+
+```
+## # A tibble: 6 × 14
+##   name   height  mass hair_color skin_color eye_c…¹ birth…² sex   gender homew…³
+##   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 C-3PO     167    75 &lt;NA&gt;       gold       yellow      112 none  mascu… Tatooi…
+## 2 R2-D2      96    32 &lt;NA&gt;       white, bl… red          33 none  mascu… Naboo  
+## 3 R5-D4      97    32 &lt;NA&gt;       white, red red          NA none  mascu… Tatooi…
+## 4 IG-88     200   140 none       metal      red          15 none  mascu… &lt;NA&gt;   
+## 5 R4-P17     96    NA none       silver, r… red, b…      NA none  femin… &lt;NA&gt;   
+## 6 BB8        NA    NA none       none       black        NA none  mascu… &lt;NA&gt;   
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​eye_color, ²​birth_year,
+## #   ³​homeworld
+```
+
+
+&lt;br&gt;
+
+"These aren't the droids you're looking for!"&lt;img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'&gt;&lt;img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'&gt;
+
+.small[
+"These are not the droids you're looking for!"&lt;img style='height:18px' src='img/C3PO.webp'&gt;&lt;img style='vertical-align:middle;' src='img/R2D2.webp'&gt;
+]
+
+---
+
+## Logical operators in R
+
+
+| Code    | Description           | Example        | Output  |
+|:-------:|:----------------------|:---------------|:--------|
+| `&lt;`     | Strictly less than    | `1 &lt; 2`        | `TRUE`  |
+| `&lt;=`    | Less than or equal to | `2 &lt;= 2`       | `TRUE`  | 
+| `&gt;`     | Strictly greater than | `-3 &gt; 3`       | `FALSE` |
+| `&gt;=`    | Less than or equal to | `10 &gt;= 0`      | `TRUE`  |
+| `==`    | Exactly equal to      | `pi == 3.14`   | `FALSE` |
+| `!=`    | Not equal to          | `pi != 3.14`   | `TRUE`  |
+| ` `     | ` `                   | ` `            | ` `     |
+| ` `     | ` `                   | ` `            | ` `     |
+| ` `     | ` `                   | ` `            | ` `     |
+| `x &amp; y` | Logical AND operator  | `TRUE &amp; FALSE` | `FALSE` |
+| `x `&lt;span, style="color:#a7a798;"&gt;&amp;nbsp;&amp;nbsp;&amp;#124;&amp;nbsp;&amp;nbsp;&lt;/span&gt;` y` | Logical OR operator   | `TRUE `&lt;span, style="color:#a7a798;"&gt;&amp;nbsp;&amp;nbsp;&amp;#124;&amp;nbsp;&amp;nbsp;&lt;/span&gt;` FALSE` | `TRUE`  |
+| `!x`    | Logical NOT operator  | `!TRUE `       | `FALSE` |
+
+
+```r
+filter(starwars, species == "Droid" &amp; height &lt; 100)
+```
+
+
+---
+
+### `mutate` to compute BMI and species group
+
+.pull-left[
+
+```r
+mutate(starwars, 
+       bmi = 10000 * mass / height^2,
+       species_grp = 
+         case_when(
+           species == "Human" ~ "Human",
+           species == "Droid" ~ "Droid",
+           TRUE ~ "Other"
+         ))
+```
+]
+
+
+.pull-right[
+
+```
+## # A tibble: 87 × 16
+##    name         bmi speci…¹ height  mass
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt;
+##  1 Jabba Des… 443.  Other      175  1358
+##  2 Dud Bolt    50.9 Other       94    45
+##  3 Yoda        39.0 Other       66    17
+##  4 Owen Lars   37.9 Human      178   120
+##  5 IG-88       35   Droid      200   140
+##  6 R2-D2       34.7 Droid       96    32
+##  7 Grievous    34.1 Other      216   159
+##  8 R5-D4       34.0 Droid       97    32
+##  9 Jek Tono …  34.0 Human      180   110
+## 10 Darth Vad…  33.3 Human      202   136
+## # … with 77 more rows, 11 more
+## #   variables: hair_color &lt;chr&gt;,
+## #   skin_color &lt;chr&gt;, eye_color &lt;chr&gt;,
+## #   birth_year &lt;dbl&gt;, sex &lt;chr&gt;,
+## #   gender &lt;chr&gt;, homeworld &lt;chr&gt;,
+## #   species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, …
+```
+]
+
+
+---
+
+## `count` to make a frequency table
+
+.pull-left[
+
+```r
+count(starwars, eye_color, sort = TRUE)
+```
+
+```
+## # A tibble: 15 × 2
+##    eye_color         n
+##    &lt;chr&gt;         &lt;int&gt;
+##  1 brown            21
+##  2 blue             19
+##  3 yellow           11
+##  4 black            10
+##  5 orange            8
+##  6 red               5
+##  7 hazel             3
+##  8 unknown           3
+##  9 blue-gray         1
+## 10 dark              1
+## 11 gold              1
+## 12 green, yellow     1
+## 13 pink              1
+## 14 red, blue         1
+## 15 white             1
+```
+]
+
+
+---
+
+## `summerise` to compute the average height
+
+.pull-left[
+✅ Informative variable name
+
+```r
+summarise(starwars, avg_ht = mean(height))
+```
+
+```
+## # A tibble: 1 × 1
+##   avg_ht
+##    &lt;dbl&gt;
+## 1   178.
+```
+
+
+
+```r
+summarise(starwars, 
+          min_ht = min(height),
+          avg_ht = mean(height),
+          med_ht = median(height),
+          max_ht = max(height),
+          sd_ht = sd(height))
+```
+
+```
+## # A tibble: 1 × 5
+##   min_ht avg_ht med_ht max_ht sd_ht
+##    &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;
+## 1     88   178.    180    228  22.5
+```
+
+]
+
+
+.pull-right[
+❌ Bad/sloppy variable name
+
+```r
+summarise(starwars, mean(height))
+```
+
+```
+## # A tibble: 1 × 1
+##   `mean(height)`
+##            &lt;dbl&gt;
+## 1           178.
+```
+
+.tip[
+`summarise()` changes the data frame entirely, it collapses rows down to a single summary statistic, and removes all columns that are irrelevant to the calculation.
+]
+
+]
+
+
+---
+
+class: middle
+
+# .hand[We...]
+
+.huge[.green[have]] .hand[a single data frame]
+
+.huge[.pink[want]] .hand[to slice it, and dice it, and juice it, and process it]
+
+
+---
+
+## How to do multiple data wrangling steps?
+
+
+.pull-left[
+**Method 1**: Nesting
+
+
+```r
+summarise( 
+  filter( 
+    starwars, 
+    species == "Human"
+    ), 
+  avg_mass = mean(mass, na.rm = TRUE)
+  )
+```
+
+*ISSUE*: Where do you begin reading the code?!
+
+]
+
+.pull-right[
+**Method 2**: Assign to Memory
+
+
+```r
+starwars_humans &lt;-  
+  filter(starwars, 
+         species == "Human")
+
+summarise(starwars_humans, 
+          av_mass = mean(mass, 
+                         na.rm = TRUE))
+```
+
+*ISSUE*: How good is *your* memory of each object in the computer's memory?!
+]
+
+.question[
+Which method (if either) produces `tidy` code that is easy to read? Can we do any better?
+]
+
+
+---
+
+class: middle
+
+# Pipes
+
+---
+
+## What is a pipe?
+
+In programming, a pipe is a technique for passing information from one process to another.
+
+
+The pipe operator is implemented in the package **magrittr**, though we don't need to load this package explicitly since **tidyverse** does this for us.
+
+.pull-left[
+&lt;img src="img/magrittr_hex.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+
+```r
+data %&gt;% 
+  select(variable1, variable2) %&gt;%
+  filter(variable1 &lt;= variable2)
+```
+
+.center[
+<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z"/></svg>
+]
+
+&lt;img src="img/piping_code.png" width="100%" /&gt;
+
+]
+
+
+---
+
+## The piping narrative
+
+.pull-left[
+
+* **Take the `starwars` data set and ...**
+
+]
+
+.pull-right[
+.small[
+
+```r
+*starwars
+```
+
+```
+## # A tibble: 87 × 14
+##    name   height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex  
+##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;
+##  1 Luke …    172    77 blond   fair    blue       19   male 
+##  2 C-3PO     167    75 &lt;NA&gt;    gold    yellow    112   none 
+##  3 R2-D2      96    32 &lt;NA&gt;    white,… red        33   none 
+##  4 Darth…    202   136 none    white   yellow     41.9 male 
+##  5 Leia …    150    49 brown   light   brown      19   fema…
+##  6 Owen …    178   120 brown,… light   blue       52   male 
+##  7 Beru …    165    75 brown   light   blue       47   fema…
+##  8 R5-D4      97    32 &lt;NA&gt;    white,… red        NA   none 
+##  9 Biggs…    183    84 black   light   brown      24   male 
+## 10 Obi-W…    182    77 auburn… fair    blue-g…    57   male 
+## # … with 77 more rows, 6 more variables: gender &lt;chr&gt;,
+## #   homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated
+## #   variable names ¹​hair_color, ²​skin_color, ³​eye_color,
+## #   ⁴​birth_year
+```
+]
+]
+
+---
+
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* **... select the `species` and `height` variables. **
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+* select(species, height)
+```
+
+```
+## # A tibble: 87 × 2
+##    species height
+##    &lt;chr&gt;    &lt;int&gt;
+##  1 Human      172
+##  2 Droid      167
+##  3 Droid       96
+##  4 Human      202
+##  5 Human      150
+##  6 Human      178
+##  7 Human      165
+##  8 Droid       97
+##  9 Human      183
+## 10 Human      182
+## # … with 77 more rows
+```
+]
+]
+
+---
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* **Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".**
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+* mutate(species_group = case_when(
+*   species == "Droid" ~ "Droid",
+*   species == "Human" ~ "Human",
+*   TRUE ~ "Other"))
+```
+
+```
+## # A tibble: 87 × 3
+##    species height species_group
+##    &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        
+##  1 Human      172 Human        
+##  2 Droid      167 Droid        
+##  3 Droid       96 Droid        
+##  4 Human      202 Human        
+##  5 Human      150 Human        
+##  6 Human      178 Human        
+##  7 Human      165 Human        
+##  8 Droid       97 Droid        
+##  9 Human      183 Human        
+## 10 Human      182 Human        
+## # … with 77 more rows
+```
+]
+]
+
+---
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
+* **Next, group the data according to their `species_group`, and ...**
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+* group_by(species_group)
+```
+
+```
+## # A tibble: 87 × 3
+## # Groups:   species_group [3]
+##    species height species_group
+##    &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        
+##  1 Human      172 Human        
+##  2 Droid      167 Droid        
+##  3 Droid       96 Droid        
+##  4 Human      202 Human        
+##  5 Human      150 Human        
+##  6 Human      178 Human        
+##  7 Human      165 Human        
+##  8 Droid       97 Droid        
+##  9 Human      183 Human        
+## 10 Human      182 Human        
+## # … with 77 more rows
+```
+]
+]
+
+---
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
+* Next, group the data according to their `species_group`, and ...
+* **... summarise the data to return ...**
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+  group_by(species_group) %&gt;%
+* summarise()
+```
+
+```
+## # A tibble: 3 × 1
+##   species_group
+##   &lt;chr&gt;        
+## 1 Droid        
+## 2 Human        
+## 3 Other
+```
+]
+]
+
+---
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
+* Next, group the data according to their `species_group`, and ...
+* ... summarise the data to return ...
+  *   **... the group's sample size and ...**
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+  group_by(species_group) %&gt;%
+  summarise(
+*   count = n()
+  )
+```
+
+```
+## # A tibble: 3 × 2
+##   species_group count
+##   &lt;chr&gt;         &lt;int&gt;
+## 1 Droid             6
+## 2 Human            35
+## 3 Other            46
+```
+]
+]
+
+---
+
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
+* Next, group the data according to their `species_group`, and ...
+* ... summarise the data to return ...
+  *   ... the group's sample size and ...
+  *   **... the group's sample mean** 
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+  group_by(species_group) %&gt;%
+  summarise(
+    count = n(),
+*   avg_height = mean(height)
+  )
+```
+
+```
+## # A tibble: 3 × 3
+##   species_group count avg_height
+##   &lt;chr&gt;         &lt;int&gt;      &lt;dbl&gt;
+## 1 Droid             6         NA
+## 2 Human            35         NA
+## 3 Other            46         NA
+```
+]
+]
+
+---
+
+
+## The piping narrative
+
+.pull-left[
+
+* Take the `starwars` data set and ...
+* ... select the `species` and `height` variables. 
+* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
+* Next, group the data according to their `species_group`, and ...
+* ... summarise the data to return ...
+  *   ... the group's sample size and ...
+  *   ... the group's sample mean **(excluding the rows where data is not available, `NA`).**
+
+]
+
+.pull-right[
+.small[
+
+```r
+starwars %&gt;%
+  select(species, height) %&gt;%
+  mutate(species_group = case_when(
+    species == "Droid" ~ "Droid",
+    species == "Human" ~ "Human",
+    TRUE ~ "Other")) %&gt;%
+  group_by(species_group) %&gt;%
+  summarise(
+    count = n(),
+*   avg_height = mean(height, na.rm = TRUE)
+  )
+```
+
+```
+## # A tibble: 3 × 3
+##   species_group count avg_height
+##   &lt;chr&gt;         &lt;int&gt;      &lt;dbl&gt;
+## 1 Droid             6       131.
+## 2 Human            35       177.
+## 3 Other            46       178.
+```
+]
+]
+
+---
+
+
+
+## A note on piping and layering
+
+- `%&gt;%` is used in data wrangling pipelines. we _pipe_ the output of the previous line of code as the first input of the next line of code.
+
+- `+` is used in **ggplot2** plots for "layering". We create the plot by _adding_ layers.
+
+---
+
+## Right and wrong uses
+
+
+.pull-left[
+.midi[
+❌
+
+
+```r
+starwars +
+  select(name, height)
+```
+
+```
+## Error in select(name, height) : object 
+## 'name' not found
+```
+
+✅
+
+
+```r
+starwars %&gt;%
+  select(name, height)
+```
+
+```
+## # A tibble: 87 × 2
+##    name               height
+##    &lt;chr&gt;               &lt;int&gt;
+##  1 Luke Skywalker        172
+##  2 C-3PO                 167
+##  3 R2-D2                  96
+...
+```
+]
+]
+
+.pull-right[
+.midi[
+❌
+
+
+```r
+ggplot(starwars, aes(x = gender)) %&gt;%
+  geom_bar()
+```
+
+```
+## Error in `validate_mapping()`:
+## ! `mapping` must be created by `aes()`
+## Did you use %&gt;% instead of +?
+```
+
+✅
+
+
+```r
+ggplot(starwars, aes(x = gender)) +
+  geom_bar()
+```
+
+&lt;img src="w03-L05_files/figure-html/good_add-1.png" width="25%" /&gt;
+
+]
+]
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
