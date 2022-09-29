@@ -1,0 +1,19 @@
+---
+title: "Lab 02 - Take a sad plot and make it better"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Willfried Wende from Pixabay"}
+knitr::include_graphics("img/garbage-g54775ac54_1920.jpg")
+```
+
+This material is yet to be written!!!
+
