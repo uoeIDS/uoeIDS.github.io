@@ -310,9 +310,7 @@ filter(starwars, species == "Droid")
 
 "These aren't the droids you're looking for!"<img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'><img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'>
 
-.small[
-"These are not the droids you're looking for!"<img style='height:18px' src='img/C3PO.webp'><img style='vertical-align:middle;' src='img/R2D2.webp'>
-]
+
 
 ---
 
