@@ -249,24 +249,14 @@ Once the last person pushes their final changes, others should pull the changes 
 
 ## Making and managing personal copies
 
-**TEAM MEMBERS 2+:** 
-The following steps will ensure that you have your own copy of today's lab worksheet and maintain all of the communication between RStudio and GitHub so that you can attempt any outstanding exercises on your own time in your own version of the worksheet.
-
--   Ensure that you pull any further changes from the collaborative repository.
--   Log into GitHub and click on the green button to create a new blank repository with a suitable name. Note, do not clone the repository from team member 1!
--   Copy the HTTPS URL of your personal repository.
--   In RStudio, open the file _.git/config_ and replace the URL of the "origin" to your personal GitHub repository you have just created.
--   Save this file. (You may be asked to restart RStudio depending on your system.)
--   Finally, go to the Git pane and click on push _Push_. The message in the pop-up should mention something about creating a new branch. Go to your repository on GitHub and your files from today's lab should be there.
-
-
 **TEAM MEMBERS 1:**
 After today's lab, you may want to prevent others from making any further changes to the worksheet.
 -   First ensure that your team members have pulled the latest version of the repository.
 -   In the lab worksheet repository on GitHub, go to _Settings_ and then _Collaborators_.
 -   Remove your team members so that they can no longer push changes to the repository.
 
-
+**TEAM MEMBERS 2+:** 
+Take a personal clone of today's lab worksheet from team member 1. Go to your GitHub repository and when creating a new repository select "Import a repository". In the text box, paste the HTTPS URL of today's lab repository by team member 1. Note that when team member 1 removes you as a collaborator from their GitHub repository then you will lose the permission to push any further changes. In that case, you may need to create a new R project that connects to your personal GitHub repository.
 
 
 
