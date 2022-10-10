@@ -11,9 +11,9 @@ link-citations: yes
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-library(openintro)
-library(ggimage)
-library(ggrepel)
+library(dsbox)
+library(lubridate)
+library(ggplot2)
     
 knitr::opts_chunk$set(out.width = "100%")
 ```
@@ -22,85 +22,49 @@ knitr::opts_chunk$set(out.width = "100%")
 knitr::include_graphics("img/peiheng-yang-wa8U2Y01nmY-unsplash.jpg")
 ```
 
-# **WARNING**: This material needs to be reviewed!!!
 
 
-In this assignment you'll get to put your newly acquired data visualisation and wrangling chops to use as well as continue practicing working with Git and GitHub.
+In this assignment, you will get to put your newly acquired skills of data visualisation and wrangling into use, as well as continue practising working with Git and GitHub.
 
 ## Prerequisites
 
--   This assignment assumes that you've worked through all materials for [week 1](https://idsed.digital/week01/), [week 2](https://idsed.digital/week02/), and [week 3](https://idsed.digital/week03/).
-    Make sure you're familiar with this content.
-
--   This assignment uses datasets from the following interactive R tutorials that were assigned during these weeks.
-    If you haven't gone through the tutorials then, this is a good time to give them a try.
-    While it's not strictly required that you finish the tutorials before the homework, they will be useful if you want some guided practice before working on open-ended questions as part of this assignment.
-
-    -   [Airbnb listings in Edinburgh](https://minecr.shinyapps.io/dsbox-01-edibnb/)
-    -   [Road traffic accidents](https://minecr.shinyapps.io/dsbox-02-accidents/)
+-   This assignment assumes that you have worked through all materials up to and including [week 3](https://ids2022.netlify.app/week03/) and [week 4](https://ids2022.netlify.app/week04/).
+    Make sure you are familiar with this content.
 
 ## Workflow
 
-```{marginfigure}
-**IMPORTANT:** If there is no GitHub repo created for you for this assignment, it means I didn't have your GitHub username as of when I assigned the homework. Please let me know your GitHub username asap, and I can create your repo.
-```
+### **Step 1. Cloning the homework template in GitHub:** 
 
-```{=html}
-<details>
-  <summary>Click here for workflow overview.</summary>
-  
-<p>For each assignment in this course you will start with a GitHub repo that I created for you and that contains the starter documents you will build upon when working on your assignment. The first step is always to bring these files into RStudio so that you can edit them, run them, view your results, and interpret them. This action is called cloning.</p>
+From your profile in GitHub, go to **Repositories** and click on the green **New** button. Click on the text **Import a repository** and type the following URL: [`https://github.com/uoeIDS/hw-02-template`](https://github.com/uoeIDS/hw-02-template). Add an appropriate name to your repository, e.g. `hw-02`.
 
-<p>Then you will work in RStudio on the data analysis, making commits along the way (snapshots of your changes) and finally push all your work back to GitHub.</p>
+* **IMPORTANT**: Set the privacy of your repository to **Private**.
 
-<p>The <a href="https://idsed.digital/troubleshoot/setup/openingaproject/">Opening a Project</a> page walks you through the process of getting information of the repo to be cloned, cloning your repo in a new RStudio Cloud project, and getting started with the analysis.</p>
-  
-</details>
-```
-**Step 1. Get URL of repo to be cloned:** On GitHub, click on the green **Code** button, select **HTTPS** (this might already be selected by default).
-Click on the clipboard icon 📋 to copy the repo URL.
+Once done, click on the green **Begin import** button.
 
-**Step 2. Go to RStudio Cloud:** Go to [rstudio.cloud](https://rstudio.cloud/ "RStudio Cloud") and then **navigate to the course workspace** via the left sidebar.
-Before you proceed, confirm that you are in the course workspace by checking out what's on your top bar in RStudio Cloud; it should say Introduction to Data Science.
+Since your repository is private to you, we as that you add the GitHub account `uoeIDS` as a **Collaborator** so that the teaching team can see your work and provide technical support if needed.
 
-**Step 3. Clone the repo:** In RStudio, click on the **down arrow** next to New Project and then choose **New Project from Git Repository**.
-In the pop-up window, **paste the URL** you copied from GitHub, make sure the box for **Add packages from the base project** is checked (it should be, by default) and then click **OK**.
 
-## Warm up
+### **Step 2. Go to RStudio:** 
 
-Before we introduce the data, let's warm up with some simple exercises.
+Open RStudio, click on **File** and then **New Project...**. In the wizard, select **Version Control**, then **Git** and then paste the HTTPS URL of the homework GitHub repository you have just created. Browse your local file system to find a convenient place to save your project and then click **Create Project**
 
-**Step 1. Update the YAML:** Open the R Markdown (Rmd) file in your project, change the author name to your name, and **knit** the document.
 
-**Step 2. Commit:** Go to the **Git pane** in RStudio.
-You should see that your Rmd (R Markdown) file and its output, your md file (Markdown), file are listed there as recently changed files.
-Next, click on **Diff**.
-This will pop open a new window that shows you the **diff**erence between the last committed state of the document and its current state that includes your changes.
-If you're happy with these changes, click on the checkboxes of all files in the list, and type *"Update author name"* in the **Commit message** box and hit **Commit**.
+### **Step 3: Initial commit:**
 
-```{marginfigure}
-Don't fret if you miss a commit suggested or end up making more commits than what's suggested here. The important thing is that you make incremental commits, the precise number doesn't matter. And your commit messages should be informative, but the precise wording doesn't matter either.
-```
+Under the **Files** tab (bottom-right pane), tick the box next to the file `hw-02-template.Rmd` and then click on the **Rename** button. Rename your R markdown file to read `hw-02-s<nnnnnn>.Rmd` where you should replace `<nnnnnn>` with your UUN.
 
-You don't have to commit after every change, this would get quite cumbersome.
-You should consider committing states that are *meaningful to you* for inspection, comparison, or restoration.
-In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use.
-As the semester progresses we will let you make these decisions.
+Open the R markdown file you have renamed and update the document's author to your name and UUN.
 
-**Step 3. Push:** Now that you have made an update and committed this change, it's time to push these changes to the web!
-Or more specifically, to your repo on GitHub.
-Why?
-So that others can see your changes.
-And by others, we mean the course teaching team (your repos in this course are private to you and us, only).
-In order to push your changes to GitHub, first follow the [Push and Pull Changes](https://idsed.digital/troubleshoot/setup/openingaproject/#push-and-pull-changes) instructions on the [Opening a Project](https://idsed.digital/troubleshoot/setup/openingaproject/) page, then click on **Push**.
+Go to the **Git** pane (top-right) and click on **Commit**. Stage all the files by ticking the boxes and commit the changes with an informative message, e.g. `Initial commit`. Finally, push your changes to GitHub. Remember to periodically stage, commit and push your work. 
+
 
 ## Packages
 
-R is an open-source language, and developers contribute functionality to R via packages.
-In this assignment we will use the following packages:
+This assignment will use the following packages:
 
 -   `tidyverse`: a collection of packages for doing data analysis in a "tidy" way
--   `dsbox`: a package that contains the datasets that we will use in this course
+-   `dsbox`: a package that contains the dataset that we will use in this assignment
+-   `lubridate`: a package for formatting dates in R
 
 We use the `library()` function to load packages.
 In your R Markdown document you should see an R chunk labelled `load-packages` which has the necessary code for loading both packages.
@@ -114,16 +78,16 @@ Note that these packages are also get loaded in your R Markdown environment when
 
 ## Airbnb listings in Edinburgh
 
-Once upon a time in a land before the plague, people travelled all over the world, and some stayed in hotels and others chose to stay in other people's houses that they booked through Airbnb.
+Airbnb is an online marketplace where people can book short-term stays in hotels or in other people's houses. 
 Recent developments in Edinburgh regarding the growth of Airbnb and its impact on the housing market means a better understanding of the Airbnb listings is needed.
 Using data provided by Airbnb, we can explore how Airbnb availability and prices vary by neighbourhood.
 
-The data can be found in the **dsbox** package, and it's called `edibnb`.
-Since the dataset is distributed with the package, we don't need to load it separately; it becomes available to us when we load the package.
+The data can be found in the **dsbox** package, and it is called `edibnb`.
+Since the dataset is distributed with the package, we do not need to load it separately; it becomes available to us when we load the package.
 
 You can view the dataset as a spreadsheet using the `View()` function.
-Note that you should not put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window (and the concept of popping open a window in a static document doesn't really make sense...).
-When you run this in the console, you'll see the following **data viewer** window pop up.
+Note that you should _not_ put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window.
+When you run this in the console, you will see the following **data viewer** window pop up.
 
 ```{r view-data, eval = FALSE}
 View(edibnb)
@@ -132,69 +96,95 @@ View(edibnb)
 You can find out more about the dataset by inspecting its documentation, which you can access by running `?edibnb` in the Console or using the Help menu in RStudio to search for `edibnb`.
 You can also find this information [here](https://rstudio-education.github.io/dsbox/reference/edibnb.html).
 
-```{marginfigure}
-You may want to use **inline** code instead of hard coding the number
+The `edibnb` data set contain `r nrow(edibnb)` listings in Edinburgh, with values about `r ncol(edibnb)` different variables that includes the property neighbourhood location, number of rooms and review ratings.
+
+
+Edinburgh council collects the second data set from their assessments of a randomly selected sample of listings. The variables in this data set are:
+  -   `id`, the ID number of the listing (according to `edibnb`)
+  -   `rating`, the council's rating of the listing of the property either being good, adequate or poor.
+  -   `assessment_date`, the date the council performed their assessment of the property.
+The data is contained in the file `edinburgh_council_airbnb_reviews.csv` within the `data/` directory. It can be loaded into your workflow using the following code.
+
+```{r message = FALSE}
+council <- read_csv("data/council_assessments.csv")
 ```
 
-1.  How many observations and variables does the dataset have? Write your answer as a full sentence.
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under the appropriate exercise, knit the document, commit your changes with a commit message that says "Completed Exercise 1", and push. Make sure you commit and push all files so your Git pane is clear after the push.*
+## Exercise 1
 
-```{marginfigure}
-Remember to give your figure an appropriate title and axis labels.
-```
+In the `edibnb` data set, what is the ID of the listing that has the highest number of reviews with a perfect review score of 100%?
 
-1.  Create a faceted histogram where each facet represents a neighbourhood and displays the distribution of Airbnb prices in that neighbourhood. Think critically about whether it makes more sense to stack the facets on top of each other in a column, lay them out in a row, or wrap them around. Along with your visualisation, include your reasoning for the layout you chose for your facets.
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 1, knit the document, commit your changes with a commit message that says "Completed Exercise 1", and push.*
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under the appropriate exercise, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push. Make sure you commit and push all files so your Git pane is clear after the push.*
 
-1.  The following question will require creating three pipelines, one of which ends in a visualisation, and a narrative.
+## Exercise 2
 
-    A - Use a single pipeline to identity the neighbourhoods with the top five median listing prices.
+Calculate the minimum, maximum and average price from the Airbnb properties in Southside for a single night stay for four people. (Note, four people can stay in a property for four or more people.)
 
-    B - In another pipeline filter the data for these neighbourhoods and make ridge plots of the distributions of listing prices in these neighbourhoods.
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
 
-    C - In a third pipeline calculate the minimum, mean, median, standard deviation, IQR, and maximum listing price in each of these neighbourhoods.
+## Exercise 3
 
-    D - Use the visualisation and the summary statistics to describe and interpret the distribution of listing prices in the neighbourhoods.
+When looking at the data you will notice that some of the listings have a value for the number of bathrooms that is not a whole number, e.g. 1.5 or 2.5. Mutate the `bathrooms` variable to round the number of bathrooms _up_ to the nearest whole number (hint, look at `ceiling()`). Using this mutated variable, how many listings have more bathrooms than bedrooms?
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under the appropriate exercise, knit the document, commit your changes with a short and informative commit message, and push. Make sure you commit and push all files so your Git pane is clear after the push.*
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
 
-1.  Create a visualization that will help you compare the distribution of review scores (`review_scores_rating`) across neighbourhoods. You get to decide what type of visualisation to create and there is more than one correct answer! In your answer, include a brief interpretation of how Airbnb guests rate properties in general and how the neighbourhoods compare to each other in terms of their ratings.
+## Exercise 4
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under the appropriate exercise, knit the document, commit your changes with a short and informative commit message, and push. Make sure you commit and push all files so your Git pane is clear after the push.*
+Join the `edibnb` to the `council` data frames. Create a bar plot of the `neighbourhood` variable for the properties that have been assessed by the council (remember to iterate the data visualisation to make it as informative as possible). What does the data visualisation suggest? Is the council targeting all neighbourhoods within Edinburgh equally?
 
-## Road traffic accidents in Edinburgh
 
-Next we'll look at traffic accidents in Edinburgh.
-The data are made available [online](https://data.gov.uk/dataset/cb7ae6f0-4be6-4935-9277-47e5ce24a11f/road-safety-data/datafile/36f1658e-b709-47e7-9f56-cca7aefeb8fe/preview) by the UK Government.
-It covers all recorded accidents in Edinburgh in 2018 and some of the variables were modified for the purposes of this assignment.
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4, knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
 
-The data can be found in the **dsbox** package, and it's called `accidents`.
-Since the dataset is distributed with the package, we don't need to load it separately; it becomes available to us when we load the package.
-You can find out more about the dataset by inspecting its documentation, which you can access by running `?accidents` in the Console or using the Help menu in RStudio to search for `accidents`.
-You can also find this information [here](https://rstudio-education.github.io/dsbox/reference/accidents.html).
 
-```{marginfigure}
-Don't forget to label your R chunk as well (where it says `label-me-1`). Your label should be short, informative, shouldn't include spaces, and shouldn't shouldn't repeat a previous label.
-```
+## Exercise 5
 
-1.  Recreate the following plot, and describe and interpret it in context of the data.
+On reading the `council` data, R interprets the variable `assessment_date` as a character. Using the **lubridate** package to correct the class of the `assessment_date` variable, and use this variable to evaluate how many properties the council assessed in the month of May. (Hint: have a look at the [lubridate cheat sheet](https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf) for what functions may be useful in this exercise.)
 
-```{r echo=FALSE}
-knitr::include_graphics("img/plot-to-recreate.png")
-```
 
-1.  Create another data visualisation based on this data and interpret it. You can choose any variables and any type of visualisation you like, but it must have at least three variables, e.g. a scatterplot of x vs. y isn't enough, but if points are coloured by z, that's fine.
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 5, knit the document, commit your changes with a commit message that says "Completed Exercise 5", and push.*
 
-```{marginfigure}
-__IMPORTANT: How do we mark assignments?__
 
-Your teaching team will mark your work using your __knitted file__ (ending in .md) and not your R Markdown (.Rmd) file that you use to create and run your code. This is because your knitted file is a completely _reproducible_ document where we can see your code and its output without having to run any code ourselves. It is important you knit your work while working on your assessments as we will only mark what is in the knitted file and not what is in the .Rmd file.
-```
+### Review your work
 
-✏️️🧶 ✅ ⬆️ *After writing your answer in your R Markdown document under the appropriate exercise, make sure to knit, commit, and push your changes to GitHub with an appropriate commit message. Make sure you have committed and pushed all changed files so that your Git pane is cleared up afterwards. Your last push to the repo needs to come before the deadline, **14 October, 16:00 UK time**. You can confirm that what you committed and pushed are indeed in your repo that we will see by visiting your repo on GitHub. Make sure your Rmd and md files are there and that your md file contains all of your code and plots!*
+After answering each of the exercise, take a moment to review your work and to check that your code is clear and understandable. A proportion of the homework assignment marks are attributable to how you present your work, both code and written.
+
+When reviewing your code, add new lines, tabs and spaces where appropriate to help aid the reader to understand what your code is doing. Even if the exercise does not explicitly ask you to write some text, it is also good practice to add a short sentence to be explicit about what is your answer to the question.
+
+
+# Submission
+
+Once you have answered all of the exercises, please make sure that you have knitted your document and committed all the changes to GitHub.
+
+To submit your homework:
+
+1.    Go to the Introduction to Data Science webpage on [LEARN](https://www.learn.ed.ac.uk/ultra/courses/_98726_1/cl/outline) 
+
+2.    Under **Assessment** in the left-hand panel, scroll down and click on **Gradescope**.
+
+3.    Click on the **Dashboard** in the left-hand panel and select **Homework hw-02**.
+
+4.    In the question, click on **Select file(s)** and find the knitted html document containing your answers. Once done, press **Save Answer** and then **Submit & View Submissions**. 
+
+**IMPORTANT**: You must only submit the knitted html document! Uploading any other file (including the R Markdown file of your homework) will receive zero marks.
+
+If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
+
+
+## How the homework graded
+
+The homework is grades out of a 25 where:
+
+*   Each exercise is marked out of 4, and
+
+*   Up to five additional marks are awarded based on the clarity of your writing, coding skills, reproducibility and overall presentation. 
+
 
 ## Getting help
 
-If you have any questions about the assignment, please post them on Piazza and/or stop by student hours!
+If you have any questions about the assignment, please post them on Piazza!
+
+
+
+
+
