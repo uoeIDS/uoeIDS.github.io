@@ -11,7 +11,7 @@ link-citations: yes
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-library(dsbox)
+#library(dsbox)
 library(lubridate)
 library(ggplot2)
     
@@ -63,7 +63,7 @@ Go to the **Git** pane (top-right) and click on **Commit**. Stage all the files 
 This assignment will use the following packages:
 
 -   `tidyverse`: a collection of packages for doing data analysis in a "tidy" way
--   `dsbox`: a package that contains the dataset that we will use in this assignment
+-   `dsbox`: a package that contains the dataset that we will use in this assignment (**See update below**)
 -   `lubridate`: a package for formatting dates in R
 
 We use the `library()` function to load packages.
@@ -78,9 +78,25 @@ Note that these packages are also get loaded in your R Markdown environment when
 
 ## Airbnb listings in Edinburgh
 
+
 Airbnb is an online marketplace where people can book short-term stays in hotels or in other people's houses. 
 Recent developments in Edinburgh regarding the growth of Airbnb and its impact on the housing market means a better understanding of the Airbnb listings is needed.
 Using data provided by Airbnb, we can explore how Airbnb availability and prices vary by neighbourhood.
+
+------
+
+**UPDATE: 13th Oct 2022**
+
+Some students have identified issues with downloading and installing the **dsbox**. As such, a copy of the Edinburgh Airbnb data set has been available within the `data/` directory of the latest update to the `hw-02` template repository. To read this data, ensure that you have the following code near the beginning of your R Markdown file.
+
+```{r load-edibnb-data, message = FALSE}
+edibnb <- read_csv("data/edibnb.csv")
+```
+
+If you cloned the template repository prior to this update and have problems with installing the **dsbox** package, then return to the template repository [HERE](https://github.com/uoeIDS/hw-02-template), click on "Code" and then select "Download.zip". Unpack the .zip file and copy the `edinbnb.csv` file into the `data/` directory within your current homework project. You can then add the above code at the top of your R Markdown document to read in the `edibnb` data set. Finally, knit your document and remember to commit and push the changes to GitHub.
+
+------
+
 
 The data can be found in the **dsbox** package, and it is called `edibnb`.
 Since the dataset is distributed with the package, we do not need to load it separately; it becomes available to us when we load the package.

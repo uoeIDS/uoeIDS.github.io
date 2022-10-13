@@ -419,7 +419,7 @@ Remember to periodically stage, commit and push your work.</p>
 <li><code>tidyverse</code>: a collection of packages for doing data
 analysis in a “tidy” way</li>
 <li><code>dsbox</code>: a package that contains the dataset that we will
-use in this assignment</li>
+use in this assignment (<strong>See update below</strong>)</li>
 <li><code>lubridate</code>: a package for formatting dates in R</li>
 </ul>
 <p>We use the <code>library()</code> function to load packages. In your
@@ -441,6 +441,25 @@ Edinburgh regarding the growth of Airbnb and its impact on the housing
 market means a better understanding of the Airbnb listings is needed.
 Using data provided by Airbnb, we can explore how Airbnb availability
 and prices vary by neighbourhood.</p>
+<hr />
+<p><strong>UPDATE: 13th Oct 2022</strong></p>
+<p>Some students have identified issues with downloading and installing
+the <strong>dsbox</strong>. As such, a copy of the Edinburgh Airbnb data
+set has been available within the <code>data/</code> directory of the
+latest update to the <code>hw-02</code> template repository. To read
+this data, ensure that you have the following code near the beginning of
+your R Markdown file.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>edibnb <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/edibnb.csv&quot;</span>)</span></code></pre></div>
+<p>If you cloned the template repository prior to this update and have
+problems with installing the <strong>dsbox</strong> package, then return
+to the template repository <a href="https://github.com/uoeIDS/hw-02-template">HERE</a>, click on
+“Code” and then select “Download.zip”. Unpack the .zip file and copy the
+<code>edinbnb.csv</code> file into the <code>data/</code> directory
+within your current homework project. You can then add the above code at
+the top of your R Markdown document to read in the <code>edibnb</code>
+data set. Finally, knit your document and remember to commit and push
+the changes to GitHub.</p>
+<hr />
 <p>The data can be found in the <strong>dsbox</strong> package, and it
 is called <code>edibnb</code>. Since the dataset is distributed with the
 package, we do not need to load it separately; it becomes available to
@@ -451,7 +470,7 @@ function in your R Markdown document, but instead type it directly in
 the Console, as it pops open a new window. When you run this in the
 console, you will see the following <strong>data viewer</strong> window
 pop up.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(edibnb)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(edibnb)</span></code></pre></div>
 <p>You can find out more about the dataset by inspecting its
 documentation, which you can access by running <code>?edibnb</code> in
 the Console or using the Help menu in RStudio to search for
@@ -469,7 +488,7 @@ assessment of the property. The data is contained in the file
 <code>edinburgh_council_airbnb_reviews.csv</code> within the
 <code>data/</code> directory. It can be loaded into your workflow using
 the following code.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>council <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/edinburgh_council_airbnb_reviews.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>council <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/council_assessments.csv&quot;</span>)</span></code></pre></div>
 </div>
 <div id="exercise-1" class="section level2">
 <h2>Exercise 1</h2>
