@@ -1,0 +1,169 @@
+---
+title: "Lab 03 - Nobel laureates"
+author: "KEY"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r load-package, message = FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+```{r load-data, message = FALSE}
+nobel <- read_csv("data/nobel.csv")
+```
+
+### Exercise 1
+
+#### Narrative
+
+There are `r nrow(nobel)` observations and `r ncol(nobel)` variables in the dataset.
+
+### Exercise 2
+
+#### Code
+
+```{r nobel-living}
+nobel_living <- nobel %>%
+  filter(
+    !is.na(country),
+    gender != "org",
+    is.na(died_date)
+  )
+```
+
+#### Narrative
+
+There are `r nrow(nobel_living)` observations in the `nobel_living` data frame.
+
+### Exercise 3
+
+#### Code
+
+```{r}
+nobel_living_science <- nobel_living %>%
+  mutate(country_us = if_else(country == "USA", "USA", "Other")) %>%
+  filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
+```
+
+```{r facet-bar-plot}
+nobel_living_science %>%
+  ggplot(aes(x = country_us)) +
+  geom_bar() +
+  coord_flip() +
+  facet_grid(category ~ .)
+```
+
+#### Narrative
+
+In each science category, a majority of living Nobel science laureates were based in the US when they won their prizes (as determined by the fact that there are only two bars for each, and the "US" bar is always longer).  The absolute disparity (i.e. difference in numbers between US-based and non-US-based laureates) is greatest in Economics, and smallest in Chemistry.  Because the total numbers are different across the sciences, it's hard to tell in which subject the relative disparity (i.e. number of US-based laureates divided by total number of laureates) is greatest.
+
+Because a majority of laureates were US-based for each subject, a majority were overall, and the BuzzFeed News headline is supported by the data.
+
+### Exercise 4
+
+#### Code
+
+```{r born-country-us}
+nobel_living_science <- nobel_living_science %>%
+  mutate(born_country_us = if_else(born_country == "USA", "USA", "Other"))
+```
+
+There were `r nobel_living_science %>% filter(born_country_us == "USA") %>% nrow()` laureates born in the US.
+
+### Exercise 5
+
+#### Narrative
+
+(NB based on the instructions, there's no reason the bar charts had to be made with `position = "fill"`, like this.  They could equivalently have been made using no position argument---i.e., the default, `position = "stack"`---which is actually closer to the BuzzFeed News visualisation.)
+
+The data appear to support BuzzFeed News's claim: they don't claim that a specific number were born in other countries, only that "many" were, of those working in the US.  Since a reasonable proportion of the US bars are shaded for being born elsewhere, the claim is supported.  (The bars relating to laureates not working in the US at the time of their award are not relevant to the claim.)
+
+#### Code
+
+```{r facet-bar-plot-redo}
+nobel_living_science %>%
+  ggplot(aes(x = country_us, fill = born_country_us)) +
+  geom_bar(position = "fill") +
+  coord_flip() +
+  facet_grid(category ~ .)
+```
+
+### Exercise 6
+
+#### Code
+
+```{r born-country}
+nobel_living <- nobel_living %>%
+  mutate(country_us = if_else(country == "USA", "USA", "Other"),
+         born_country_us = if_else(born_country == "USA", "USA", "Other"))
+  
+nobel_living %>%
+  filter(
+    country_us == "USA",
+    born_country_us == "Other"
+  ) %>%
+  count(born_country) %>%
+  arrange(desc(n))
+```
+
+```{r}
+nobel_living %>%
+  filter(country == "USA") %>%
+  filter(born_country != "USA") %>%
+  mutate(born_country = fct_infreq(born_country)) %>%
+  #Sorts countries in *ascending* order of frequency
+  mutate(born_country = fct_rev(born_country)) %>%
+  #Reverses to decreasing order
+  ggplot(aes(born_country)) +
+  geom_bar() +
+  coord_flip()
+```
+
+```{r}
+nobel_living %>%
+  filter(country == "USA") %>%
+  filter(born_country != "USA") %>%
+  #Reverses to decreasing order
+  ggplot(aes(x = reorder(born_country, table(born_country)[born_country]))) +
+  geom_bar() +
+  labs(x = "Country") +
+  coord_flip()
+```
+
+#### Narrative
+
+(NB1 Sorting the bars in order is a little tricky, and is not required for full credit---the instructions explicitly say that any ordering is fine.  The second way above is a slightly hacky method via [Stack Overflow](https://stackoverflow.com/a/27448463), with the disadvantage that ties are sorted in *reverse* alphabetical order.)
+
+(NB2 An alternate way to get the bar chart is directly through the frequency table---again, this has ties sorted in *reverse* alphabetical order.)
+
+```{r}
+nobel_living %>%
+  filter(
+    country_us == "USA",
+    born_country_us == "Other"
+  ) %>%
+  count(born_country) %>%
+  mutate(born_country = fct_reorder(born_country, n)) %>% #The sorting line
+  ggplot(aes(x = born_country, y = n)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+```{r}
+#A hack for getting the alphabetical order right:
+nobel_living %>%
+  filter(
+    country_us == "USA",
+    born_country_us == "Other"
+  ) %>%
+  count(born_country) %>%
+  mutate(alpha_rank = rank(born_country)) %>%
+  #Ranks countries in alphabetical order
+  mutate(ord = n - alpha_rank/1000) %>%
+  #Creates a new variable that puts countries in the right order
+  mutate(born_country = fct_reorder(born_country, ord)) %>% #The sorting line
+  ggplot(aes(x = born_country, y = n)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
