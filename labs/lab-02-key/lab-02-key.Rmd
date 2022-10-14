@@ -1,0 +1,179 @@
+---
+title: "Lab 02 - Take a sad plot and make it better"
+author: "KEY"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r load-package-data, message = FALSE}
+library(tidyverse)
+library(scales)
+```
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+```
+
+```{r load-data, message = FALSE}
+staff <- read_csv("data/instructional-staff.csv")
+glimpse(staff)
+```
+
+### Exercise 1
+
+_Question_: 
+
+If the long data will have a row for each year/faculty type combination, and there are 5 faculty types and 11 years of data, how many rows will the data have? Discuss as a team and write down your answer.
+
+
+_Answer_:
+
+$11 \times 5 = 55$
+
+### Exercise 2
+
+_Question_: 
+
+Fill in the blanks in the following code chunk (see exercise sheet) to pivot the staff data longer and save it as a new data frame called `staff_long`.
+
+
+_Answer_:
+
+
+```{r staff-long-create}
+staff_long <- staff %>%
+  pivot_longer(
+    cols = -faculty_type, 
+    names_to = "year",
+    values_to = "value"
+    )
+```
+
+Note the use of the minus symbol before `faculty_type`. This means that we want to use *all* of the columns *excluding* the variable `faculty_type`.
+
+### Exercise 3
+
+_Question_: 
+
+Inspect `staff_long` to check if your guess regarding number of rows from Exercise 1 was correct.
+
+
+_Answer_:
+
+
+Yes, values match.
+
+```{r staff-long-inspect}
+nrow(staff_long)
+```
+
+
+### Exercise 4
+
+_Question_: 
+
+We will plot instructional staff employment trends as a line plot. A possible approach for creating a line plot where we colour the lines by faculty type is the following, but it does not quite look right. What is wrong with the graph?
+
+
+_Answer_:
+
+
+
+We don't see the lines.
+
+```{r lineplot-1}
+staff_long %>%
+  ggplot(aes(x = year, y = value, colour = faculty_type)) +
+  geom_line()
+```
+
+
+### Exercise 5
+
+_Question_: 
+
+Next, add a `group` aesthetic to the plot (grouping by `faculty_type`) and plot again. What does the plot reveal about instructional staff employment trends over the years?
+
+
+_Answer_:
+
+
+Part-time faculty increasing, full-time tenured and full-time tenure-track decreasing.
+
+```{r lineplot-2}
+staff_long %>%
+  ggplot(aes(x = year, y = value, colour = faculty_type, group = faculty_type)) +
+  geom_line()
+```
+
+
+### Exercise 6
+
+_Question_:
+
+Improve the line plot from the previous exercise by fixing up its labels (title, axis labels, and legend label) as well as any other components you think could benefit from improvement.
+
+_Answer_:
+
+
+```{r lineplot-3}
+staff_long %>%
+  ggplot(aes(x = as.numeric(year), y = value, colour = faculty_type, group = faculty_type)) +
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Percentage",
+    colour = "Faculty type",
+    title = "Instructional staff employment trends, 1975–2011",
+    caption = "Data source: American Association of University Professors"
+  ) +
+  scale_y_continuous(labels = label_percent(scale = 1)) #Optional,  harder
+```
+
+
+### Exercise 7
+
+_Question_:
+
+Suppose the objective of this plot was to show that the proportion of part-time faculty have gone up over time compared to other instructional staff types. What changes would you propose making to this plot to tell this story? Write down your idea(s). The more precise you are, the easier the next step will be. Get creative, and think about how you can modify the dataset to give you new/different variables to work with.
+
+_Answer_:
+
+(e.g.) Change colours to highlight---other options are possible here!
+
+### Exercise 8
+
+_Question_:
+
+Implement at least one of these ideas you came up with in the previous exercise. You should produce an improved data visualisation and accompany your visualisation with a brief paragraph describing the choices you made in your improvement, specifically discussing what you didn't like in the original plot and why, and how you addressed them in the visualisation you created.
+
+_Answer_:
+
+
+
+(NB. The "correct" answer to this section will depend on the ideas generated in Exercise 7.  The code below shows how to implement the idea given above.)
+
+```{r lineplot-4, message = FALSE}
+staff_long %>%
+  mutate(part_time = 
+           if_else(faculty_type == "Part-Time Faculty", 
+                   "Part-Time Faculty", "Other Faculty Type")) %>%
+  ggplot(aes(x = year, y = value/100, group = faculty_type, 
+             colour = part_time)) +
+  geom_line() +
+  scale_colour_manual(values = c("gray", "red")) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  #Requires library(scales)
+  theme_minimal() +
+  labs(
+    title = "Instructional staff employment trends, 1975–2011",
+    x = "Year",
+    y = "Percentage",
+    colour = "",
+    caption = "Data source: American Association of University Professors"
+  ) +
+  theme(legend.position = "bottom")
+```
+

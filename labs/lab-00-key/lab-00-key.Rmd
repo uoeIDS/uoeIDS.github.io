@@ -1,0 +1,63 @@
+---
+title: "Lab 00 - Hello IDS!"
+author: "key"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Load packages and data
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(tidyverse) 
+```
+
+### Exercises 13--17
+
+We set up the data frame.
+
+```{r setup-tibble}
+usernames <- c("wilsonamy", "username 2", "username 3", "username 4") #Extend if necessary
+nums <- c(18, 14, 4, 7) #Extend if necessary
+colours <- c("powderblue", "peachpuff", "seagreen1", "yellow") #Extend if necessary
+hobbies <- c("Hiking", "Photography", "Hobby 2", "Hobby 3") #Extend if necessary
+
+team_data <- tibble(username = usernames, die_roll = nums, colour = colours,
+                    hobby = hobbies)
+```
+
+### Exercise 18
+We now work on visualising our data.
+
+```{r bar-plot}
+# Uncomment the three lines below
+p1 <- ggplot(team_data, aes(x = username, y = die_roll)) +
+  geom_col(fill = team_data$colour)
+p1
+```
+
+### Exercise 19
+
+Shows the result of the die roll as a bar plot, with each bar's colour dependent on the colour chosen by the participant.
+
+### Exercises 20--21
+
+```{r labelled-bar-plot}
+# Uncomment the three lines below
+p1 +
+ labs(x = "GitHub Usernames", y = "Die Roll Results",
+      title = "Results of a D20 Die Roll")
+```
+
+The axis labels and title have been changed/added.
+
+### Exercise 17
+
+```{r new-bar-plot}
+p2 <- ggplot(team_data, aes(x = hobby)) +
+  geom_bar()
+p2
+```
+
+This isn't a good way to visualise the data because (probably!) no two of you had the same hobby, so there are just four bars of equal height that don't tell you very much.  Even if you had a larger sample size, it's likely this won't capture people's responses in a sensible way---you'll have lots of bars, and probably some bars representing the same thing (e.g. someone might enter "hiking" and someone else "walking").  You'd probably want to sort the entries into categories and then plot a bar plot of those, but that's quite an intensive coding task.  For such a small dataset, you could try something like a word cloud.
+
+*(There's no one right answer to this question!)*
