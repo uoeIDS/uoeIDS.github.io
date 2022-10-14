@@ -47,7 +47,7 @@ You should by now have a bit of experience with Git and Github, and so now let u
 -   Pushing to a repo replaces the code on GitHub with the code you have on your computer.
 -   If a collaborator has made a change to your repo on GitHub that you have not incorporated into your local work, GitHub will stop you from pushing to the repo because this could overwrite your collaborator's work!
 -   So you need to explicitly "merge" your collaborator's work before you can push.
--   If your and your collaborator's changes are in different files or in different parts of the same file, git merges the work for you automatically when you *pull*.
+-   If you and your collaborator's changes are in different files or in different parts of the same file, git merges the work for you automatically when you *pull*.
 -   If you both changed the same part of a file, git will produce a **merge conflict** because it does not know how which change you want to keep and which change you want to overwrite.
 
 Git will put conflict markers in your code that look like:
@@ -87,7 +87,7 @@ Complete the following steps during the live workshop with your team.
 
 ## Let's cause a merge conflict!
 
-Our goal is to see two different types of merges: first, we will see a type of merge that git cannot figure out on its own how to do on its own (a **merge conflict**) and requires human intervention, then another type of where that git can figure out how to do without human intervention.
+Our goal is to see two different types of merges: first, we will see a type of merge where git cannot figure out what to do on its own (a **merge conflict**) and requires human intervention, then we will see another type of merge where git can figure out what to do without human intervention.
 
 Doing this will require some tight choreography, so pay attention!
 
