@@ -1,0 +1,19 @@
+---
+title: "Lab 04 - Projects"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+# Project team assignment
+This week we will start work on the projects. You will need to get into your teams (remember this should be around 4 students - 3 or 5 is also OK) and decide on your team name. The course lecturers will come round and collect information on your team name and team members during the workshop. You will need to stay in this team for the duration of the project - when you submit your project you will also be asked to evaluate the contribution of all of your team members. 
+
+**Important** You won't be able to complete all of the work for your project during the workshops so you will need to arrange to meet with your team at some other time. Make sure you exchange email addresses and arrange a time to meet outside of the workshop to continue working. 
+
+# Project instructions
+- Hopefully you have already read the instructions for the project [here](https://ids2022.netlify.app/assessments/project/). If not please do so now!
+- The first task is to find a dataset and a research question. There are some suggested datasets listed with the project instructions. Discuss some options with your team and try to find something that you are interested in. Speak to your tutor if you need help or would like to discuss your ideas.
+- Next week in the workshop you will need to give a 5 minute team presentation on your data, your research question and your analysis plan. See [here](https://ids2022.netlify.app/assessments/project/#proposal) for a more detailed summary of what you need to include in this presentation. Everyone in your team should have a chance to speak during this presentation.
+- We have set up a GitHub repository containing a skeleton presentation for you to work with [here]. One member of your team should import this repository and add the rest of your team as collaborators. Once you have done this you should be able to edit the files with your own content.  
