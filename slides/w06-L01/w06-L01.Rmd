@@ -1,0 +1,490 @@
+---
+title: "Programming"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2022/2023"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    anchor_sections: FALSE
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+---
+
+
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+library(DT)
+```
+
+class: middle
+
+# R environment
+
+---
+
+## 🏁 Start with `sessionInfo()`
+
+```{r echo=FALSE, out.width="110%"}
+knitr::include_graphics("img/sessioninfo.png")
+```
+
+---
+
+## For more information
+Use `search` to get the list of all the attached packages in the R search path.
+
+```{r echo=TRUE,out.width="75%"}
+search()
+library(evd)
+search()
+```
+
+
+---
+
+Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings.
+
+```{r echo=TRUE,out.width="85%"}
+ls()
+```
+If I add a variable or a function to the global environment.
+```{r echo=TRUE,out.width="85%"}
+a<-1; b<-10
+f<-function(x) x<-1
+ls()
+```
+Remove a variable or function from the global environment.
+```{r echo=TRUE,out.width="85%"}
+rm(a,f)
+ls()
+```
+
+---
+
+Use `ls()` to see what is defined in a specific package.
+
+```{r echo=TRUE,out.width="65%"}
+search()
+```
+Let's see what is in package `datasets` of the list.
+```{r echo=TRUE,out.width="65%"}
+ls(18)
+```
+
+---
+Use `ls()` to list all the objects in a package.
+```{r echo=TRUE,out.width="65%"}
+ls("package:datasets")
+```
+
+---
+
+class: middle
+
+# Functions
+
+---
+
+## When should you write a function?
+
+--
+.pull-left[
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/funct-all-things.png")
+```
+]
+--
+.pull-right[
+When you’ve copied and pasted a block of code more than twice.
+]
+
+---
+## Why functions?
+
+- Automate common tasks in a more powerful and general way than copy-and-pasting:
+  - Give your function an evocative name that makes your code easier to understand
+  - As requirements change, only need to update code in one place, instead of many
+  - Eliminate chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another)
+
+--
+
+- Down the line: Improve your reach as a data scientist by writing functions (and packages!) that others use
+
+
+## Turn your code into a function
+
+- Pick a short but informative **name**, preferably a verb.
+
+<br>
+<br>
+<br>
+<br>
+
+```{r eval=FALSE}
+name_function <- 
+  
+  
+  
+```
+
+---
+
+## Turn your code into a function
+
+- Pick a short but evocative **name**, preferably a verb.
+- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
+
+<br>
+
+```{r eval=FALSE}
+name_function <- function(x){
+  
+  
+  
+}  
+```
+
+---
+
+## Turn your code into a function
+
+- Pick a short but informative **name**, preferably a verb.
+- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
+- Place the **code** you have developed in body of the function, a `{` block that immediately follows `function(...)`.
+
+```{r eval=FALSE}
+name_function  <- function(x){
+
+  # code you want the function to do
+  # if different outputs add the specific return()
+  
+}
+```
+
+---
+
+class: middle
+
+# Writing functions
+
+---
+
+## What goes in / what comes out?
+
+.pull-left-wide[
+- They take input(s) defined in the function definition
+
+```{r eval=FALSE}
+function([inputs separated by commas]){
+  # what to do with those inputs
+}
+```
+
+- By default they return the last value computed in the function
+
+```{r eval=FALSE}
+name_function <- function(x){
+  # do bunch of stuff with the input...
+  
+  # return the final object
+  return(...)
+}
+```
+
+- You can define more outputs to be returned in a list as well as nice print methods (but we won't go there for now...)
+]
+
+---
+
+.question[
+What is going on here?
+]
+
+```{r}
+add_2 <- function(x){
+  x + 2
+  1000
+}
+```
+
+```{r}
+add_2(3)
+add_2(10)
+```
+
+---
+
+## Naming functions
+
+> "There are only two hard things in Computer Science: cache invalidation and naming things." - Phil Karlton
+
+---
+
+## Naming functions
+
+- Names should be short but clearly evoke what the function does
+
+--
+- Names should be verbs, not nouns
+
+--
+- Multi-word names should be separated by underscores (`snake_case` as opposed to `snakeCase`)
+
+--
+- A family of functions should be named similarly (`scrape_page()`, `scrape_speech()` OR `str_remove()`, `str_replace()` etc.)
+
+---
+## Overwriting existing functions
+
+```{r}
+mean
+mean(1:10)
+```
+What happened if we write a function with the same name?
+```{r}
+mean<-function(x){x+2}
+mean(1:10)
+```
+---
+Now `mean` is the new function.
+```{r}
+mean
+```
+To use the later version you can:
+```{r}
+base::mean(1:10)
+```
+--
+- Avoid overwriting existing (especially widely used) functions
+
+```{r eval=FALSE}
+# JUST DON'T
+mean <- function(x){ 
+  x+2
+  }
+```
+```{r}
+rm(mean)
+```
+---
+
+## Function in action
+
+Create a function that calculates the area of a circle.
+
+1 The function need as input the `radius` of the circle.
+
+2 The function should return the area of the circle.
+```{r}
+area<-function(r) { pi*r^2 }
+area(2)
+```
+If the radius is negative?
+```{r}
+area(-2)
+```
+**Be careful!**
+---
+Add a condition, if the input is negative, the function should return an error.
+
+* `message`  prints a message but not stop execution.
+
+* `warning`  prints a warning message but not stop execution.
+
+* `stop`  stops execution of the current expression and executes an error action.
+```{r}
+area<-function(r) {
+  if (r<0)
+    message("Error, provide positive radius.")
+  else  pi*r^2 }
+area(2)
+```
+If the radius is negative?
+```{r}
+area(-2)
+```
+---
+
+## R operators
+
+```{r echo=FALSE, out.width="75%"}
+knitr::include_graphics("img/operators.png")
+```
+
+---
+
+## R operators example
+Logical And `&` vectorized version. It compares two vectors element-wise and returns a vector of
+TRUE and/or FALSE.
+```{r echo=TRUE, out.width="55%"}
+x<-0:2
+y<-2:0
+(x<1) & (y>1)
+```
+Logical And `&&` unvectorized version. It compares only the first value in each vector, left to right,
+and returns only the first logical result.
+
+```{r echo=TRUE, warning=FALSE}
+x<-0:2
+y<-2:0
+(x<1) && (y>1)
+```
+
+---
+
+## R operators example
+Logical Or `|` vectorized version. It compares two vectors element-wise and returns a vector of
+TRUE and/or FALSE.
+```{r echo=TRUE, out.width="55%"}
+x<-0:2
+y<-2:0
+(x<1) | (y>1)
+```
+Logical Or `||` unvectorized version. It compares only the first value in each vector, left to right,
+and returns only the first logical result.
+
+```{r echo=TRUE, warning=FALSE}
+x<-0:2
+y<-2:0
+(x<1) || (y>1)
+```
+
+---
+
+Remember the function **area**.
+```{r,echo=FALSE}
+area<-function(r) {
+  if (r<0)
+   message("Error, provide positive radius.")
+  else  pi*r^2 }
+```
+Evaluate in a character or a logic value.
+```{r}
+area(TRUE)
+```
+`TRUE` logical is taken as `1`. Add the condition that `radius` should be a numeric value.
+```{r,echo=TRUE}
+area<-function(r) {
+  if (r<0 | !is.numeric(r) )
+      return("Error, provide positive numeric radius.")
+  else  pi*r^2 }
+```
+Try again.
+```{r,echo=TRUE}
+area(TRUE)
+```
+---
+
+class: middle
+
+# Loops in R
+
+---
+## For loops in R
+`for (values) {expression}`
+
+The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
+```{r,echo=TRUE}
+for (i in 1:10){
+  print(5*i)
+}
+```
+---
+
+## While loops in R
+`while (values) {expression}`
+
+The `while` loop will iterate the expression as long as the component in `values` is TRUE.
+```{r,echo=TRUE}
+i<-0
+while (i<10){
+  print(5*i)
+  i<-i+1  #Be careful or is an infinite loop
+}
+```
+---
+
+## Avoiding Explicit Loops 
+Example: I have 1000 observations of each variable x, y and z. 
+```{r,echo=TRUE}
+x<-0:1000
+y<-1000:2000
+z<-3000:4000
+```
+I want the mean of each observation. 
+```{r,echo=TRUE}
+m1<-mean(c(x[1],y[1],z[1])); m1
+m2<-mean(c(x[2],y[2],z[2])); m2 #Repeat 1000 times (length(x))
+```
+---
+## Write a loop
+```{r,echo=TRUE}
+m<-numeric() #Define an empty variable to save the results.
+
+for (i in 1:length(x)){
+  aux <- mean(c(x[i],y[i],z[i]))
+  m <- c(m,aux)
+}
+m[1:100]
+```
+---
+* Apply function family includes: `apply, sapply, lapply and tapply`.
+*Useful data manipulation: `cbind, rbind`.
+```{r,echo=TRUE}
+data<-cbind(x,y,z) #Add as column 
+head(data)
+m<-apply(data,1,mean) #apply function mean to each 1--columns, 2--rows.
+m[1:50]
+```
+---
+Compare times of two approaches for 1,000 observations.
+```{r,echo=TRUE}
+start.time <- Sys.time()
+m<-numeric() #Define an empty variable to save the results.
+for (i in 1:length(x)){
+  aux <- mean(c(x[i],y[i],z[i]))
+  m <- c(m,aux)
+}
+end.time <- Sys.time()
+end.time - start.time
+```
+```{r,echo=TRUE}
+start.time <- Sys.time()
+data<-cbind(x,y,z) #Add as column 
+m<-apply(data,1,mean)
+end.time <- Sys.time()
+end.time - start.time
+```
+---
+Compare times of two approaches for 10,000 observations.
+```{r,echo=TRUE}
+x<-0:10000; y<-10000:20000; z<-30000:40000
+start.time <- Sys.time()
+m<-numeric() #Define an empty variable to save the results.
+for (i in 1:length(x)){
+  aux <- mean(c(x[i],y[i],z[i]))
+  m <- c(m,aux)
+}
+end.time <- Sys.time()
+end.time - start.time
+```
+```{r,echo=TRUE}
+start.time <- Sys.time()
+data<-cbind(x,y,z) #Add as column 
+m<-apply(data,1,mean)
+end.time <- Sys.time()
+end.time - start.time
+```
+---
+
+class: middle
+# We want to make R code both simpler and more efficient.
+
+---
