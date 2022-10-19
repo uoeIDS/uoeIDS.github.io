@@ -47,20 +47,26 @@ class: middle
 ## For more information
 Use `search` to get the list of all the attached packages in the R search path.
 
+.pull-left[
 
 ```r
 search()
 ```
 
 ```
-##  [1] ".GlobalEnv"        "package:DT"        "package:rvest"    
-##  [4] "package:forcats"   "package:stringr"   "package:dplyr"    
-##  [7] "package:purrr"     "package:readr"     "package:tidyr"    
-## [10] "package:tibble"    "package:ggplot2"   "package:tidyverse"
-## [13] "package:stats"     "package:graphics"  "package:grDevices"
-## [16] "package:utils"     "package:datasets"  "package:methods"  
+##  [1] ".GlobalEnv"        "package:DT"       
+##  [3] "package:rvest"     "package:forcats"  
+##  [5] "package:stringr"   "package:dplyr"    
+##  [7] "package:purrr"     "package:readr"    
+##  [9] "package:tidyr"     "package:tibble"   
+## [11] "package:ggplot2"   "package:tidyverse"
+## [13] "package:stats"     "package:graphics" 
+## [15] "package:grDevices" "package:utils"    
+## [17] "package:datasets"  "package:methods"  
 ## [19] "Autoloads"         "package:base"
 ```
+]
+.pull-right[
 
 ```r
 library(evd)
@@ -68,15 +74,19 @@ search()
 ```
 
 ```
-##  [1] ".GlobalEnv"        "package:evd"       "package:DT"       
-##  [4] "package:rvest"     "package:forcats"   "package:stringr"  
-##  [7] "package:dplyr"     "package:purrr"     "package:readr"    
-## [10] "package:tidyr"     "package:tibble"    "package:ggplot2"  
-## [13] "package:tidyverse" "package:stats"     "package:graphics" 
-## [16] "package:grDevices" "package:utils"     "package:datasets" 
-## [19] "package:methods"   "Autoloads"         "package:base"
+##  [1] ".GlobalEnv"        "package:evd"      
+##  [3] "package:DT"        "package:rvest"    
+##  [5] "package:forcats"   "package:stringr"  
+##  [7] "package:dplyr"     "package:purrr"    
+##  [9] "package:readr"     "package:tidyr"    
+## [11] "package:tibble"    "package:ggplot2"  
+## [13] "package:tidyverse" "package:stats"    
+## [15] "package:graphics"  "package:grDevices"
+## [17] "package:utils"     "package:datasets" 
+## [19] "package:methods"   "Autoloads"        
+## [21] "package:base"
 ```
-
+]
 
 ---
 
@@ -93,8 +103,9 @@ ls()
 If I add a variable or a function to the global environment.
 
 ```r
-a&lt;-1; b&lt;-10
-f&lt;-function(x) x&lt;-1
+a &lt;- 1
+b &lt;- 10
+f &lt;- function(x) x &lt;- 1
 ls()
 ```
 
@@ -399,7 +410,7 @@ mean
 ```
 ## function (x, ...) 
 ## UseMethod("mean")
-## &lt;bytecode: 0x563e3ad471c0&gt;
+## &lt;bytecode: 0x000002424d5a2ce8&gt;
 ## &lt;environment: namespace:base&gt;
 ```
 
@@ -459,9 +470,9 @@ rm(mean)
 
 Create a function that calculates the area of a circle.
 
-1 The function need as input the `radius` of the circle.
+1. The function need as input the `radius` of the circle.
 
-2 The function should return the area of the circle.
+2. The function should return the area of the circle.
 
 ```r
 area&lt;-function(r) { pi*r^2 }
@@ -764,7 +775,7 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.01593566 secs
+## Time difference of 0.02219296 secs
 ```
 
 ```r
@@ -776,7 +787,7 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.01081252 secs
+## Time difference of 0.01635194 secs
 ```
 ---
 Compare times of two approaches for 10,000 observations.
@@ -794,7 +805,7 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.205395 secs
+## Time difference of 0.4029331 secs
 ```
 
 ```r
@@ -806,7 +817,7 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.05801845 secs
+## Time difference of 0.08342814 secs
 ```
 ---
 

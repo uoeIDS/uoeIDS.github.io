@@ -40,12 +40,18 @@ knitr::include_graphics("img/sessioninfo.png")
 ## For more information
 Use `search` to get the list of all the attached packages in the R search path.
 
-```{r echo=TRUE,out.width="75%"}
+.pull-left[
+```{r echo=TRUE,out.width="75%", R.options=list(width = 60)}
 search()
+
+```
+]
+.pull-right[
+```{r echo=TRUE,out.width="75%", R.options=list(width = 60)}
 library(evd)
 search()
 ```
-
+]
 
 ---
 
@@ -56,8 +62,9 @@ ls()
 ```
 If I add a variable or a function to the global environment.
 ```{r echo=TRUE,out.width="85%"}
-a<-1; b<-10
-f<-function(x) x<-1
+a <- 1
+b <- 10
+f <- function(x) x <- 1
 ls()
 ```
 Remove a variable or function from the global environment.
@@ -80,7 +87,7 @@ ls(18)
 
 ---
 Use `ls()` to list all the objects in a package.
-```{r echo=TRUE,out.width="65%"}
+```{r echo=TRUE, out.width="65%", output.lines=10}
 ls("package:datasets")
 ```
 
@@ -279,9 +286,9 @@ rm(mean)
 
 Create a function that calculates the area of a circle.
 
-1 The function need as input the `radius` of the circle.
+1. The function need as input the `radius` of the circle.
 
-2 The function should return the area of the circle.
+2. The function should return the area of the circle.
 ```{r}
 area<-function(r) { pi*r^2 }
 area(2)
