@@ -49,18 +49,16 @@ search()
 .pull-right[
 ```{r echo=TRUE,out.width="75%", R.options=list(width = 60)}
 library(evd)
-search()
+search() 
 ```
 ]
 
 ---
-
-Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings.
-
+Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings. 
 ```{r echo=TRUE,out.width="85%"}
 ls()
 ```
-If I add a variable or a function to the global environment.
+If I add a variable or a function to the global environment. 
 ```{r echo=TRUE,out.width="85%"}
 a <- 1
 b <- 10
@@ -69,7 +67,7 @@ ls()
 ```
 Remove a variable or function from the global environment.
 ```{r echo=TRUE,out.width="85%"}
-rm(a,f)
+rm(a, f)
 ls()
 ```
 
@@ -81,13 +79,13 @@ Use `ls()` to see what is defined in a specific package.
 search()
 ```
 Let's see what is in package `datasets` of the list.
-```{r echo=TRUE,out.width="65%"}
+```{r echo=TRUE,out.width=20,R.options=list(max.print = 15)}
 ls(18)
 ```
 
 ---
 Use `ls()` to list all the objects in a package.
-```{r echo=TRUE, out.width="65%", output.lines=10}
+```{r echo=TRUE, out.width="65%", R.options=list(max.print = 45)}
 ls("package:datasets")
 ```
 
@@ -256,7 +254,7 @@ mean(1:10)
 ```
 What happened if we write a function with the same name?
 ```{r}
-mean<-function(x){x+2}
+mean <- function(x){ x+2 }
 mean(1:10)
 ```
 ---
@@ -290,7 +288,7 @@ Create a function that calculates the area of a circle.
 
 2. The function should return the area of the circle.
 ```{r}
-area<-function(r) { pi*r^2 }
+area <- function(r) { pi*r^2 }
 area(2)
 ```
 If the radius is negative?
@@ -307,8 +305,8 @@ Add a condition, if the input is negative, the function should return an error.
 
 * `stop`  stops execution of the current expression and executes an error action.
 ```{r}
-area<-function(r) {
-  if (r<0)
+area <- function(r) {
+  if (r < 0)
     message("Error, provide positive radius.")
   else  pi*r^2 }
 area(2)
@@ -319,56 +317,10 @@ area(-2)
 ```
 ---
 
-## R operators
-
-```{r echo=FALSE, out.width="75%"}
-knitr::include_graphics("img/operators.png")
-```
-
----
-
-## R operators example
-Logical And `&` vectorized version. It compares two vectors element-wise and returns a vector of
-TRUE and/or FALSE.
-```{r echo=TRUE, out.width="55%"}
-x<-0:2
-y<-2:0
-(x<1) & (y>1)
-```
-Logical And `&&` unvectorized version. It compares only the first value in each vector, left to right,
-and returns only the first logical result.
-
-```{r echo=TRUE, warning=FALSE}
-x<-0:2
-y<-2:0
-(x<1) && (y>1)
-```
-
----
-
-## R operators example
-Logical Or `|` vectorized version. It compares two vectors element-wise and returns a vector of
-TRUE and/or FALSE.
-```{r echo=TRUE, out.width="55%"}
-x<-0:2
-y<-2:0
-(x<1) | (y>1)
-```
-Logical Or `||` unvectorized version. It compares only the first value in each vector, left to right,
-and returns only the first logical result.
-
-```{r echo=TRUE, warning=FALSE}
-x<-0:2
-y<-2:0
-(x<1) || (y>1)
-```
-
----
-
 Remember the function **area**.
 ```{r,echo=FALSE}
-area<-function(r) {
-  if (r<0)
+area <- function(r) {
+  if (r < 0)
    message("Error, provide positive radius.")
   else  pi*r^2 }
 ```
@@ -378,8 +330,8 @@ area(TRUE)
 ```
 `TRUE` logical is taken as `1`. Add the condition that `radius` should be a numeric value.
 ```{r,echo=TRUE}
-area<-function(r) {
-  if (r<0 | !is.numeric(r) )
+area <- function(r) {
+  if (r < 0 | !is.numeric(r) )
       return("Error, provide positive numeric radius.")
   else  pi*r^2 }
 ```
@@ -391,107 +343,6 @@ area(TRUE)
 
 class: middle
 
-# Loops in R
-
----
-## For loops in R
-`for (values) {expression}`
-
-The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
-```{r,echo=TRUE}
-for (i in 1:10){
-  print(5*i)
-}
-```
----
-
-## While loops in R
-`while (values) {expression}`
-
-The `while` loop will iterate the expression as long as the component in `values` is TRUE.
-```{r,echo=TRUE}
-i<-0
-while (i<10){
-  print(5*i)
-  i<-i+1  #Be careful or is an infinite loop
-}
-```
----
-
-## Avoiding Explicit Loops 
-Example: I have 1000 observations of each variable x, y and z. 
-```{r,echo=TRUE}
-x<-0:1000
-y<-1000:2000
-z<-3000:4000
-```
-I want the mean of each observation. 
-```{r,echo=TRUE}
-m1<-mean(c(x[1],y[1],z[1])); m1
-m2<-mean(c(x[2],y[2],z[2])); m2 #Repeat 1000 times (length(x))
-```
----
-## Write a loop
-```{r,echo=TRUE}
-m<-numeric() #Define an empty variable to save the results.
-
-for (i in 1:length(x)){
-  aux <- mean(c(x[i],y[i],z[i]))
-  m <- c(m,aux)
-}
-m[1:100]
-```
----
-* Apply function family includes: `apply, sapply, lapply and tapply`.
-*Useful data manipulation: `cbind, rbind`.
-```{r,echo=TRUE}
-data<-cbind(x,y,z) #Add as column 
-head(data)
-m<-apply(data,1,mean) #apply function mean to each 1--columns, 2--rows.
-m[1:50]
-```
----
-Compare times of two approaches for 1,000 observations.
-```{r,echo=TRUE}
-start.time <- Sys.time()
-m<-numeric() #Define an empty variable to save the results.
-for (i in 1:length(x)){
-  aux <- mean(c(x[i],y[i],z[i]))
-  m <- c(m,aux)
-}
-end.time <- Sys.time()
-end.time - start.time
-```
-```{r,echo=TRUE}
-start.time <- Sys.time()
-data<-cbind(x,y,z) #Add as column 
-m<-apply(data,1,mean)
-end.time <- Sys.time()
-end.time - start.time
-```
----
-Compare times of two approaches for 10,000 observations.
-```{r,echo=TRUE}
-x<-0:10000; y<-10000:20000; z<-30000:40000
-start.time <- Sys.time()
-m<-numeric() #Define an empty variable to save the results.
-for (i in 1:length(x)){
-  aux <- mean(c(x[i],y[i],z[i]))
-  m <- c(m,aux)
-}
-end.time <- Sys.time()
-end.time - start.time
-```
-```{r,echo=TRUE}
-start.time <- Sys.time()
-data<-cbind(x,y,z) #Add as column 
-m<-apply(data,1,mean)
-end.time <- Sys.time()
-end.time - start.time
-```
----
-
-class: middle
-# We want to make R code both simpler and more efficient.
+# Another example 
 
 ---

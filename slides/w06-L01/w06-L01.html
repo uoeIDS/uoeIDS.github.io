@@ -70,7 +70,7 @@ search()
 
 ```r
 library(evd)
-search()
+search() 
 ```
 
 ```
@@ -89,9 +89,7 @@ search()
 ]
 
 ---
-
-Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings.
-
+Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings. 
 
 ```r
 ls()
@@ -100,7 +98,7 @@ ls()
 ```
 ## character(0)
 ```
-If I add a variable or a function to the global environment.
+If I add a variable or a function to the global environment. 
 
 ```r
 a &lt;- 1
@@ -115,7 +113,7 @@ ls()
 Remove a variable or function from the global environment.
 
 ```r
-rm(a,f)
+rm(a, f)
 ls()
 ```
 
@@ -148,41 +146,11 @@ ls(18)
 ```
 
 ```
-##   [1] "ability.cov"           "airmiles"              "AirPassengers"        
-##   [4] "airquality"            "anscombe"              "attenu"               
-##   [7] "attitude"              "austres"               "beaver1"              
-##  [10] "beaver2"               "BJsales"               "BJsales.lead"         
-##  [13] "BOD"                   "cars"                  "ChickWeight"          
-##  [16] "chickwts"              "co2"                   "CO2"                  
-##  [19] "crimtab"               "discoveries"           "DNase"                
-##  [22] "esoph"                 "euro"                  "euro.cross"           
-##  [25] "eurodist"              "EuStockMarkets"        "faithful"             
-##  [28] "fdeaths"               "Formaldehyde"          "freeny"               
-##  [31] "freeny.x"              "freeny.y"              "HairEyeColor"         
-##  [34] "Harman23.cor"          "Harman74.cor"          "Indometh"             
-##  [37] "infert"                "InsectSprays"          "iris"                 
-##  [40] "iris3"                 "islands"               "JohnsonJohnson"       
-##  [43] "LakeHuron"             "ldeaths"               "lh"                   
-##  [46] "LifeCycleSavings"      "Loblolly"              "longley"              
-##  [49] "lynx"                  "mdeaths"               "morley"               
-##  [52] "mtcars"                "nhtemp"                "Nile"                 
-##  [55] "nottem"                "npk"                   "occupationalStatus"   
-##  [58] "Orange"                "OrchardSprays"         "PlantGrowth"          
-##  [61] "precip"                "presidents"            "pressure"             
-##  [64] "Puromycin"             "quakes"                "randu"                
-##  [67] "rivers"                "rock"                  "Seatbelts"            
-##  [70] "sleep"                 "stack.loss"            "stack.x"              
-##  [73] "stackloss"             "state.abb"             "state.area"           
-##  [76] "state.center"          "state.division"        "state.name"           
-##  [79] "state.region"          "state.x77"             "sunspot.month"        
-##  [82] "sunspot.year"          "sunspots"              "swiss"                
-##  [85] "Theoph"                "Titanic"               "ToothGrowth"          
-##  [88] "treering"              "trees"                 "UCBAdmissions"        
-##  [91] "UKDriverDeaths"        "UKgas"                 "USAccDeaths"          
-##  [94] "USArrests"             "UScitiesD"             "USJudgeRatings"       
-##  [97] "USPersonalExpenditure" "uspop"                 "VADeaths"             
-## [100] "volcano"               "warpbreaks"            "women"                
-## [103] "WorldPhones"           "WWWusage"
+##  [1] "ability.cov"   "airmiles"      "AirPassengers" "airquality"   
+##  [5] "anscombe"      "attenu"        "attitude"      "austres"      
+##  [9] "beaver1"       "beaver2"       "BJsales"       "BJsales.lead" 
+## [13] "BOD"           "cars"          "ChickWeight"  
+##  [ reached getOption("max.print") -- omitted 89 entries ]
 ```
 
 ---
@@ -193,41 +161,19 @@ ls("package:datasets")
 ```
 
 ```
-##   [1] "ability.cov"           "airmiles"              "AirPassengers"        
-##   [4] "airquality"            "anscombe"              "attenu"               
-##   [7] "attitude"              "austres"               "beaver1"              
-##  [10] "beaver2"               "BJsales"               "BJsales.lead"         
-##  [13] "BOD"                   "cars"                  "ChickWeight"          
-##  [16] "chickwts"              "co2"                   "CO2"                  
-##  [19] "crimtab"               "discoveries"           "DNase"                
-##  [22] "esoph"                 "euro"                  "euro.cross"           
-##  [25] "eurodist"              "EuStockMarkets"        "faithful"             
-##  [28] "fdeaths"               "Formaldehyde"          "freeny"               
-##  [31] "freeny.x"              "freeny.y"              "HairEyeColor"         
-##  [34] "Harman23.cor"          "Harman74.cor"          "Indometh"             
-##  [37] "infert"                "InsectSprays"          "iris"                 
-##  [40] "iris3"                 "islands"               "JohnsonJohnson"       
-##  [43] "LakeHuron"             "ldeaths"               "lh"                   
-##  [46] "LifeCycleSavings"      "Loblolly"              "longley"              
-##  [49] "lynx"                  "mdeaths"               "morley"               
-##  [52] "mtcars"                "nhtemp"                "Nile"                 
-##  [55] "nottem"                "npk"                   "occupationalStatus"   
-##  [58] "Orange"                "OrchardSprays"         "PlantGrowth"          
-##  [61] "precip"                "presidents"            "pressure"             
-##  [64] "Puromycin"             "quakes"                "randu"                
-##  [67] "rivers"                "rock"                  "Seatbelts"            
-##  [70] "sleep"                 "stack.loss"            "stack.x"              
-##  [73] "stackloss"             "state.abb"             "state.area"           
-##  [76] "state.center"          "state.division"        "state.name"           
-##  [79] "state.region"          "state.x77"             "sunspot.month"        
-##  [82] "sunspot.year"          "sunspots"              "swiss"                
-##  [85] "Theoph"                "Titanic"               "ToothGrowth"          
-##  [88] "treering"              "trees"                 "UCBAdmissions"        
-##  [91] "UKDriverDeaths"        "UKgas"                 "USAccDeaths"          
-##  [94] "USArrests"             "UScitiesD"             "USJudgeRatings"       
-##  [97] "USPersonalExpenditure" "uspop"                 "VADeaths"             
-## [100] "volcano"               "warpbreaks"            "women"                
-## [103] "WorldPhones"           "WWWusage"
+##  [1] "ability.cov"    "airmiles"       "AirPassengers"  "airquality"    
+##  [5] "anscombe"       "attenu"         "attitude"       "austres"       
+##  [9] "beaver1"        "beaver2"        "BJsales"        "BJsales.lead"  
+## [13] "BOD"            "cars"           "ChickWeight"    "chickwts"      
+## [17] "co2"            "CO2"            "crimtab"        "discoveries"   
+## [21] "DNase"          "esoph"          "euro"           "euro.cross"    
+## [25] "eurodist"       "EuStockMarkets" "faithful"       "fdeaths"       
+## [29] "Formaldehyde"   "freeny"         "freeny.x"       "freeny.y"      
+## [33] "HairEyeColor"   "Harman23.cor"   "Harman74.cor"   "Indometh"      
+## [37] "infert"         "InsectSprays"   "iris"           "iris3"         
+## [41] "islands"        "JohnsonJohnson" "LakeHuron"      "ldeaths"       
+## [45] "lh"            
+##  [ reached getOption("max.print") -- omitted 59 entries ]
 ```
 
 ---
@@ -410,7 +356,7 @@ mean
 ```
 ## function (x, ...) 
 ## UseMethod("mean")
-## &lt;bytecode: 0x000002424d5a2ce8&gt;
+## &lt;bytecode: 0x55eaf30cd1c0&gt;
 ## &lt;environment: namespace:base&gt;
 ```
 
@@ -424,7 +370,7 @@ mean(1:10)
 What happened if we write a function with the same name?
 
 ```r
-mean&lt;-function(x){x+2}
+mean &lt;- function(x){ x+2 }
 mean(1:10)
 ```
 
@@ -439,7 +385,7 @@ mean
 ```
 
 ```
-## function(x){x+2}
+## function(x){ x+2 }
 ```
 To use the later version you can:
 
@@ -475,7 +421,7 @@ Create a function that calculates the area of a circle.
 2. The function should return the area of the circle.
 
 ```r
-area&lt;-function(r) { pi*r^2 }
+area &lt;- function(r) { pi*r^2 }
 area(2)
 ```
 
@@ -502,8 +448,8 @@ Add a condition, if the input is negative, the function should return an error.
 * `stop`  stops execution of the current expression and executes an error action.
 
 ```r
-area&lt;-function(r) {
-  if (r&lt;0)
+area &lt;- function(r) {
+  if (r &lt; 0)
     message("Error, provide positive radius.")
   else  pi*r^2 }
 area(2)
@@ -523,70 +469,6 @@ area(-2)
 ```
 ---
 
-## R operators
-
-&lt;img src="img/operators.png" width="75%" /&gt;
-
----
-
-## R operators example
-Logical And `&amp;` vectorized version. It compares two vectors element-wise and returns a vector of
-TRUE and/or FALSE.
-
-```r
-x&lt;-0:2
-y&lt;-2:0
-(x&lt;1) &amp; (y&gt;1)
-```
-
-```
-## [1]  TRUE FALSE FALSE
-```
-Logical And `&amp;&amp;` unvectorized version. It compares only the first value in each vector, left to right,
-and returns only the first logical result.
-
-
-```r
-x&lt;-0:2
-y&lt;-2:0
-(x&lt;1) &amp;&amp; (y&gt;1)
-```
-
-```
-## [1] TRUE
-```
-
----
-
-## R operators example
-Logical Or `|` vectorized version. It compares two vectors element-wise and returns a vector of
-TRUE and/or FALSE.
-
-```r
-x&lt;-0:2
-y&lt;-2:0
-(x&lt;1) | (y&gt;1)
-```
-
-```
-## [1]  TRUE FALSE FALSE
-```
-Logical Or `||` unvectorized version. It compares only the first value in each vector, left to right,
-and returns only the first logical result.
-
-
-```r
-x&lt;-0:2
-y&lt;-2:0
-(x&lt;1) || (y&gt;1)
-```
-
-```
-## [1] TRUE
-```
-
----
-
 Remember the function **area**.
 
 Evaluate in a character or a logic value.
@@ -601,8 +483,8 @@ area(TRUE)
 `TRUE` logical is taken as `1`. Add the condition that `radius` should be a numeric value.
 
 ```r
-area&lt;-function(r) {
-  if (r&lt;0 | !is.numeric(r) )
+area &lt;- function(r) {
+  if (r &lt; 0 | !is.numeric(r) )
       return("Error, provide positive numeric radius.")
   else  pi*r^2 }
 ```
@@ -619,210 +501,7 @@ area(TRUE)
 
 class: middle
 
-# Loops in R
-
----
-## For loops in R
-`for (values) {expression}`
-
-The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
-
-```r
-for (i in 1:10){
-  print(5*i)
-}
-```
-
-```
-## [1] 5
-## [1] 10
-## [1] 15
-## [1] 20
-## [1] 25
-## [1] 30
-## [1] 35
-## [1] 40
-## [1] 45
-## [1] 50
-```
----
-
-## While loops in R
-`while (values) {expression}`
-
-The `while` loop will iterate the expression as long as the component in `values` is TRUE.
-
-```r
-i&lt;-0
-while (i&lt;10){
-  print(5*i)
-  i&lt;-i+1  #Be careful or is an infinite loop
-}
-```
-
-```
-## [1] 0
-## [1] 5
-## [1] 10
-## [1] 15
-## [1] 20
-## [1] 25
-## [1] 30
-## [1] 35
-## [1] 40
-## [1] 45
-```
----
-
-## Avoiding Explicit Loops 
-Example: I have 1000 observations of each variable x, y and z. 
-
-```r
-x&lt;-0:1000
-y&lt;-1000:2000
-z&lt;-3000:4000
-```
-I want the mean of each observation. 
-
-```r
-m1&lt;-mean(c(x[1],y[1],z[1])); m1
-```
-
-```
-## [1] 1333.333
-```
-
-```r
-m2&lt;-mean(c(x[2],y[2],z[2])); m2 #Repeat 1000 times (length(x))
-```
-
-```
-## [1] 1334.333
-```
----
-## Write a loop
-
-```r
-m&lt;-numeric() #Define an empty variable to save the results.
-
-for (i in 1:length(x)){
-  aux &lt;- mean(c(x[i],y[i],z[i]))
-  m &lt;- c(m,aux)
-}
-m[1:100]
-```
-
-```
-##   [1] 1333.333 1334.333 1335.333 1336.333 1337.333 1338.333 1339.333 1340.333
-##   [9] 1341.333 1342.333 1343.333 1344.333 1345.333 1346.333 1347.333 1348.333
-##  [17] 1349.333 1350.333 1351.333 1352.333 1353.333 1354.333 1355.333 1356.333
-##  [25] 1357.333 1358.333 1359.333 1360.333 1361.333 1362.333 1363.333 1364.333
-##  [33] 1365.333 1366.333 1367.333 1368.333 1369.333 1370.333 1371.333 1372.333
-##  [41] 1373.333 1374.333 1375.333 1376.333 1377.333 1378.333 1379.333 1380.333
-##  [49] 1381.333 1382.333 1383.333 1384.333 1385.333 1386.333 1387.333 1388.333
-##  [57] 1389.333 1390.333 1391.333 1392.333 1393.333 1394.333 1395.333 1396.333
-##  [65] 1397.333 1398.333 1399.333 1400.333 1401.333 1402.333 1403.333 1404.333
-##  [73] 1405.333 1406.333 1407.333 1408.333 1409.333 1410.333 1411.333 1412.333
-##  [81] 1413.333 1414.333 1415.333 1416.333 1417.333 1418.333 1419.333 1420.333
-##  [89] 1421.333 1422.333 1423.333 1424.333 1425.333 1426.333 1427.333 1428.333
-##  [97] 1429.333 1430.333 1431.333 1432.333
-```
----
-* Apply function family includes: `apply, sapply, lapply and tapply`.
-*Useful data manipulation: `cbind, rbind`.
-
-```r
-data&lt;-cbind(x,y,z) #Add as column 
-head(data)
-```
-
-```
-##      x    y    z
-## [1,] 0 1000 3000
-## [2,] 1 1001 3001
-## [3,] 2 1002 3002
-## [4,] 3 1003 3003
-## [5,] 4 1004 3004
-## [6,] 5 1005 3005
-```
-
-```r
-m&lt;-apply(data,1,mean) #apply function mean to each 1--columns, 2--rows.
-m[1:50]
-```
-
-```
-##  [1] 1333.333 1334.333 1335.333 1336.333 1337.333 1338.333 1339.333 1340.333
-##  [9] 1341.333 1342.333 1343.333 1344.333 1345.333 1346.333 1347.333 1348.333
-## [17] 1349.333 1350.333 1351.333 1352.333 1353.333 1354.333 1355.333 1356.333
-## [25] 1357.333 1358.333 1359.333 1360.333 1361.333 1362.333 1363.333 1364.333
-## [33] 1365.333 1366.333 1367.333 1368.333 1369.333 1370.333 1371.333 1372.333
-## [41] 1373.333 1374.333 1375.333 1376.333 1377.333 1378.333 1379.333 1380.333
-## [49] 1381.333 1382.333
-```
----
-Compare times of two approaches for 1,000 observations.
-
-```r
-start.time &lt;- Sys.time()
-m&lt;-numeric() #Define an empty variable to save the results.
-for (i in 1:length(x)){
-  aux &lt;- mean(c(x[i],y[i],z[i]))
-  m &lt;- c(m,aux)
-}
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.02219296 secs
-```
-
-```r
-start.time &lt;- Sys.time()
-data&lt;-cbind(x,y,z) #Add as column 
-m&lt;-apply(data,1,mean)
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.01635194 secs
-```
----
-Compare times of two approaches for 10,000 observations.
-
-```r
-x&lt;-0:10000; y&lt;-10000:20000; z&lt;-30000:40000
-start.time &lt;- Sys.time()
-m&lt;-numeric() #Define an empty variable to save the results.
-for (i in 1:length(x)){
-  aux &lt;- mean(c(x[i],y[i],z[i]))
-  m &lt;- c(m,aux)
-}
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.4029331 secs
-```
-
-```r
-start.time &lt;- Sys.time()
-data&lt;-cbind(x,y,z) #Add as column 
-m&lt;-apply(data,1,mean)
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.08342814 secs
-```
----
-
-class: middle
-# We want to make R code both simpler and more efficient.
+# Another example 
 
 ---
     </textarea>
