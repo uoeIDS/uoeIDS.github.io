@@ -1,0 +1,33 @@
+---
+title: "Lab 05 - Proposal"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+# Proposal presentation and peer review
+
+This week you will be giving a presentation on your proposal for the team project. This is a 5 minute team presentation on your data, your research question and your analysis plan. See [here](https://ids2022.netlify.app/assessments/project/#proposal) for a more detailed summary of what you need to include in this presentation. Everyone in your team should have a chance to speak during the presentation.
+
+You will also watch the presentations given by other teams. Your tutors will hand out anonymous feedback forms for you to fill out. Try to give some tips and ideas to your peers to help them improve their project!
+
+# Organisation
+- You will be separated into two halves for the presentations:
+- 09.00 workshop. Groups 1 and 2 on left hand side, groups 3, 4 and 5 on right hand side
+- 10.30 workshop. Groups 11 and 12 on left hand side, groups 13, 14 and 15 on right hand side
+- 14.00 workshop. Groups 21 and 23 on left hand side, groups 22,24 and 25 on right hand side
+- 15.30 workshop. Groups 31 and 33 on left hand side, groups 32, 24 and 35 on right hand side. 
+
+You will have 5 minutes to present (this will be strictly timed) with 5 minutes for questions while we do the changeover to the next presentation. The order of the presentations will be randomly allocated. When the presentation before you finishes (during the questions) one member of your team will need to log into the computer, log into their GitHub account and load the html file of your presentation.
+
+Once the presentations have finished you will return to your groups to discuss the feedback forms from your peers and the tutors. You should discuss with your tutor whether there is anything you need to change about your project plan to make a success of your project.
+
+# Tips
+
+**Reminder** Project instructions are [here](https://ids2022.netlify.app/assessments/project/).
+
+**Important** Next week we will go back to the usual lab format. Make sure you keep meeting with your team to complete your project so that you have plenty of time to work on it before the deadline of 2 December.  
+
+ 
