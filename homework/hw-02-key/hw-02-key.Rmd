@@ -1,0 +1,129 @@
+---
+title: "HW 01 - All about Edinburgh"
+author: "KEY"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r load-packages, message = FALSE}
+library(tidyverse)
+library(lubridate)
+edibnb <- read_csv("data/edibnb.csv")
+council <- read_csv("data/council_assessments.csv")
+```
+
+### Exercise 1
+
+_Question_:
+
+In the `edibnb` data set, what is the ID of the listing that has the highest number of reviews with a perfect review score of 100%?
+
+_Answer_:
+
+```{r hw02-ex1}
+edibnb %>% 
+  filter(review_scores_rating == 100) %>%
+  arrange(desc(number_of_reviews)) %>%
+  select(id, review_scores_rating, number_of_reviews) %>%
+  slice(1)
+```
+
+The listing with a perfect review rating of 100% with the most number of reviews (612 reviews) is property ID 860170.
+
+
+### Exercise 2
+
+_Question_:
+
+Calculate the minimum, maximum and average price from the Airbnb properties in Southside for a single night stay for four people. (Note, four people can stay in a property for four or more people.)
+
+_Answer_:
+
+```{r hw02-ex2}
+edibnb %>%
+  filter(
+    accommodates >= 4,
+    neighbourhood == "Southside"
+  ) %>%
+  summarise(
+    min_price = min(price),
+    max_price = max(price),
+    av_price = mean(price)
+  )
+```
+
+The data set is first filtered based on two conditions, that the property is in the Southside neighbourhood (`neighbourhood == "Southside"`) and that the listing accommodates at least 4 people (`accommodates >= 4`). The average price of listings that meet these conditions is £153 (to the nearest pound) with a min-max range of £10--£800.
+
+### Exercise 3
+
+_Question_:
+
+Mutate the `bathrooms` variable to round the number of bathrooms _up_ to the nearest whole number (hint, look at `ceiling()`). Using this mutated variable, how many listings have more bathrooms than bedrooms?
+
+_Answer_:
+
+```{r hw02-ex3}
+edibnb %>%
+  mutate(whole_bathroom_number = ceiling(bathrooms)) %>%
+  filter(whole_bathroom_number > bedrooms) %>%
+  count()
+```
+
+The `ceiling()` function is used to round a number _up_ to the closest whole number. For example, `ceiling(4.0) == 4`, `ceiling(6.2) == 7` and `ceiling(9.9) == 10`. The above code uses the `ceiling()` function to mutate the `bathroom` variable so that the values for the number of bathrooms is a whole number, forming the new variable `whole_bathroom_number`. The data set is then filtered to extract the listing where the `whole_bathroom_number` is strictly greater than the number of `bedrooms`. The resulting data frame consists of 963 properties.
+
+### Exercise 4
+
+_Question_:
+
+Join the `edibnb` to the `council` data frames. Create a bar plot of the `neighbourhood` variable for the properties that have been assessed by the council. What does the data visualisation suggest? Is the council targeting all neighbourhoods within Edinburgh equally?
+
+
+_Answer_:
+
+```{r hw02-ex4}
+council %>% 
+  left_join(edibnb, by="id") %>%
+  ggplot(mapping = aes(y = neighbourhood))+
+  geom_bar() + 
+  labs(
+    x = "Count",
+    y = "Edinburgh Neighbourhood",
+    title = "Number of AirBnB assessments per Edinburgh neighbourhood"
+  )
+```
+
+It is clear to see that the council has perform many more assessments in Leith compared to the other neighbourhoods in Edinburgh.
+
+
+Other ways of joining the `edibnb` and `council` data sets that achieves the same result for this exercise are:
+```{r alt_joins, eval = FALSE}
+council %>% left_join(edibnb, by="id")
+edibnb %>% right_join(council, by="id")
+council %>% inner_join(edibnb, by = "id")
+edibnb %>% inner_join(council, by = "id")
+edibnb %>% semi_join(council, by = "id")
+```
+
+### Exercise 5
+
+
+_Question_:
+
+Using the **lubridate** package to correct the class of the `assessment_date` variable, and use this variable to evaluate how many properties the council assessed in the month of May.
+
+_Answer_:
+
+```{r hw02-ex5}
+council %>%
+  mutate(assessment_date = dmy(assessment_date)) %>%
+  filter(month(assessment_date) == 5) %>%
+  count()
+```
+
+The `dmy()` function from the **lubridate** package processes the `assessment_date` variable from a character data type to a recognisable date class. Furthermore, the `month()` function takes a date variable and extracts the month as a numerical variable (i.e. Jan = 1,  Feb = 2, ..., Dec = 12.) Filtering the `council` data set identifies that there were 296 assessments performed in the month of May.
+
+
+
+
+
+
