@@ -102,18 +102,16 @@ __Hint:__ You can calculate the sum of total contributions from PACs for each ye
 
 Create a line plot of total contributions from all foreign-connected PACs in the Canada and Mexico over the years. Once you have made the plot, write a brief interpretation of what the graph reveals.
 
-```{marginfigure}
-__Hint:__ These are only UK contributions. You will need to make use of functions from the **scales** package for axis labels as well as from **ggplot2**.
-```
-
-In this exercise you get to be creative, try something new, and help your peers out!
+In the next exercise you get to be creative, and try something new!
 
 # Mirror, mirror on the wall, who's the prettiest of them all?
 
 Here is a simple plot using the `mpg` dataset, which contains information on fuel economy of cars.
+
 We are plotting highway miles per gallon vs. city miles per gallon, coloured by whether the car is front-wheel drive, rear wheel drive, or four-wheel drive. 
 
-```{r, echo=FALSE}
+
+```{r, echo=TRUE}
 ggplot(data = mpg, 
        mapping = aes(x = cty, y = hwy, colour = drv)) +
   geom_point(alpha = 10) + 
@@ -132,8 +130,15 @@ ggplot(data = mpg,
 
 ```
 
+You can edit the given code to change the plot or start from scratch.
+
+
 ```{marginfigure}
 I realize that "pretty" is subjective, so we are mostly looking to see if you can figure out how to change the look of a plot using help files of functions you have not learned before.
+```
+
+```{marginfigure}
+__Hint:__ You might want to make use of functions from the scales package for axis labels as well as from ggplot2.
 ```
 
 ## Exercise 5
