@@ -130,7 +130,6 @@ ggplot(data = mpg,
 
 ```
 
-You can edit the given code to change the plot or start from scratch.
 
 
 ```{marginfigure}
@@ -144,6 +143,8 @@ __Hint:__ You might want to make use of functions from the scales package for ax
 ## Exercise 5
 
 Make this plot as pretty as possible by changing colours, background colour, fonts, or anything else you can think of. You will probably want to play around with [theme options](https://ggplot2.tidyverse.org/reference/theme.html), but you can do more. You can also search online for other themes, fonts, etc. that you want to tweak. Try to make it as pretty as possible, the sky is the limit!
+
+You can edit the given code to change the plot or start from scratch.
 
 
 ### Review your work
