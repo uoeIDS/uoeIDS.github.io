@@ -1,0 +1,86 @@
+---
+title: "Lab 06 - Conveying the right message through visualisation"
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+library(rvest)
+library(tidyverse)
+```
+
+::: {.home}
+Complete the following steps before you join the workshop!
+:::
+
+## Workshop prep
+
+- Look back over the week 5 lectures and reading material. This workshop is on effective data visualiation so many of the topics you studied in week 5 are relevant here.
+- Take a look at the data visualisation below (and the associated Tweet) and think about what is misleading about the visualisation and how you might go about fixing it. Take notes and bring your notes to the workshop to share with your teammates.
+
+## Part 1 - Masks and COVID
+
+The following visualisation was shared [on Twitter](https://twitter.com/JonBoeckenstedt/status/1291602888376999936) as "extraordinarily misleading". 
+
+```{r fig.fullwidth=TRUE, echo=FALSE}
+knitr::include_graphics("img/masks-v-nomasks.png")
+```
+
+Discuss with your teammates what is misleading about the visualisation and how you might fix it.
+
+::: {.video}
+Complete the following steps during the live workshop with your team.
+:::
+
+## Setup
+
+-   Sit with your team.
+-   One team member needs to import the lab's template repository from [https://github.com/uoeIDS/lab-06-template](https://github.com/uoeIDS/lab-06-template) and add the other team members as collaborators.
+-   All team members will need to create a new R version control project using the GitHub repository created.
+
+## Questions
+
+1. Create a data frame that can be used to re-construct the visualisation above. You may need to guess some of the numbers, that's ok. You should first think about how many rows and columns you'll need and what you want to call your variables. You can use the `tribble()` function to create the data frame. For example, if you wanted to construct the following data frame
+
+```{r tribble, echo=FALSE}
+df <- tribble(
+  ~date, ~count,
+  "1/1/2020", 15,
+  "2/1/2020", 20,
+  "3/1/2020", 22,
+)
+```
+
+```{r}
+df
+```
+
+you can write
+
+```{r ref.label="tribble", eval = FALSE}
+```
+
+2. Make a visualisation that more accurately (and honestly) tells the story. 
+
+3. What message is more clear in your visualisation than in the original visualisation?
+
+4. What, if any, useful information do these data and your visualisation tell us about mask wearing and COVID? It'll be difficult to set aside what you already know about mask wearing, but you should try to focus only on what this visualisation tells you. Feel free also to comment on whether the information in the visualisation lines up with what you know about mask wearing.
+
+🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+
+::: {.marker}
+Aim to make it to this point during the workshop.
+:::
+
+## Part 2 - Work on projects
+
+Once you're done with this week's lab, you can spend some time working on your projects. Remember to check the feedback from the presentations last week and discuss with your team what (if anything) you might want to change about your approach. Is there anything we learnt this week that you might apply to your project?
+
+
+
+
