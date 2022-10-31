@@ -53,7 +53,12 @@ Our goal is to merge the different data sets provided (11), to create a single d
 
 ## Exercise 1
 
-Write a function using a `for` loop in R to create a single data set and called it `pac_all` containing the contributions in all election years available. In your R Markdown file, load `pac_all.csv` and report its number of observations and variables as a full sentence.
+Write a function using a `for` loop in R to create a single data set and call it `pac_all` containing the contributions in all election years available. In your R Markdown file, load `pac_all.csv` and report its number of observations and variables as a full sentence.
+
+```{marginfigure}
+__Hint:__ There are lots of different ways that you could write this function. A good first step if you are stuck is to write down the code without using a loop and then to see how you might simplify it. Take a look at Section 21.3 of the reading in week 6 for some more tips on using for loops. Remember that you might have to use the help files of some functions you haven't seen in class. 
+```
+
 
 🧶✅⬆️ *If you haven't yet done so, now is definitely a good time to knit, commit, and push your changes to GitHub with an appropriate commit message (e.g. "Data merge complete"). Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
 
@@ -130,6 +135,7 @@ ggplot(data = mpg,
 
 ```
 
+You can edit the given code to change the plot or start from scratch.
 
 
 ```{marginfigure}
@@ -143,8 +149,6 @@ __Hint:__ You might want to make use of functions from the scales package for ax
 ## Exercise 5
 
 Make this plot as pretty as possible by changing colours, background colour, fonts, or anything else you can think of. You will probably want to play around with [theme options](https://ggplot2.tidyverse.org/reference/theme.html), but you can do more. You can also search online for other themes, fonts, etc. that you want to tweak. Try to make it as pretty as possible, the sky is the limit!
-
-You can edit the given code to change the plot or start from scratch.
 
 
 ### Review your work
