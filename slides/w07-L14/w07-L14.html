@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Model checking and multiple linear regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/pymjs/pym.v1.js"></script>
+    <script src="libs/widgetframe-binding/widgetframe.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Model checking and multiple linear regression
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/23
+]
+
+---
+
+
+
+
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+## Reminders
+
+- HW03 due on Friday
+- Look through lab sheet in advance of lab tomorrow
+- Meet with your team to work on the project
+
+---
+## Topics
+
+- Assessing model fit.
+- Linearity and transformations.
+- Multiple linear regression
+- Model comparison
+- Interaction effects
+
+
+---
+class: middle
+
+# Model checking
+
+---
+
+## Data: Paris Paintings
+
+
+```r
+pp &lt;- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
+```
+
+- Number of observations: 3393
+- Number of variables: 61
+
+---
+
+## "Linear" models
+
+- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
+- But how do we assess this?
+
+---
+
+## Graphical diagnostic: residuals plot
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Code]
+
+```r
+ht_wt_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(Height_in ~ Width_in, data = pp)
+
+*ht_wt_fit_aug &lt;- augment(ht_wt_fit$fit)
+
+ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted height", y = "Residuals")
+```
+]
+
+.panel[.panel-name[Augment]
+
+```r
+ht_wt_fit_aug
+```
+
+```
+## # A tibble: 3,135 × 9
+##   .rownames Heigh…¹ Width…² .fitted .resid    .hat .sigma .cooksd
+##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1              37    29.5    26.7  10.3  3.99e-4   8.30 3.10e-4
+## 2 2              18    14      14.6   3.45 3.96e-4   8.31 3.42e-5
+## 3 3              13    16      16.1  -3.11 3.61e-4   8.31 2.54e-5
+## 4 4              14    18      17.7  -3.68 3.37e-4   8.31 3.30e-5
+## 5 5              14    18      17.7  -3.68 3.37e-4   8.31 3.30e-5
+## 6 6               7    10      11.4  -4.43 4.98e-4   8.31 7.09e-5
+## # … with 3,129 more rows, 1 more variable: .std.resid &lt;dbl&gt;, and
+## #   abbreviated variable names ¹​Height_in, ²​Width_in
+```
+]
+]
+
+---
+
+## More on `augment()`
+
+
+```r
+glimpse(ht_wt_fit_aug)
+```
+
+```
+## Rows: 3,135
+## Columns: 9
+## $ .rownames  &lt;chr&gt; "1", "2", "3", "4", "5", "6", "7", "8", "9",…
+## $ Height_in  &lt;dbl&gt; 37, 18, 13, 14, 14, 7, 6, 6, 15, 9, 9, 16, 1…
+## $ Width_in   &lt;dbl&gt; 29.5, 14.0, 16.0, 18.0, 18.0, 10.0, 13.0, 13…
+## $ .fitted    &lt;dbl&gt; 26.65490, 14.55256, 16.11415, 17.67574, 17.6…
+## $ .resid     &lt;dbl&gt; 10.3451004, 3.4474447, -3.1141481, -3.675740…
+## $ .hat       &lt;dbl&gt; 0.0003991488, 0.0003961825, 0.0003611963, 0.…
+## $ .sigma     &lt;dbl&gt; 8.303538, 8.305367, 8.305409, 8.305336, 8.30…
+## $ .cooksd    &lt;dbl&gt; 3.099689e-04, 3.416655e-05, 2.541574e-05, 3.…
+## $ .std.resid &lt;dbl&gt; 1.24600543, 0.41522347, -0.37507338, -0.4427…
+```
+
+
+---
+
+## Looking for...
+
+- Residuals distributed randomly around 0
+- With no visible pattern along the x or y axes
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Fan shapes**
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Groups of patterns**
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Residuals correlated with predicted values**
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Any patterns!**
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.question[
+What patterns does the residuals plot reveal that should make us question whether a linear model is a good fit for modeling the relationship between height and width of paintings?
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+# Linearity and transformations
+
+---
+
+## Data: Paris Paintings
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Price vs. width
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-12-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Focus on paintings with `Width_in &lt; 100`
+
+That is, paintings with width &lt; 2.54 m
+
+
+```r
+pp_wt_lt_100 &lt;- pp %&gt;% 
+  filter(Width_in &lt; 100)
+```
+
+---
+
+## Price vs. width
+
+.question[
+Which plot shows a more linear relationship?
+]
+
+.small[
+  
+.pull-left[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+
+---
+
+## Price vs. width, residuals
+
+.question[
+Which plot shows a residuals that are uncorrelated with predicted values from the model? Also, what is the unit of the residuals?
+]
+  
+.pull-left[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Transforming the data
+
+- We saw that `price` has a right-skewed distribution, and the relationship between price and width of painting is non-linear.
+
+--
+- In these situations a transformation applied to the response variable may be useful.
+
+--
+- In order to decide which transformation to use, we should examine the distribution of the response variable.
+
+--
+- The extremely right skewed distribution suggests that a log transformation may 
+be useful.
+    - log = natural log, `\(ln\)`
+    - Default base of the `log` function in R is the natural log: &lt;br&gt;
+    `log(x, base = exp(1))`
+    
+---
+
+## Logged price vs. width
+
+.question[
+How do we interpret the slope of this model?
+]
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Models with log transformation
+
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log(price) ~ Width_in, data = pp_wt_lt_100) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.67     0.0585      79.9  0       
+## 2 Width_in      0.0192   0.00226      8.48 3.36e-17
+```
+
+---
+
+
+## Interpreting the slope
+
+$$ \widehat{log(price)} = 4.67 + 0.0192 Width $$
+
+--
+- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 livres.
+
+--
+- which is not a very useful statement...
+
+---
+
+## Working with logs
+
+- Subtraction and logs: `\(log(a) − log(b) = log(a / b)\)`
+
+--
+- Natural logarithm: `\(e^{log(x)} = x\)`
+
+--
+- We can use these identities to "undo" the log transformation
+
+---
+
+## Interpreting the slope
+
+The slope coefficient for the log transformed model is 0.0192, meaning the log price difference between paintings whose widths are one inch apart is predicted to be 0.0192 log livres.
+
+--
+
+.question[
+Using this information, and properties of logs that we just reviewed, fill in the blanks in the following alternate interpretation of the slope:
+
+&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
+]
+
+
+---
+
+&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
+
+
+$$ log(\text{price for width x+1}) - log(\text{price for width x}) = 0.0192 $$
+
+--
+
+$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
+
+--
+
+$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
+
+--
+
+$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 $$
+
+--
+
+For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, by a factor of 1.02.
+
+---
+
+## Recap
+
+- Non-constant variance is one of the most common model violations, however it is usually fixable by transforming the response (y) variable.
+
+--
+- The most common transformation when the response variable is right skewed is the log transform: `\(log(y)\)`, especially useful when the response variable is 
+(extremely) right skewed.
+
+--
+- This transformation is also useful for variance stabilization.
+
+--
+- When using a log transformation on the response variable the interpretation of 
+the slope changes: *"For each unit increase in x, y is expected on average to be higher/lower &lt;br&gt; by a factor of `\(e^{b_1}\)`."*
+
+--
+- Another useful transformation is the square root: `\(\sqrt{y}\)`, especially 
+useful when the response variable is counts.
+
+---
+
+## Transform, or learn more?
+
+- Data transformations may also be useful when the relationship is non-linear
+- However in those cases a polynomial regression may be more appropriate
+  + This is beyond the scope of this course, but you’re welcomed to try it for your final project, and I’d be happy to provide further guidance
+
+---
+class: middle
+
+# The linear model with multiple predictors
+
+---
+
+## Data: Book weight and volume
+
+The `allbacks` data frame gives measurements on the volume and weight of 15 books, some of which are paperback and some of which are hardback
+
+.pull-left[
+- Volume - cubic centimetres
+- Area - square centimetres
+- Weight - grams
+]
+.pull-right[
+.small[
+
+```
+## # A tibble: 15 × 4
+##    volume  area weight cover
+##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;
+##  1    885   382    800 hb   
+##  2   1016   468    950 hb   
+##  3   1125   387   1050 hb   
+##  4    239   371    350 hb   
+##  5    701   371    750 hb   
+##  6    641   367    600 hb   
+##  7   1228   396   1075 hb   
+##  8    412     0    250 pb   
+##  9    953     0    700 pb   
+## 10    929     0    650 pb   
+## 11   1492     0    975 pb   
+## 12    419     0    350 pb   
+## 13   1010     0    950 pb   
+## 14    595     0    425 pb   
+## 15   1034     0    725 pb
+```
+]
+]
+
+.footnote[
+.small[
+These books are from the bookshelf of J. H. Maindonald at Australian National University.
+]
+]
+
+---
+
+## Book weight vs. volume
+
+.pull-left[
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(weight ~ volume, data = allbacks) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic    p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)  108.      88.4         1.22 0.245     
+## 2 volume         0.709    0.0975      7.27 0.00000626
+```
+]
+.pull-right[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-22-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
+---
+
+## Book weight vs. volume and cover
+
+.pull-left[
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(weight ~ volume + cover, data = allbacks) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic      p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)  198.      59.2         3.34 0.00584     
+## 2 volume         0.718    0.0615     11.7  0.0000000660
+## 3 coverpb     -184.      40.5        -4.55 0.000672
+```
+]
+.pull-right[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-24-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
+---
+
+## Interpretation of estimates
+
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic      p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)  198.      59.2         3.34 0.00584     
+## 2 volume         0.718    0.0615     11.7  0.0000000660
+## 3 coverpb     -184.      40.5        -4.55 0.000672
+```
+
+--
+- **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
+
+--
+- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardcover books.
+
+--
+- **Intercept:** Hardcover books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
+
+
+---
+
+## Main vs. interaction effects
+
+.question[
+Suppose we want to predict weight of books from their volume and cover type 
+(hardback vs. paperback). Do you think a model with main effects or 
+interaction effects is more appropriate? Explain your reasoning.
+
+**Hint:** Main effects would mean rate at which weight changes as volume 
+increases would be the same for hardback and paperback books and interaction 
+effects would mean the rate at which weight changes as volume 
+increases would be different for hardback and paperback books.
+]
+
+---
+
+&lt;img src="w07-L14_files/figure-html/book-main-int-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## In pursuit of Occam's razor
+
+- Occam's Razor states that among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.
+
+--
+- Model selection follows this principle.
+
+--
+- We only want to add another variable to the model if the addition of that variable brings something valuable in terms of predictive power to the model.
+
+--
+- In other words, we prefer the simplest best model, i.e. **parsimonious** model.
+
+---
+
+.pull-left[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-26-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+.question[
+Visually, which of the two models is preferable under Occam's razor?
+]
+]
+
+---
+
+## R-squared
+
+- `\(R^2\)` is the percentage of variability in the response variable explained by 
+the regression model.
+
+
+```r
+glance(book_main_fit)$r.squared
+```
+
+```
+## [1] 0.9274776
+```
+
+```r
+glance(book_int_fit)$r.squared
+```
+
+```
+## [1] 0.9297137
+```
+
+--
+- Clearly the model with interactions has a higher `\(R^2\)`.
+
+--
+- However using `\(R^2\)` for model selection in models with multiple explanatory variables is not a good idea as `\(R^2\)` increases when **any** variable is added to the model.
+
+---
+
+## Adjusted R-squared
+
+... a (more) objective measure for model selection
+
+- Adjusted `\(R^2\)` doesn't increase if the new variable does not provide any new 
+informaton or is completely unrelated, as it applies a penalty for number of 
+variables included in the model.
+- This makes adjusted `\(R^2\)` a preferable metric for model selection in multiple
+regression models.
+
+---
+
+## Comparing models
+
+.pull-left[
+
+```r
+glance(book_main_fit)$r.squared
+```
+
+```
+## [1] 0.9274776
+```
+
+```r
+glance(book_int_fit)$r.squared
+```
+
+```
+## [1] 0.9297137
+```
+]
+.pull-right[
+
+```r
+glance(book_main_fit)$adj.r.squared
+```
+
+```
+## [1] 0.9153905
+```
+
+```r
+glance(book_int_fit)$adj.r.squared
+```
+
+```
+## [1] 0.9105447
+```
+]
+
+--
+
+.pull-left-wide[
+.small[
+- Is R-sq higher for int model?
+
+```r
+glance(book_int_fit)$r.squared &gt; glance(book_main_fit)$r.squared 
+```
+
+```
+## [1] TRUE
+```
+
+- Is R-sq adj. higher for int model?
+
+
+```r
+glance(book_int_fit)$adj.r.squared &gt; glance(book_main_fit)$adj.r.squared
+```
+
+```
+## [1] FALSE
+```
+]
+]
+---
+
+class: middle
+
+# More detail on multiple predictors
+
+---
+class: middle
+
+# Two numerical predictors
+
+---
+
+## The data
+
+
+```r
+pp &lt;- read_csv(
+  "data/paris-paintings.csv",
+  na = c("n/a", "", "NA")
+) %&gt;%
+  mutate(log_price = log(price))
+```
+
+---
+
+## Multiple predictors
+
+- Response variable: `log_price` 
+- Explanatory variables: Width and height
+
+
+```r
+pp_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Width_in + Height_in, data = pp)
+tidy(pp_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.77     0.0579      82.4  0       
+## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
+## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
+```
+
+---
+
+##  Linear model with multiple predictors
+
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.77     0.0579      82.4  0       
+## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
+## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
+```
+
+&lt;br&gt;
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+
+---
+
+## Visualizing models with multiple predictors
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-wide[
+<div id="htmlwidget-5e1145adb6dc5e0163be" style="width:100%;height:1483.2px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5e1145adb6dc5e0163be">{"x":{"url":"w07-L14_files/figure-html//widgets/widget_plotly-plot.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+]
+]
+.panel[.panel-name[Code]
+
+```r
+p &lt;- plot_ly(pp,
+  x = ~Width_in, y = ~Height_in, z = ~log_price,
+  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
+                line = list(color = "gray", width = 2))) %&gt;%
+  add_markers() %&gt;%
+  plotly::layout(scene = list(
+    xaxis = list(title = "Width (in)"),
+    yaxis = list(title = "Height (in)"),
+    zaxis = list(title = "log_price")
+  )) %&gt;%
+  config(displayModeBar = FALSE)
+frameWidget(p)
+```
+]
+]
+
+---
+
+class: middle
+
+# Numerical and categorical predictors
+
+---
+
+## Price, surface area, and living artist
+
+- Explore the relationship between price of paintings and surface area, conditioned 
+on whether or not the artist is still living
+- First visualize and explore, then model
+- But first, prep the data
+
+.midi[
+
+```r
+pp &lt;- pp %&gt;%
+  mutate(artistliving = if_else(artistliving == 0, "Deceased", "Living"))
+
+pp %&gt;%
+  count(artistliving)
+```
+
+```
+## # A tibble: 2 × 2
+##   artistliving     n
+##   &lt;chr&gt;        &lt;int&gt;
+## 1 Deceased      2937
+## 2 Living         456
+```
+]
+
+---
+
+## Typical surface area
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-narrow[
+Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). There are very few paintings that have surface area above 5000 square inches.
+]
+.pull-right-wide[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-33-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
+  geom_histogram(binwidth = 500) + 
+  facet_grid(artistliving ~ .) +
+  scale_fill_manual(values = c("#E48957", "#071381")) +
+  guides(fill = FALSE) +
+  labs(x = "Surface area", y = NULL) +
+  geom_vline(xintercept = 1000) +
+  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
+```
+
+```
+## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use
+## `guides(&lt;scale&gt; = "none")` instead.
+```
+
+```
+## Warning: Removed 176 rows containing non-finite values
+## (stat_bin).
+```
+]
+]
+
+---
+
+## Narrowing the scope
+
+.panelset[
+.panel[.panel-name[Plot]
+For simplicity let's focus on the paintings with `Surface &lt; 5000`:
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-34-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Code]
+
+```r
+pp_Surf_lt_5000 &lt;- pp %&gt;%
+  filter(Surface &lt; 5000)
+
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  labs(color = "Artist", shape = "Artist") +
+  scale_color_manual(values = c("#E48957", "#071381"))
+```
+]
+]
+
+---
+
+## Facet to get a better look
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~artistliving) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  labs(color = "Artist", shape = "Artist")
+```
+]
+]
+
+---
+
+## Two ways to model
+
+- **Main effects:** Assuming relationship between surface and logged price 
+**does not vary** by whether or not the artist is living.
+- **Interaction effects:** Assuming relationship between surface and logged 
+price **varies** by whether or not the artist is living.
+
+---
+
+## Interacting explanatory variables
+
+- Including an interaction effect in the model allows for different slopes, i.e. 
+nonparallel lines.
+- This implies that the regression coefficient for an explanatory variable would 
+change as another explanatory variable changes.
+- This can be accomplished by adding an interaction variable: the product of two 
+explanatory variables.
+
+---
+
+## Two ways to model
+
+.pull-left-narrow[
+- **Main effects:** Assuming relationship between surface and logged price **does not vary** by whether or not the artist is living
+- **Interaction effects:** Assuming relationship between surface and logged price **varies** by whether or not the artist is living
+]
+.pull-right-wide[
+&lt;img src="w07-L14_files/figure-html/pp-main-int-viz-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Fit model with main effects
+
+- Response variable: `log_price`
+- Explanatory variables: `Surface` area and `artistliving`
+
+.midi[
+
+```r
+pp_main_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
+tidy(pp_main_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term               estimate std.error statistic  p.value
+##   &lt;chr&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        4.88     0.0424       115.   0       
+## 2 Surface            0.000265 0.0000415      6.39 1.85e-10
+## 3 artistlivingLiving 0.137    0.0970         1.41 1.57e- 1
+```
+]
+
+--
+
+`$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$`
+
+---
+
+## Solving the model
+
+- Non-living artist: Plug in 0 for `artistliving`
+
+`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 0\)`  
+`\(= 4.88 + 0.000265 \times surface\)`
+
+--
+- Living artist: Plug in 1 for `artistliving`
+
+`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 1\)`   
+`\(= 5.017 + 0.000265 \times surface\)`
+
+---
+
+## Visualizing main effects
+
+.pull-left-narrow[
+- **Same slope:** Rate of change in price as the surface area increases does 
+not vary between paintings by living and non-living artists.
+- **Different intercept:** Paintings by living artists are consistently more 
+expensive than paintings by non-living artists.
+]
+.pull-right-wide[
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Interpreting main effects
+
+.midi[
+
+```r
+tidy(pp_main_fit) %&gt;% 
+  mutate(exp_estimate = exp(estimate)) %&gt;%
+  select(term, estimate, exp_estimate)
+```
+
+```
+## # A tibble: 3 × 3
+##   term               estimate exp_estimate
+##   &lt;chr&gt;                 &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)        4.88           132.  
+## 2 Surface            0.000265         1.00
+## 3 artistlivingLiving 0.137            1.15
+```
+]
+
+- All else held constant, for each additional square inch in painting's surface area, the price of the painting is predicted, on average, to be higher by a factor of 1.
+- All else held constant, paintings by a living artist are predicted, on average, to be higher by a factor of 1.15 compared to paintings by an artist who is no longer alive.
+- Paintings that are by an artist who is not alive and that have a surface area of 0 square inches are predicted, on average, to be 132 livres.
+
+---
+
+## Main vs. interaction effects
+
+- The way we specified our main effects model only lets `artistliving` affect the intercept.
+- Model implicitly assumes that paintings with living and deceased artists have the *same slope* and only allows for *different intercepts*.  
+
+.question[
+What seems more appropriate in this case?
++ Same slope and same intercept for both colours
++ Same slope and different intercept for both colours
++ Different slope and different intercept for both colours
+]
+
+---
+
+## Interaction: `Surface * artistliving`
+
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-37-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Fit model with interaction effects
+
+- Response variable: log_price
+- Explanatory variables: `Surface` area, `artistliving`, and their interaction
+
+.midi[
+
+```r
+pp_int_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
+tidy(pp_int_fit)
+```
+
+```
+## # A tibble: 4 × 5
+##   term                        estimate std.error statis…¹ p.value
+##   &lt;chr&gt;                          &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91     0.0432      114.   0      
+## 2 Surface                     0.000206 0.0000442     4.65 3.37e-6
+## 3 artistlivingLiving         -0.126    0.119        -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  0.000479 0.000126      3.81 1.39e-4
+## # … with abbreviated variable name ¹​statistic
+```
+]
+
+---
+
+## Linear model with interaction effects
+
+.midi[
+
+```
+## # A tibble: 4 × 5
+##   term                        estimate std.error statis…¹ p.value
+##   &lt;chr&gt;                          &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91     0.0432      114.   0      
+## 2 Surface                     0.000206 0.0000442     4.65 3.37e-6
+## 3 artistlivingLiving         -0.126    0.119        -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  0.000479 0.000126      3.81 1.39e-4
+## # … with abbreviated variable name ¹​statistic
+```
+]
+
+`$$\widehat{log\_price} = 4.91 + 0.00021 \times surface - 0.126 \times artistliving$$`
+`$$+ ~ 0.00048 \times surface * artistliving$$`
+
+---
+
+## Interpretation of interaction effects
+
+- Rate of change in price as the surface area of the painting increases does 
+vary between paintings by living and non-living artists (different slopes), 
+- Some paintings by living artists are more expensive than paintings by
+non-living artists, and some are not (different intercept).
+
+.small[
+.pull-left[
+- Non-living artist: 
+`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 \times 0 + 0.00048 \times surface \times 0\)`
+`\(= 4.91 + 0.00021 \times surface\)`
+- Living artist: 
+`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 \times 1 + 0.00048 \times surface \times 1\)`
+`\(= 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 + 0.00048 \times surface\)`
+`\(= 4.784 + 0.00069 \times surface\)`
+]
+.pull-right[
+&lt;img src="w07-L14_files/figure-html/viz-interaction-effects2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+
+## Comparing models
+
+It appears that adding the interaction actually increased adjusted `\(R^2\)`, so we 
+should indeed use the model with the interactions.
+
+
+```r
+glance(pp_main_fit)$adj.r.squared
+```
+
+```
+## [1] 0.01258977
+```
+
+```r
+glance(pp_int_fit)$adj.r.squared
+```
+
+```
+## [1] 0.01676753
+```
+
+---
+
+## Third order interactions
+
+- Can you? Yes
+- Should you? Probably not if you want to interpret these interactions in context
+of the data.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
