@@ -472,8 +472,8 @@ includes the variables <code>advfront</code>, <code>educ</code>
 your data frame.</li>
 </ol>
 </div>
-<div id="create-a-workflow-to-fit-a-logistic-regression-model" class="section level2">
-<h2>Create a workflow to fit a logistic regression model</h2>
+<div id="create-a-workflow-to-fit-a-model" class="section level2">
+<h2>Create a workflow to fit a model</h2>
 <p>Now use the following code to split the dataset into a training
 dataset (<code>gss16_train</code>) and a testing dataset
 (<code>gss16_test</code>). This code splits the data into 75% training
@@ -519,10 +519,9 @@ parameters.</li>
 <p><label for="tufte-mn-6" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-6" class="margin-toggle"><span class="marginnote"><span style="display: block;">The response variable
 in the model is a factor with levels <code>“Not Agree”</code> and
 <code>“Agree”</code>. R automatically assigns the second level in the
-factor to correspond to <code>“1”</code> in the logistic regression
-which is why we needed to make sure the factors were in the order:
-<code>“Not agree”</code> and <code>“Agree”</code> in Ex.
-1.</span></span></p>
+factor to correspond to <code>“1”</code> which is why we needed to make
+sure the factors were in the order: <code>“Not agree”</code> and
+<code>“Agree”</code> in Ex. 1.</span></span></p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>Compute <span class="math inline">\(\hat{o}_1=\hat{p}_1/(1-\hat{p}_1)\)</span> and
 <span class="math inline">\(\hat{o}_2=\hat{p}_2/(1-\hat{p}_2)\)</span>,

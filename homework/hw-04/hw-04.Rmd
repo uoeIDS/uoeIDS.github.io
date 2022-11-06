@@ -98,7 +98,7 @@ c)  Create a new data frame called `gss16_advfront` that includes the variables 
     Then, use the `drop_na()` function to remove rows that contain `NA`s from this new data frame. Print the top ten rows of your data frame. 
 
 
-## Create a workflow to fit a logistic regression model
+## Create a workflow to fit a model
 
 Now use the following code to split the dataset into a training dataset (`gss16_train`) and a testing dataset (`gss16_test`). This code splits the data into 75\% training and 25\% testing.
 
@@ -142,7 +142,7 @@ You can de-select things using the minus sign, just as you can when using `selec
 a) Apply the workflow you defined earlier to the training dataset and display the resulting tibble containing the fitted model parameters. 
 
 ```{marginfigure}
-The response variable in the model is a factor with levels `"Not Agree"` and `"Agree"`. R automatically assigns the second level in the factor to correspond to `"1"` in the logistic regression which is why we needed to make sure the factors were in the order: `"Not agree"` and `"Agree"` in Ex. 1.
+The response variable in the model is a factor with levels `"Not Agree"` and `"Agree"`. R automatically assigns the second level in the factor to correspond to `"1"` which is why we needed to make sure the factors were in the order: `"Not agree"` and `"Agree"` in Ex. 1.
 ```
 
 
