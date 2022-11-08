@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Predicting categorical outcomes</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Predicting categorical outcomes
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/23
+]
+
+---
+
+
+
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+## Reminders
+
+- This lecture is being recorded
+- HW4 (final homework) has been released
+- No interactive R tutorial this week, use the time to work on projects. 
+- 2 December final project presentations (final lab of semester)
+
+---
+## Topics
+
+- Modelling categorical outcomes
+- Brief introduction to GLMs
+- Logistic regression
+- Sensitivity, specificity and ROC curves
+- Using models for prediction
+
+---
+
+class: middle
+
+# Modelling categorical outcomes
+
+---
+
+## Spam filters
+
+.pull-left-narrow[
+- Data from 3921 emails and 21 variables on them
+- Outcome: whether the email is spam or not
+- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+]
+.pull-right-wide[
+.small[
+
+```r
+library(openintro)
+glimpse(email)
+```
+
+```
+## Rows: 3,921
+## Columns: 21
+## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, …
+## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ cc           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, …
+## $ sent_email   &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, …
+## $ time         &lt;dttm&gt; 2012-01-01 06:16:41, 2012-01-01 07:03:59,…
+## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
+## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
+## $ dollar       &lt;dbl&gt; 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no…
+## $ inherit      &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ password     &lt;dbl&gt; 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ num_char     &lt;dbl&gt; 11.370, 10.504, 7.773, 13.256, 1.231, 1.09…
+## $ line_breaks  &lt;int&gt; 202, 202, 192, 255, 29, 25, 193, 237, 69, …
+## $ format       &lt;fct&gt; 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, …
+## $ re_subj      &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, …
+## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ exclaim_mess &lt;dbl&gt; 0, 1, 6, 48, 1, 1, 1, 18, 1, 0, 2, 1, 0, 1…
+## $ number       &lt;fct&gt; big, small, small, small, none, none, big,…
+```
+]
+]
+
+---
+
+.question[
+Would you expect longer or shorter emails to be spam?
+]
+
+--
+
+.pull-left[
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+```
+## # A tibble: 2 × 2
+##   spam  mean_num_char
+##   &lt;fct&gt;         &lt;dbl&gt;
+## 1 0             11.3 
+## 2 1              5.44
+```
+]
+
+---
+
+.question[
+Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
+]
+
+--
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Modelling spam
+
+- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam. How do we come up with a model that will let us explore this relationship?
+
+--
+- For simplicity, we'll focus on the number of characters (`num_char`) as predictor, but the model we describe can be expanded to take multiple predictors as well.
+
+---
+
+## Modelling spam
+
+This isn't something we can reasonably fit a linear model to -- we need something different!
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Framing the problem
+
+- We can treat each outcome (spam and not) as successes and failures arising from separate Bernoulli trials
+  - Bernoulli trial: a random experiment with exactly two possible outcomes, "success" and "failure", in which the probability of success is the same every time the experiment is conducted
+
+--
+- Each Bernoulli trial can have a separate probability of success
+
+$$ y_i ∼ Bern(p_i) $$
+
+--
+- We can then use the predictor variables to model that probability of success, `\(p_i\)`
+
+--
+- We can't just use a linear model for `\(p_i\)` (since `\(p_i\)` must be between 0 and 1) but we can transform the linear model to have the appropriate range
+
+---
+
+## Generalized linear models
+
+- This is a very general way of addressing many problems in regression and the resulting models are called **generalized linear models (GLMs)**
+
+--
+- Logistic regression is just one example
+
+---
+
+## Three characteristics of GLMs
+
+All GLMs have the following three characteristics:
+
+1. A probability distribution describing a generative model for the outcome variable
+
+--
+2. A linear model:
+`$$\eta = \beta_0 + \beta_1 X_1 + \cdots + \beta_k X_k$$`
+
+--
+3. A link function that relates the linear model to the parameter of the outcome distribution
+  
+---
+
+class: middle
+
+# Logistic regression
+
+---
+
+## Logistic regression
+
+- Logistic regression is a GLM used to model a binary categorical outcome using numerical and categorical predictors
+
+--
+- To finish specifying the Logistic model we just need to define a reasonable link function that connects `\(\eta_i\)` to `\(p_i\)`: logit function
+
+--
+- **Logit function:** For `\(0\le p \le 1\)`
+
+`$$logit(p) = \log\left(\frac{p}{1-p}\right)$$`
+
+
+
+---
+
+## Logit function, visualised
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Properties of the logit
+
+- The logit function takes a value between 0 and 1 and maps it to a value between `\(-\infty\)` and `\(\infty\)`
+
+--
+- Inverse logit (logistic) function:
+`$$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$`
+
+--
+- The inverse logit function takes a value between `\(-\infty\)` and `\(\infty\)` and maps it to a value between 0 and 1
+
+--
+- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
+
+---
+
+## The logistic regression model
+
+- Based on the three GLM criteria we have
+  - `\(y_i \sim \text{Bern}(p_i)\)`
+  - `\(\eta_i = \beta_0+\beta_1 x_{1,i} + \cdots + \beta_n x_{n,i}\)`
+  - `\(\text{logit}(p_i) = \eta_i\)`
+
+--
+- From which we get
+
+`$$p_i = \frac{\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}{1+\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}$$`
+---
+
+## Modeling spam
+
+In R we fit a GLM in the same way as a linear model except we
+
+- specify the model with `logistic_reg()`
+- use `"glm"` instead of `"lm"` as the engine 
+- define `family = "binomial"` for the link function to be used in the model
+
+--
+
+
+```r
+spam_fit &lt;- logistic_reg() %&gt;%
+  set_engine("glm") %&gt;%
+  fit(spam ~ num_char, data = email, family = "binomial")
+
+tidy(spam_fit)
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  -1.80     0.0716     -25.1  2.04e-139
+## 2 num_char     -0.0621   0.00801     -7.75 9.50e- 15
+```
+
+---
+
+## Spam model
+
+
+```r
+tidy(spam_fit)
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  -1.80     0.0716     -25.1  2.04e-139
+## 2 num_char     -0.0621   0.00801     -7.75 9.50e- 15
+```
+
+--
+
+Model:
+`$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times \text{num_char}$$`
+
+---
+
+## P(spam) for an email with 2000 characters 
+
+`$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times 2$$`
+--
+`$$\frac{p}{1-p} = \exp(-1.9242) = 0.15 \rightarrow p = 0.15 \times (1 - p)$$`
+--
+`$$p = 0.15 - 0.15p \rightarrow 1.15p = 0.15$$`
+--
+`$$p = 0.15 / 1.15 = 0.13$$`
+
+---
+
+.question[
+What is the probability that an email with 15000 characters is spam? What about an email with 40000 characters?
+]
+
+--
+
+.pull-left[
+&lt;img src="w08-L15_files/figure-html/spam-predict-viz-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+- .light-blue[2K chars: P(spam) = 0.13]
+- .yellow[15K chars, P(spam) = 0.06]
+- .green[40K chars, P(spam) = 0.01]
+]
+
+---
+
+.question[
+Would you prefer an email with 2000 characters to be labelled as spam or not? How about 40,000 characters?
+]
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+# Sensitivity and specificity
+
+---
+
+## False positive and negative
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+- False negative rate = P(Labelled not spam | Email spam) = FN / (TP + FN) 
+
+- False positive rate = P(Labelled spam | Email not spam) = FP / (FP + TN)
+
+---
+
+## Sensitivity and specificity
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+
+- Sensitivity = P(Labelled spam | Email spam) = TP / (TP + FN)
+  - Sensitivity = 1 − False negative rate
+  
+- Specificity = P(Labelled not spam | Email not spam) = TN / (FP + TN) 
+  - Specificity = 1 − False positive rate
+
+---
+
+.question[
+If you were designing a spam filter, would you want sensitivity and specificity to be high or low? What are the trade-offs associated with each decision? 
+]
+
+---
+class: middle
+
+# Prediction and classification
+
+---
+
+## Goal: Building a spam filter
+
+- Data: Set of emails and we know if each email is spam/not and other features 
+- Use logistic regression to predict the probability that an incoming email is spam
+- Use model selection to pick the model with the best predictive performance
+
+--
+- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
+
+--
+- A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
+
+---
+
+## A multiple regression approach
+
+.panelset[
+.panel[.panel-name[Output]
+.small[
+
+```
+## # A tibble: 22 × 5
+##    term         estimate std.error statistic  p.value
+##    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)  -9.09e+1   9.80e+3  -0.00928 9.93e- 1
+##  2 to_multiple1 -2.68e+0   3.27e-1  -8.21    2.25e-16
+##  3 from1        -2.19e+1   9.80e+3  -0.00224 9.98e- 1
+##  4 cc            1.88e-2   2.20e-2   0.855   3.93e- 1
+##  5 sent_email1  -2.07e+1   3.87e+2  -0.0536  9.57e- 1
+##  6 time          8.48e-8   2.85e-8   2.98    2.92e- 3
+##  7 image        -1.78e+0   5.95e-1  -3.00    2.73e- 3
+##  8 attach        7.35e-1   1.44e-1   5.09    3.61e- 7
+##  9 dollar       -6.85e-2   2.64e-2  -2.59    9.64e- 3
+## 10 winneryes     2.07e+0   3.65e-1   5.67    1.41e- 8
+## 11 inherit       3.15e-1   1.56e-1   2.02    4.32e- 2
+## 12 viagra        2.84e+0   2.22e+3   0.00128 9.99e- 1
+## 13 password     -8.54e-1   2.97e-1  -2.88    4.03e- 3
+## 14 num_char      5.06e-2   2.38e-2   2.13    3.35e- 2
+## 15 line_breaks  -5.49e-3   1.35e-3  -4.06    4.91e- 5
+## 16 format1      -6.14e-1   1.49e-1  -4.14    3.53e- 5
+## 17 re_subj1     -1.64e+0   3.86e-1  -4.25    2.16e- 5
+## 18 exclaim_subj  1.42e-1   2.43e-1   0.585   5.58e- 1
+## 19 urgent_subj1  3.88e+0   1.32e+0   2.95    3.18e- 3
+## 20 exclaim_mess  1.08e-2   1.81e-3   5.98    2.23e- 9
+## 21 numbersmall  -1.19e+0   1.54e-1  -7.74    9.62e-15
+## 22 numberbig    -2.95e-1   2.20e-1  -1.34    1.79e- 1
+```
+]
+]
+.panel[.panel-name[Code]
+
+```r
+logistic_reg() %&gt;%
+  set_engine("glm") %&gt;%
+  fit(spam ~ ., data = email, family = "binomial") %&gt;%
+  tidy() %&gt;%
+  print(n = 22)
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1
+## occurred
+```
+]
+]
+
+---
+
+## Prediction
+
+- The mechanics of prediction is **easy**:
+  - Plug in values of predictors to the model equation
+  - Calculate the predicted value of the response variable, `\(\hat{y}\)`
+
+--
+- Getting it right is **hard**!
+  - There is no guarantee the model estimates you have are correct
+  - Or that your model will perform as well with new data as it did with your sample data
+
+---
+
+## Underfitting and overfitting
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Spending our data
+
+- Several steps to create a useful model: parameter estimation, model selection, performance assessment, etc.
+
+- Doing all of this on the entire data we have available can lead to **overfitting**
+
+- Allocate specific subsets of data for different tasks, as opposed to allocating the largest possible amount to the model parameter estimation only (which is what we've done so far)
+
+---
+
+class: middle
+
+# Splitting data
+
+---
+
+## Splitting data
+
+- **Training set:**
+  - Sandbox for model building 
+  - Spend most of your time using the training set to develop the model
+  - Majority of the data (usually 80%)
+  
+- **Testing set:**
+  - Held in reserve to determine efficacy of one or two chosen models
+  - Critical to look at it once, otherwise it becomes part of the modeling process
+  - Remainder of the data (usually 20%)
+  
+---
+
+## Performing the split
+
+
+```r
+# Fix random numbers by setting the seed 
+# Enables analysis to be reproducible when random numbers are used 
+set.seed(1116)
+
+# Put 80% of the data into the training set 
+email_split &lt;- initial_split(email, prop = 0.80)
+
+# Create data frames for the two sets:
+train_data &lt;- training(email_split)
+test_data  &lt;- testing(email_split)
+```
+
+---
+
+## Peek at the split
+
+.small[
+.pull-left[
+
+```r
+glimpse(train_data)
+```
+
+```
+## Rows: 3,136
+## Columns: 21
+## $ spam         &lt;fct&gt; 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, …
+## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ cc           &lt;int&gt; 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35,…
+## $ sent_email   &lt;fct&gt; 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ time         &lt;dttm&gt; 2012-01-25 22:46:55, 2012-01-03 05:28:28,…
+## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ dollar       &lt;dbl&gt; 10, 0, 0, 0, 0, 0, 13, 0, 0, 0, 2, 0, 0, 0…
+## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, yes, no, no, n…
+## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ password     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ num_char     &lt;dbl&gt; 23.308, 1.162, 4.732, 42.238, 1.228, 25.59…
+## $ line_breaks  &lt;int&gt; 477, 2, 127, 712, 30, 674, 367, 226, 98, 6…
+## $ format       &lt;fct&gt; 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, …
+## $ re_subj      &lt;fct&gt; 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, …
+## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, …
+## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ exclaim_mess &lt;dbl&gt; 12, 0, 2, 2, 2, 31, 2, 0, 0, 1, 0, 1, 2, 0…
+## $ number       &lt;fct&gt; small, none, big, big, small, small, small…
+```
+]
+.pull-right[
+
+```r
+glimpse(test_data)
+```
+
+```
+## Rows: 785
+## Columns: 21
+## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ to_multiple  &lt;fct&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, …
+## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ cc           &lt;int&gt; 0, 1, 0, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ sent_email   &lt;fct&gt; 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ time         &lt;dttm&gt; 2012-01-01 17:55:06, 2012-01-01 19:38:32,…
+## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ dollar       &lt;dbl&gt; 0, 0, 5, 0, 0, 0, 0, 5, 4, 0, 0, 0, 21, 0,…
+## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no…
+## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, …
+## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ password     &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ num_char     &lt;dbl&gt; 4.837, 15.075, 18.037, 45.842, 11.438, 1.4…
+## $ line_breaks  &lt;int&gt; 193, 354, 345, 881, 125, 24, 296, 13, 192,…
+## $ format       &lt;fct&gt; 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, …
+## $ re_subj      &lt;fct&gt; 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, …
+## $ exclaim_subj &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ exclaim_mess &lt;dbl&gt; 1, 10, 20, 5, 2, 0, 0, 0, 6, 0, 0, 1, 3, 0…
+## $ number       &lt;fct&gt; big, small, small, big, small, none, small…
+```
+]
+]
+
+---
+
+class: middle
+
+# Modeling workflow
+
+---
+
+## Fit a model to the training dataset
+
+
+```r
+email_fit &lt;- logistic_reg() %&gt;%
+  set_engine("glm") %&gt;%
+  fit(spam ~ ., data = train_data, family = "binomial")
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1
+## occurred
+```
+
+---
+
+## Categorical predictors
+
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-16-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `from` and `sent_email`
+
+.pull-left[
+- `from`: Whether the message was listed as from anyone (this is usually set by default for regular outgoing email)
+
+
+```r
+train_data %&gt;%
+  count(spam, from)
+```
+
+```
+## # A tibble: 3 × 3
+##   spam  from      n
+##   &lt;fct&gt; &lt;fct&gt; &lt;int&gt;
+## 1 0     1      2837
+## 2 1     0         3
+## 3 1     1       296
+```
+]
+.pull-right[
+- `sent_email`: Indicator for whether the sender had been sent an email in the last 30 days
+
+
+```r
+train_data %&gt;%
+  count(spam, sent_email)
+```
+
+```
+## # A tibble: 3 × 3
+##   spam  sent_email     n
+##   &lt;fct&gt; &lt;fct&gt;      &lt;int&gt;
+## 1 0     0           1972
+## 2 0     1            865
+## 3 1     0            299
+```
+]
+
+---
+
+## Numerical predictors
+
+.small[
+
+```
+## 
+## ── Variable type: numeric ──────────────────────────────────────────────────────────────────────────
+##    skim_variable spam n_missing complete_rate      mean       sd    p0    p25     p50    p75  p100
+##  1 cc            0            0             1   0.393     2.62   0      0       0       0      68 
+##  2 cc            1            0             1   0.388     3.25   0      0       0       0      50 
+##  3 image         0            0             1   0.0536    0.503  0      0       0       0      20 
+*##  4 image         1            0             1   0.00334   0.0578 0      0       0       0       1 
+##  5 attach        0            0             1   0.124     0.775  0      0       0       0      21 
+##  6 attach        1            0             1   0.227     0.620  0      0       0       0       2 
+##  7 dollar        0            0             1   1.56      5.33   0      0       0       0      64 
+##  8 dollar        1            0             1   0.779     3.01   0      0       0       0      36 
+##  9 inherit       0            0             1   0.0352    0.216  0      0       0       0       6 
+## 10 inherit       1            0             1   0.0702    0.554  0      0       0       0       9 
+*## 11 viagra        0            0             1   0         0      0      0       0       0       0 
+## 12 viagra        1            0             1   0.0268    0.463  0      0       0       0       8 
+## 13 password      0            0             1   0.112     0.938  0      0       0       0      22 
+## 14 password      1            0             1   0.0201    0.182  0      0       0       0       2 
+## 15 num_char      0            0             1  11.4      14.9    0.003  1.97    6.83   15.7   190.
+## 16 num_char      1            0             1   5.63     15.7    0.001  0.468   0.999   3.55  174.
+## 17 line_breaks   0            0             1 247.      326.     2     42     138     318    4022 
+## 18 line_breaks   1            0             1 108.      321.     1     14      23      66.5  3729 
+## 19 exclaim_subj  0            0             1   0.0783    0.269  0      0       0       0       1 
+## 20 exclaim_subj  1            0             1   0.0769    0.267  0      0       0       0       1 
+## 21 exclaim_mess  0            0             1   6.68     50.2    0      0       1       5    1236 
+## 22 exclaim_mess  1            0             1   8.75     88.4    0      0       0       1    1209
+```
+]
+
+---
+
+## Fit a model to the training dataset
+
+
+```r
+email_fit &lt;- logistic_reg() %&gt;%
+  set_engine("glm") %&gt;%
+* fit(spam ~ . - from - sent_email - viagra - image, data = train_data, family = "binomial")
+```
+
+.small[
+
+```r
+email_fit
+```
+
+```
+## parsnip model object
+## 
+## 
+## Call:  stats::glm(formula = spam ~ . - from - sent_email - viagra - 
+##     image, family = stats::binomial, data = data)
+## 
+## Coefficients:
+##  (Intercept)  to_multiple1            cc          time        attach        dollar     winneryes  
+##   -9.818e+01    -2.537e+00     2.264e-02     7.363e-08     2.269e-01    -6.260e-02     2.159e+00  
+##      inherit      password      num_char   line_breaks       format1      re_subj1  exclaim_subj  
+##    4.559e-01    -7.173e-01     5.991e-02    -5.604e-03    -9.328e-01    -3.008e+00     1.173e-01  
+## urgent_subj1  exclaim_mess   numbersmall     numberbig  
+##    3.584e+00     1.041e-02    -8.795e-01    -1.658e-01  
+## 
+## Degrees of Freedom: 3135 Total (i.e. Null);  3118 Residual
+## Null Deviance:	    1974 
+## Residual Deviance: 1460 	AIC: 1496
+```
+]
+
+---
+
+## Predict outcome on the testing dataset
+
+
+```r
+predict(email_fit, test_data)
+```
+
+```
+## # A tibble: 785 × 1
+##   .pred_class
+##   &lt;fct&gt;      
+## 1 0          
+## 2 0          
+## 3 0          
+## 4 0          
+## 5 0          
+## 6 0          
+## # … with 779 more rows
+```
+
+
+---
+
+## Predict probabilities on the testing dataset
+
+
+```r
+email_pred &lt;- predict(email_fit, test_data, type = "prob") %&gt;%
+  bind_cols(test_data %&gt;% select(spam, time))
+
+email_pred
+```
+
+```
+## # A tibble: 785 × 4
+##   .pred_0 .pred_1 spam  time               
+##     &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
+## 1   0.993 0.00665 0     2012-01-01 17:55:06
+## 2   0.998 0.00172 0     2012-01-01 19:38:32
+## 3   0.981 0.0188  0     2012-01-02 05:42:16
+## 4   0.999 0.00110 0     2012-01-02 15:12:51
+## 5   0.988 0.0124  0     2012-01-02 16:45:36
+## 6   0.826 0.174   0     2012-01-02 21:55:03
+## # … with 779 more rows
+```
+
+---
+
+## A closer look at predictions
+
+.pull-left-wide[
+
+```r
+email_pred %&gt;%
+  arrange(desc(.pred_1)) %&gt;%
+  print(n = 10)
+```
+
+```
+## # A tibble: 785 × 4
+##    .pred_0 .pred_1 spam  time               
+##      &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
+##  1  0.0939   0.906 1     2012-02-13 12:15:00
+*##  2  0.161    0.839 0     2012-01-27 20:05:06
+##  3  0.175    0.825 1     2012-03-01 05:40:27
+##  4  0.264    0.736 1     2012-03-17 10:13:27
+##  5  0.381    0.619 1     2012-03-21 12:33:12
+##  6  0.446    0.554 1     2012-03-06 11:46:20
+##  7  0.481    0.519 1     2012-02-10 12:53:18
+*##  8  0.486    0.514 0     2012-01-22 21:23:41
+##  9  0.497    0.503 1     2012-02-08 08:00:05
+*## 10  0.509    0.491 0     2012-02-17 01:57:16
+## # … with 775 more rows
+```
+]
+
+---
+
+## Evaluate the performance
+
+**Receiver operating characteristic (ROC) curve**&lt;sup&gt;+&lt;/sup&gt; which plots true positive rate vs. false positive rate (1 - specificity)
+
+.pull-left[
+
+```r
+email_pred %&gt;%
+  roc_curve(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  ) %&gt;%
+  autoplot()
+```
+]
+.pull-right[
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-25-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.footnote[
+.small[
+&lt;sup&gt;+&lt;/sup&gt;Originally developed for operators of military radar receivers, hence the name.
+]
+]
+
+---
+
+## Evaluate the performance
+
+Find the area under the curve:
+
+.pull-left[
+
+```r
+email_pred %&gt;%
+  roc_auc(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  )
+```
+
+```
+## # A tibble: 1 × 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 roc_auc binary         0.860
+```
+]
+.pull-right[
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-27-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
