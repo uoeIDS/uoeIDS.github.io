@@ -474,7 +474,7 @@ summary(email_rec) %>% print(n = 21)
 
 ```{r}
 email_rec <- email_rec %>%
-  step_rm(from, sent_email, image)
+  step_rm(from, sent_email, image, viagra)
 ```
 
 .small[
@@ -553,7 +553,7 @@ email_rec
 
 ```{r}
 email_rec <- recipe(spam ~ ., data = email) %>%
-  step_rm(from, sent_email, image) %>%
+  step_rm(from, sent_email, image, viagra) %>%
   step_date(time, features = c("dow", "month")) %>%               
   step_rm(time) %>%
   step_cut(cc, attach, dollar, breaks = c(0, 1)) %>%
