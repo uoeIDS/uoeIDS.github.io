@@ -1,6 +1,6 @@
 ---
 title: "HW 04 - Model and review"
-subtitle: "Due: 14 November, 12:00 UK time"
+subtitle: "Due: 18 November, 12:00 UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
