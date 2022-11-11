@@ -1,0 +1,177 @@
+---
+title: "HW 04 - Model and review"
+subtitle: "Due: 18 November, 12:00 UK time"
+output: 
+  tufte::tufte_html:
+    css: ../hw.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(out.width = "100%", eval = TRUE)
+```
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, fig.cap = "Image by mauro  mora on Unsplash"}
+knitr::include_graphics("img/mauro-mora-31-pOduwZGE-unsplash.jpg")
+```
+
+In this assignment we are reviewing modelling and inference from weeks 7 and 8 of the course. 
+
+## Prerequisites
+
+-   This assignment assumes that you have worked through all materials up to and including [week 7](https://ids2022.netlify.app/week07/) and [week 8](https://ids2022.netlify.app/week08/).
+    Make sure you are familiar with this content.
+
+## Workflow
+
+Import the homework template from [`https://github.com/uoeIDS/hw-04-template`](https://github.com/uoeIDS/hw-04-template) into your personal GitHub account. Remember to make your repository private and to add `uoeIDS` as a collaborator. Follow the initial instructions at the beginning of the first homework assignment to set-up a version control R project.
+
+
+## Packages
+
+In this assignment we will use the following packages:
+
+-   **tidyverse**: a collection of packages for doing data analysis in a "tidy" way
+-   **tidymodels**:  a collection of packages for modelling in a "tidy" way.
+
+If you haven't used these packages before you will need to install them. 
+
+
+# Part 1 - General Social Survey
+
+The GSS gathers data on contemporary American society in order to monitor and explain trends and constants in attitudes, behaviours, and attributes.
+Hundreds of trends have been tracked since 1972.
+In addition, since the GSS adopted questions from earlier surveys, trends can be followed for up to 70 years.
+
+The GSS contains a standard core of demographic, behavioural, and attitudinal questions, plus topics of special interest.
+Among the topics covered are civil liberties, crime and violence, intergroup tolerance, morality, national spending priorities, psychological well-being, social mobility, and stress and traumatic events.
+
+In this assignment we analyze data from the 2016 GSS, using it to estimate values of population parameters of interest about US adults.[^1]
+You can load the packages needed for this assignment with the following:
+
+```{r message=FALSE}
+library(tidyverse)
+library(tidymodels)
+```
+
+The dataset we will use is called `gss16` and it is in the `dsbox` package. The data have been downloaded for you and added to the data folder in the template repo ("gss16.csv"). The first thing you will need to do is to load the dataset into RStudio. 
+
+## Scientific research
+
+In this section we're going to build a model to predict whether someone agrees or doesn't agree with the following statement:
+
+> Even if it brings no immediate benefits, scientific research that advances the frontiers of knowledge is necessary and should be supported by the federal government.
+
+The responses to the question on the GSS about this statement are in the `advfront` variable.
+
+
+## Prepare the dataset for modelling
+
+1.  
+
+```{marginfigure}
+It's important that you don't recode the NAs, just the remaining levels.
+```
+
+a) Re-level the `advfront` variable such that it has two levels: `"Strongly agree"` and `"Agree"` combined into a new level called `"Agree"` and the remaining levels (except `NA`s) combined into `"Not agree"`. Make sure the levels are in the following order: `"Not agree"` and `"Agree"`. Finally, `count()` how many times each new level appears in the `advfront` variable.
+
+```{marginfigure}
+You can do this in various ways. One option is to use the `str_detect()` function to detect the existence of words like liberal or conservative. Note that these sometimes show up with lowercase first letters and sometimes with upper case first letters. To detect either in the `str_detect()` function, you can use "[Ll]iberal" and "[Cc]onservative". But feel free to solve the problem however you like, this is just one option!
+```
+
+
+
+b)   Combine the levels of the `polviews` variable (political views) such that levels that have the word "liberal" in them are lumped into a level called `"Liberal"` and those that have the word "conservative" in them are lumped into a level called `"Conservative"`.
+    Then, re-order the levels in the following order: `"Conservative"` , `"Moderate"`, and `"Liberal"`.
+    Finally, `count()` how many times each new level appears in the `polviews` variable.
+
+```{marginfigure}
+Use the specific names given to make it easier to follow the rest of the instructions.
+```
+
+
+c)  Create a new data frame called `gss16_advfront` that includes the variables `advfront`, `educ` (education level), `polviews` (political views), and `wrkstat` (working status).
+    Then, use the `drop_na()` function to remove rows that contain `NA`s from this new data frame. Print the top ten rows of your data frame. 
+
+
+## Create a workflow to fit a model
+
+Now use the following code to split the dataset into a training dataset (`gss16_train`) and a testing dataset (`gss16_test`). This code splits the data into 75\% training and 25\% testing.
+
+```{r split-data, eval=FALSE}
+set.seed(1234)
+gss16_split <- initial_split(gss16_advfront)
+gss16_train <- training(gss16_split)
+gss16_test  <- testing(gss16_split)
+```
+
+
+```{marginfigure}
+We'll create one more recipe and workflow later, that's why we're naming these `_1`.
+```
+
+2. Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_spec_1`).
+    Name this workflow `gss16_wflow_1`.
+    
+  The recipe (named `gss16_rec_1`) should contain the following steps for predicting `advfront` from `polviews`, `wrkstat`, and `educ`:
+
+    -   `step_other()` to pool values that occur less than 10% of the time in the `wrkstat` variable into `"Other"`.
+
+    -   `step_dummy()` to create dummy variables for `all_nominal()` variables that are predictors, i.e. not "outcomes".
+        You can select outcomes using `all_outcomes()`
+
+The model (named `gss16_spec_1`) should specify a model that is appropriate for the data as well as the computational engine.
+
+Explain why you have chosen the model that you have selected.
+
+
+
+```{marginfigure}
+You can de-select things using the minus sign, just as you can when using `select`, and in this case it's fine to combine positive and negative selections.
+```
+
+
+## Model fitting and interpretation
+
+3. 
+
+a) Apply the workflow you defined earlier to the training dataset and display the resulting tibble containing the fitted model parameters. 
+
+```{marginfigure}
+The response variable in the model is a factor with levels `"Not Agree"` and `"Agree"`. R automatically assigns the second level in the factor to correspond to `"1"` which is why we needed to make sure the factors were in the order: `"Not agree"` and `"Agree"` in Ex. 1.
+```
+
+
+b) Compute $\hat{o}_1=\hat{p}_1/(1-\hat{p}_1)$ and $\hat{o}_2=\hat{p}_2/(1-\hat{p}_2)$, where:
+
+- $\hat{p}_1$ is the predicted probability that a person who has conservative political views, is retired and has an education level of 13 agrees with the following statement:
+
+> Even if it brings no immediate benefits, scientific research that advances the frontiers of knowledge is necessary and should be supported by the federal government.
+
+- $\hat{p}_2$ is the predicted probability that a person who has liberal political views, is retired and has an education level of 13 agrees with the statement above.
+
+$\hat{o}_1$ are the predicted odds for someone who is conservative, has an education level of 13 and is retired agreeing with the statement. $\hat{o}_2$ are the predicted odds for someone who is liberal, has an education level of 13 and is retired agreeing with the statement.
+
+Now compute the ratio $\hat{o}_2/ \hat{o}_1$ and show that it is equal to $\exp(b_3)$ where $b_3$ is the estimated coefficient associated with liberal political views. 
+
+c) Explain the interpretation of the ratio $\hat{o}_2/ \hat{o}_1$ in the context of the study. This ratio is known as the odds ratio.
+
+
+
+## Model checking and comparison
+
+4. Now, try a different, simpler model: predict `advfront` from only `polviews` and `educ`. Update your workflow and recipe to reflect this simpler model specification (and name the updated workflow `gss16_wflow_2`). 
+
+Apply both of your models to the training data using the two workflows that you have defined. Then use the fitted models to predict the test data, plot the ROC curves for the predictions for both models, and calculate the areas under the ROC curves.
+
+Comment on which model performs better (the model including `wrkstat`, model 1, or the model excluding `wrkstat`, model 2). Explain your reasoning. 
+
+
+[^1]: Smith, Tom W, Peter Marsden, Michael Hout, and Jibum Kim.
+    General Social Surveys, 1972-2016 [machine-readable data file] /Principal Investigator, Tom W. Smith; Co-Principal Investigator, Peter V. Marsden; Co-Principal Investigator, Michael Hout; Sponsored by National Science Foundation.
+    -NORC ed.- Chicago: NORC at the University of Chicago [producer and distributor].
+    Data accessed from the GSS Data Explorer website at gssdataexplorer.norc.org.
