@@ -1,0 +1,74 @@
+---
+title: "Lab 08 - Work on projects"
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This week you'll be working on your projects. Remember that the assignment details are [here](https://ids2022.netlify.app/assessments/project/). Note that both the presentation and the write-up are **group** work - so you will only have one presentation and one write-up for your team. 
+
+Read through the additional information below and then use the rest of the time to work on your project with your team. 
+
+## Project template
+
+There is a template that you can import to use as a project repo. It can be found on the course GitHub page [here](https://github.com/uoeIDS/project_template). Feel free to set up your own repo if you prefer but you should read through the information contained in the template as it contains some extra tips on your write-up. 
+
+There are marks for reproducibility and organisation which will be based on your GitHub repo so:
+
+- Make sure you read the requirements for what needs to be included within your repo [here](https://ids2022.netlify.app/assessments/project/#submission-and-github-repository). 
+- Make sure you remember to add the course GitHub page to your repo.
+
+## Project example
+
+There is an example of a high-scoring project done last year available [here](https://github.com/uoeIDS/project-example) for you to look at. This has been anonymised. Two important caveats:
+
+- This course is all about real data science - the idea is that what you do in your project will depend on the data and question that you chose. So we wouldn't expect any two projects to look similar. You should be choosing plots and modelling methods that are right for your data/ question, not what someone else has done!
+- The format of the projects has changed this year. Last year only a 750 word write-up was required, with no plots or code. Instead, last year students handed in a longer and marked project proposal. We are asking you to produce around 1,500 words for your final write-up and to include relevant plots and code. Your write-up should reflect what you said in the presentation, with a little extra detail to explain things that you won't have time for. The write-up in this example is actually around 1,500 words which was longer than required last year but **your marks will be penalised if you go much over 1,500 words or speak for much longer than 5 minutes in your presentation**.
+
+## Extra
+
+You may notice a folder called `extra` in the template repo.
+Any extra documents you might have go here.
+This might include Rmd files you're using to develop your project, any notes, or anything else.
+The contents of this folder will **not** be marked, it's just a convenient place to store documents and collaborate with teammates without cluttering the rest of your repo.
+
+-   If you have any extra documents in your repo, move them into this folder. To move files in RStudio: go to your Files pane and check the boxes next to the files you want to move, click on More, and then Move... and select the `extra` folder.
+- Now is also a good time to generally check things are in the right place (e.g. data is only in the data folder).
+-   Commit and push your changes.
+
+```{marginfigure}
+On the repository on GitHub, you probably want to click on the gear icon next to **About** and add a very brief description of your project.
+```
+
+## Write up
+
+Add your project title and team name to the `summary.Rmd` file in the repo.
+Knit, commit, and push your changes to `summary.Rmd`.
+
+## Presentation
+
+-   Open the `presentation.Rmd` file in the `presentation` folder, knit the document, and review the presentation format. 
+
+```{marginfigure}
+Remember that your data lives in a folder called data that is not inside your presentation folder. So you need to specify the path to your data with here::here("data/name_of_datafile") in your read_csv() (or similar) function.
+```
+
+- Load your data in your `presentation.Rmd`, knit, and make sure everything works.
+
+- To view the slides/present them, you can make sure the knitted file opens in a "viewer pane", making sure the settings under the gear icon (next to "Knit"), are set to "preview in viewer pane".
+
+## Planning
+
+Now that all the logistical details are done, start work on the planning of your project.
+
+-   Discuss how you might incorporate modelling into your project. Note that this is not a requirement, but since we hadn't introduced modelling at the time of your proposal, this is a good time to think about how you might use modelling in your project.
+-   Discuss next steps for your project, identifying concrete tasks that need to be done. Assign at least one task to each member.
+
+-   **Strongly recommended:** Get a hold of a tutor and run your ideas by them.

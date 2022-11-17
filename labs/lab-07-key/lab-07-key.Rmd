@@ -1,0 +1,264 @@
+---
+title: "Lab 07 - Modelling course evaluations"
+author: Key
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+### Load packages 
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+```
+
+### Read in data
+
+```{r read-data}
+evals<-read.csv("data/evals.csv", row.names=1)
+```
+
+### Exercise 1
+
+```{r viz-score}
+ggplot(data = evals, mapping = aes(x = score)) +
+  geom_histogram(binwidth = 0.2) + 
+  labs(
+    x = "Evaluation score", 
+    y = "Frequency", 
+    title = "Professor evaluation scores"
+    )
+```
+
+The distribution is negatively/left-skewed---this happens because most professors are getting scores near the upper end of the scale, but then there is a tail to the left of lower scores.  There appears to be a sharp peak around 4.4, but this may be an artefact of the data (evaluation scores, as we shall soon see, appear to be recorded in discrete steps of 0.1).
+
+### Exercise 2
+
+```{r viz-score-bty}
+# add the code for each plot and assign them to the names as outlined below
+# remove eval = FALSE from the code chunk options
+# knit the document, and you'll see them appear next to each other
+# this uses the patchwork package loaded above
+# learn more about patchwork at https://patchwork.data-imaginist.com/
+# it might be useful for your presentations!
+plot_geom_point  <- ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
+  geom_point() + 
+  labs(
+    x = "Beauty score", 
+    y = "Evaluation score", 
+    title = "A weak, positive relationship between evaluation and beauty scores"
+    )
+
+plot_geom_jitter <- ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
+  geom_jitter() + 
+  labs(
+    x = "Beauty score", 
+    y = "Evaluation score", 
+    title = "A weak, positive relationship between evaluation and beauty scores"
+    )
+
+plot_geom_point + plot_geom_jitter
+```
+
+Jittering randomly shifts the data points slightly so that points are not overplotted. In the initial scatterplot observations (professors) that have the same score and bty_avg were overplotted, making it impossible to see where there is a higher/lower density of points.
+
+### Exercise 3
+
+```{r fit-score_bty_fit}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+score_bty_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg, data = evals)
+```
+
+```{r tidy-score_bty_fit}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+tidy(score_bty_fit)
+```
+
+```{r include = FALSE}
+bty_avg_estimate <- tidy(score_bty_fit) %>%  # summarize components of the model
+  filter(term == "bty_avg")  %>%             # filter for the "bty_avg" component
+  pull("estimate") %>%                       # pull its estimate
+  signif(., 3)                               # round to 3 significant figures
+
+intercept_estimate <- tidy(score_bty_fit) %>%  # summarize components of the model
+  filter(term == "(Intercept)")  %>%           # filter for the "(Intercept)" component
+  pull("estimate") %>%                         # pull its estimate
+  signif(., 3)                                 # round to 3 significant figures
+```
+
+The linear model is score-hat = `r intercept_estimate` + `r bty_avg_estimate` bty_avg.
+
+### Exercise 4
+
+```{r viz-score_bty_fit}
+ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm", se = FALSE, formula = "y ~ x") +
+  labs(
+    x = "Beauty score", 
+    y = "Evaluation score", 
+    title = "Evaluation vs. beauty scores"
+    )
+```
+
+### Exercise 5
+
+For each additional average beauty score, the model predicts the professor’s evaluation score to be higher, on average, by `r bty_avg_estimate` points.
+
+### Exercise 6
+
+Professors who have a 0 beauty score on average are predicted to have an evaluation score of 3.88. The intercept doesn’t make sense in this context as it’s not possible for a professor to have a 0 beauty score on average (lowest possible score a student can assign a professor is 1).
+
+### Exercise 7
+
+```{r glance-score_bty_fit}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+glance(score_bty_fit)
+```
+
+```{r include=FALSE}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+score_bty_r <- glance(score_bty_fit) %>%  # get model summaries
+  pull("r.squared") %>%                 # pull out the r squared value
+  signif(., 2)*100                      # round to 2 significant figures and times by 100 to get a percent
+```
+
+The model has an R-squared value of `r score_bty_r`%. This means that average beauty scores explain `r score_bty_r`% of the variability in evaluation scores.
+
+### Exercise 8
+
+```{r viz-score_bty_fit-diagnostic}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+score_bty_aug <- augment(score_bty_fit$fit)
+
+ggplot(score_bty_aug, aes(x = .fitted, y = .resid)) +
+  geom_jitter() +
+  geom_hline(yintercept = 0, linetype = "dashed")
+```
+
+The model is probably reasonable, but could be better.  There's some slight "heteroskedasticity"---that is, there are differences in the variation about the *x*-axis, with more to the left.  There are also more large negative residuals than large positive ones, which is probably due to the fact that values of the response variable were close to the rigid maximum limit of the scale.
+
+### Exercise 9
+
+```{r fit-score_rank_fit}
+# fit model
+score_rank_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ rank, data = evals)
+# tidy model output
+tidy(score_rank_fit)
+```
+
+- **Intercept:** A lecturer whose rank is as teaching staff (which, if we look at the data dictionary in the help file, is the level not mentioned in the output) has a predicted score of 4.28.
+- **"Slope":** There are two of these:
+  - A tenure track lecturer is predicted by the model to have a score that is 0.130 *lower* that that of teaching staff.
+  - A tenured lecturer is predicted by the model to have a score that is 0.145 *lower* than that of teaching staff.
+
+### Exercise 10
+
+```{r fit-score_gender_fit}
+# fit model
+score_gender_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ gender, data = evals)
+# tidy model output
+tidy(score_gender_fit)
+```
+
+```{r score_gender_intercept}
+# remove eval = FALSE from the code chunk options
+score_gender_intercept <- tidy(score_gender_fit) %>% 
+  filter(term == "(Intercept)") %>%
+  select(estimate) %>%
+  pull()
+```
+
+```{r score_gender_slope}
+# remove eval = FALSE from the code chunk options after filling in the blanks
+score_gender_slope <- tidy(score_gender_fit) %>% 
+  filter(term == "gendermale") %>%
+  select(estimate) %>%
+  pull()
+```
+
+- **Intercept:** The model predicts female staff (the baseline of the model) to have a score of `r round(score_gender_intercept, 2)`.
+- **"Slope":** The model predicts male staff to have a score that is `r round(score_gender_slope, 2)` *higher* than that of female staff.
+
+### Exercise 11
+
+```{r fit-score_bty_gender_fit}
+# fit model
+score_bty_gender_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg + gender, data = evals)
+# tidy model output
+tidy(score_bty_gender_fit)
+```
+
+- **Intercept:** The model predicts that female staff with a beauty score of 0 (which is again not something that makes sense in context) would have a professor evaluation score of 3.75.
+- **Slopes:**
+  - The model predicts that, *keeping all else constant*, for every increase by one in the beauty score, the lecturer's evaluation score will *increase* by 0.0742.
+  - The model predicts that, for lecturers with *the same beauty score*, male lecturers will have a professor evaluation score that is 0.172 *higher* than that of female lecturers.
+
+### Exercise 12
+
+```{r glance-score_bty_gender_fit}
+# glance model output
+glance(score_bty_gender_fit)
+```
+
+```{r}
+# glance model output
+score_bty_gender_r <- glance(score_bty_gender_fit) %>%  # get model summaries
+  pull("r.squared") %>%                        # pull out the r squared value
+  signif(., 2)*100                             # round to 2 significant figures and times by 100 to get a percent
+```
+
+The model has an R-squared value of `r score_bty_gender_r`%. This means that a model with both average beauty scores and gender can explain `r score_bty_gender_r`% of the variability in evaluation scores.
+
+### Exercise 13
+
+score-hat = 3.75 + 0.172 + 0.0742 bty_avg = 3.92 + 0.0743 bty_avg
+
+### Exercise 14
+
+Male professors tend to have the higher course evaluation, for those wth the same beauty score.
+
+### Exercise 15
+
+In this model, it doesn't, because we haven't fitted an interaction effects model---the model gives the same increase in evaluation for each increase in beauty score for both male and female professors.
+
+### Exercise 16
+
+The adjusted R-squared is higher for the fit when gender is included, suggesting gender is useful for explaining the variability in evaluation scores when we already have information on the beauty scores.
+
+### Exercise 17
+
+The addition of gender has changed the slope estimate: it has increased it frrom around 0.067 to around 0.074.
+
+### Exercise 18
+
+```{r fit-score_bty_gender_rank_fit}
+# fit model
+score_bty_gender_rank_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg + gender + rank, data = evals)
+# glance model output
+glance(score_bty_gender_rank_fit)
+```
+
+```{r include=FALSE}
+# glance model output
+score_bty_gender_rank_r <- glance(score_bty_gender_rank_fit) %>%  # get model summaries
+  pull("r.squared") %>%                        # pull out the r squared value
+  signif(., 2)*100                             # round to 2 significant figures and times by 100 to get a percent
+```
+
+The model with average beauty rating (`bty_avg`), `gender`, and `rank` had an R-squared value of `r score_bty_gender_rank_r`%, whereas without `rank` had an R-squared value of `r score_bty_gender_r`%. This shows that rank is also a useful variable for explaining the score.
