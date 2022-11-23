@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quantifying uncertainty</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Quantifying uncertainty
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/23
+]
+
+---
+
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+
+## Reminders
+
+- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+- Look through lab sheet 8. Labs tomorrow last chance to discuss with tutors. See marking criteria on lab sheet 9. 
+- Lecture next Tuesday will be projects Q&amp;A. Send questions!
+- Application exercise and interactive R tutorial uploaded to website.
+
+---
+## Topics
+
+- Why is quantification of uncertainty important?
+- Confidence intervals
+- Bootstrapping for confidence intervals
+- Bootstrapping with Tidymodels
+- Precision vs Accuracy
+
+---
+
+class: middle
+
+# Recap and motivation
+
+---
+
+## Data
+
+- Family income and gift aid data from a random sample of fifty students in the freshman class of Elmhurst College in Illinois, USA
+- Gift aid is financial aid that does not need to be paid back, as opposed to a loan
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+.small[
+The data come from the openintro package: [`elmhurst`](http://openintrostat.github.io/openintro/reference/elmhurst.html).
+]
+]
+
+---
+
+## Linear model
+
+.pull-left[
+.small[
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(gift_aid ~ family_income, data = elmhurst) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term          estimate std.error statistic  p.value
+##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    24.3       1.29       18.8  8.28e-24
+## 2 family_income  -0.0431    0.0108     -3.98 2.29e- 4
+```
+]
+]
+.pull-right[
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Interpreting the slope
+
+.pull-left-wide[
+
+```
+## # A tibble: 2 × 5
+##   term          estimate std.error statistic  p.value
+##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    24.3       1.29       18.8  8.28e-24
+## 2 family_income  -0.0431    0.0108     -3.98 2.29e- 4
+```
+]
+.pull-right-narrow[
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+For each additional $1,000 of family income, we would expect students to receive a net difference of 1,000 * (-0.0431) = -$43.10 in aid on average, i.e. $43.10 less in gift aid, on average.
+
+---
+
+class: middle
+
+.hand[
+.light-blue[
+exactly $43.10 for all students at this school?!
+]
+]
+
+---
+
+class: middle
+
+# Inference
+
+---
+
+## Statistical inference 
+
+... is the process of using sample data to make conclusions about the underlying population the sample came from
+
+&lt;img src="img/photo-1571942676516-bcab84649e44.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Estimation
+
+So far we have done lots of estimation (mean, median, slope, etc.), i.e.
+- used data from samples to calculate sample statistics
+- which can then be used as estimates for population parameters
+
+---
+
+.question[
+If you want to catch a fish, do you prefer a spear or a net?
+]
+
+&lt;br&gt;
+
+.pull-left[
+&lt;img src="img/spear.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="img/net.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.question[
+If you want to estimate a population parameter, do you prefer to report a range of values the parameter might be in, or a single value?
+]
+
+&lt;br&gt;
+
+--
+
+- If we report a point estimate, we probably won’t hit the exact population parameter
+- If we report a range of plausible values we have a good shot at capturing the parameter
+
+---
+
+.center[
+&lt;img src="img/Gallup_COP.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.footnote[
+.midi[
+Source: Gallup. [World Less Than Satisfied With Climate Efforts](https://news.gallup.com/poll/405215/climate-efforts-falling-short-across-globe.aspx), 22 Nov 2022.
+]
+]
+
+---
+
+class: middle
+
+# Confidence intervals
+
+---
+
+## Confidence intervals
+
+A plausible range of values for the population parameter is a **confidence interval**.
+
+--
+- In order to construct a confidence interval we need to quantify the variability of our sample statistic
+
+--
+- For example, if we want to construct a confidence interval for a population slope, we need to come up with a plausible range of values around our observed sample slope
+
+--
+- This range will depend on how precise and how accurate our sample mean is as an estimate of the population mean
+
+--
+- Quantifying this requires a measurement of how much we would expect the sample population to vary from sample to sample
+
+---
+
+.question[
+Suppose we split the class in half down the middle of the classroom and ask each student their heights. Then, we calculate the mean height of students on each side of the classroom. Would you expect these two means to be exactly equal, close but not equal, or wildly different?
+]
+
+--
+
+&lt;br&gt;
+
+.question[
+Suppose you randomly sample 50 students and 5 of them are left handed. If you were to take another random sample of 50 students, how many would you expect to be left handed? Would you be surprised if only 3 of them were left handed? Would you be surprised if 40 of them were left handed?
+]
+
+---
+
+## Quantifying the variability of slopes
+
+We can quantify the variability of sample statistics using
+
+- simulation: via bootstrapping (now)
+
+or
+
+- theory: via Central Limit Theorem (future stat courses!)
+
+
+```
+## # A tibble: 2 × 5
+##   term          estimate std.error statistic  p.value
+##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    24.3       1.29       18.8  8.28e-24
+## 2 family_income  -0.0431    0.0108     -3.98 2.29e- 4
+```
+
+---
+
+class: middle
+
+# Bootstrapping
+
+---
+
+## Bootstrapping
+
+.pull-left-wide[
+- _"pulling oneself up by one’s bootstraps"_: accomplishing an impossible task without any outside help
+- **Impossible task:** estimating a population parameter using data from only the given sample
+- **Note:** Notion of saying something about a population parameter using only information from an observed sample is the crux of statistical inference
+]
+.pull-right-narrow[
+.huge[
+🥾
+]
+]
+
+---
+
+
+
+## Observed sample
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap population
+
+Generated assuming there are more students like the ones in the observed sample...
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-12-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrapping scheme
+
+1. Take a bootstrap sample - a random sample taken **with replacement** from the original sample, of the same size as the original sample
+
+--
+2. Calculate the bootstrap statistic - a statistic such as mean, median, proportion, slope, etc. computed on the bootstrap samples
+
+--
+3. Repeat steps (1) and (2) many times to create a bootstrap distribution - a distribution of bootstrap statistics
+
+--
+4. Calculate the bounds of the XX% confidence interval as the middle XX% of the bootstrap distribution
+
+---
+
+## Bootstrap sample 1
+
+
+```r
+elmhurtst_boot_1 &lt;- elmhurst %&gt;%
+  slice_sample(n = 50, replace = TRUE)
+```
+
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-14-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 2
+
+
+```r
+elmhurtst_boot_2 &lt;- elmhurst %&gt;%
+  slice_sample(n = 50, replace = TRUE)
+```
+
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 3
+
+
+```r
+elmhurtst_boot_3 &lt;- elmhurst %&gt;%
+  slice_sample(n = 50, replace = TRUE)
+```
+
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 4
+
+
+```r
+elmhurtst_boot_4 &lt;- elmhurst %&gt;%
+  slice_sample(n = 50, replace = TRUE)
+```
+
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-20-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap samples 1 - 4
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-21-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+.hand[
+.light-blue[
+we could keep going...
+]
+]
+
+---
+
+## Many many samples...
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-22-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Slopes of bootstrap samples
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-23-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## 95% confidence interval
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-24-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpreting the slope, take two
+
+
+```
+## # A tibble: 2 × 6
+##   term           .lower .estimate  .upper .alpha .method   
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;     
+## 1 (Intercept)   21.8      24.4    26.8      0.05 percentile
+## 2 family_income -0.0695   -0.0445 -0.0219   0.05 percentile
+```
+
+**We are 95% confident that** for each additional $1,000 of family income, we would expect students to receive $69.50 to $21.90 less in gift aid, on average.
+
+---
+
+## Code
+
+
+```r
+# set a seed
+set.seed(1234)
+
+# take 1000 bootstrap samples
+elmhurst_boot &lt;- bootstraps(elmhurst, times = 1000)
+
+# for each sample
+# fit a model and save output in model column
+# tidy model output and save in coef_info column 
+elmhurst_models &lt;- elmhurst_boot %&gt;%
+  mutate(
+    model = map(splits, ~ lm(gift_aid ~ family_income, data = .)),
+    coef_info = map(model, tidy)
+  )
+
+# unnest coef_info (for intercept and slope)
+elmhurst_coefs &lt;- elmhurst_models %&gt;%
+  unnest(coef_info)
+
+# calculate 95% (default) percentile interval
+int_pctl(elmhurst_models, coef_info)
+```
+
+---
+
+class: middle
+
+# Rent in Edinburgh
+
+---
+
+## Rent in Edinburgh
+
+.question[
+Take a guess! How much did a typical 3 BR flat in Edinburgh rent for in 2020?
+]
+
+---
+
+## Sample
+
+Fifteen 3 BR flats in Edinburgh were randomly selected on rightmove.co.uk.
+
+
+```r
+library(tidyverse)
+edi_3br &lt;- read_csv2("data/edi-3br.csv") # ; separated
+```
+
+.small[
+
+```
+## # A tibble: 15 × 4
+##   flat_id  rent title                       address              
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt;                
+## 1 flat_01   825 3 bedroom apartment to rent Burnhead Grove, Edin…
+## 2 flat_02  2400 3 bedroom flat to rent      Simpson Loan, Quarte…
+## 3 flat_03  1900 3 bedroom flat to rent      FETTES ROW, NEW TOWN…
+## 4 flat_04  1500 3 bedroom apartment to rent Eyre Crescent, Edinb…
+## 5 flat_05  3250 3 bedroom flat to rent      Walker Street, Edinb…
+## 6 flat_06  2145 3 bedroom flat to rent      George Street, City …
+## # … with 9 more rows
+```
+]
+
+---
+
+## Observed sample
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Observed sample
+
+Sample mean ≈ £1895 😱
+
+&lt;br&gt;
+
+&lt;img src="img/rent-bootsamp.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap population
+
+Generated assuming there are more flats like the ones in the observed sample... Population mean = ❓
+
+&lt;img src="img/rent-bootpop.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrapping scheme
+
+1. Take a bootstrap sample - a random sample taken **with replacement** from the 
+original sample, of the same size as the original sample
+2. Calculate the bootstrap statistic - a statistic such as mean, median, 
+proportion, slope, etc. computed on the bootstrap samples
+3. Repeat steps (1) and (2) many times to create a bootstrap distribution - 
+a distribution of bootstrap statistics
+4. Calculate the bounds of the XX% confidence interval as the middle XX% 
+of the bootstrap distribution
+
+---
+
+class: middle
+
+# Bootstrapping with tidymodels
+
+---
+
+## Generate bootstrap means
+
+
+```r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+```
+
+---
+
+## Generate bootstrap means
+
+
+```r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap")
+```
+
+---
+
+## Generate bootstrap means
+
+
+```r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap")
+  # calculate the mean of each bootstrap sample
+  calculate(stat = "mean")
+```
+
+---
+
+## Generate bootstrap means
+
+
+
+
+
+```r
+# save resulting bootstrap distribution
+boot_df &lt;- edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent) %&gt;% 
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") %&gt;% 
+  # calculate the mean of each bootstrap sample
+  calculate(stat = "mean")
+```
+
+---
+
+## The bootstrap sample
+
+.question[
+How many observations are there in `boot_df`? What does each observation represent?
+]
+
+
+```r
+boot_df
+```
+
+```
+## Response: rent (numeric)
+## # A tibble: 15,000 × 2
+##   replicate  stat
+##       &lt;int&gt; &lt;dbl&gt;
+## 1         1 1793.
+## 2         2 1938.
+## 3         3 2175 
+## 4         4 2159.
+## 5         5 2084 
+## 6         6 1761 
+## # … with 14,994 more rows
+```
+
+---
+
+## Visualize the bootstrap distribution
+
+
+```r
+ggplot(data = boot_df, mapping = aes(x = stat)) +
+  geom_histogram(binwidth = 100) +
+  labs(title = "Bootstrap distribution of means")
+```
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-38-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Calculate the confidence interval
+
+A 95% confidence interval is bounded by the middle 95% of the bootstrap distribution.
+
+
+```r
+boot_df %&gt;%
+  summarize(lower = quantile(stat, 0.025),
+            upper = quantile(stat, 0.975))
+```
+
+```
+## # A tibble: 1 × 2
+##   lower upper
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 1603. 2213.
+```
+
+---
+
+## Visualize the confidence interval
+
+
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-41-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpret the confidence interval
+
+.question[
+The 95% confidence interval for the mean rent of three bedroom flats in Edinburgh was calculated as (1603, 2213). Which of the following is the correct interpretation of this interval?
+
+**(a)** 95% of the time the mean rent of three bedroom flats in this sample is between £1603 and £2213.
+
+**(b)** 95% of all three bedroom flats in Edinburgh have rents between £1603 and £2213.
+
+**(c)** We are 95% confident that the mean rent of all three bedroom flats is between £1603 and £2213.
+
+**(d)** We are 95% confident that the mean rent of three bedroom flats in this sample is between £1603 and £2213.
+]
+
+---
+
+class: middle
+
+# Accuracy vs. precision
+
+---
+
+## Confidence level
+
+**We are 95% confident that ...**
+
+- Suppose we took many samples from the original population and built a 95% confidence interval based on each sample.
+- Then about 95% of those intervals would contain the true population parameter.
+
+---
+
+## Commonly used confidence levels
+
+.question[
+Which line (orange dash/dot, blue dash, green dot) represents which confidence level?
+]
+
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-42-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Precision vs. accuracy
+
+.question[
+If we want to be very certain that we capture the population parameter, should we use a wider or a narrower interval? What drawbacks are associated with using a wider interval?
+]
+
+--
+
+&lt;img src="img/garfield.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.question[
+How can we get best of both worlds -- high precision and high accuracy?
+]
+
+---
+
+## Changing confidence level
+
+.question[
+How would you modify the following code to calculate a 90% confidence interval? 
+How would you modify it for a 99% confidence interval?
+]
+
+
+```r
+edi_3br %&gt;%
+  specify(response = rent) %&gt;% 
+  generate(reps = 15000, type = "bootstrap") %&gt;% 
+  calculate(stat = "mean") %&gt;%
+  summarize(lower = quantile(stat, 0.025),
+            upper = quantile(stat, 0.975))
+```
+
+---
+
+## Recap
+
+- Sample statistic `\(\ne\)` population parameter, but if the sample is good, it can be a good estimate
+- We report the estimate with a confidence interval, and the width of this interval depends on the variability of sample statistics from different samples from the population
+- Since we can't continue sampling from the population, we bootstrap from the one sample we have to estimate sampling variability
+- We can do this for any sample statistic:
+  - For a mean: `calculate(stat = "mean")`
+  - Learn about calculating bootstrap intervals for other statistics in the quiz
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
