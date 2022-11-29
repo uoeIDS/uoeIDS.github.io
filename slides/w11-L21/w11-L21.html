@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Projects Q&amp;A</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Projects Q&amp;A
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/23
+]
+
+---
+
+
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+
+## Reminders
+
+- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+
+--
+
+- Lecture on Thursday - "Recap and Looking Beyond IDS".
+
+--
+
+- Office hours on Thursday and Piazza for last minute questions.
+
+---
+## Presentation tips
+
+- Practice with your team. Don't go over time (you will lose marks for this).
+
+--
+
+- Focus on the key points, don't include too much text on slides or irrelevant plots. Get your key findings across. 
+
+--
+
+- Use plots/ tables rather than lots of text.
+
+--
+
+- You get points for teamwork so make sure that you have included everyone in the presentation.
+
+--
+
+- Check that you can load your slides properly beforehand!!
+
+
+---
+## Data Science life cycle
+
+&lt;img src="img/data-science-cycle/data-science-cycle.001.png" width="90%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+---
+
+## Write-up tips
+
+- Should be a written version of your presentation, with a bit of extra room to expand on some points. 
+
+--
+- Think: Tidy, Transform, Visualise, Model (if you did this), Communicate.
+
+--
+- Limitations: were there any problems with data, assumptions etc? Any suggestions to deal with those? It's better to be honest about your data and conclusions and explain why you had those problems that to be misleading. Not all real data questions can be answered!
+
+--
+- Extensions: if you had more time, what would you have done?
+
+--
+- Be clear. Minimise jargon, make sure explanations are clear. Get someone else in your team to read and edit your text. 
+
+--
+- Do a good job on the basics rather than trying to do everything. Remember you only have 1,500 words. 
+
+---
+## Problems
+
+- Hopefully you didn't have any, but...
+
+--
+
+- Everyone should have contributed equally.
+
+--
+
+- If this is not the case (or you have had any other difficulties), please say so in the peer evaluation form. We will also check GitHub commits if the peer evaluation forms suggest an issue. 
+
+--
+
+- Anyone who doesn't contribute a reasonable amount will have their marks reduced.
+
+--
+
+- Don't worry if you have had problems (they do happen!) -  our expectation is that larger teams will have done more work than smaller teams. We will account for issues in the marks.
+
+--
+
+- Everyone has different backgrounds, so you should try and work together and include everyone in the project. 
+
+---
+## Hand-in
+
+- Deadline: 9am on 2 December. 
+
+--
+- Submission is via Gradescope in the same way as homework assignments. 
+
+--
+- Make sure you check the [website](https://ids2022.netlify.app/assessments/project/#submission-and-github-repository) and include everything that you need to with the submission. 
+
+--
+- **Each individual** needs to submit a peer evaluation survey on Gradescope. 
+
+--
+- **One person** from each team needs to submit a html version of the write-up **and** a html version of the presentation. This person needs to add their group members to the submission using the drop down list. 
+
+--
+- Make sure you include a link to your GitHub repo with the write-up and add the course GitHub account to the repo.
+
+---
+class:middle
+
+#Questions?
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,219 @@
+---
+title: "Projects Q&A"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2022/23"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+---
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+library(emo)
+library(openintro)
+library(ggridges)
+library(patchwork)
+library(skimr)
+library(webshot)
+set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
+)
+
+xaringanExtra::use_panelset()
+
+elmhurst_boot <- bootstraps(elmhurst, times = 1000)
+
+```
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+
+## Reminders
+
+- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+
+--
+
+- Lecture on Thursday - "Recap and Looking Beyond IDS".
+
+--
+
+- Office hours on Thursday and Piazza for last minute questions.
+
+---
+## Presentation tips
+
+- Practice with your team. Don't go over time (you will lose marks for this).
+
+--
+
+- Focus on the key points, don't include too much text on slides or irrelevant plots. Get your key findings across. 
+
+--
+
+- Use plots/ tables rather than lots of text.
+
+--
+
+- You get points for teamwork so make sure that you have included everyone in the presentation.
+
+--
+
+- Check that you can load your slides properly beforehand!!
+
+
+---
+## Data Science life cycle
+
+```{r echo=FALSE, out.width="90%", fig.align="left"}
+knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
+```
+
+---
+
+## Write-up tips
+
+- Should be a written version of your presentation, with a bit of extra room to expand on some points. 
+
+--
+- Think: Tidy, Transform, Visualise, Model (if you did this), Communicate.
+
+--
+- Limitations: were there any problems with data, assumptions etc? Any suggestions to deal with those? It's better to be honest about your data and conclusions and explain why you had those problems that to be misleading. Not all real data questions can be answered!
+
+--
+- Extensions: if you had more time, what would you have done?
+
+--
+- Be clear. Minimise jargon, make sure explanations are clear. Get someone else in your team to read and edit your text. 
+
+--
+- Do a good job on the basics rather than trying to do everything. Remember you only have 1,500 words. 
+
+---
+## Problems
+
+- Hopefully you didn't have any, but...
+
+--
+
+- Everyone should have contributed equally.
+
+--
+
+- If this is not the case (or you have had any other difficulties), please say so in the peer evaluation form. We will also check GitHub commits if the peer evaluation forms suggest an issue. 
+
+--
+
+- Anyone who doesn't contribute a reasonable amount will have their marks reduced.
+
+--
+
+- Don't worry if you have had problems (they do happen!) -  our expectation is that larger teams will have done more work than smaller teams. We will account for issues in the marks.
+
+--
+
+- Everyone has different backgrounds, so you should try and work together and include everyone in the project. 
+
+---
+## Hand-in
+
+- Deadline: 9am on 2 December. 
+
+--
+- Submission is via Gradescope in the same way as homework assignments. 
+
+--
+- Make sure you check the [website](https://ids2022.netlify.app/assessments/project/#submission-and-github-repository) and include everything that you need to with the submission. 
+
+--
+- **Each individual** needs to submit a peer evaluation survey on Gradescope. 
+
+--
+- **One person** from each team needs to submit a html version of the write-up **and** a html version of the presentation. This person needs to add their group members to the submission using the drop down list. 
+
+--
+- Make sure you include a link to your GitHub repo with the write-up and add the course GitHub account to the repo.
+
+---
+class:middle
+
+#Questions?
+
