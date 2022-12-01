@@ -1,0 +1,318 @@
+---
+title: "Recap and Looking Beyond IDS"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2022/23"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+---
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+library(emo)
+library(openintro)
+library(ggridges)
+library(patchwork)
+library(skimr)
+library(webshot)
+library(datasauRus)
+
+set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
+)
+
+xaringanExtra::use_panelset()
+
+elmhurst_boot <- bootstraps(elmhurst, times = 1000)
+
+```
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+
+## Reminders
+
+- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+
+--
+
+- Check your html file loads properly
+
+--
+
+- HDMI port on laptop
+
+--
+
+- Don't forget your peer evaluation
+
+--
+
+- Don't forget to add the course GitHub page to your project
+
+
+
+---
+## Topics
+
+- Recap - what did people find difficult?
+- Where can you go for more information?
+- Next steps in R
+- What else for Data Science?
+
+
+---
+## What have you learnt?
+
+
+| Week | Topic                                     |
+|------|-------------------------------------------|
+| 1    | Welcome                                   |
+| 2    | Visualising data                          |
+| 3    | Wrangling and tidying data                |
+| 4    | Importing and recoding data               |
+| 5    | Communicating effectively                 |
+| 6    | Programming                               |
+| 7    | Modelling                                 |
+| 8    | Classification and model building         |
+| 9    | Ethics                                    |
+| 10   | Validation and uncertainty quantification |
+| 11   | Looking beyond IDS                        |
+
+
+---
+class:middle 
+
+## Recap - some of the difficult bits
+
+---
+## Linear regression with categorical variables. Q07, q3-5
+
+- Q3
+```{r, eval=FALSE}
+loans_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(interest_rate ~ verified_income, data = loans)
+  tidy(loans_fit)
+```
+  
+  - Q4
+```{r, eval=FALSE}
+  loans_fit_2 <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(interest_rate ~verified_income+bankruptcy, data = loans)
+  
+  tidy(loans_fit_2)
+```
+
+---
+## R-squared. Q08, q4
+
+- $R^2$ is the percentage of variability in the response variable explained by 
+the regression model.
+
+--
+
+- It always increases as the number of predictors increases.
+
+--
+
+- This is why the adjusted R-squared is preferred to compare models with a different number of predictors.
+
+
+---
+## Linear correlation - Q08, q5
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/Correlation_examples2.svg")
+```
+
+---
+## Confidence Intervals - Q09, q6-10
+
+```{r eval=FALSE}
+boot_df <- stats_scores %>% 
+  # specify the variable of interest 
+  specify(response = scores) %>% 
+  # generate 20000 bootstrap samples 
+  generate(reps = 20000, type = "bootstrap") %>% 
+  # calculate the median of each bootstrap sample 
+  calculate(stat = "median") %>% 
+  # get the 90% confidence interval
+  summarise(
+    lower = quantile(stat, 0.05),
+    upper = quantile(stat, 0.95)
+  )
+  
+  boot_df
+```
+
+---
+
+class:middle
+
+## Looking Beyond IDS
+
+---
+
+## Books
+
+ 
+
+```{r, echo=FALSE, out.width="25%", fig.show='hold', fig.align="center", fig.cap="  "}
+knitr::include_graphics(c("img/IMS.png", "img/R4DS.jpeg", "img/AdvancedR.png"))
+```
+
+---
+## Courses 
+
+- Statistics (year 2)
+
+--
+
+- Statistical computing (year 3)
+
+--
+
+- Machine Learning in Python (year 4)
+
+--
+
+- Projects
+
+---
+class:middle
+
+## Shiny Apps
+
+---
+
+## Shiny
+
+.pull-left[
+- Shiny is an R package that makes it easy to build interactive web apps straight from R
+- You can host standalone apps on a webpage or embed them in R Markdown documents or build dashboards
+- You can also extend your Shiny apps with CSS themes, htmlwidgets, and JavaScript actions
+- Learn more at [shiny.rstudio.com](https://shiny.rstudio.com/)
+]
+.pull-right[
+```{r echo=FALSE, fig.align = "left"}
+knitr::include_graphics("img/shiny.png")
+```
+]
+
+---
+
+## High level view
+
+- Every Shiny app has a webpage that the user visits, and behind this webpage there is a computer that serves this webpage by running R
+
+- When running your app locally, the computer serving your app is your computer
+
+- When your app is deployed, the computer serving your app is a web server
+
+---
+
+## Examples
+
+Here's an example:
+.center[
+[minecr.shinyapps.io/fm-speeches-covid19-simple](https://minecr.shinyapps.io/fm-speeches-covid19-simple/)
+]
+
+If you want to try making your own, try working through the reading [here](https://mastering-shiny.org/basic-app.html)
+
+---
+class:middle
+
+## Research in Data Science
+
+---
+## Turing Institute
+
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/Turing.png")
+```
+
+---
+class:middle
+
+## Good luck!

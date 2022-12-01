@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Recap and Looking Beyond IDS</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="University of Edinburgh" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Recap and Looking Beyond IDS
+]
+.subtitle[
+## <br><br> Introduction to Data Science
+]
+.author[
+### University of Edinburgh
+]
+.date[
+### <br> 2022/23
+]
+
+---
+
+
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+
+## Reminders
+
+- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+
+--
+
+- Check your html file loads properly
+
+--
+
+- HDMI port on laptop
+
+--
+
+- Don't forget your peer evaluation
+
+--
+
+- Don't forget to add the course GitHub page to your project
+
+
+
+---
+## Topics
+
+- Recap - what did people find difficult?
+- Where can you go for more information?
+- Next steps in R
+- What else for Data Science?
+
+
+---
+## What have you learnt?
+
+
+| Week | Topic                                     |
+|------|-------------------------------------------|
+| 1    | Welcome                                   |
+| 2    | Visualising data                          |
+| 3    | Wrangling and tidying data                |
+| 4    | Importing and recoding data               |
+| 5    | Communicating effectively                 |
+| 6    | Programming                               |
+| 7    | Modelling                                 |
+| 8    | Classification and model building         |
+| 9    | Ethics                                    |
+| 10   | Validation and uncertainty quantification |
+| 11   | Looking beyond IDS                        |
+
+
+---
+class:middle 
+
+## Recap - some of the difficult bits
+
+---
+## Linear regression with categorical variables. Q07, q3-5
+
+- Q3
+
+```r
+loans_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(interest_rate ~ verified_income, data = loans)
+  tidy(loans_fit)
+```
+  
+  - Q4
+
+```r
+  loans_fit_2 &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(interest_rate ~verified_income+bankruptcy, data = loans)
+  
+  tidy(loans_fit_2)
+```
+
+---
+## R-squared. Q08, q4
+
+- `\(R^2\)` is the percentage of variability in the response variable explained by 
+the regression model.
+
+--
+
+- It always increases as the number of predictors increases.
+
+--
+
+- This is why the adjusted R-squared is preferred to compare models with a different number of predictors.
+
+
+---
+## Linear correlation - Q08, q5
+
+&lt;img src="img/Correlation_examples2.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+## Confidence Intervals - Q09, q6-10
+
+
+```r
+boot_df &lt;- stats_scores %&gt;% 
+  # specify the variable of interest 
+  specify(response = scores) %&gt;% 
+  # generate 20000 bootstrap samples 
+  generate(reps = 20000, type = "bootstrap") %&gt;% 
+  # calculate the median of each bootstrap sample 
+  calculate(stat = "median") %&gt;% 
+  # get the 90% confidence interval
+  summarise(
+    lower = quantile(stat, 0.05),
+    upper = quantile(stat, 0.95)
+  )
+  
+  boot_df
+```
+
+---
+
+class:middle
+
+## Looking Beyond IDS
+
+---
+
+## Books
+
+ 
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="img/IMS.png" alt="  " width="25%" /&gt;&lt;img src="img/R4DS.jpeg" alt="  " width="25%" /&gt;&lt;img src="img/AdvancedR.png" alt="  " width="25%" /&gt;
+&lt;p class="caption"&gt;  &lt;/p&gt;
+&lt;/div&gt;
+
+---
+## Courses 
+
+- Statistics (year 2)
+
+--
+
+- Statistical computing (year 3)
+
+--
+
+- Machine Learning in Python (year 4)
+
+--
+
+- Projects
+
+---
+class:middle
+
+## Shiny Apps
+
+---
+
+## Shiny
+
+.pull-left[
+- Shiny is an R package that makes it easy to build interactive web apps straight from R
+- You can host standalone apps on a webpage or embed them in R Markdown documents or build dashboards
+- You can also extend your Shiny apps with CSS themes, htmlwidgets, and JavaScript actions
+- Learn more at [shiny.rstudio.com](https://shiny.rstudio.com/)
+]
+.pull-right[
+&lt;img src="img/shiny.png" width="60%" style="display: block; margin: auto auto auto 0;" /&gt;
+]
+
+---
+
+## High level view
+
+- Every Shiny app has a webpage that the user visits, and behind this webpage there is a computer that serves this webpage by running R
+
+- When running your app locally, the computer serving your app is your computer
+
+- When your app is deployed, the computer serving your app is a web server
+
+---
+
+## Examples
+
+Here's an example:
+.center[
+[minecr.shinyapps.io/fm-speeches-covid19-simple](https://minecr.shinyapps.io/fm-speeches-covid19-simple/)
+]
+
+If you want to try making your own, try working through the reading [here](https://mastering-shiny.org/basic-app.html)
+
+---
+class:middle
+
+## Research in Data Science
+
+---
+## Turing Institute
+
+
+&lt;img src="img/Turing.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+
+## Good luck!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
