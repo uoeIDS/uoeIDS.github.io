@@ -2,7 +2,7 @@
 title: "Welcome to IDS!"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
