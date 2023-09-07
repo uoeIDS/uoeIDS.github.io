@@ -2,7 +2,7 @@
 title: "Course Toolkit"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -19,7 +19,9 @@ library(tidyverse)
 library(viridis)
 library(sugrrants)
 library(lubridate)
-library(emo)
+#library(emo)
+library(emoji)
+library(fontawesome)
 ```
 
 ## Course toolkit
@@ -179,11 +181,11 @@ Installation: [link](https://www.rstudio.com/products/rstudio/download/)
 
 ---
 
-&emsp; Script editor `r emo::ji("point_down")` &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; `r emo::ji("point_down")` Environment/History/Git
+&emsp; Script editor `r emoji::emoji("point_down")` &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; `r emoji::emoji("point_down")` Environment/History/Git
 ```{r echo=FALSE, out.width="70%", fig.align="center"}
 knitr::include_graphics("img/Rstudio2.png")
 ```
-&emsp;&emsp;&emsp; Console `r emo::ji("point_up_2")`        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; `r emo::ji("point_up_2")` Files/Plots/Packages/Help
+&emsp;&emsp;&emsp; Console `r emoji::emoji("point_up_2")` &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Files/Plots/Packages/Help `r emoji::emoji("point_up_2")`
 
 ---
 
@@ -289,7 +291,10 @@ $$ y = 2x + 1 $$
 class: middle
 
 # GitHub for version control
-.center[`r fontawesome::fa(name = "fab fa-github", height = "25ex")`]
+
+```{r echo=FALSE, out.width="30%", fig.align="center"}
+knitr::include_graphics("img/Githublogo.png")
+```
 
 ---
 
@@ -315,6 +320,8 @@ What does GitHub do?
 - **Pull** the latest version of the project to a local copy
 - **Pull** local updates to the main project
 
+[Git and GitHub with Rstudio](https://rstudio.github.io/cheatsheets/git-github.pdf)
+
 ---
 
 ## Set-up on GitHub
@@ -322,8 +329,8 @@ What does GitHub do?
 Create or sign-in to your GitHub account: [[Link](https://github.com/)]
 
 Creating a new repository:
-- From your profile, go to '`r fontawesome::fa("fas fa-book-bookmark", fill="white")` Repositories'
-- Click '`r fontawesome::fa("fas fa-book-bookmark", fill="white")` New' button
+- From your profile, go to your 'Repositories'
+- Click 'New' button
 - If importing homework or lab template:
   - Click 'Import a repository'
   - Copy URL of template repository to clone
@@ -334,10 +341,11 @@ Creating a new repository:
 
 ---
 
+
 ## Linking GitHub repo to RStudio
 
 In your repository on GitHub:
-- Click the green 'Code `r fontawesome::fa("caret-down")`' button
+- Click the green 'Code' button
 - Copy the repository's 'HTTPS' URL
 
 
@@ -349,6 +357,21 @@ In RStudio, create a new version control project:
 - Click _Create Project_ button
 
 
+---
+
+## Linking Set-up for Mac users
+
+Use Rstudio terminal to do the following steps;
+
+Creating a new repository:
+1. Install homebrew https://brew.sh/ (copy and paste the link into the terminal)
+2. Then copy and paste this into the terminal: brew install git
+3. Then install the github credential manager by typing the following in the terminal: brew install gh
+4. Then type: gh auth login.
+5. Follow the instructions (defaults should all be fine, choose HTTPS and Y to authenticating Git with GitHub credentials)
+
+[About fixing potential issues](https://nanxiao.me/en/fix-permission-denied-rb_file_s_symlink-error-of-installing-homebrew/)
+
 
 ---
 
@@ -356,17 +379,18 @@ In RStudio, create a new version control project:
 
 Under the _Git_ tab (top-right panel), click 'Commit' button
 
-- _Pull_ by clicking the '`r fontawesome::fa("arrow-down")` Pull' button
-- _Stage_ by ticking the boxes, `r fontawesome::fa("square")` $\rightarrow$ `r fontawesome::fa("square-check")`
+- _Pull_ by clicking the $\downarrow$ 'Pull'  button
+- _Stage_ by ticking the boxes, ☐ $\rightarrow$ ☑
 - Add a commit message (short yet informative)
 - _Commit_ by pressing the 'Commit' button
 - If working collaborativly:
   - _Pull_ again for updates, there may be merge conflicts to resolve!
-- _Push_ commits to Gitub by clicking '`r fontawesome::fa("arrow-up")` Push' button
+- _Push_ commits to GitHub by clicking $\uparrow$ 'Push' button
 
 ```{r echo=FALSE, out.width="60%", fig.align="center"}
 knitr::include_graphics("img/RStudio_git_commit2.png")
 ```
+
 
 
 
