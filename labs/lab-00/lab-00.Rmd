@@ -1,61 +1,169 @@
 ---
 title: "Lab 00 - Hello IDS!"
-author: "INSERT TEAM NAME HERE"
-date: "`r Sys.Date()`"
-output: github_document
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
 ---
 
-### Load packages and data
 
-```{r load-packages, message=FALSE}
-library(tidyverse) 
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Carlos Muza on Unsplash"}
+knitr::include_graphics("img/carlos-muza-hpjSkU2UYSU-unsplash.jpg")
 ```
 
-### Exercises 13--17
+  
+Below are the tasks we will be working through in today's workshop.
+The primary goal in all of this is to form your teams for the class, check you are all setup for the course, and to have a practice with some of the core technology we will be using.
+If you do not get through all of the Lab work today, this is not an issue.
 
-We set up the data frame.
 
-```{r setup-tibble}
-usernames <- c("wilsonamy", "username 1", "username 2", "username 3", "username 4") #Extend if necessary
-nums <- c(18, NA, NA, NA, NA) #Extend if necessary
-colours <- c("powderblue", "Colour 1", "colour 2", "colour 2", "colour 4") #Extend if necessary
-hobbies <- c("Hiking", "Hobby 1", "Hobby 2", "Hobby 3", "Hobby 4") #Extend if necessary
+Each workshop session will start with a brief introduction in the "big group" and then you will work in your teams for the rest of the workshop.
+Who you can form a team with will depend on your pre-allocated group number.
+These groups are a little big for the purposes of the class, so we will ask you to form smaller subteams (\~4 students).
+You are free to form a team with whoever you like as long as they are in the same group as you.
+You will stay in the same team for the entire semester and work together for the final project.
 
-team_data <- tibble(username = usernames, die_roll = nums, colour = colours,
-                    hobby = hobbies)
+1.  Take turns to introduce yourself to your team (e.g. your name, where you studied previously, what degree programme you are taking, etc.).
+    Tell the rest of your team a boring fact about yourself.
+    (For example, "I had cornflakes for breakfast this morning.")
+
+2.  Introduce yourselves to your tutor.
+    If you have any problems with any of your lab exercises or have any questions during the course, then your tutor is a good person to ask.
+
+## Setting up the software
+
+```{marginfigure}
+**Note:** Each participant in the team needs to have completed the "first time setup" to be able to do the rest of the workshop.
+    Team members who have already got themselves set up can move on and include the remaining members once they are ready. Please help others in your team set up their tools. 
 ```
 
-### Exercise 18
-We now work on visualising our data.
+Hopefully you would have had the chance to download and install the necessary software you will need for this course.
+If not, then now is your chance.
+Read though the instructions carefully, it is easy to skip a step and then the installation fails!
+If you encounter any issues with any of these steps then please ask for help by raising your hand.
 
-```{r bar-plot}
-# Uncomment the three lines below
-# p1 <- ggplot(team_data, aes(x = username, y = die_roll)) +
-#   geom_col(fill = team_data$colour)
-# p1
+
+3.  Create an account on GitHub.
+    Instructions on how to do this can be found on the [Setup & Troubleshooting](https://uoe-ids.netlify.app/troubleshoot/) page on the course website.
+    If you already have a GitHub account, then feel free to use your own account.
+
+4.  We will use RStudio for the coding in this course.
+    You will need to download and install various pieces of software to get this to work.
+    Please follow the instructions on the [RStudio setup](https://uoe-ids.netlify.app/troubleshoot/setup/rstudio/) page on the course website.
+
+5.  You will then need to download and install Git and link this to your GitHub account and to RStudio.
+    To do this, follow the instructions on the [GitHub setup](https://uoe-ids.netlify.app/troubleshoot/setup/github/) page on the course website.
+
+## Cloning a Github repo and loading an R project
+
+We're now going to set up an RStudio project using files already stored on GitHub.
+<!--
+Only one member of the team needs to do these steps.
+They can add the other members afterwards.
+-->
+
+6.  Navigate to the repository containing today's lab template on the course GitHub page (<https://github.com/uoeIDS/lab-00-template>).
+    Click the green '\<\> code' button and copy the URL given under HTTPS.
+
+7.  Now log into your own GitHub account, click on "Repositories" and then click on "New" to set up a new repository.
+    Then click "Import a repository".
+
+8.  Paste the URL from step 6.
+    into the "Your old repository's clone URL" box.
+
+```{marginfigure}
+**Note:** In the near future, when cloning the homework template repository it is important to make your repository **private**. It is at this point where you would do this.
 ```
 
-### Exercise 19
+9.  Add a repository name.
+    Don't use any spaces in this.
+    Set the repository to public.
 
-*Remove this text (including the stars), and add your answer for Exercise 19 here.*
+10. Click "Begin import".
 
-### Exercises 20--21
-
-```{r labelled-bar-plot}
-# Uncomment the three lines below
-# p1 +
-#   labs(x = "Insert text here", y = "Insert text here",
-#        title = "Insert text here")
+```{marginfigure}
+**Note:** There are instructions for the above steps at the bottom of the [troubleshooting page](https://uoe-ids.netlify.app/troubleshoot/setup/github/) of the course website (under "Set up a GitHub repository for coursework").
 ```
 
-*Remove this text (including the stars), and add your answer for Exercise 21 here.*
 
-### Exercise 22
+If you have managed all that, **congratulations**!
+This setup will become easier each week and you only need to do it for each project/repository once.
 
-```{r new-bar-plot}
-p2 <- ggplot(team_data, aes(x = hobby)) +
-  geom_bar()
-p2
+## First commit and push
+
+The next stage is to learn how to commit and push edits to your work from the R project to GitHub. 
+
+
+11. Under the 'Files' tab (bottom right panel), click on 'lab-00.Rmd' to open the template R markdown file.
+
+12. On line 3, replace the author text with your name within the quotation marks. Save your work. 
+
+13. Now go to the 'Git' tab (top right panel) and click on the 'commit' button which will open a new window. If you cannot find this tab then please ask a tutor. 
+
+```{marginfigure}
+**WARNING:** Never click the button that says: "Amend previous commits" - it can cause some errors!
 ```
 
-*Remove this text (including the stars) and add your answer for Exercise 22 here.*
+14. Tick the boxes next to the files that have changed since your last pull from your GitHub repository, add an information commit message (e.g. "Added my name") and then press the 'Commit' button.
+
+15. Click on the green push button.
+
+You have now made your first version control commit and push to GitHub. If you now go to your GitHub account on-line you should be able to see the changes that you have made.
+
+
+```{marginfigure}
+**Target:** Please ensure that you at least get to this point in today's workshop. 
+```
+
+It is important to commit and push your work regularly. Throughout future workshops you will see the icons  `r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` as a reminder to go through the above commit/push steps.
+
+
+
+## First steps in coding
+
+Now we are finally ready to start learning R!
+Don't worry today if you don't understand what every line of code does---the purpose of this workshop is to give you experience working with RStudio.
+Lets start by making a data frame.
+Normally we'll load these from outside R, but you can also create them within R as well, using a function called "`tibble`".
+This isn't something you'll want to do except for really simple data frames---like the one we're about to make!
+
+
+16. Edit the "`tibble`" in the first R code chunk with data collected from your team members. Ask each member:
+  - What is your name?
+  - What is your GitHub username?
+  - What is your favourite colour?
+  - What is your hobby?
+  - What is your favourite number between 1 and 10.
+The first row of the first row has already been completed as an example. 
+
+If you are struggling to think of what is your favourite number, you can ask R to generate a random one for you! On the console (bottom left panel), type `sample(10, size = 1)` and hit return.
+
+R contains a list of over 600 pre-defined colours. You can see see the full list by running `colours()` (or `colors()`) into the console.
+
+
+17. Press the "Knit" button to run and compile your document. The result should be presented in the 'Viewer' tab (bottom right panel). There you will be able to see your data.
+
+18. Also in the output should be a data visualisation of your data generated by the code in the next R code chunk. What does the plot show?
+    Type your answer into the space provided in your team's R Markdown document.
+
+19. Look at the third R chunk. What do you think the command `labs()` do? If you are unsure, run `?labs` on the console to open the manual page for this function. Replace `Insert text here` each time it appears with sensible choices of text. Press the "Knit" button again to re-compile your document.
+
+20. Have a look at the plot on the knitted R Markdown document for "Exercise 20".
+    (Re-knit the document if you need to.) This plot probably isn't a good data visualisation unless at least two members have the same hobby.
+    In fact, suppose you had a data frame that extended to everyone taking this course.
+    The data visualisation produced by this method would probably be even worse at conveying information.
+    Why?
+    Can you think of any way to display these data nicely?
+    (You do not need to write code to do this!)
+
+
+# Wrapping up
+
+That's the end of this lab! 
+
+`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files (that is, make sure every file has a tick next to it) so that your Git pane is cleared up afterwards.
+
+Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time.
+
+
