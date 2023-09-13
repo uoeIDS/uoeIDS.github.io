@@ -168,16 +168,15 @@ On completion of this course, the student will be able to:
 
 ## Lectures
 
-.pull-left-wide[
-- Two lectures per week, both in-person (Tuesday) and (Thursday).
+- Two lectures per week, Tuesday and Thursday, both in-person.
 
-- During lectures, Wooclap platform will be used for interactivity
+- During lectures, _Wooclap_ platform will be used for interactivity.
 
-- Recordings and slides will be posted on the website after the lecture.
+- Lecture slides are available via the course website at the start of the respective week.
 
-- Lecture recordings are a back up, it is better to attend live!
+- Recordings of the lecture are available as soon as possible after the lecture has concluded. However, these should be used as a reminder/back-up and not as an alternative to attending lectures - __Live is better!__
 
-- There can be a lot of material to get through in lectures. Expect to have to go back over the slides and recordings later to make sure you understand the content.]
+- There can be a lot of material to get through in lectures. Expect to have to go back over the slides and recordings later to make sure you understand the content.
 
 ---
 
@@ -195,28 +194,31 @@ On completion of this course, the student will be able to:
 
 ## Workshops/ labs
 
-.pull-left-wide[
 - On Fridays, over 4 different time slots (9.00-10.30 / 10.30-12.00 / 12.10 - 13.30 / 13.30 -15.00)
 
 - Check your timetable to see which workshop you should attend.
-- Bring your laptop. See [here](https://teaching.maths.ed.ac.uk/main/undergraduate/studies/equipment) for the School policy on equipment or to request a device and [here](https://www.ed.ac.uk/information-services/library-museum-gallery/using-library/borrowing-a-book/borrowing-laptops) for a laptop loan.
 
-- Work in teams on computing lab exercises. Pair working/programming is strongly suggested
+- **Bring your laptop!**
 
-- **Tip:** meet with your team  outside of the workshop to finish the exercises, if you need.
+  - See [Setup & Troubleshooting](https://uoe-ids.netlify.app/troubleshoot/) for the School policy on equipment or to request/loan a device.
+  - This webpage also contains software installation instructions.
 
-- IT support for non-Windows laptops is not guaranteed.]
+- Work in teams on computing lab exercises. Pair working/programming is strongly suggested.
+
+- **Tip:** Meet with your team outside of the workshop to finish the exercises, if you need.
 
 ---
 
 ## Assessment
 
 **Weekly quizzes** (20%)
-.pull-left-wide[
-- 10 Weekly quiz in total, 2 marks for each. Best 9 out of 10!
-- Due on Mondays every week at 12:00 noon
+
+- **Release**: Every Tuesday morning (starting from Week 2). 
+- **Deadline**: Following Monday at 12:00noon.
+
+- 10 Weekly quiz in total. Grade based on best 9 out of 10 quizzes!
 - Work on them individually
-- 5-7 multiple choice questions, some requiring a bit of coding, some conceptual and visual based exercises
+- 5-7 multiple choice questions, some requiring a bit of coding, some conceptual and visual based exercises.
 - **Tip:** Read the instructions carefully and don't leave it until the last minute!
 - Submission:
   - `Assessment` > `Quizzes` via Learn-Ultra platform
@@ -230,11 +232,14 @@ On completion of this course, the student will be able to:
 
 **Homework assignments** (30%)
 .pull-left-wide[
-- Due on Fridays at 16:00 noon alternate weeks (4,7,10).
+- **Release**: One week ago at least!
+- **Deadline**: Fridays at 16:00noon, weeks 4, 7 & 10.
 
-- Work on them individually. Individual homework deadlines (alternate weeks.)
+- Work on them individually. 
 
-- All submissions count.
+- All three submissions count.
+
+- Submit via Gradescope.
 
 - **IMPORTANT:** Your GitHub repository _MUST_ be made private for individual homework assignments. Failure to make your repository private means that others can see your work and thereby risks incurring an academic misconduct case.]
 
@@ -245,15 +250,17 @@ On completion of this course, the student will be able to:
 
 **Project** (50%)
 .pull-left-wide[
-- TL;DR: Find a dataset and do something with it! You will see some data suggestions later
+- TL;DR: Find a dataset and do something with it! You will see some data suggestions later in the semester.
 
-- Work in teams, by supporting pair programming idea
+- Work in teams, by supporting pair programming idea.
 
-- Proposal, 5 min team presentation, 1,500 word write-up
+- How are you graded:
+  - A 5 minute team presentation.
+  - A write-up of your investigation, 1,500 word count.
 
-- You must complete the project and participate in the presentation 
+- You must complete the project and participate in the presentation.
 
-- More details will be provided later in the course]
+- More details will be provided later in the course.]
 
 
 ---
