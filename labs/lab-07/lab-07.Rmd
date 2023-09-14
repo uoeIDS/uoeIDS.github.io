@@ -1,202 +1,51 @@
 ---
-title: "Lab 07 - Modelling course evaluations"
+title: "Lab 07 - Under Constuction"
 output: 
   tufte::tufte_html:
-    css: ../lab.css
     tufte_variant: "envisioned"
     highlight: pygments
 link-citations: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = TRUE)
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
+knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
+```
+
+
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
+```
+
+This worksheet for the IDS lab is currently under construction. 👷🔨
+
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
-library(tidymodels)
+library(ggplot2)
 
-evals<-read.csv("data/evals.csv", row.names=1)
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
 
-score_bty_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ bty_avg, data = evals)
-
-score_gender_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ gender, data = evals)
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```
-
-::: {.home}
-Complete the following steps before you join the workshop!
-:::
-
-# Workshop prep
-
--   This lab is all about linear regression so you should make sure you are up to date with the week 7 material.
--   Familiarise yourself with the dataset we are going to use by reading the data dictionary and reference [here](http://openintrostat.github.io/openintro/reference/evals.html).
-
-# Setup
-
--   Sit with your team.
--   One team member needs to import the lab's template repository from [https://github.com/uoeIDS/lab-07-template](https://github.com/uoeIDS/lab-07-template) and add the other team members as collaborators.
--   All team members will need to create a new R version control project using the GitHub repository created.
-- You should take turns at writing up the answers to the questions. Remember to pull before making any changes and then knit, stage, commit and push once you have written down the answer!
-
-# Beauty in the classroom
-
-Many college courses conclude by giving students the opportunity to evaluate the course and the instructor anonymously.
-However, the use of these student evaluations as an indicator of course quality and teaching effectiveness is often criticized because these measures may reflect the influence of non-teaching related characteristics, such as the physical appearance of the instructor.
-The article titled, "Beauty in the classroom: instructors' pulchritude and putative pedagogical productivity" (Hamermesh and Parker, 2005) found that instructors who are viewed to be better looking receive higher instructional ratings.[^1]
-
-[^1]: Daniel S. Hamermesh, Amy Parker, Beauty in the classroom: instructors pulchritude and putative pedagogical productivity, Economics of Education Review, Volume 24, Issue 4, August 2005, Pages 369-376, ISSN 0272-7757, 10.1016/j.econedurev.2004.07.013.
-    <http://www.sciencedirect.com/science/article/pii/S0272775704001165>.
-
-For this assignment you will analyze the data from this study in order to learn what goes into a positive professor evaluation.
-
-The data were gathered from end of semester student evaluations for a large sample of professors from the University of Texas at Austin.
-In addition, six students rated the professors' physical appearance.[^2]
-The result is a data frame where each row contains a different course and columns represent variables about the courses and professors.
-
-[^2]: This is a slightly modified version of the original data set that was released as part of the replication data for Data Analysis Using Regression and Multilevel/Hierarchical Models (Gelman and Hill, 2007).
-
-During the workshop we'll use the following packages:
-
--   **tidyverse**: for data wrangling and visualisation
--   **tidymodels**: for modelling
-
-You should read the data into RStudio using the following code:
-
-```{r}
-evals<-read.csv("data/evals.csv", row.names=1)
-
-```
-
-# Part 1: Exploratory Data Analysis
-
-1.  Visualize the distribution of `score` in the dataframe `evals`. Is the distribution skewed? What does that tell you about how students rate courses? Is this what you expected to see? Why, or why not? Include any summary statistics and visualizations you use in your response.
-2.  Visualize and describe the relationship between `score` and `bty_avg` using `geom_point()` to represent the data. Then, visualise again using `geom_jitter()` for the points. What does "jitter" mean? What was misleading about the initial scatterplot?
-
-
-# Part 2: Linear regression with a numerical predictor
-
-```{marginfigure}
-**Hint:** Linear models are in the form $\hat{y} = b_0 + b_1 x$.
-```
-
-3.  Fit a linear model called `score_bty_fit` to predict average professor evaluation `score` from average beauty rating (`bty_avg`). Print the regression output using `tidy()`. Based on the regression output, write down the linear model.
-4.  Replot your jittered visualization from Exercise 2, and add the regression line to this plot. Turn off the shading for the uncertainty of the line.
-5.  Interpret the slope of the linear model in context of the data.
-6.  Interpret the intercept of the linear model in context of the data. Comment on whether or not the intercept makes sense in this context.
-
-```{marginfigure}
-**Hint:** Use `glance()` to obtain $R^2$ and other similar statistics for your model.
-```
-
-7.  Determine the $R^2$ of the model and interpret it in the context of the data.
-
-Next, we'll assess the model fit using a graphical diagnostic.
-To do so we need to calculate the predicted evaluation scores for each professor in the dataset as well as the residuals for each observation.
-We use the `augment()` function for this:
-
-```{r}
-score_bty_aug <- augment(score_bty_fit$fit)
-```
-
-Let's take a look at what's in this augmented dataset:
-
-```{r}
-names(score_bty_aug)
-```
-
-First, we have the variables used to build the model: `score` and `bty_avg`.
-We also have the predicted values (`.fitted`) and the residuals (`.resid`).
-We'll talk about a few of the other variables in the augmented data frame later in the course, and some others you will encounter in future courses.
-
-```{marginfigure}
-**Hint:** You can use `geom_hline()` with `linetype = "dashed"` for this.
-```
-
-8.  Make a plot of residuals vs. predicted values for the model above. Use `geom_jitter()` instead of `geom_point()`, and overlay a dashed horizontal line at `y = 0`. Then, comment on whether the linear model is appropriate for modeling the relationship between evaluation scores and beauty scores.
-
-
-🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
-
-# Part 3: Linear regression with a categorical predictor
-
-9.  Fit a new linear model called `score_rank_fit` to predict average professor evaluation `score` based on `rank` of the professor and print out the regression output using `tidy()`. Based on the regression output, interpret the slope and intercept in context of the data.
-10. Fit a new linear model called `score_gender_fit` to predict average professor evaluation `score` based on `gender` of the professor. and print out the regression output using `tidy()`. Based on the regression output, interpret the slope and intercept in context of the data. But we'll do things a bit differently this time, using inline code for the values of the intercept and the slope! Below are some tips for extracting these values from the model output to use in your inline code.
-
-Let's start with the intercept.
-You have two options for extracting the value of the intercept from the regression output.
-Remember, the output looks like this:
-
-```{r}
-tidy(score_gender_fit)
-```
-
-So the intercept is in the `estimate` column, and it's the first element in there.
-
-```{r}
-# Option 1
-tidy(score_gender_fit)$estimate[1]
-```
-
-We can also extract it using a dplyr pipeline:
-
-```{r}
-# Option 2
-tidy(score_gender_fit) %>% 
-  filter(term == "(Intercept)") %>%   # filter for the intercept
-  select(estimate) %>%                # select the estimate column
-  pull()                              # pull value out of data frame
-```
-
-Regardless of which option you use, you might consider storing the value in an object that you can easily refer to in your inline code, e.g.
-
-```{marginfigure}
-You can hide the code for chunks like this where you are simply preparing 
-objects for later use by adding `echo = FALSE` in the code chunk options, 
-that is, where you label your code chunk, separated by a comma, i.e.  
-`{r label, echo = FALSE}`
-```
-
-```{r}
-score_gender_intercept <- tidy(score_gender_fit) %>% 
-  filter(term == "(Intercept)") %>%
-  select(estimate) %>%
-  pull()
-```
-
-And then, you can use the `score_gender_intercept` in inline code, e.g.
-
-    The intercept of the model is 'r score_gender_intercept'...
-
-which will render to
-
-    The intercept of the model is `r score_gender_intercept`...
-
-There is still one small issue here though, the number of decimal places reported.
-It would be better to round the value in our narrative, for which we can use the `round()` function.
-This function takes two arguments: the first one is the value (or vector of values) you want to round, and the second one is the number of digits.
-
-    The intercept of the model is 'r round(score_gender_intercept, 2)'...
-
-which will render to
-
-    The intercept of the model is `r round(score_gender_intercept, 2)`...
-
-🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
-
-# Part 4: Multiple linear regression
-
-11. Next, we fit a multiple linear regression model, predicting average professor evaluation `score` based on average beauty rating (`bty_avg`) and `gender`. Name the model `score_bty_gender_fit`. Interpret the intercept and the slopes of `bty_avg` and `gender`.
-12. What percent of the variability in `score` is explained by the model `score_bty_gender_fit`. Once again, use inline code in your answer.
-13. What is the equation of the line corresponding to *just* male professors?
-14. For two professors who received the same beauty rating, which gender tends to have the higher course evaluation score?
-15. How does the relationship between beauty and evaluation score vary between male and female professors?
-
-::: {.marker}
-Aim to make it to this point during the workshop.
-:::
-
-16. How do the adjusted $R^2$ values of `score_bty_fit` and `score_bty_gender_fit` compare? What does this tell us about how useful `gender` is in explaining the variability in evaluation scores when we already have information on the beauty score of the professor.
-17. Compare the slopes of `bty_avg` under the two models (`score_bty_fit` and `score_bty_gender_fit`). Has the addition of `gender` to the model changed the parameter estimate (slope) of `bty_avg`?
-18. Create a new model called `score_bty_gender_rank_fit` predicting average professor evaluation `score` based on average beauty rating (`bty_avg`), `gender`, and `rank`. How do the adjusted $R^2$ values of `score_bty_gender_fit` and `score_bty_gender_rank_fit` compare? What does this tell us about how useful `rank` is in explaining the variability in evaluation scores when we already have information on the beauty score and gender of the professor.

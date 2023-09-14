@@ -1,161 +1,43 @@
 ---
-title: "Lab 01 - Plastic waste"
+title: "Lab 01 - Under Constuction"
 author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-### Load packages and data
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
+```
 
-```{r load-packages, message = FALSE, warning=FALSE}
+This solutions key for the IDS lab is currently under construction. 👷🔨
+
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
-```
+library(ggplot2)
 
-```{r load-data, message=FALSE}
-plastic_waste <- read_csv("data/plastic-waste.csv")
-```
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
 
-### Warm-up
-
-1.    The four RStudio panes are:
-  -   Top-left - Editor
-  -   Bottom-left - Console
-  -   Top-right - Environment, History and Git.
-  -   Bottom-left - Files, Plots, Packages, Help and Viewer.
-2.    The dataset `plastic_waste` has 240 observations (`nrow(plastic_waste)`)
-3.    The term `NA` stands for Not Available and indicates that the value in the cell is missing.
-
-
-### Exercise 1
-
-*Question*: Plot, using histograms, the distribution of plastic waste per capita faceted by continent. What can you say about how the continents compare to each other in terms of their plastic waste per capita?
-
-
-It's difficult to say much from this, because the total counts are so wildly different (especially South America).  Plastic waste per capita seems to be somewhat lower in Africa and Oceania.
-
-```{r plastic-waste-continent, fig.height=4}
-ggplot(data = plastic_waste, aes(x = plastic_waste_per_cap)) +
-  geom_histogram(binwidth = 0.1) +
-  facet_wrap(continent ~ .)
-```
-
-It would be easier to see if the histograms weren't so compressed, which we could obtain by stripping our outlier (Trinidad and Tobago) from them. If we do so, we have to make a note that we've removed it!
-
-```{r plastic_waste_per_cap-hist-country-density, fig.height=4}
-plastic_waste %>%
-  ggplot(aes(x = plastic_waste_per_cap)) +
-    geom_histogram(binwidth = 0.1) +
-    coord_cartesian(xlim = c(0,0.8)) +
-    facet_wrap(continent ~ .)
-```
-
-And we note that one entry is removed from the `r plastic_waste %>% filter(entity == "Trinidad and Tobago") %>% select(continent)` histogram, with value `r plastic_waste %>% filter(entity == "Trinidad and Tobago") %>% select(plastic_waste_per_cap)`.
-
-It's still difficult to see since the histograms don't have the same area, and it turns out this is very hard to do.
-
-### Exercise 2
-
-*Question*: Recreate the density plots above using a different (lower) alpha level that works better for displaying the density curves for all continents.
-
-```{r plastic-waste-density}
-ggplot(data = plastic_waste, 
-       mapping = aes(x = plastic_waste_per_cap, 
-                     color = continent, fill = continent)) +
-  geom_density(alpha = 0.2)
-```
-
-### Exercise 3
-
-*Question*: Describe why we defined the `color` and `fill` of the curves by mapping aesthetics of the plot but we defined the `alpha` level as a characteristic of the plotting geom.
-
-Map variables to aesthetics, set cosmetic choices.
-
-### Exercise 4
-
-*Question*: Convert your side-by-side box plots from the previous task to [violin plots](http://ggplot2.tidyverse.org/reference/geom_violin.html). What do the violin plots reveal that box plots do not? What features are apparent in the box plots but not in the violin plots?
-
-The violin plot shows you the (estimated) density of the data, including any local peaks and troughs, clusters, etc.  On the other hand, box plots show clearly various (robust) statistics of the data, which are not so apparent from a violin plot.
-
-```{r plastic-waste-violin}
-ggplot(data = plastic_waste, 
-       mapping = aes(y = plastic_waste_per_cap, 
-                     x = continent)) +
-  geom_violin()
-```
-
-### Exercise 5
-
-*Question*: Visualize the relationship between plastic waste per capita and mismanaged plastic waste per capita using a scatterplot. Describe the relationship.
-
-Very vaguely, increasing waste per capita tends to correlate with increasing mismanaged waste per capita, but the data form a fan shape, between two straight lines through the origin.  Such a straight line corresponds to a given proportion of waste being mismanaged.  It's hard to determine a pattern.
-
-```{r plastic-waste-mismanaged}
-ggplot(data = plastic_waste, mapping = aes(x = plastic_waste_per_cap, y = mismanaged_plastic_waste_per_cap)) +
-  geom_point()
-```
-
-### Exercise 6
-
-*Question*: Color the points in the scatterplot by continent. Does there seem to be any clear distinctions between continents with respect to how plastic waste per capita and mismanaged plastic waste per capita are associated?
-
-
-
-
-Maybe a North American cluster.  Very hard to tell.
-
-```{r plastic-waste-mismanaged-continent}
-ggplot(data = plastic_waste, 
-       mapping = aes(x = plastic_waste_per_cap, 
-                     y = mismanaged_plastic_waste_per_cap, 
-                     color = continent)) +
-  geom_point()
-```
-
-### Exercise 7
-
-*Question*: Visualize the relationship between plastic waste per capita and total population as well as plastic waste per capita and coastal population. You will need to make two separate plots. Do either of these pairs of variables appear to be more strongly linearly associated?
-
-
-
-Not really...
-
-```{r plastic-waste-population-total}
-ggplot(data = plastic_waste, 
-       mapping = aes(y = plastic_waste_per_cap, x = total_pop)) +
-  geom_point()
-```
-
-```{r plastic-waste-population-coastal}
-ggplot(data = plastic_waste, 
-       mapping = aes(y = plastic_waste_per_cap, x = coastal_pop)) +
-  geom_point()
-```
-
-### Exercise 8
-
-*Question*: Recreate the following plot (see the online worksheet), and interpret what you see in context of the data.
-
-
-At least up to a certain point, there seems to be a non-linear positive relationship between plastic waste per capita and the proportion of the population that leave near the coast, though with increasing variability in the plastic waste as the coastal population increases.  In particular it is possible for countries still to have low values of plastic waste per capita even with large coastal populations relative to their size.  The increasing relationship seems to break down for values of "coastal population proportion" bigger than 1; however, there seems to be a data quality issue here (more than 100% of the population live near the coast, which doesn't make sense).
-
-In terms of differentiation by continent, it's hard to detect much clustering visually.  With one exception, South American countries appear relatively close together (moderate coastal population, moderate plastic waste), as do Oceanian countries (high coastal popularion, moderate plastic waste).  Although they do not form a cluster, the majority of the countries with low plastic waste appear to be African countries with low coastal populations.
-
-```{r recreate-viz}
-plastic_waste_edit <- plastic_waste %>% 
-  mutate(coastal_pop_prop = coastal_pop / total_pop) %>%
-  filter(plastic_waste_per_cap < 3)
-
-ggplot(data = plastic_waste_edit, 
-       mapping = aes(x = coastal_pop_prop, 
-                     y = plastic_waste_per_cap, 
-                     color = continent)) + 
-    geom_point() +
-    geom_smooth(color = "black") +
-    scale_color_viridis_d() +
-    labs(x = "Coastal population proportion (Coastal / total population)", 
-         y = "Plastic waste per capita ", 
-         color = "Continent",
-         title = "Plastic waste vs. coastal population proportion",
-         subtitle = "by continent") +
-    theme_minimal()
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```

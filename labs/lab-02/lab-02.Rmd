@@ -1,16 +1,24 @@
 ---
 title: "Lab 02 - Under Constuction"
-author: "KEY"
-date: "`r Sys.Date()`"
-output: html_document
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
 ---
+
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
+knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
+```
+
 
 ```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
 library(emo)
 #devtools::install_github("hadley/emo")
 ```
 
-This solutions key for the IDS lab is currently under construction. 👷🔨
+This worksheet for the IDS lab is currently under construction. 👷🔨
 
 Please return back to this page later in the course.
 
