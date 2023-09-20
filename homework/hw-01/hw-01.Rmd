@@ -1,0 +1,25 @@
+---
+title: "HW 01 - Yet to be released"
+subtitle: "Due: dd text_month, hh:mm UK time"
+output: 
+  tufte::tufte_html:
+    css: ../hw.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  eval = FALSE,
+  out.width = "100%"
+  )
+```
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Pierre Bamin from Unsplash"}
+knitr::include_graphics("img/pierre-bamin-18T72jBinvI-unsplash.jpg")
+```
+
+You are very early at looking for the homework assignment. The worksheet is not yet released! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including release dates.

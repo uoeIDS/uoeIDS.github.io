@@ -1,0 +1,17 @@
+---
+title: "hw-01-key"
+author: "Your Name (S000000)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+![Photo by Joshua Hoehne on Unsplash](img/joshua-hoehne-WPrTKRw8KRQ-unsplash.jpg)
+
+
+## Tut-tut! 
+You should not be looking for solutions to the homework assignment before the deadline has passed! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including dateline dates and the policy around late submission.
