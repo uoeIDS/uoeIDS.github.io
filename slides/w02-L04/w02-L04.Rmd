@@ -1,8 +1,8 @@
 ---
-title: "Types of visualisations"
+title: "Data Types and Classes"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -14,596 +14,573 @@ output:
       countIncrementalSlides: false
 ---
 
+
 ```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(magick)
-library(xaringanExtra)
-library(Tmisc)
-library(dsbox)
-xaringanExtra::use_panelset()
-
-library(openintro)
-loans_full_schema <- loans_full_schema %>%
-  mutate(grade = factor(grade, ordered = TRUE))
+library(DT)
+library(scales)
 ```
 
 class: middle
 
-# Terminology
+# Why should you care about data types?
 
 ---
 
-## Types of variables
+## Example: Cat lovers
 
-- **Quantitative variables** are variables whose data are numerical values
-  - **Discrete variables** describes count data, typically non-negative integer values <br />
-    &emsp; Eg, Number of IDS students or number of election votes
-  - **Continuous variables** are typically real-valued measurements, rounded to a specified number of decimal places or significant figures <br />
-    &emsp; Eg, Penguin bill length, body mass and flipper length
+A survey asked respondents their name and number of cats. The instructions said to enter the number of cats as a numerical value.
 
-<br>
-
-- **Qualitative variable** are variables that are descriptive
-  - **Categorical variables** usually identify one option from a set of possible cases <br />
-    &emsp; Eg, Penguin breeds (Adelie, Chinstrap or Gentoo)
-  - **Ordinal variables** are categorical variables that have a natural ordering <br />
-    &emsp; Degree grades: First, upper-second, lower-second and third
-
----
-
-## Number of variables involved
-
-- Univariate data analysis
-  - Investigating a single variable
-  - What is the _location_, _spread_ and _shape_ of the data?
-  - Types of visualisations: Bar plot, histogram, density plot.
-- Bivariate data analysis 
-  - Investigating the relationship between two variables
-  - Positive/negative correlation? Linear or non-linear relationship?
-  - Types of visualisations: Stacked bar plots, box plots, scatter plots.
-- Multivariate data analysis
-  - Investigating the relationship between many variables simultaneously
-  - Does the structure of the relationship between two variables change depending on the value of a third?
-  - Use of colour, style and faceting - be creative!
-  - YouTube: Hans Rosling, The Joy of Stats, BBC - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=jbkSRLYSojo)
-
-
----
-
-class: middle
-
-# Data
-
----
-
-## Data: Lending Club
-
-.pull-left-wide[
-
-- Thousands of loans made through the Lending Club, which is a platform that allows individuals to lend to other individuals
-
-- Not all loans are created equal -- ease of getting a loan depends on (apparent) ability to pay back the loan
-
-- Data includes loans *made*, these are not loan applications
-]
-.pull-right-narrow[
-```{r echo=FALSE, out.width = "100%"}
-knitr::include_graphics("img/lending-club.png")
-```
-]
-
----
-
-## Take a peek at data (selected variables)
-
-.panelset[
-.panel[.panel-name[console]
-
-```{r loan_code3, echo=FALSE}
-library(openintro)
-loans <- loans_full_schema %>%
-  select(loan_amount, interest_rate, term, grade, 
-         state, annual_income, homeownership, debt_to_income)
-glimpse(loans)
-```
-
-
-- What are the variable types?
-]
-
-.panel[.panel-name[code]
-
-```{r loan_code1}
-library(openintro)
-ncol(loans_full_schema)   # Total number of variables
-```
-
-<br>
-
-Select specific variables:
-```{r loan_code2, eval=FALSE}
-library(tidyverse)
-loans <- loans_full_schema %>%
-  select(loan_amount, interest_rate, term, grade, 
-         state, annual_income, homeownership, debt_to_income)
-glimpse(loans)       # Output on 'console' tab
-```
-]
-
-]
-
----
-
-
-## Selected variables
-
-<br>
-
-.midi[
-variable        | description
-----------------|-------------
-`loan_amount`   |	Amount of the loan received, in US dollars
-`interest_rate` |	Interest rate on the loan, in an annual percentage
-`term`	        | The length of the loan, which is always set as a whole number of months
-`grade`	        | Loan grade, which takes a values A through G and represents the quality of the loan and its likelihood of being repaid
-`state`         |	US state where the borrower resides
-`annual_income` |	Borrower’s annual income, including any second income, in US dollars
-`homeownership`	| Indicates whether the person owns, owns but has a mortgage, or rents
-`debt_to_income` | Debt-to-income ratio
-]
-
----
-
-## Variable types
-
-<br>
-
-variable        | type
-----------------|-------------
-`loan_amount`   |	numerical, continuous
-`interest_rate` |	numerical, continuous
-`term`	        | numerical, discrete
-`grade`	        | categorical, ordinal
-`state`         |	categorical, not ordinal
-`annual_income` |	numerical, continuous
-`homeownership`	| categorical, not ordinal
-`debt_to_income` | numerical, continuous
-
----
-
-
-class: middle
-
-# Visualizing numerical data
-
----
-
-## Describing shapes of numerical distributions
-
-- center: mean (`mean`), median (`median`), mode (not always useful)
-- spread: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
-- shape:
-    - skewness: right-skewed, left-skewed, symmetric (skew is to the side of the longer tail)
-    - modality: unimodal, bimodal, multimodal, uniform
-- unusual observations, aka outliers.
-
-```{r, echo = FALSE, out.width = "70%", fig.width=8, fig.height=3, fig.align='center'}
-alpha <- 4
-beta <- 5
-avg <- alpha/beta
-med <- qgamma(0.5, alpha, beta)
-x <- seq(0, 2, by=0.01)
-y <- dgamma(x, alpha, beta)
-par(mfrow = c(1, 2), mar = c(1,1,1,1), fg = "white", bg = NA)
-plot(-x, y, xaxt = "n", yaxt = "n", type = "l", lwd = 2, ylim = c(0, 1.5*max(y)),
-     xlab = "", ylab = "", frame = FALSE, main = "Left (Negative) Skewness",
-     col.main = "white", cex.main = 1.5)
-abline(h = 0, lwd = 1)
-segments(x0 = -avg, x1 = -avg, y0 = -1, y1 = 1.3*max(y),  lty = 2, lwd = 2)
-text(labels = "mean", -avg+0.1, 1.25*max(y), pos = 4, cex = 1.5)
-segments(x0 = -med, x1 = -med, y0 = -1, y1 = 1.3*max(y),  lty = 3, lwd = 2)
-text(labels = "median", -med-0.1, 1.25*max(y), pos = 2, cex = 1.5)
-plot(x, y, xaxt = "n", yaxt = "n", type = "l", lwd = 2,  ylim = c(0, 1.5*max(y)),
-     xlab = "", ylab = "", frame = FALSE, main = "Right (Positive) Skewness",
-     col.main = "white", cex.main = 1.5)
-abline(h = 0, lwd = 1)
-segments(x0 = avg, x1 = avg, y0 = -1, y1 = 1.3*max(y),  lty = 2, lwd = 2)
-text(labels = "mean", avg-0.1, 1.25*max(y), pos = 2, cex = 1.5)
-segments(x0 = med, x1 = med, y0 = -1, y1 = 1.3*max(y),  lty = 3, lwd = 2)
-text(labels = "median", med+0.1, 1.25*max(y), pos = 4, cex = 1.5)
-
-```
-
-
----
-
-class: middle
-
-# Histogram - `geom_histogram()`
-
----
-
-## Histogram
-
-```{r message = TRUE, out.width = "50%", fig.height = 5, fig.width = 8, fig.align='center'}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_histogram()
-```
-
----
-
-## Histograms and binwidth
-
-.panelset[
-.panel[.panel-name[binwidth = 1000]
-```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_histogram(binwidth = 1000)
-```
-]
-.panel[.panel-name[binwidth = 5000]
-```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_histogram(binwidth = 5000)
-```
-]
-.panel[.panel-name[binwidth = 20000]
-```{r out.width = "50%", fig.height = 5, fig.width=8, fig.align='center'}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_histogram(binwidth = 20000)
-```
-]
-]
-
----
-
-## Customizing histograms
-
-.panelset[
-
-.panel[.panel-name[labs]
 .pull-left[
-```{r ref.label = "hist-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```{r message=FALSE}
+cat_lovers <- read_csv("data/cat-lovers.csv")
+```
+
+```{r echo=FALSE}
+cat_lovers
 ```
 ]
+
 .pull-right[
-```{r hist-custom, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_histogram(binwidth = 5000) +
-  labs( #<<
-    x = "Loan amount ($)", #<<
-    y = "Frequency", #<<
-    title = "Amounts of Lending Club loans" #<<
-  ) #<<
+```{r R.options=list(width = 40)}
+cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats))
 ```
-]
-]
 
-.panel[.panel-name[fill]
-.pull-left[
-```{r ref.label = "hist-fill", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r hist-fill, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = loan_amount, 
-                  fill = homeownership)) + #<<
-  geom_histogram(binwidth = 5000,
-                 alpha = 0.5) + #<<
-  labs(
-    x = "Loan amount ($)",
-    y = "Frequency",
-    title = "Amounts of Lending Club loans"
-  )
-```
-]
-]
-
-
-.panel[.panel-name[facet]
-.pull-left[
-```{r ref.label = "hist-facet", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r hist-facet, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = loan_amount, 
-                  fill = homeownership)) + 
-  geom_histogram(binwidth = 5000) +
-  labs(
-    x = "Loan amount ($)",
-    y = "Frequency",
-    title = "Amounts of Lending Club loans"
-  ) +
-  facet_wrap(~ homeownership, nrow = 3) #<<
-```
-]
-]
+.question[Why won't this work?]
 
 ]
 
 ---
 
-class: middle
+## Closer look at the `mean` function
 
-# Density plot - `geom_density()`
+.pull-left-narrow[
+```{r eval=FALSE}
+help(mean)
+```
+]
+.pull-right-wide[
+```{r echo=FALSE, caption="Help for mean", out.width="125%", fig.align='center'}
+knitr::include_graphics("img/mean-help-v2.png")
+```
+
+]
+
+```{r }
+cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats, na.rm = TRUE))
+```
+
 
 ---
 
-## Density plot
-
-```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_density()
-```
-
----
-
-## Adjusting bandwidth
-
-.panelset[
-.panel[.panel-name[adjust = 0.5]
-```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_density(adjust = 0.5)
-```
-]
-.panel[.panel-name[adjust = 1]
-```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_density(adjust = 1) # default bandwidth
-```
-]
-.panel[.panel-name[adjust = 2]
-```{r fig.width=8, fig.height=5, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_density(adjust = 2)
-```
-]
-]
-
----
-
-## Customizing density plots
-
-.panelset[
-.panel[.panel-name[labs]
-.pull-left[
-```{r ref.label = "density-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r density-custom, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = loan_amount)) +
-  geom_density(adjust = 2) +
-  labs( #<<
-    x = "Loan amount ($)", #<<
-    y = "Density", #<<
-    title = "Amounts of Lending Club loans" #<<
-  ) #<<
-```
-]
-]
-
-.panel[.panel-name[fill]
-.pull-left[
-```{r ref.label = "density-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r density-cat, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = loan_amount, 
-                  fill = homeownership)) + #<<
-  geom_density(adjust = 2, 
-               alpha = 0.5) + #<<
-  labs(
-    x = "Loan amount ($)",
-    y = "Density",
-    title = "Amounts of Lending Club loans", 
-    fill = "Homeownership" #<<
-  )
-```
-]
-]
-
-]
-
----
-
-class: middle
-
-# Box plot - `geom_boxplot()`
-
----
-
-## Box plot
-
-```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = interest_rate)) +
-  geom_boxplot()
-```
-
----
-
-## Customizing box plots
-
-.panelset[
-.panel[.panel-name[labs & axes]
-.pull-left[
-```{r ref.label = "box-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r box-custom, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = interest_rate)) +
-  geom_boxplot() +
-  labs(
-    x = "Interest rate (%)",
-    y = NULL,
-    title = "Interest rates of Lending Club loans"
-  ) +
-  theme( #<<
-    axis.ticks.y = element_blank(), #<<
-    axis.text.y = element_blank() #<<
-  ) #<<
-```
-]
-]
-
-.panel[.panel-name[categories]
-.pull-left[
-```{r ref.label = "box-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r box-cat, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = interest_rate,
-                  y = grade)) + #<<
-  geom_boxplot() +
-  labs(
-    x = "Interest rate (%)",
-    y = "Grade",
-    title = "Interest rates of Lending Club loans",
-    subtitle = "by grade of loan" #<<
-  )
-```
-]
-]
-
-.panel[.panel-name[orientation]
-.pull-left[
-```{r ref.label = "box-cat2", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r box-cat2, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = grade,  #<<
-                  y = interest_rate)) +  #<<
-  geom_boxplot() +
-  labs(
-    x = "Grade",   #<<
-    y = "Interest rate (%)",    #<<
-    title = "Interest rates of Lending Club loans",
-    subtitle = "by grade of loan" 
-  )
-```
-]
-]
-
-
-]
-
----
-
-class: middle
-
-# Relationships numerical variables - `geom_point()` and `geom_hex()`
-
----
-
-## Scatterplot
-
-```{r warning = FALSE, fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = debt_to_income, y = interest_rate)) +
-  geom_point()
-```
-
----
-
-## Hex plot
-
-```{r warning = FALSE, fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = debt_to_income, y = interest_rate)) +
-  geom_hex()
-```
-
----
-
-class: middle
-
-# Visualizing qualitative/categorical data
-
----
-
-# Describing shapes of categorical distributions
-
-- Standard summary statistics of mean, median and standard deviation does not apply.
-  - Question: what is your favourite pet?
-  - Data: {"cat", "dog", "cat", "snake", "rabbit"}
-  - What does the average 'favourite pet' mean?!
-- Count/tabulate the frequency of each category (`table`)
-
-<table align="center">
-    <tr>
-        <td align="center">Pet</td>
-        <td align="center">cat</td>
-        <td align="center">dog</td>
-        <td align="center">rabit</td>
-        <td align="center">snake</td>
-    </tr>
-    <tr>
-        <td align="center">Frequency</td>
-        <td align="center">2</td>
-        <td align="center">1</td>
-        <td align="center">1</td>
-        <td align="center">1</td>
-    </tr>
-</table>
-
-
-- Identify the mode (most frequent) category, eg. "cat"
-- Compute proportions, eg 40% "Cat" and 20% "rabbit".
-
----
-
-class: middle
-
-# Bar plot - `geom_bar()`
-
----
-
-## Bar plot
-
-```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = homeownership)) +
-  geom_bar()
-```
-
----
-
-## Segmented bar plot
-
-```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = homeownership, 
-                  fill = grade)) + #<<
-  geom_bar()
-```
-
----
-
-## Segmented bar plot (proportions)
-
-```{r fig.width=8, fig.height=6, fig.align='center', out.width="50%"}
-ggplot(loans, aes(x = homeownership, fill = grade)) +
-  geom_bar(position = "fill") #<<
-```
-
----
+## Take a breath and look at your data
 
 .question[
-Which bar plot is a more useful representation for visualizing the relationship between homeownership and grade?
+What is the type of the `number_of_cats` variable?
 ]
 
+```{r}
+glimpse(cat_lovers)
+```
+
+```{r}
+cat_lovers %>% slice( c(48, 54) )
+```
+
+
+---
+
+## Might need to babysit your respondents
+
+Need to _mutate_ the `number_of_cats` variable:
+-   to fix unusual data values, and
+-   to coarse the characters to numbers.
+
+```{r}
+cat_lovers %>%
+  mutate(
+    number_of_cats = case_when(
+      name == "Ginger Clark" ~ "2",
+      name == "Doug Bass"    ~ "3",
+      TRUE                   ~ number_of_cats
+      ),
+    number_of_cats = as.numeric(number_of_cats)
+    ) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+
+---
+
+## Moral of the story
+
+- If your data does not behave how you expect it to, type coercion upon reading in the data might be the reason.
+
+- Go in and investigate your data, apply the fix, *save your data*, live happily ever after.
+
+- You can make explicit coercion by using suitable functions starting with `as.???()`
+
+- Different options for `???` part of the code
+
+
+---
+
+class: middle
+
+# Data types
+
+---
+
+## Four key data types in R
+
 .pull-left[
-```{r echo=FALSE, out.width = "90%", fig.align='center'}
-ggplot(loans, aes(x = homeownership, fill = grade)) +
-  geom_bar()
+**logical** - boolean values `TRUE` and `FALSE`
+
+```{r}
+typeof(TRUE)
+```
+
+
+**double** - floating point numerical values (default numerical type)
+
+```{r}
+typeof(1.335)
+typeof(7)
 ```
 ]
 .pull-right[
-```{r echo=FALSE, out.width = "90%", fig.align='center'}
-ggplot(loans, aes(x = homeownership, fill = grade)) +
-  geom_bar(position = "fill")
+
+**character** - character strings
+
+```{r}
+typeof("hello")
+```
+
+
+**integer** - integer numerical values (indicated with an `L`)
+
+```{r}
+typeof(7L)
+typeof(1:3)
+```
+]
+
+---
+
+## Concatenation
+
+Vectors can be constructed using the `c()` function.
+
+```{r}
+c(1, 2, 3)
+c("Hello", "World!")
+c(c("hi", "hello"), c("bye", "jello"))
+```
+
+---
+
+## Explicit coercion between types
+
+`as.character()`, `as.numeric()`, `as.integer()` and `as.logical()`
+
+.pull-left[
+.small[
+```{r}
+x <- 1:3
+x
+typeof(x)
+```
+
+<br>
+
+```{r}
+y <- as.character(x)
+y
+typeof(y)
+```
+]
+]
+
+--
+
+.pull-right[
+.small[
+```{r}
+z <- c(TRUE, FALSE)
+z
+typeof(z)
+```
+
+<br>
+
+```{r}
+w <- as.numeric(z)
+w
+typeof(w)
+```
+]
+]
+
+---
+
+## Implicit coercion between types
+
+R will happily convert between various types without complaint when different types of data are concatenated in a vector, and that's not always a great thing!
+
+.pull-left[
+.small[
+```{r}
+x <- c(1, "Hello")
+x
+typeof(x)
+```
+
+```{r}
+y <- c(FALSE, 3L)
+y
+typeof(y)
+```
+]
+]
+
+.pull-right[
+.small[
+```{r}
+z <- c(1.2, 3L)
+z
+typeof(z)
+```
+
+```{r}
+w <- c(2L, "two")
+w
+typeof(w)
+```
+]
+]
+
+Data type hierarchy: **character** > **double** > **integer** > **logical**
+
+---
+
+
+class: middle
+
+# Special values
+
+---
+
+## Special values
+
+.pull-left[
+- `NaN`: Not a number
+.small[
+```{r}
+0/0
+```
+]
+- `Inf`: Positive infinity
+.small[
+```{r}
+pi/0
+```
+]
+- `-Inf`: Negative infinity
+.small[
+```{r}
+log(0)
+```
+]
+]
+
+--
+
+.pull-right[
+- `NA`: Not available, represents missing values in the data structure
+.small[
+```{r R.options=list(width = 60)}
+x <- c(1, 2, 3, 4, NA)
+mean(x)
+mean(x, na.rm = TRUE)
+summary(x)
+typeof(NA)
+```
+(ie `NA`s can work with all data types in the hierarchy)
+]
+
+
+]
+
+---
+
+## Working with `NA`s
+
+.question[
+What is happening in the following two cases?
+]
+.pull-left[
+```{r}
+# TRUE or NA
+TRUE | NA
+```
+]
+.pull-right[
+```{r}
+# FALSE or NA
+FALSE | NA
+```
+]
+
+.small[
+| First | Second | First OR Second | 
+|:-----:|:------:|:---------------:| 
+| TRUE  | TRUE   | TRUE            | 
+| TRUE  | FALSE  | TRUE            | 
+|       |        |                 | 
+|       |        |                 | 
+|       |        |                 | 
+| FALSE | TRUE   | TRUE            | 
+| FALSE | FALSE  | FALSE           | 
+]
+
+---
+
+
+class: middle
+
+# Data classes
+
+---
+
+## Data classes
+
+So far we talked about data *types*, next we'll introduce *classes*.
+
+- Classes are types of structures in R that have certain useful properties.
+
+- Like Lego, we can stick different classes together to build more complicated ones.
+
+- Analogy: 
+  -   Stick two numbers together makes a vector. 
+  -   Two vectors glued together creates a matrix.
+
+- Class examples: **matrices**, **arrays**, **lists**, **data frames**, **factors** and **dates**
+
+---
+
+## Matrices/Arrays
+
+Matrices are rectangular arrays of numbers, having two dimensions.
+
+.pull-left[
+```{r}
+M1 <- matrix(c(1, 4, 3, 6, 2, 3), 
+             nrow = 2, ncol = 3)
+M1
+M2 <- matrix(c(6, 2, 5, 1), 
+             nrow = 2, ncol = 2)
+M2
+```
+]
+.pull-right[
+```{r}
+M2 %*% M1   #Matrix multiplication
+det(M2)
+```
+
+<br>
+
+.small[
+.question[
+Can you find a use for this in ILA? `r emoji::emoji("wink")`
+]
+]
+]
+
+
+---
+
+## Arrays
+
+Arrays can be considered as collection of matrices having three dimensions. Arrays can store only data type!
+
+.pull-left[
+```{r}
+M1 <- matrix(c(1, 4, 3, 6, 2, 3), 
+             nrow = 2, ncol = 3)
+M1
+M2 <- matrix(c(6, 2, 5, 1, 4, 3), 
+             nrow = 2, ncol = 3)
+M2
+```
+]
+
+.pull-right[
+```{r}
+# Take these matrices as input to the array.
+array_matrix <- array(c(M1,M2), dim = c(2,3,2))
+array_matrix
+
+```
+]
+
+
+
+---
+
+
+
+## Lists
+
+Lists are a generic container containing items of different data type and class. 
+
+You can even have lists of lists!
+
+.pull-left[
+```{r}
+l <- list(
+  item1 = 1:4,
+  item2 = c("hi", "hello", "jello"),
+  itme3 = c(TRUE, FALSE),
+  item4 = list(
+    item4_1 = diag(2)
+  )
+)
+```
+]
+.pull-right[
+```{r}
+l$item2
+l$item4$item4_1
+```
+]
+
+
+---
+
+## Data frames
+
+Data frames are special types of lists that contain vectors of any data type but all of equal length.
+
+```{r}
+df <- data.frame(x = c(1, 2), 
+                 y = c("me","you"), 
+                 z = c(TRUE, FALSE))
+df
+```
+
+.pull-left[
+```{r}
+typeof(df)
+```
+]
+.pull-right[
+```{r}
+class(df)
+```
+]
+
+
+---
+
+## Factors 
+
+R uses **factors** to handle categorical variables.
+
+Factors like character (level labels) and an integer (level numbers) glued together.
+
+```{r}
+x <- factor(c("BS", "MS", "PhD", "MS"))
+x
+```
+
+.pull-left[
+```{r}
+typeof(x)
+class(x)
+```
+]
+.pull-right[
+```{r}
+glimpse(x)
+as.integer(x)
+```
+]
+
+---
+
+## The `forcats` package
+
+.pull-left[
+<br>
+- Factors are useful when you have true categorical data and you want to override the ordering of character vectors to improve display
+- They are also useful in modeling scenarios
+- The **forcats** package provides a suite of useful tools that solve common problems with factors
+- More info [HERE](https://forcats.tidyverse.org/)
+]
+.pull-right[
+```{r echo=FALSE, out.width="60%", fig.align='center'}
+knitr::include_graphics("img/forcats-part-of-tidyverse.png")
+```
+
+```{r}
+cat_lovers %>%
+  group_by(handedness) %>%
+  tally()
+```
+
+]
+
+---
+
+## Working with factors
+
+.pull-left[
+.small[
+```{r out.width="75%", echo=FALSE}
+ggplot(cat_lovers, 
+       mapping = aes(x = handedness)) +
+  geom_bar()
+```
+]
+]
+
+.pull-right[
+.small[
+```{r out.width="70%", echo=FALSE}
+cat_lovers %>%
+  mutate(handedness = fct_infreq(handedness)) %>% #<<
+  ggplot(mapping = aes(x = handedness)) +
+  geom_bar()
+```
+]
+]
+
+Do you recall how these plots can be created from lab-00?
+
+
+---
+
+## Dates
+
+We can think of dates like an integer (the number of days since the origin, 1 Jan 1970) presented as a character in the form `YYYY-MM-DD`.
+
+```{r}
+y <- as.Date("2020-01-01")
+y
+```
+
+.pull-left[
+```{r}
+typeof(y)
+class(y)
+```
+]
+.pull-right[
+```{r}
+as.integer(y)
+as.integer(y) / 365 # roughly 50 yrs
 ```
 ]
 
@@ -611,59 +588,138 @@ ggplot(loans, aes(x = homeownership, fill = grade)) +
 
 class: middle
 
-# Relationships between numerical and categorical variables
+.hand[.light-blue[
+we're just going to scratch the surface of working with dates in R here...
+]]
 
-Already talked about...
+YouTube: Tom Scott, The problem with time and timezones, Computerphile - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=-5wpm-gesOY)
 
-- Colouring and faceting histograms and density plots
-- Side-by-side box plots
 
-What other ways can visualize this?
+```{r out.width="10%", fig.align='center', echo = FALSE}
+knitr::include_graphics("img/pinch-point-hazard-label.png")
+```
 
 ---
 
-## Violin plots - `geom_violin()`
+## Make a date
 
 .pull-left[
-```{r violin, fig.show = "hide", warning = FALSE}
-ggplot(loans, aes(x = homeownership, 
-                  y = loan_amount)) +
-  geom_violin()
+- **lubridate** is the tidyverse-friendly package that makes dealing with dates a little easier
+- It's _not_ one of the core tidyverse packages!
+- Functions to read different date orders: `ymd()`, `dmy()`, `mdy()`
+- Recognises numerical and text months.
+
+```{r echo=FALSE, out.width="30%", fig.align="center"}
+knitr::include_graphics("img/lubridate-not-part-of-tidyverse.png")
 ```
 ]
 .pull-right[
-```{r ref.label = "violin", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```{r message=FALSE}
+#install.packages("lubridate")
+library(lubridate)
+```
+
+```{r}
+ymd("2022 October 11")
+mdy("10oct2022")
+dmy("11/10/2022")
 ```
 ]
 
 
----
+<!--
 
-## Ridge plots - `geom_density_ridges()`
+## Visualising poll-tracker data
 
+Data from YouGov's voting intention tracer ([source](https://yougov.co.uk/topics/politics/articles-reports/2022/09/30/voting-intention-con-21-lab-54-28-29-sep-2022))
 
 .pull-left[
-```{r ridge1, fig.show = "hide", warning = FALSE, eval = FALSE}
-#install.packages("ggridges")
-library(ggridges)    
-ggplot(loans, aes(x = loan_amount, 
-                  y = grade, 
-                  fill = grade, 
-                  color = grade)) + 
-  geom_density_ridges(alpha = 0.5)
-```
-]
-.pull-right[
-```{r ridge2, echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
-#install.packages("ggridges")
-library(ggridges)    
-p <- ggplot(loans, aes(x = loan_amount, 
-                  y = grade, 
-                  fill = grade, 
-                  color = grade)) + 
-  geom_density_ridges(alpha = 0.5)
-suppressMessages(print(p))
+How do you go from this...
+```{r message = FALSE, R.options=list(width = 40)}
+poll <- read_csv("data/voting_intension.csv")
+glimpse(poll)
 ```
 ]
 
-.footnote[Looks like the album art of "Unknown Pleasures" by Joy Division.]
+.pull-right[
+...to this...
+
+```{r echo=FALSE, out.width="100%", fig.align="center"}
+knitr::include_graphics("img/poll_tracker.png")
+```
+
+]
+
+-->
+
+<!--
+## Step to take
+
+.pull-left[
+1.   Pivot data from wide format to long
+2.   Convert character `Date` variable to a date class
+3.   Convert `Parties` from character to factor
+  -   choose an appropriate category ordering (see [here](https://forcats.tidyverse.org/reference/fct_reorder.html) for more info)
+4.   Create line plot of `Share` against `Date` per `Party`
+5.   Add title and axis labels
+6.   Change line colours to party affiliated colours
+]
+.pull-right[
+.small[
+```{r eval=FALSE}
+library(tidyverse)
+library(lubridate)
+
+poll <- read_csv("data/voting_intension.csv")
+
+poll %>% 
+  pivot_longer(cols = -Date, 
+               names_to = "Party", 
+               values_to = "Share") %>%
+  mutate(Date = dmy(Date),
+         Party = fct_reorder(Party, Share, 
+                             first, .desc=TRUE)) %>%
+  ggplot(mapping = aes(x = Date, 
+                       y = Share, 
+                       colour = Party)) +
+    geom_line() +
+    labs(x = "Date",
+         y = "Vote Share (%)",
+         colour = "Political Party",
+        title = "YouGov, Voting Intension Tracker") +
+    scale_color_manual(values = c("#003cab", "#c20600", 
+                                  "#ffb922", "#ffe046",
+                                  "#149678", "#6ac9f5", 
+                                  "#006b46", "#bfbdbd"))
+
+```
+]
+]
+-->
+
+<!--
+## The final result! 
+
+```{r echo = FALSE, fig.width=10, fig.height=7, fig.align='center'}
+poll %>% 
+  pivot_longer(cols = -Date, 
+               names_to = "Party", 
+               values_to = "Share") %>%
+  mutate(Date = dmy(Date),
+         Party = fct_reorder(Party, Share, first, .desc=TRUE)) %>%
+  ggplot(mapping = aes(x = Date, 
+                       y = Share, 
+                       colour = Party)) +
+    geom_line() +
+    labs(x = "Date",
+         y = "Vote Share (%)",
+         colour = "Political Party",
+        title = "YouGov, Voting Intension Tracker") +
+    scale_color_manual(values = c("#003cab", "#c20600", 
+                                  "#ffb922", "#ffe046",
+                                  "#149678", "#6ac9f5", 
+                                  "#006b46", "#bfbdbd"))
+
+```
+
+-->
