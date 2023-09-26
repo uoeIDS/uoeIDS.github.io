@@ -328,7 +328,7 @@ filter(starwars, species == "Droid")
 | `<`     | Strictly less than    | `1 < 2`        | `TRUE`  |
 | `<=`    | Less than or equal to | `2 <= 2`       | `TRUE`  | 
 | `>`     | Strictly greater than | `-3 > 3`       | `FALSE` |
-| `>=`    | Less than or equal to | `10 >= 0`      | `TRUE`  |
+| `>=`    | Greater than or equal to | `10 >= 0`      | `TRUE`  |
 | `==`    | Exactly equal to      | `pi == 3.14`   | `FALSE` |
 | `!=`    | Not equal to          | `pi != 3.14`   | `TRUE`  |
 | ` `     | ` `                   | ` `            | ` `     |
