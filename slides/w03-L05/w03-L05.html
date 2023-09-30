@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Tidy Data and Data Wrangling</title>
+    <title>Importing/Exporting Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
-    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.2.6/panelset.js"></script>
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -15,7 +13,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Tidy Data and Data Wrangling
+# Importing/Exporting Data
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -24,7 +22,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2022/2023
+### <br> 2023/2024
 ]
 
 ---
@@ -33,1087 +31,897 @@ class: center, middle, inverse, title-slide
 
 
 
-## Tidy data
 
-&gt;Happy families are all alike; every unhappy family is unhappy in its own way. 
-&gt;
-&gt;Leo Tolstoy
+
+
+class: middle
+
+# Reading and writing rectangular data
+
+---
+
+## Ways of rectangular data may be stored
 
 
 .pull-left[
-**Characteristics of tidy data:**
+- comma delimitation
+&lt;img src="img/data_structures/delim_comma.png" width="100%" style="display: block; margin: auto;" /&gt;
 
-- Each variable forms a column.
-- Each observation forms a row.
-- Each type of observational unit forms a table.
+- semicolon delimitation
+&lt;img src="img/data_structures/delim_semicolon.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
-**Characteristics of untidy data:**
+- tab delimitation
+&lt;img src="img/data_structures/delim_tab.png" width="100%" style="display: block; margin: auto;" /&gt;
 
-- Merged cells.
-- Repeated or non-informative variable/column names.
-- Cell comments or superfluous information.
-- Empty or total/subtotal rows.
-- ... 
+- MS Excel encoding
+&lt;img src="img/data_structures/excel.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
+
+## Reading data
+
+.pull-left[
+**readr** - part of tidyverse
+- `read_csv()` - comma delimited files
+- `read_csv2()` - semicolon separated files (common in countries where , is used as the decimal place)
+- `read_tsv()` - tab delimited files
+- `read_delim()` - reads in files with any delimiter
+- ...
+
+**readxl** - _not_ part of tidyverse
+- `read_excel()` - read xls or xlsx files
+- ...
+
+]
+
+.pull-right[
+&lt;img src="img/readr.png" width="35%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+&lt;img src="img/readxl.png" width="35%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Reading data (skipping first few lines)
+
+.pull-left[
+
+```r
+library(readxl)
+tube &lt;- read_excel(
+  path = "data/tube-stations.xlsx")
+glimpse(tube)
+```
+
+```
+## Rows: 10
+## Columns: 5
+## $ `Tube station data` &lt;chr&gt; "Some tube…
+## $ ...2                &lt;chr&gt; NA, "Line"…
+## $ ...3                &lt;chr&gt; NA, "Zone"…
+## $ ...4                &lt;chr&gt; NA, "Opene…
+## $ ...5                &lt;chr&gt; NA, "Numbe…
+```
+]
+
+.pull-right[
+
+```r
+tube &lt;- read_excel(
+  path = "data/tube-stations.xlsx", 
+  skip = 2)
+glimpse(tube)
+```
+
+```
+## Rows: 8
+## Columns: 5
+## $ Station                                 &lt;chr&gt; …
+## $ Line                                    &lt;chr&gt; …
+## $ Zone                                    &lt;chr&gt; …
+## $ Opened                                  &lt;chr&gt; …
+## $ `Number of passengers (millions, 2019)` &lt;chr&gt; …
+```
+]
+
+---
+
+## Writing data to file
+
+Most read functions have a corresponding write function.
+
+
+```r
+write_csv(tube, file = "data/tube-station-comma.csv")
+write_csv2(tube, file = "data/tube-station-semicolon.txt")
+write_tsv(tube, file = "data/tube-station-tab.txt")
+```
+
+Note, a file write is a quiet function (it does return anything to R!)
+
+
+```r
+glimpse( read_tsv("data/tube-station-tab.txt") )
+```
+
+```
+## Rows: 8
+## Columns: 5
+## $ Station                                 &lt;chr&gt; "Russell Square", "Heathrow Te…
+## $ Line                                    &lt;chr&gt; "Piccadilly", "Piccadilly", "J…
+## $ Zone                                    &lt;chr&gt; "1", "6", "4", "3", "2", "6", …
+## $ Opened                                  &lt;chr&gt; "15 December 1906", "16 Decemb…
+## $ `Number of passengers (millions, 2019)` &lt;dbl&gt; 12.270, 7.880, 4.550, 7.670, 4…
+```
+
+
+---
+
+class: middle
+
+# Variable names
+
+---
+
+## Data with bad names
+
+
+```r
+edibnb_badnames &lt;- read_csv("data/edibnb-badnames.csv")
+names(edibnb_badnames)
+```
+
+```
+##  [1] "ID"                   "Price"                "neighbourhood"       
+##  [4] "accommodates"         "Number of bathrooms"  "Number of Bedrooms"  
+##  [7] "n beds"               "Review Scores Rating" "Number of reviews"   
+## [10] "listing_url"
+```
+
+
+... but R doesn't allow spaces in variable names
+
+
+```r
+ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
+  geom_point()
+```
+
+```
+## Error: &lt;text&gt;:1:40: unexpected symbol
+## 1: ggplot(edibnb_badnames, aes(x = Number of
+##                                            ^
+```
+
+
+---
+
+## Option 1 - Manual edit
+
+-   Edit the column names in the raw data file to `snake_name` style
+-   OK, provided that you are only ever working with one file
+-   Method is not _reproducible_ if developing a data flow where your data file may be updated
+-   Can this be done in the code?
+
+
+---
+
+## Option 2 - Define column names
+
+
+```r
+edibnb_col_names &lt;- read_csv("data/edibnb-badnames.csv", skip = 1,
+                             col_names = c("id", "price", "neighbourhood", "accommodates", 
+                                           "bathroom", "bedroom", "bed", 
+                                           "review_scores_rating", "n_reviews", "url"))
+```
+
+```
+## Rows: 13245 Columns: 10
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (2): neighbourhood, url
+## dbl (8): id, price, accommodates, bathroom, bedroom, bed, review_scores_rati...
 ## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
 
-.question[
-What makes this data not tidy?
-]
+```r
+names(edibnb_col_names)
+```
 
-&lt;img src="img/hyperwar-airplanes-on-hand.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-.footnote[
-Source: [Army Air Forces Statistical Digest, WW II](https://www.ibiblio.org/hyperwar/AAF/StatDigest/aafsd-3.html)
-]
+```
+##  [1] "id"                   "price"                "neighbourhood"       
+##  [4] "accommodates"         "bathroom"             "bedroom"             
+##  [7] "bed"                  "review_scores_rating" "n_reviews"           
+## [10] "url"
+```
 
 ---
 
-.question[
-What makes this data not tidy?
-]
-
-&lt;br&gt;
-
-&lt;img src="img/hiv-est-prevalence-15-49.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-.footnote[
-Source: [Gapminder, Estimated HIV prevalence among 15-49 year olds](https://www.gapminder.org/data)
-]
-
----
-
-## Displaying vs. summarising data
-
-
-
-.panelset[
-.panel[
-.panel-name[Tables]
-
-.pull-left[
-
-| Name | Species | Height | Mass |
-|:----|----:|----:|---:|
-| Luke Skywalker      | Human |  172 |    77 |
-| C-3PO               | Droid |  167 |    75 |
-| R2-D2               | Droid |   96 |    32 |
-| Darth Vader         | Human |  202 |   136 |
-| Leia Organa         | Human |  150 |    49 |
-| ... | ... | ... | ... |
-]
-
-.pull-right[
-
-| Species | Count | Average Height |
-|:----|----:|----:|
-| Droid | 6   | 131 |
-| Human | 35  | 177 |
-| Other | 46  | 178 |
-
-
-
-<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:4em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:none;overflow:visible;position:relative;"><path d="M342.6 182.6C336.4 188.9 328.2 192 319.1 192s-16.38-3.125-22.62-9.375L224 109.3V432c0 44.13-35.89 80-80 80H32c-17.67 0-32-14.31-32-32s14.33-32 32-32h112C152.8 448 160 440.8 160 432V109.3L86.62 182.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l127.1-128c12.5-12.5 32.75-12.5 45.25 0l128 128C355.1 149.9 355.1 170.1 342.6 182.6z"/></svg>
-
-<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M342.6 182.6C336.4 188.9 328.2 192 319.1 192s-16.38-3.125-22.62-9.375L224 109.3V432c0 44.13-35.89 80-80 80H32c-17.67 0-32-14.31-32-32s14.33-32 32-32h112C152.8 448 160 440.8 160 432V109.3L86.62 182.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l127.1-128c12.5-12.5 32.75-12.5 45.25 0l128 128C355.1 149.9 355.1 170.1 342.6 182.6z"/></svg>
-
-]
-
-]
-
-.panel[
-.panel-name[Code]
+## Option 3 - `clean_names` to snake_case
 
 
 ```r
-library(tidyverse)
+library(janitor)       #may need to run: install.packages("janitor")
 ```
-
-.pull-left[
 
 ```r
-starwars %&gt;%
-  select(species, height, mass)
+edibnb_clean_names &lt;- read_csv("data/edibnb-badnames.csv") %&gt;%
+  clean_names()
 ```
-]
 
-.pull-right[
+```
+## Rows: 13245 Columns: 10
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (2): neighbourhood, listing_url
+## dbl (8): ID, Price, accommodates, Number of bathrooms, Number of Bedrooms, n...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
 
 ```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-  group_by(species_group) %&gt;%
-  summarise(
-    count = n(),
-    avg_height = mean(height, na.rm = TRUE)
-  )
-```
-]
-
-]
-
-]
-
-
----
-
-
-
-class: middle
-
-# Grammar of data wrangling
-
----
-
-## A grammar of data wrangling...
-
-... based on the concepts of functions as verbs that manipulate data frames
-
-.pull-left[
-&lt;img src="img/dplyr-part-of-tidyverse.png" width="70%" /&gt;
-]
-.pull-right[
-.midi[
-- `select`: pick columns by name
-- `arrange`: reorder rows
-- `slice`: pick rows using index(es)
-- `filter`: pick rows matching criteria
-- `distinct`: filter for unique rows
-- `mutate`: add new variables
-- `summarise`: reduce variables to values
-- `group_by`: for grouped operations
-- ... (many more)
-]
-
-
-```r
-&lt;function_name&gt;(&lt;dataset_name&gt;, ...)
-```
-
-
-```r
-help(select)
-```
-]
-
----
-
-## `select` specific variables
-
-.pull-left[
-
-```r
-select(starwars, name, height, mass)
+names(edibnb_clean_names)
 ```
 
 ```
-## # A tibble: 87 × 3
-##    name               height  mass
-##    &lt;chr&gt;               &lt;int&gt; &lt;dbl&gt;
-##  1 Luke Skywalker        172    77
-##  2 C-3PO                 167    75
-##  3 R2-D2                  96    32
-##  4 Darth Vader           202   136
-##  5 Leia Organa           150    49
-##  6 Owen Lars             178   120
-##  7 Beru Whitesun lars    165    75
-##  8 R5-D4                  97    32
-##  9 Biggs Darklighter     183    84
-## 10 Obi-Wan Kenobi        182    77
-## # … with 77 more rows
+##  [1] "id"                   "price"                "neighbourhood"       
+##  [4] "accommodates"         "number_of_bathrooms"  "number_of_bedrooms"  
+##  [7] "n_beds"               "review_scores_rating" "number_of_reviews"   
+## [10] "listing_url"
 ```
-]
-
-.pull-right[
-
-```r
-select(starwars, -name)
-```
-
-```
-## # A tibble: 87 × 13
-##    height  mass hair_c…¹ skin_…² eye_c…³
-##     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;  
-##  1    172    77 blond    fair    blue   
-##  2    167    75 &lt;NA&gt;     gold    yellow 
-##  3     96    32 &lt;NA&gt;     white,… red    
-##  4    202   136 none     white   yellow 
-##  5    150    49 brown    light   brown  
-##  6    178   120 brown, … light   blue   
-##  7    165    75 brown    light   blue   
-##  8     97    32 &lt;NA&gt;     white,… red    
-##  9    183    84 black    light   brown  
-## 10    182    77 auburn,… fair    blue-g…
-## # … with 77 more rows, 8 more
-## #   variables: birth_year &lt;dbl&gt;,
-## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
-## #   films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated
-## #   variable names ¹​hair_color, …
-```
-]
-
----
-
-
-## Select helper functions
-
-.pull-left[
-
-```r
-select(starwars, ends_with("color"))
-```
-
-```
-## # A tibble: 87 × 3
-##    hair_color    skin_color  eye_color
-##    &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
-##  1 blond         fair        blue     
-##  2 &lt;NA&gt;          gold        yellow   
-##  3 &lt;NA&gt;          white, blue red      
-##  4 none          white       yellow   
-##  5 brown         light       brown    
-##  6 brown, grey   light       blue     
-##  7 brown         light       blue     
-##  8 &lt;NA&gt;          white, red  red      
-##  9 black         light       brown    
-## 10 auburn, white fair        blue-gray
-## # … with 77 more rows
-```
-]
-
-.pull-right[
-&lt;br&gt;
-.small[
-*   `starts_with()`: Starts with a prefix
-*   `ends_with()`: Ends with a suffix
-*   `contains()`: Contains a literal string
-*   `num_range()`: Match a numerical range like x01, x02, x03
-*   `one_of()`: Matches variable names in a character vector
-*   `everything()`: Matches all variables
-*   `last_col()`: Select last variable, possibly with an offset
-*   `matches()`: Matches a regular expression (a sequence of symbols/characters expressing a string/pattern to be searched for within text)
-
-See the help page for more info on these functions.
-]
-]
-
-
-
----
-
-## `arrange` mass in numerical order
-
-.pull-left[
-Ascending order:
-
-```r
-arrange(starwars, mass)
-```
-
-```
-## # A tibble: 87 × 14
-##    name     height  mass hair_…¹ skin_…²
-##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
-##  1 Ratts T…     79    15 none    grey, …
-##  2 Yoda         66    17 white   green  
-##  3 Wicket …     88    20 brown   brown  
-##  4 R2-D2        96    32 &lt;NA&gt;    white,…
-##  5 R5-D4        97    32 &lt;NA&gt;    white,…
-##  6 Sebulba     112    40 none    grey, …
-##  7 Dud Bolt     94    45 none    blue, …
-...
-```
-]
-
-.pull-right[
-Descending order:
-
-```r
-arrange(starwars, desc(mass))
-```
-
-```
-## # A tibble: 87 × 14
-##    name     height  mass hair_…¹ skin_…²
-##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
-##  1 Jabba D…    175  1358 &lt;NA&gt;    green-…
-##  2 Grievous    216   159 none    brown,…
-##  3 IG-88       200   140 none    metal  
-##  4 Darth V…    202   136 none    white  
-##  5 Tarfful     234   136 brown   brown  
-##  6 Owen La…    178   120 brown,… light  
-##  7 Bossk       190   113 none    green  
-...
-```
-]
-
-
----
-
-## `slice` for cetain row numbers
-
-.pull-left[
-
-```r
-slice(starwars, 1:4)
-```
-
-```
-## # A tibble: 4 × 14
-##   name      height  mass hair_…¹ skin_…²
-##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
-## 1 Luke Sky…    172    77 blond   fair   
-## 2 C-3PO        167    75 &lt;NA&gt;    gold   
-## 3 R2-D2         96    32 &lt;NA&gt;    white,…
-## 4 Darth Va…    202   136 none    white  
-## # … with 9 more variables:
-## #   eye_color &lt;chr&gt;, birth_year &lt;dbl&gt;,
-## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
-## #   films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated
-## #   variable names ¹​hair_color, …
-```
-]
-
-.pull-right[
-
-```r
-slice(starwars, c(2,4,6,8))
-```
-
-```
-## # A tibble: 4 × 14
-##   name      height  mass hair_…¹ skin_…²
-##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
-## 1 C-3PO        167    75 &lt;NA&gt;    gold   
-## 2 Darth Va…    202   136 none    white  
-## 3 Owen Lars    178   120 brown,… light  
-## 4 R5-D4         97    32 &lt;NA&gt;    white,…
-## # … with 9 more variables:
-## #   eye_color &lt;chr&gt;, birth_year &lt;dbl&gt;,
-## #   sex &lt;chr&gt;, gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;,
-## #   films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated
-## #   variable names ¹​hair_color, …
-```
-]
----
-
-## `filter` for the droids
-
-
-```r
-filter(starwars, species == "Droid")
-```
-
-```
-## # A tibble: 6 × 14
-##   name   height  mass hair_color skin_color eye_c…¹ birth…² sex   gender homew…³
-##   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-## 1 C-3PO     167    75 &lt;NA&gt;       gold       yellow      112 none  mascu… Tatooi…
-## 2 R2-D2      96    32 &lt;NA&gt;       white, bl… red          33 none  mascu… Naboo  
-## 3 R5-D4      97    32 &lt;NA&gt;       white, red red          NA none  mascu… Tatooi…
-## 4 IG-88     200   140 none       metal      red          15 none  mascu… &lt;NA&gt;   
-## 5 R4-P17     96    NA none       silver, r… red, b…      NA none  femin… &lt;NA&gt;   
-## 6 BB8        NA    NA none       none       black        NA none  mascu… &lt;NA&gt;   
-## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated variable names ¹​eye_color, ²​birth_year,
-## #   ³​homeworld
-```
-
-
-&lt;br&gt;
-
-"These aren't the droids you're looking for!"&lt;img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'&gt;&lt;img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'&gt;
-
-
-
----
-
-## Logical operators in R
-
-
-| Code    | Description           | Example        | Output  |
-|:-------:|:----------------------|:---------------|:--------|
-| `&lt;`     | Strictly less than    | `1 &lt; 2`        | `TRUE`  |
-| `&lt;=`    | Less than or equal to | `2 &lt;= 2`       | `TRUE`  | 
-| `&gt;`     | Strictly greater than | `-3 &gt; 3`       | `FALSE` |
-| `&gt;=`    | Less than or equal to | `10 &gt;= 0`      | `TRUE`  |
-| `==`    | Exactly equal to      | `pi == 3.14`   | `FALSE` |
-| `!=`    | Not equal to          | `pi != 3.14`   | `TRUE`  |
-| ` `     | ` `                   | ` `            | ` `     |
-| ` `     | ` `                   | ` `            | ` `     |
-| ` `     | ` `                   | ` `            | ` `     |
-| `x &amp; y` | Logical AND operator  | `TRUE &amp; FALSE` | `FALSE` |
-| `x `&lt;span, style="color:#a7a798;"&gt;&amp;nbsp;&amp;nbsp;&amp;#124;&amp;nbsp;&amp;nbsp;&lt;/span&gt;` y` | Logical OR operator   | `TRUE `&lt;span, style="color:#a7a798;"&gt;&amp;nbsp;&amp;nbsp;&amp;#124;&amp;nbsp;&amp;nbsp;&lt;/span&gt;` FALSE` | `TRUE`  |
-| `!x`    | Logical NOT operator  | `!TRUE `       | `FALSE` |
-
-
-```r
-filter(starwars, species == "Droid" &amp; height &lt; 100)
-```
-
-
----
-
-### `mutate` to compute BMI and species group
-
-.pull-left[
-
-```r
-mutate(starwars, 
-       bmi = 10000 * mass / height^2,
-       species_grp = 
-         case_when(
-           species == "Human" ~ "Human",
-           species == "Droid" ~ "Droid",
-           TRUE ~ "Other"
-         ))
-```
-]
-
-
-.pull-right[
-
-```
-## # A tibble: 87 × 16
-##    name         bmi speci…¹ height  mass
-##    &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt;
-##  1 Jabba Des… 443.  Other      175  1358
-##  2 Dud Bolt    50.9 Other       94    45
-##  3 Yoda        39.0 Other       66    17
-##  4 Owen Lars   37.9 Human      178   120
-##  5 IG-88       35   Droid      200   140
-##  6 R2-D2       34.7 Droid       96    32
-##  7 Grievous    34.1 Other      216   159
-##  8 R5-D4       34.0 Droid       97    32
-##  9 Jek Tono …  34.0 Human      180   110
-## 10 Darth Vad…  33.3 Human      202   136
-## # … with 77 more rows, 11 more
-## #   variables: hair_color &lt;chr&gt;,
-## #   skin_color &lt;chr&gt;, eye_color &lt;chr&gt;,
-## #   birth_year &lt;dbl&gt;, sex &lt;chr&gt;,
-## #   gender &lt;chr&gt;, homeworld &lt;chr&gt;,
-## #   species &lt;chr&gt;, films &lt;list&gt;,
-## #   vehicles &lt;list&gt;, …
-```
-]
-
-
----
-
-## `count` to make a frequency table
-
-.pull-left[
-
-```r
-count(starwars, eye_color, sort = TRUE)
-```
-
-```
-## # A tibble: 15 × 2
-##    eye_color         n
-##    &lt;chr&gt;         &lt;int&gt;
-##  1 brown            21
-##  2 blue             19
-##  3 yellow           11
-##  4 black            10
-##  5 orange            8
-##  6 red               5
-##  7 hazel             3
-##  8 unknown           3
-##  9 blue-gray         1
-## 10 dark              1
-## 11 gold              1
-## 12 green, yellow     1
-## 13 pink              1
-## 14 red, blue         1
-## 15 white             1
-```
-]
-
-
----
-
-## `summerise` to compute the average height
-
-.pull-left[
-✅ Informative variable name
-
-```r
-summarise(starwars, avg_ht = mean(height))
-```
-
-```
-## # A tibble: 1 × 1
-##   avg_ht
-##    &lt;dbl&gt;
-## 1   178.
-```
-
-
-
-```r
-summarise(starwars, 
-          min_ht = min(height),
-          avg_ht = mean(height),
-          med_ht = median(height),
-          max_ht = max(height),
-          sd_ht = sd(height))
-```
-
-```
-## # A tibble: 1 × 5
-##   min_ht avg_ht med_ht max_ht sd_ht
-##    &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;
-## 1     88   178.    180    228  22.5
-```
-
-]
-
-
-.pull-right[
-❌ Bad/sloppy variable name
-
-```r
-summarise(starwars, mean(height))
-```
-
-```
-## # A tibble: 1 × 1
-##   `mean(height)`
-##            &lt;dbl&gt;
-## 1           178.
-```
-
-.tip[
-`summarise()` changes the data frame entirely, it collapses rows down to a single summary statistic, and removes all columns that are irrelevant to the calculation.
-]
-
-]
-
 
 ---
 
 class: middle
 
-# .hand[We...]
-
-.huge[.green[have]] .hand[a single data frame]
-
-.huge[.pink[want]] .hand[to slice it, and dice it, and juice it, and process it]
-
+# Variable types
 
 ---
 
-## How to do multiple data wrangling steps?
-
+## Which type is variable `x`?
 
 .pull-left[
-**Method 1**: Nesting
+&lt;img src="img/df-na.png" width="100%" /&gt;
+]
+.pull-right[
+
+```r
+read_csv("data/df-na.csv")
+```
+
+
+```
+## Rows: 9 Columns: 3
+## ── Column specification ──────────────────────────
+## Delimiter: ","
+## chr (3): x, y, z
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```
+## # A tibble: 9 × 3
+##   x     y              z     
+##   &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; 
+## 1 1     a              hi    
+## 2 &lt;NA&gt;  b              hello 
+## 3 3     Not applicable 9999  
+## 4 4     d              ola   
+## 5 5     e              hola  
+## 6 .     f              whatup
+## 7 7     g              wassup
+## 8 8     h              sup   
+## 9 9     i              &lt;NA&gt;
+```
+]
+
+---
+
+## Option 1. Explicit NAs
 
 
 ```r
-summarise( 
-  filter( 
-    starwars, 
-    species == "Human"
-    ), 
-  avg_mass = mean(mass, na.rm = TRUE)
-  )
+read_csv("data/df-na.csv", 
+         na = c("", "NA", ".", "9999", "Not applicable"))
 ```
 
-*ISSUE*: Where do you begin reading the code?!
+.pull-left[
+&lt;img src="img/df-na.png" width="100%" /&gt;
+]
+.pull-right[
 
+```
+## # A tibble: 9 × 3
+##       x y     z     
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1     1 a     hi    
+## 2    NA b     hello 
+## 3     3 &lt;NA&gt;  &lt;NA&gt;  
+## 4     4 d     ola   
+## 5     5 e     hola  
+## 6    NA f     whatup
+## 7     7 g     wassup
+## 8     8 h     sup   
+## 9     9 i     &lt;NA&gt;
+```
 ]
 
-.pull-right[
-**Method 2**: Assign to Memory
+---
+
+## Option 2. Specify column types
 
 
 ```r
-starwars_humans &lt;-  
-  filter(starwars, 
-         species == "Human")
-
-summarise(starwars_humans, 
-          av_mass = mean(mass, 
-                         na.rm = TRUE))
+read_csv("data/df-na.csv", col_types = list(col_double(), 
+                                            col_character(), 
+                                            col_character()))
 ```
 
-*ISSUE*: How good is *your* memory of each object in the computer's memory?!
-]
 
-.question[
-Which method (if either) produces `tidy` code that is easy to read? Can we do any better?
-]
-
-
----
-
-class: middle
-
-# Pipes
-
----
-
-## What is a pipe?
-
-In programming, a pipe is a technique for passing information from one process to another.
-
-
-The pipe operator is implemented in the package **magrittr**, though we don't need to load this package explicitly since **tidyverse** does this for us.
-
-.pull-left[
-&lt;img src="img/magrittr_hex.png" width="50%" style="display: block; margin: auto;" /&gt;
-]
-
-.pull-right[
-
-
-```r
-data %&gt;% 
-  select(variable1, variable2) %&gt;%
-  filter(variable1 &lt;= variable2)
+```
+## # A tibble: 9 × 3
+##       x y              z     
+##   &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; 
+## 1     1 a              hi    
+## 2    NA b              hello 
+## 3     3 Not applicable 9999  
+## 4     4 d              ola   
+## 5     5 e              hola  
+## 6    NA f              whatup
+## 7     7 g              wassup
+## 8     8 h              sup   
+## 9     9 i              &lt;NA&gt;
 ```
 
-.center[
-<svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:white;overflow:visible;position:relative;"><path d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z"/></svg>
-]
-
-&lt;img src="img/piping_code.png" width="100%" /&gt;
-
-]
-
-
 ---
 
-## The piping narrative
+## Column types
 
-.pull-left[
-
-* **Take the `starwars` data set and ...**
-
-]
-
-.pull-right[
 .small[
-
-```r
-*starwars
-```
-
-```
-## # A tibble: 87 × 14
-##    name   height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex  
-##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;
-##  1 Luke …    172    77 blond   fair    blue       19   male 
-##  2 C-3PO     167    75 &lt;NA&gt;    gold    yellow    112   none 
-##  3 R2-D2      96    32 &lt;NA&gt;    white,… red        33   none 
-##  4 Darth…    202   136 none    white   yellow     41.9 male 
-##  5 Leia …    150    49 brown   light   brown      19   fema…
-##  6 Owen …    178   120 brown,… light   blue       52   male 
-##  7 Beru …    165    75 brown   light   blue       47   fema…
-##  8 R5-D4      97    32 &lt;NA&gt;    white,… red        NA   none 
-##  9 Biggs…    183    84 black   light   brown      24   male 
-## 10 Obi-W…    182    77 auburn… fair    blue-g…    57   male 
-## # … with 77 more rows, 6 more variables: gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
-## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated
-## #   variable names ¹​hair_color, ²​skin_color, ³​eye_color,
-## #   ⁴​birth_year
-```
-]
+**type function**  | **data type**
+------------------ | -------------
+`col_character()`  | character
+`col_date()`       | date
+`col_datetime()`   | POSIXct (date-time)
+`col_double()`     | double (numeric)
+`col_factor()`     | factor
+`col_guess()`      | let readr guess (default)
+`col_integer()`    | integer
+`col_logical()`    | logical
+`col_number()`     | numbers mixed with non-number characters
+`col_numeric()`    | double or integer
+`col_skip()`       | do not read
+`col_time()`       | time
 ]
 
 ---
 
-## The piping narrative
 
-.pull-left[
+class:middle
 
-* Take the `starwars` data set and ...
-* **... select the `species` and `height` variables. **
+# Case study: Favourite foods
 
-]
+---
 
-.pull-right[
-.small[
+## Favourite foods
+
+&lt;img src="img/fav-food/fav-food.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
 
 ```r
-starwars %&gt;%
-* select(species, height)
+*fav_food &lt;- read_excel("data/favourite-food.xlsx")
+fav_food
 ```
 
 ```
-## # A tibble: 87 × 2
-##    species height
-##    &lt;chr&gt;    &lt;int&gt;
-##  1 Human      172
-##  2 Droid      167
-##  3 Droid       96
-##  4 Human      202
-##  5 Human      150
-##  6 Human      178
-##  7 Human      165
-##  8 Droid       97
-##  9 Human      183
-## 10 Human      182
-## # … with 77 more rows
+## # A tibble: 5 × 6
+##   `Student ID` `Full Name`      favourite.food     mealPlan          AGE   SES  
+##          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt;
+## 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only        4     High 
+## 2            2 Barclay Lynn     French fries       Lunch only        5     Midd…
+## 3            3 Jayendra Lyne    N/A                Breakfast and lu… 7     Low  
+## 4            4 Leon Rossini     Anchovies          Lunch only        99999 Midd…
+## 5            5 Chidiegwu Dunkel Pizza              Breakfast and lu… five  High
+```
+
+---
+
+## Variable names
+
+&lt;img src="img/fav-food/fav-food-names.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+
+```r
+fav_food &lt;- read_excel("data/favourite-food.xlsx") %&gt;%
+* clean_names()
+fav_food 
+```
+
+```
+## # A tibble: 5 × 6
+##   student_id full_name        favourite_food     meal_plan           age   ses  
+##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;
+## 1          1 Sunil Huffmann   Strawberry yoghurt Lunch only          4     High 
+## 2          2 Barclay Lynn     French fries       Lunch only          5     Midd…
+## 3          3 Jayendra Lyne    N/A                Breakfast and lunch 7     Low  
+## 4          4 Leon Rossini     Anchovies          Lunch only          99999 Midd…
+## 5          5 Chidiegwu Dunkel Pizza              Breakfast and lunch five  High
+```
+
+---
+
+## Handling NAs
+
+&lt;img src="img/fav-food/fav-food-nas.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+
+```r
+fav_food &lt;- read_excel("data/favourite-food.xlsx",
+*                      na = c("N/A", "99999")) %&gt;%
+  clean_names()
+fav_food 
+```
+
+```
+## # A tibble: 5 × 6
+##   student_id full_name        favourite_food     meal_plan           age   ses  
+##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;
+## 1          1 Sunil Huffmann   Strawberry yoghurt Lunch only          4     High 
+## 2          2 Barclay Lynn     French fries       Lunch only          5     Midd…
+## 3          3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch 7     Low  
+## 4          4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt;  Midd…
+## 5          5 Chidiegwu Dunkel Pizza              Breakfast and lunch five  High
+```
+
+---
+
+## Make `age` numeric
+
+.pull-left-wide[
+
+```r
+fav_food &lt;- fav_food %&gt;%
+* mutate(
+*   age = if_else(age == "five", "5", age),
+*   age = as.numeric(age)
+*   )
+
+glimpse(fav_food) 
+```
+
+```
+## Rows: 5
+## Columns: 6
+## $ student_id     &lt;dbl&gt; 1, 2, 3, 4, 5
+## $ full_name      &lt;chr&gt; "Sunil Huffmann", "Barclay Lynn", "…
+## $ favourite_food &lt;chr&gt; "Strawberry yoghurt", "French fries…
+## $ meal_plan      &lt;chr&gt; "Lunch only", "Lunch only", "Breakf…
+## $ age            &lt;dbl&gt; 4, 5, 7, NA, 5
+## $ ses            &lt;chr&gt; "High", "Middle", "Low", "Middle", …
 ```
 ]
+.pull-right-narrow[
+&lt;img src="img/fav-food/fav-food-age.png" width="565" /&gt;
 ]
 
 ---
-## The piping narrative
 
-.pull-left[
+## Socio-economic status
 
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* **Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".**
-
-]
-
-.pull-right[
-.small[
+.pull-left-wide[
 
 ```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-* mutate(species_group = case_when(
-*   species == "Droid" ~ "Droid",
-*   species == "Human" ~ "Human",
-*   TRUE ~ "Other"))
-```
-
-```
-## # A tibble: 87 × 3
-##    species height species_group
-##    &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        
-##  1 Human      172 Human        
-##  2 Droid      167 Droid        
-##  3 Droid       96 Droid        
-##  4 Human      202 Human        
-##  5 Human      150 Human        
-##  6 Human      178 Human        
-##  7 Human      165 Human        
-##  8 Droid       97 Droid        
-##  9 Human      183 Human        
-## 10 Human      182 Human        
-## # … with 77 more rows
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* **Next, group the data according to their `species_group`, and ...**
-
-]
-
-.pull-right[
-.small[
-
-```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-* group_by(species_group)
-```
-
-```
-## # A tibble: 87 × 3
-## # Groups:   species_group [3]
-##    species height species_group
-##    &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        
-##  1 Human      172 Human        
-##  2 Droid      167 Droid        
-##  3 Droid       96 Droid        
-##  4 Human      202 Human        
-##  5 Human      150 Human        
-##  6 Human      178 Human        
-##  7 Human      165 Human        
-##  8 Droid       97 Droid        
-##  9 Human      183 Human        
-## 10 Human      182 Human        
-## # … with 77 more rows
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* **... summarise the data to return ...**
-
-]
-
-.pull-right[
-.small[
-
-```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-  group_by(species_group) %&gt;%
-* summarise()
-```
-
-```
-## # A tibble: 3 × 1
-##   species_group
-##   &lt;chr&gt;        
-## 1 Droid        
-## 2 Human        
-## 3 Other
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   **... the group's sample size and ...**
-
-]
-
-.pull-right[
-.small[
-
-```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-  group_by(species_group) %&gt;%
-  summarise(
-*   count = n()
-  )
+fav_food %&gt;%
+  count(ses)
 ```
 
 ```
 ## # A tibble: 3 × 2
-##   species_group count
-##   &lt;chr&gt;         &lt;int&gt;
-## 1 Droid             6
-## 2 Human            35
-## 3 Other            46
+##   ses        n
+##   &lt;chr&gt;  &lt;int&gt;
+## 1 High       2
+## 2 Low        1
+## 3 Middle     2
 ```
 ]
+.pull-right-narrow[
+&lt;img src="img/fav-food/fav-food-ses.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+.question[
+Does the order of the `ses` categories make sense?
+]
+
+
+---
+
+## Make `ses` factor
+
+.pull-left-wide[
+
+```r
+fav_food &lt;- fav_food %&gt;%
+* mutate(ses = fct_relevel(ses, "Low", "Middle", "High"))
+
+fav_food %&gt;%
+  count(ses)
+```
+
+```
+## # A tibble: 3 × 2
+##   ses        n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 Low        1
+## 2 Middle     2
+## 3 High       2
+```
 ]
 
 ---
 
-## The piping narrative
+## Putting it altogether
 
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   ... the group's sample size and ...
-  *   **... the group's sample mean** 
-
-]
-
-.pull-right[
-.small[
 
 ```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-  group_by(species_group) %&gt;%
-  summarise(
-    count = n(),
-*   avg_height = mean(height)
+fav_food &lt;- read_excel("data/favourite-food.xlsx", na = c("N/A", "99999")) %&gt;%
+  clean_names() %&gt;%
+  mutate(
+    age = if_else(age == "five", "5", age), 
+    age = as.numeric(age),
+    ses = fct_relevel(ses, "Low", "Middle", "High")
   )
+
+fav_food
 ```
 
 ```
-## # A tibble: 3 × 3
-##   species_group count avg_height
-##   &lt;chr&gt;         &lt;int&gt;      &lt;dbl&gt;
-## 1 Droid             6         NA
-## 2 Human            35         NA
-## 3 Other            46         NA
+## # A tibble: 5 × 6
+##   student_id full_name        favourite_food     meal_plan             age ses  
+##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt; &lt;fct&gt;
+## 1          1 Sunil Huffmann   Strawberry yoghurt Lunch only              4 High 
+## 2          2 Barclay Lynn     French fries       Lunch only              5 Midd…
+## 3          3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch     7 Low  
+## 4          4 Leon Rossini     Anchovies          Lunch only             NA Midd…
+## 5          5 Chidiegwu Dunkel Pizza              Breakfast and lunch     5 High
 ```
-]
+
+
+---
+
+## Out and back in
+
+
+```r
+write_csv(fav_food, file = "data/fav-food-clean.csv")
+
+fav_food_clean &lt;- read_csv("data/fav-food-clean.csv")
+```
+
+
+```r
+fav_food_clean %&gt;%
+  count(ses)
+```
+
+```
+## # A tibble: 3 × 2
+##   ses        n
+##   &lt;chr&gt;  &lt;int&gt;
+## 1 High       2
+## 2 Low        1
+## 3 Middle     2
+```
+
+.question[
+What happened to the order of `ses` categories?
 ]
 
 ---
 
+## `read_rds()` and `write_rds()`
 
-## The piping narrative
+- CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.
+- An alternative is RDS files ('R data single'), you can read and write them with `read_rds()` and `write_rds()`, respectively.
+
+
+```r
+write_rds(fav_food, file = "data/fav-food-clean.rds")
+fav_food_clean &lt;- read_rds("data/fav-food-clean.rds")
+fav_food_clean %&gt;%
+  count(ses)
+```
+
+```
+## # A tibble: 3 × 2
+##   ses        n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 Low        1
+## 2 Middle     2
+## 3 High       2
+```
+
+
+---
+
+class: middle
+
+# Other types of data
+
+---
+
+## Other types of data importing
+
+- **googlesheets4:** Google Sheets
+- **haven**: SPSS, Stata, and SAS files
+- **DBI**, along with a database specific backend (e.g. RMySQL, RSQLite, RPostgreSQL etc): allows you to run SQL queries against a database and return a data frame
+- **jsonline**: JSON
+- **xml2**: xml
+- **rvest**: web scraping
+- **httr**: web APIs
+- **sparklyr**: data loaded into spark
+
+&lt;br&gt;
+
+⬇️ You may need to install specialised R packages to read data from a specific format
+
+
+---
+
+class: middle
+
+# Using RStudio GUI (Graphical User Interface)
+
+
+---
+
+## Importing CSV data
+
+- We've talked about the `read_csv` function
+
+- The options are a little bit fiddly, especially for wide datasets with many variables
+  
+- You have to inspect the dataset manually to get it right
+
+
+
+```r
+tube &lt;- read_csv("data/tube-stations.csv")
+```
+
+```
+## Warning: One or more parsing issues, see `problems()` for details
+```
+
+```
+## Rows: 7 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (2): Station; Line; Zone; Opened; Number of passengers (millions, 2019)
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+Well, this doesn't seem to have worked!  Let's look at the dataset…
+
+---
+## Tube stations data
+
+
+```r
+tube
+```
+
+```
+## # A tibble: 7 × 2
+##   `Station; Line; Zone; Opened; Number of passengers (millions` `2019)`         
+##   &lt;chr&gt;                                                         &lt;chr&gt;           
+## 1 Russell Square; Piccadilly; 1; 15-DEC-1906; 12.27             &lt;NA&gt;            
+## 2 Heathrow Terminals 1                                          2, 3; Piccadill…
+## 3 Kingsbury; Jubilee; 4; 10-DEC-1932; 4.55                      &lt;NA&gt;            
+## 4 Tooting Bec; Northern; 3; 13-SEP-1926; 7.67                   &lt;NA&gt;            
+## 5 Warwick Avenue; Bakerloo; 2; 31-JAN-1915; 4.00                &lt;NA&gt;            
+## 6 Upminster Bridge; District; 6; 17-DEC-1932; 1.11              &lt;NA&gt;            
+## 7 Battersea Power Station; Northern; 1; 1-JAN-3000; NA          &lt;NA&gt;
+```
+- The separators are semicolons, not commas!
+- So we could use `read_csv2` - but we have to remember that!
+- Is there an easier way?
+---
+
+class: inverse
+background-image: url("img/GUI/From-text-readr.png")
+
+## The "Import Dataset" menu
+-   **Environment** tab (top-right pane)
+-   Several options!  Choose **From Text (readr)...**.
+
+---
+class: inverse
+background-image: url("img/GUI/Import-box.png")
+background-size: contain
+
+---
+class: inverse
+background-image: url("img/GUI/Preview-1.png")
+background-size: contain
+---
+class: inverse
+background-image: url("img/GUI/Preview-2.png")
+background-size: contain
+---
+
+## Choosing a data type from drop-down menu
+
 
 .pull-left[
+For the "Zone" column
 
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   ... the group's sample size and ...
-  *   ... the group's sample mean **(excluding the rows where data is not available, `NA`).**
+.center[![The drop-down menu for the "Zone" column](img/GUI/Zone-type.png)]
+]
+
+
+
+.pull-right[
+For the "Opened" column
+
+.center[![The drop-down menu for the "Opened" column](img/GUI/Date-type.png)]
+]
+
+---
+
+## Date formats
+
+The default isn't right!
+
+Our dates are of the form `01-JAN-1900`, so we need to type `%d-%b-%Y` into the box. 
+
+(`%b` encondes 3 character months, run `help(col_date)` for more on syntax)
+
+.pull-left[
+.center[![bad date format](img/GUI/date-1.png)]
 
 ]
 
 .pull-right[
-.small[
-
-```r
-starwars %&gt;%
-  select(species, height) %&gt;%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %&gt;%
-  group_by(species_group) %&gt;%
-  summarise(
-    count = n(),
-*   avg_height = mean(height, na.rm = TRUE)
-  )
-```
-
-```
-## # A tibble: 3 × 3
-##   species_group count avg_height
-##   &lt;chr&gt;         &lt;int&gt;      &lt;dbl&gt;
-## 1 Droid             6       131.
-## 2 Human            35       177.
-## 3 Other            46       178.
-```
-]
+.center[![good date format](img/GUI/date-2.png)]
 ]
 
 ---
 
+## Importing from a CSV using the GUI
+
+.center[![The final appearance of the data table in the import dialog box](img/GUI/finished-data.png)]
+
+- All the data types are correct
+- Note the non-integer Zone has become an `NA` …
+- … but not all NAs have been removed!
+---
+## Importing from a CSV using the GUI
+
+.center[![The final appearance of the code in the import dialog box](img/GUI/final-code-preview.png)]
+
+- We can run the code directly from the dialogue box, but that won't help with reproducibility/portability of the code
+- Instead, click the clipboard button (📋) to copy the code into yout editor.
+
+---
+## Importing from a CSV using the GUI
 
 
-## A note on piping and layering
 
-- `%&gt;%` is used in data wrangling pipelines. we _pipe_ the output of the previous line of code as the first input of the next line of code.
 
-- `+` is used in **ggplot2** plots for "layering". We create the plot by _adding_ layers.
+```r
+#library(readr)
+tube_stations &lt;- read_delim("data/tube-stations.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Zone = col_integer(), 
+        Opened = col_date(format = "%d-%b-%Y")), 
+    trim_ws = TRUE)
+```
+
+```
+## Warning: One or more parsing issues, see `problems()` for details
+```
+It gives us the `readr` library, but if we've already imported the tidyverse we don't need to include that line, and can delete it.
+
+The warning message here is fine---it's telling us that "`not in a zone`" is not an integer, which we already know!
+---
+
+## Importing from a CSV using the GUI
+
+Let's prove it worked!
+
+
+
+```r
+tube_stations %&gt;%
+  summarise(mean_date = mean(Opened), med_zone = median(Zone, na.rm = T))
+```
+
+```
+## # A tibble: 1 × 2
+##   mean_date  med_zone
+##   &lt;date&gt;        &lt;int&gt;
+## 1 2056-05-13        3
+```
+
+- The mean date is in the future because we haven't corrected that Year 3000 date yet!
+- .small[FYI, Battersea underground station opened in 20-SEP-2021.]
+---
+
+## Our data in an Excel file
+
+
+.center[![Nearly same data we've been working with, but in an Excel file](img/GUIxl/excel-sheet.png)]
+
+---
+class: inverse
+background-image: url("img/GUIxl/From-text-readr.png")
+
+## The "Import Dataset" menu
+
+-   **Environment** tab (top-right pane)
+-   Now we want **From Excel...**.
 
 ---
 
-## Right and wrong uses
+class: inverse
+background-image: url("img/GUIxl/Import-box.png")
+background-size: contain
+
+---
+class: inverse
+background-image: url("img/GUIxl/Preview-1.png")
+background-size: contain
+---
+
+## Importing from Excel using the GUI
+
+.center[![The final appearance of the Import Options in the dialog box, from Excel](img/GUIxl/Import-options.png)]
+
+- We need to specify the range of cells in which the data are stored (or use the **Skip:** field)
+- The **Name:** field is the name under which we'll store the data once imported
+  - Choose something different to avoid overwriting!
+
+---
+
+## Importing from Excel using the GUI
+
+.center[![The final appearance of the data in the dialog box, from Excel](img/GUIxl/finished-data.png)]
 
 
-.pull-left[
-.midi[
-❌
+- Check and edit the data types for each variable
+- We don't get separate **double** and **integer** options here: all we can choose is **numeric** (we can fix that later)
 
+---
 
-```r
-starwars +
-  select(name, height)
-```
+## Importing from Excel using the GUI
 
-```
-## Error in select(name, height) : object 
-## 'name' not found
-```
+.center[![The final appearance of the code from the dialog box, from Excel](img/GUIxl/final-code-preview.png)]
 
-✅
-
-
-```r
-starwars %&gt;%
-  select(name, height)
-```
-
-```
-## # A tibble: 87 × 2
-##    name               height
-##    &lt;chr&gt;               &lt;int&gt;
-##  1 Luke Skywalker        172
-##  2 C-3PO                 167
-##  3 R2-D2                  96
-...
-```
-]
-]
-
-.pull-right[
-.midi[
-❌
+- Again, let's copy this out using the clipboard icon…
 
 
 ```r
-ggplot(starwars, aes(x = gender)) %&gt;%
-  geom_bar()
+library(readxl)
+tube_stations_excel &lt;- read_excel("data/tube-stations.xlsx", 
+    range = "A3:E11", col_types = c("text", 
+        "text", "numeric", "text", "numeric"))
 ```
-
-```
-## Error in `validate_mapping()`:
-## ! `mapping` must be created by `aes()`
-## Did you use %&gt;% instead of +?
-```
-
-✅
-
-
-```r
-ggplot(starwars, aes(x = gender)) +
-  geom_bar()
-```
-
-&lt;img src="w03-L05_files/figure-html/good_add-1.png" width="25%" /&gt;
-
-]
-]
-
-
-
-
+- I've suppressed the warnings (`warning = F` in the code chunk label) because it gives lots, for every time it changes the data type in a cell
 
 
     </textarea>
