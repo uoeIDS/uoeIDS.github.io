@@ -2,7 +2,7 @@
 title: "Joining and Organising Data Sets"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -130,7 +130,7 @@ works <- read_csv("data/scientists/works.csv")
 ```
 
 .small[
-*More on importing data later in the course.
+*Check w03-L05 slides about data importing!
 ]
 
 ---
@@ -775,6 +775,3 @@ purchases %>%
     values_from = item #<<
   ) #<<
 ```
-
-
-
