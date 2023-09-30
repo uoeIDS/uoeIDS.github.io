@@ -1,8 +1,8 @@
 ---
-title: "Tidy Data and Data Wrangling"
+title: "Importing/Exporting Data"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -16,790 +16,658 @@ output:
 
 ```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-xaringanExtra::use_panelset()
-
+library(readxl)
+library(janitor)
+library(skimr)
 library(knitr)
-hook_output <- knit_hooks$get("output")
-knit_hooks$set(output = function(x, options) {
-  lines <- options$output.lines
-  if (is.null(lines)) {
-    return(hook_output(x, options))  # pass to default hook
-  }
-  x <- unlist(strsplit(x, "\n"))
-  more <- "..."
-  if (length(lines)==1) {        # first n lines
-    if (length(x) > lines) {
-      # truncate the output, but add ....
-      x <- c(head(x, lines), more)
-    }
-  } else {
-    x <- c(more, x[lines], more)
-  }
-  # paste these lines together
-  x <- paste(c(x, ""), collapse = "\n")
-  hook_output(x, options)
-})
-
+library(DT)
+library(here)
+library(emoji)
 ```
 
 
-## Tidy data
+```{r echo=FALSE, eval = FALSE}
+read_csv2("data/tube-stations.csv")
+read_csv("data/tube-stations2.csv")
+read_tsv("data/tube-stations3.csv")
+read_fwf("data/tube-stations4.txt", fwf_widths(c(30, 15, 20, 15, 50)))  ##does not support first row headers!
 
->Happy families are all alike; every unhappy family is unhappy in its own way. 
->
->Leo Tolstoy
+read_excel("data/tube-stations.xlsx")
+```
+
+
+class: middle
+
+# Reading and writing rectangular data
+
+---
+
+## Ways of rectangular data may be stored
 
 
 .pull-left[
-**Characteristics of tidy data:**
+- comma delimitation
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("img/data_structures/delim_comma.png")
+```
 
-- Each variable forms a column.
-- Each observation forms a row.
-- Each type of observational unit forms a table.
+- semicolon delimitation
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("img/data_structures/delim_semicolon.png")
+```
 ]
 
 .pull-right[
-**Characteristics of untidy data:**
-
-- Merged cells.
-- Repeated or non-informative variable/column names.
-- Cell comments or superfluous information.
-- Empty or total/subtotal rows.
-- ... 
-]
-
----
-
-## 
-
-.question[
-What makes this data not tidy?
-]
-
-```{r hyperwar-airplanes-on-hand, echo=FALSE, out.width="90%", fig.align = "center", caption = "WW2 Army Air Force combat aircraft", out.width = "70%"}
-knitr::include_graphics("img/hyperwar-airplanes-on-hand.png")
+- tab delimitation
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("img/data_structures/delim_tab.png")
 ```
 
-.footnote[
-Source: [Army Air Forces Statistical Digest, WW II](https://www.ibiblio.org/hyperwar/AAF/StatDigest/aafsd-3.html)
+- MS Excel encoding
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("img/data_structures/excel.png")
+```
 ]
 
 ---
 
-.question[
-What makes this data not tidy?
+
+## Reading data
+
+.pull-left[
+**readr** - part of tidyverse
+- `read_csv()` - comma delimited files
+- `read_csv2()` - semicolon separated files (common in countries where , is used as the decimal place)
+- `read_tsv()` - tab delimited files
+- `read_delim()` - reads in files with any delimiter
+- ...
+
+**readxl** - _not_ part of tidyverse
+- `read_excel()` - read xls or xlsx files
+- ...
+
 ]
 
+.pull-right[
+```{r echo=FALSE, out.width="35%", fig.align='center'}
+knitr::include_graphics("img/readr.png")
+```
 <br>
-
-```{r hiv-est-prevalence-15-49, echo=FALSE, out.width="95%", fig.align = "center", caption = "Estimated HIV prevalence among 15-49 year olds", out.width = "70%"}
-knitr::include_graphics("img/hiv-est-prevalence-15-49.png")
+```{r echo=FALSE, out.width="35%", fig.align='center'}
+knitr::include_graphics("img/readxl.png")
 ```
-
-.footnote[
-Source: [Gapminder, Estimated HIV prevalence among 15-49 year olds](https://www.gapminder.org/data)
 ]
 
 ---
 
-## Displaying vs. summarising data
-
-
-
-.panelset[
-.panel[
-.panel-name[Tables]
+## Reading data (skipping first few lines)
 
 .pull-left[
-
-| Name | Species | Height | Mass |
-|:----|----:|----:|---:|
-| Luke Skywalker      | Human |  172 |    77 |
-| C-3PO               | Droid |  167 |    75 |
-| R2-D2               | Droid |   96 |    32 |
-| Darth Vader         | Human |  202 |   136 |
-| Leia Organa         | Human |  150 |    49 |
-| ... | ... | ... | ... |
+```{r message = FALSE, R.options=list(width = 40)}
+library(readxl)
+tube <- read_excel(
+  path = "data/tube-stations.xlsx")
+glimpse(tube)
+```
 ]
 
 .pull-right[
-
-| Species | Count | Average Height |
-|:----|----:|----:|
-| Droid | 6   | 131 |
-| Human | 35  | 177 |
-| Other | 46  | 178 |
-
-
-
-`r fontawesome::fa("fas fa-arrow-turn-up", fill = "none", height = "4em")`
-
-`r fontawesome::fa("fas fa-arrow-turn-up", fill = "white", height = "3em")`
-
+```{r message = FALSE, R.options=list(width = 40)}
+tube <- read_excel(
+  path = "data/tube-stations.xlsx", 
+  skip = 2)
+glimpse(tube)
+```
 ]
 
+---
+
+## Writing data to file
+
+Most read functions have a corresponding write function.
+
+```{r}
+write_csv(tube, file = "data/tube-station-comma.csv")
+write_csv2(tube, file = "data/tube-station-semicolon.txt")
+write_tsv(tube, file = "data/tube-station-tab.txt")
+```
+
+Note, a file write is a quiet function (it does return anything to R!)
+
+```{r message = FALSE}
+glimpse( read_tsv("data/tube-station-tab.txt") )
+```
+
+
+---
+
+class: middle
+
+# Variable names
+
+---
+
+## Data with bad names
+
+```{r message=FALSE}
+edibnb_badnames <- read_csv("data/edibnb-badnames.csv")
+names(edibnb_badnames)
+```
+
+
+... but R doesn't allow spaces in variable names
+
+```{r error=TRUE}
+ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
+  geom_point()
+```
+
+
+---
+
+## Option 1 - Manual edit
+
+-   Edit the column names in the raw data file to `snake_name` style
+-   OK, provided that you are only ever working with one file
+-   Method is not _reproducible_ if developing a data flow where your data file may be updated
+-   Can this be done in the code?
+
+
+---
+
+## Option 2 - Define column names
+
+```{r}
+edibnb_col_names <- read_csv("data/edibnb-badnames.csv", skip = 1,
+                             col_names = c("id", "price", "neighbourhood", "accommodates", 
+                                           "bathroom", "bedroom", "bed", 
+                                           "review_scores_rating", "n_reviews", "url"))
+
+names(edibnb_col_names)
+```
+
+---
+
+## Option 3 - `clean_names` to snake_case
+
+```{r warning=FALSE, message=FALSE}
+library(janitor)       #may need to run: install.packages("janitor")
+```
+```{r warning=FALSE}
+edibnb_clean_names <- read_csv("data/edibnb-badnames.csv") %>%
+  clean_names()
+
+names(edibnb_clean_names)
+```
+
+---
+
+class: middle
+
+# Variable types
+
+---
+
+## Which type is variable `x`?
+
+.pull-left[
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/df-na.png")
+```
+]
+.pull-right[
+```{r eval=FALSE, R.options=list(width = 50)}
+read_csv("data/df-na.csv")
+```
+
+```{r echo=FALSE, R.options=list(width = 50)}
+read_csv("data/df-na.csv") %>% print(n = 10)
+```
 ]
 
-.panel[
-.panel-name[Code]
+---
+
+## Option 1. Explicit NAs
 
 ```{r eval=FALSE}
-library(tidyverse)
+read_csv("data/df-na.csv", 
+         na = c("", "NA", ".", "9999", "Not applicable"))
 ```
 
 .pull-left[
-```{r eval = FALSE}
-starwars %>%
-  select(species, height, mass)
-
-```
-]
-
-.pull-right[
-```{r eval = FALSE}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) %>%
-  summarise(
-    count = n(),
-    avg_height = mean(height, na.rm = TRUE)
-  )
-
-```
-]
-
-]
-
-]
-
-
----
-
-
-
-class: middle
-
-# Grammar of data wrangling
-
----
-
-## A grammar of data wrangling...
-
-... based on the concepts of functions as verbs that manipulate data frames
-
-.pull-left[
-```{r dplyr-part-of-tidyverse, echo=FALSE, out.width="70%", caption = "dplyr is part of the tidyverse"}
-knitr::include_graphics("img/dplyr-part-of-tidyverse.png")
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/df-na.png")
 ```
 ]
 .pull-right[
-.midi[
-- `select`: pick columns by name
-- `arrange`: reorder rows
-- `slice`: pick rows using index(es)
-- `filter`: pick rows matching criteria
-- `distinct`: filter for unique rows
-- `mutate`: add new variables
-- `summarise`: reduce variables to values
-- `group_by`: for grouped operations
-- ... (many more)
+```{r echo=FALSE,message=FALSE}
+read_csv("data/df-na.csv", 
+  na = c("", "NA", ".", "9999",
+         "Not applicable")) %>% 
+  print(n = 10)
+```
 ]
+
+---
+
+## Option 2. Specify column types
 
 ```{r eval=FALSE}
-<function_name>(<dataset_name>, ...)
+read_csv("data/df-na.csv", col_types = list(col_double(), 
+                                            col_character(), 
+                                            col_character()))
 ```
 
-```{r eval = FALSE}
-help(select)
+```{r echo=FALSE, warning = FALSE}
+read_csv("data/df-na.csv", col_types = list(col_double(), 
+                                            col_character(), 
+                                            col_character())) %>%
+  print(n = 10)
 ```
-]
 
 ---
 
-## `select` specific variables
+## Column types
 
-.pull-left[
-```{r starwars_selecting}
-select(starwars, name, height, mass)
-```
-]
-
-.pull-right[
-```{r starwars_deleting, R.options = list(width = 40)}
-select(starwars, -name)
-```
-]
-
----
-
-
-## Select helper functions
-
-.pull-left[
-```{r starwars_selecting_string}
-select(starwars, ends_with("color"))
-```
-]
-
-.pull-right[
-<br>
 .small[
-*   `starts_with()`: Starts with a prefix
-*   `ends_with()`: Ends with a suffix
-*   `contains()`: Contains a literal string
-*   `num_range()`: Match a numerical range like x01, x02, x03
-*   `one_of()`: Matches variable names in a character vector
-*   `everything()`: Matches all variables
-*   `last_col()`: Select last variable, possibly with an offset
-*   `matches()`: Matches a regular expression (a sequence of symbols/characters expressing a string/pattern to be searched for within text)
-
-See the help page for more info on these functions.
+**type function**  | **data type**
+------------------ | -------------
+`col_character()`  | character
+`col_date()`       | date
+`col_datetime()`   | POSIXct (date-time)
+`col_double()`     | double (numeric)
+`col_factor()`     | factor
+`col_guess()`      | let readr guess (default)
+`col_integer()`    | integer
+`col_logical()`    | logical
+`col_number()`     | numbers mixed with non-number characters
+`col_numeric()`    | double or integer
+`col_skip()`       | do not read
+`col_time()`       | time
 ]
-]
-
-
 
 ---
 
-## `arrange` mass in numerical order
 
-.pull-left[
-Ascending order:
-```{r starwars_arrange_asc, R.options = list(width = 40), output.lines = 10}
-arrange(starwars, mass)
-```
-]
+class:middle
 
-.pull-right[
-Descending order:
-```{r starwars_arrange_desc, R.options = list(width = 40), output.lines = 10}
-arrange(starwars, desc(mass))
-```
-]
-
+# Case study: Favourite foods
 
 ---
 
-## `slice` for cetain row numbers
+## Favourite foods
 
-.pull-left[
-```{r starwars_slice_top, R.options = list(width = 40), ouput.lines = 10}
-slice(starwars, 1:4)
-```
-]
-
-.pull-right[
-```{r starwars_slice_even, R.options = list(width = 40), ouput.lines = 10}
-slice(starwars, c(2,4,6,8))
-```
-]
----
-
-## `filter` for the droids
-
-```{r starwars_filter, R.options = list(width = 80)}
-filter(starwars, species == "Droid")
+```{r echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("img/fav-food/fav-food.png")
 ```
 
 
-<br>
-
-"These aren't the droids you're looking for!"<img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'><img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'>
-
-
+```{r}
+fav_food <- read_excel("data/favourite-food.xlsx") #<<
+fav_food
+```
 
 ---
 
-## Logical operators in R
+## Variable names
 
-
-| Code    | Description           | Example        | Output  |
-|:-------:|:----------------------|:---------------|:--------|
-| `<`     | Strictly less than    | `1 < 2`        | `TRUE`  |
-| `<=`    | Less than or equal to | `2 <= 2`       | `TRUE`  | 
-| `>`     | Strictly greater than | `-3 > 3`       | `FALSE` |
-| `>=`    | Less than or equal to | `10 >= 0`      | `TRUE`  |
-| `==`    | Exactly equal to      | `pi == 3.14`   | `FALSE` |
-| `!=`    | Not equal to          | `pi != 3.14`   | `TRUE`  |
-| ` `     | ` `                   | ` `            | ` `     |
-| ` `     | ` `                   | ` `            | ` `     |
-| ` `     | ` `                   | ` `            | ` `     |
-| `x & y` | Logical AND operator  | `TRUE & FALSE` | `FALSE` |
-| `x `<span, style="color:#a7a798;">&nbsp;&nbsp;&#124;&nbsp;&nbsp;</span>` y` | Logical OR operator   | `TRUE `<span, style="color:#a7a798;">&nbsp;&nbsp;&#124;&nbsp;&nbsp;</span>` FALSE` | `TRUE`  |
-| `!x`    | Logical NOT operator  | `!TRUE `       | `FALSE` |
-
-```{r starwars_filter2, eval=FALSE}
-filter(starwars, species == "Droid" & height < 100)
+```{r echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("img/fav-food/fav-food-names.png")
 ```
 
+
+```{r warning=FALSE}
+fav_food <- read_excel("data/favourite-food.xlsx") %>%
+  clean_names() #<<
+fav_food 
+```
 
 ---
 
-### `mutate` to compute BMI and species group
+## Handling NAs
 
-.pull-left[
-```{r starwars_mutate, eval = FALSE}
-mutate(starwars, 
-       bmi = 10000 * mass / height^2,
-       species_grp = 
-         case_when(
-           species == "Human" ~ "Human",
-           species == "Droid" ~ "Droid",
-           TRUE ~ "Other"
-         ))
+```{r echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("img/fav-food/fav-food-nas.png")
 ```
-]
 
 
-.pull-right[
-```{r starwars_mutate_output, echo = FALSE, R.options=list(width = 40)}
-mutate(starwars, 
-       bmi = 10000 * mass / height^2,
-       species_grp = 
-         case_when(
-           species == "Human" ~ "Human",
-           species == "Droid" ~ "Droid",
-           TRUE ~ "Other"
-         )) %>% 
-  arrange(desc(bmi)) %>%
-  relocate(name, bmi, species_grp)
+```{r warning=FALSE}
+fav_food <- read_excel("data/favourite-food.xlsx",
+                       na = c("N/A", "99999")) %>% #<<
+  clean_names()
+fav_food 
 ```
-]
-
 
 ---
 
-## `count` to make a frequency table
+## Make `age` numeric
 
-.pull-left[
-```{r count_1var}
-count(starwars, eye_color, sort = TRUE)
+.pull-left-wide[
+```{r warning=FALSE, R.options=list(width = 60)}
+fav_food <- fav_food %>%
+  mutate( #<<
+    age = if_else(age == "five", "5", age), #<<
+    age = as.numeric(age) #<<
+    ) #<<
+
+glimpse(fav_food) 
 ```
 ]
-
+.pull-right-narrow[
+```{r echo=FALSE}
+knitr::include_graphics("img/fav-food/fav-food-age.png")
+```
+]
 
 ---
 
-## `summerise` to compute the average height
+## Socio-economic status
 
-.pull-left[
-`r emo::ji("white_check_mark")` Informative variable name
-```{r starwars_avg, eval = FALSE}
-summarise(starwars, avg_ht = mean(height))
+.pull-left-wide[
+```{r}
+fav_food %>%
+  count(ses)
 ```
-```{r starwars_avg2, echo = FALSE}
-summarise(na.omit(starwars), avg_ht = mean(height))
+]
+.pull-right-narrow[
+```{r echo=FALSE, out.width="75%", fig.align='center'}
+knitr::include_graphics("img/fav-food/fav-food-ses.png")
 ```
-
-
-```{r starwars_summary, eval = FALSE}
-summarise(starwars, 
-          min_ht = min(height),
-          avg_ht = mean(height),
-          med_ht = median(height),
-          max_ht = max(height),
-          sd_ht = sd(height))
-```
-```{r starwars_summary2, echo = FALSE}
-summarise(na.omit(starwars), 
-          min_ht = min(height),
-          avg_ht = mean(height),
-          med_ht = median(height),
-          max_ht = max(height),
-          sd_ht = sd(height))
-```
-
 ]
 
 
-.pull-right[
-`r emo::ji("x")` Bad/sloppy variable name
-```{r starwars_avg_bad, eval = FALSE}
-summarise(starwars, mean(height))
-```
-```{r starwars_avg_bad2, echo = FALSE}
-summarise(na.omit(starwars), mean(height))
-```
-
-.tip[
-`summarise()` changes the data frame entirely, it collapses rows down to a single summary statistic, and removes all columns that are irrelevant to the calculation.
-]
-
-]
-
-
----
-
-class: middle
-
-# .hand[We...]
-
-.huge[.green[have]] .hand[a single data frame]
-
-.huge[.pink[want]] .hand[to slice it, and dice it, and juice it, and process it]
-
-
----
-
-## How to do multiple data wrangling steps?
-
-
-.pull-left[
-**Method 1**: Nesting
-
-```{r bad_combine_nesting, eval = FALSE}
-summarise( 
-  filter( 
-    starwars, 
-    species == "Human"
-    ), 
-  avg_mass = mean(mass, na.rm = TRUE)
-  )
-```
-
-*ISSUE*: Where do you begin reading the code?!
-
-]
-
-.pull-right[
-**Method 2**: Assign to Memory
-
-```{r bad_combine_memory, eval = FALSE}
-starwars_humans <-  
-  filter(starwars, 
-         species == "Human")
-
-summarise(starwars_humans, 
-          av_mass = mean(mass, 
-                         na.rm = TRUE))
-```
-
-*ISSUE*: How good is *your* memory of each object in the computer's memory?!
-]
 
 .question[
-Which method (if either) produces `tidy` code that is easy to read? Can we do any better?
+Does the order of the `ses` categories make sense?
 ]
+
+
+---
+
+## Make `ses` factor
+
+.pull-left-wide[
+```{r warning=FALSE}
+fav_food <- fav_food %>%
+  mutate(ses = fct_relevel(ses, "Low", "Middle", "High")) #<<
+
+fav_food %>%
+  count(ses)
+```
+]
+
+---
+
+## Putting it altogether
+
+```{r warning=FALSE}
+fav_food <- read_excel("data/favourite-food.xlsx", na = c("N/A", "99999")) %>%
+  clean_names() %>%
+  mutate(
+    age = if_else(age == "five", "5", age), 
+    age = as.numeric(age),
+    ses = fct_relevel(ses, "Low", "Middle", "High")
+  )
+
+fav_food
+```
+
+
+---
+
+## Out and back in
+
+```{r message = FALSE}
+write_csv(fav_food, file = "data/fav-food-clean.csv")
+
+fav_food_clean <- read_csv("data/fav-food-clean.csv")
+```
+
+```{r}
+fav_food_clean %>%
+  count(ses)
+```
+
+.question[
+What happened to the order of `ses` categories?
+]
+
+---
+
+## `read_rds()` and `write_rds()`
+
+- CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.
+- An alternative is RDS files ('R data single'), you can read and write them with `read_rds()` and `write_rds()`, respectively.
+
+```{r message = FALSE}
+write_rds(fav_food, file = "data/fav-food-clean.rds")
+fav_food_clean <- read_rds("data/fav-food-clean.rds")
+fav_food_clean %>%
+  count(ses)
+```
 
 
 ---
 
 class: middle
 
-# Pipes
+# Other types of data
 
 ---
 
-## What is a pipe?
+## Other types of data importing
 
-In programming, a pipe is a technique for passing information from one process to another.
+- **googlesheets4:** Google Sheets
+- **haven**: SPSS, Stata, and SAS files
+- **DBI**, along with a database specific backend (e.g. RMySQL, RSQLite, RPostgreSQL etc): allows you to run SQL queries against a database and return a data frame
+- **jsonline**: JSON
+- **xml2**: xml
+- **rvest**: web scraping
+- **httr**: web APIs
+- **sparklyr**: data loaded into spark
 
+<br>
 
-The pipe operator is implemented in the package **magrittr**, though we don't need to load this package explicitly since **tidyverse** does this for us.
-
-.pull-left[
-```{r magrittr_hex, echo=FALSE, out.width="50%", caption = "magrittr's pipe", fig.align="center"}
-knitr::include_graphics("img/magrittr_hex.png")
-```
-]
-
-.pull-right[
-
-```{r pipeg, eval = FALSE}
-data %>% 
-  select(variable1, variable2) %>%
-  filter(variable1 <= variable2)
-```
-
-.center[
-`r fontawesome::fa("fas fa-arrow-down", fill = "white")`
-]
-
-```{r piping_img, echo=FALSE, out.width="100%", caption = "magrittr's pipe"}
-knitr::include_graphics("img/piping_code.png")
-```
-
-]
+`r emoji::emoji("down_arrow")` You may need to install specialised R packages to read data from a specific format
 
 
 ---
 
-## The piping narrative
+class: middle
 
-.pull-left[
+# Using RStudio GUI (Graphical User Interface)
 
-* **Take the `starwars` data set and ...**
-
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative1, R.options = list(width = 60)}
-starwars #<<
-```
-]
-]
 
 ---
 
-## The piping narrative
+## Importing CSV data
 
-.pull-left[
+- We've talked about the `read_csv` function
 
-* Take the `starwars` data set and ...
-* **... select the `species` and `height` variables. **
-
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative2, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) #<<
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* **Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".**
-
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative3, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(  #<<
-    species == "Droid" ~ "Droid",    #<<
-    species == "Human" ~ "Human",    #<<
-    TRUE ~ "Other"))                 #<<
+- The options are a little bit fiddly, especially for wide datasets with many variables
   
+- You have to inspect the dataset manually to get it right
+
+
+```{r read-csv, echo = T}
+tube <- read_csv("data/tube-stations.csv")
 ```
+
+Well, this doesn't seem to have worked!  Let's look at the dataset…
+
+---
+## Tube stations data
+
+```{r show-data, echo = T}
+tube
+```
+- The separators are semicolons, not commas!
+- So we could use `read_csv2` - but we have to remember that!
+- Is there an easier way?
+---
+
+class: inverse
+background-image: url("img/GUI/From-text-readr.png")
+
+## The "Import Dataset" menu
+-   **Environment** tab (top-right pane)
+-   Several options!  Choose **From Text (readr)...**.
+
+---
+class: inverse
+background-image: url("img/GUI/Import-box.png")
+background-size: contain
+
+---
+class: inverse
+background-image: url("img/GUI/Preview-1.png")
+background-size: contain
+---
+class: inverse
+background-image: url("img/GUI/Preview-2.png")
+background-size: contain
+---
+
+## Choosing a data type from drop-down menu
+
+
+.pull-left[
+For the "Zone" column
+
+.center[![The drop-down menu for the "Zone" column](img/GUI/Zone-type.png)]
 ]
+
+
+
+.pull-right[
+For the "Opened" column
+
+.center[![The drop-down menu for the "Opened" column](img/GUI/Date-type.png)]
 ]
 
 ---
-## The piping narrative
+
+## Date formats
+
+The default isn't right!
+
+Our dates are of the form `01-JAN-1900`, so we need to type `%d-%b-%Y` into the box. 
+
+(`%b` encondes 3 character months, run `help(col_date)` for more on syntax)
 
 .pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* **Next, group the data according to their `species_group`, and ...**
+.center[![bad date format](img/GUI/date-1.png)]
 
 ]
 
 .pull-right[
-.small[
-```{r pipe_narrative4, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) #<<
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* **... summarise the data to return ...**
-
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative5, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) %>%
-  summarise()    #<<
-```
-]
-]
-
----
-## The piping narrative
-
-.pull-left[
-
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   **... the group's sample size and ...**
-
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative6, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) %>%
-  summarise(
-    count = n()   #<<
-  )
-```
-]
+.center[![good date format](img/GUI/date-2.png)]
 ]
 
 ---
 
-## The piping narrative
+## Importing from a CSV using the GUI
 
-.pull-left[
+.center[![The final appearance of the data table in the import dialog box](img/GUI/finished-data.png)]
 
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   ... the group's sample size and ...
-  *   **... the group's sample mean** 
+- All the data types are correct
+- Note the non-integer Zone has become an `NA` …
+- … but not all NAs have been removed!
+---
+## Importing from a CSV using the GUI
 
-]
+.center[![The final appearance of the code in the import dialog box](img/GUI/final-code-preview.png)]
 
-.pull-right[
-.small[
-```{r pipe_narrative7, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) %>%
-  summarise(
-    count = n(),
-    avg_height = mean(height)  #<<
-  )
+- We can run the code directly from the dialogue box, but that won't help with reproducibility/portability of the code
+- Instead, click the clipboard button (`r emoji::emoji("clipboard")`) to copy the code into yout editor.
+
+---
+## Importing from a CSV using the GUI
+
+
+
+```{r csv-data-import, echo = T}
+#library(readr)
+tube_stations <- read_delim("data/tube-stations.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Zone = col_integer(), 
+        Opened = col_date(format = "%d-%b-%Y")), 
+    trim_ws = TRUE)
 ```
-]
-]
+It gives us the `readr` library, but if we've already imported the tidyverse we don't need to include that line, and can delete it.
+
+The warning message here is fine---it's telling us that "`not in a zone`" is not an integer, which we already know!
+---
+
+## Importing from a CSV using the GUI
+
+Let's prove it worked!
+
+
+```{r csv-summary, echo =T}
+tube_stations %>%
+  summarise(mean_date = mean(Opened), med_zone = median(Zone, na.rm = T))
+```
+
+- The mean date is in the future because we haven't corrected that Year 3000 date yet!
+- .small[FYI, Battersea underground station opened in 20-SEP-2021.]
+---
+
+## Our data in an Excel file
+
+
+.center[![Nearly same data we've been working with, but in an Excel file](img/GUIxl/excel-sheet.png)]
+
+---
+class: inverse
+background-image: url("img/GUIxl/From-text-readr.png")
+
+## The "Import Dataset" menu
+
+-   **Environment** tab (top-right pane)
+-   Now we want **From Excel...**.
 
 ---
 
+class: inverse
+background-image: url("img/GUIxl/Import-box.png")
+background-size: contain
 
-## The piping narrative
+---
+class: inverse
+background-image: url("img/GUIxl/Preview-1.png")
+background-size: contain
+---
 
-.pull-left[
+## Importing from Excel using the GUI
 
-* Take the `starwars` data set and ...
-* ... select the `species` and `height` variables. 
-* Mutate the data to add a new categorical variable called `species_group` that classifies a character's `species` as either "Droid", "Human" or "Other".
-* Next, group the data according to their `species_group`, and ...
-* ... summarise the data to return ...
-  *   ... the group's sample size and ...
-  *   ... the group's sample mean **(excluding the rows where data is not available, `NA`).**
+.center[![The final appearance of the Import Options in the dialog box, from Excel](img/GUIxl/Import-options.png)]
 
-]
-
-.pull-right[
-.small[
-```{r pipe_narrative8, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
-  mutate(species_group = case_when(
-    species == "Droid" ~ "Droid",
-    species == "Human" ~ "Human",
-    TRUE ~ "Other")) %>%
-  group_by(species_group) %>%
-  summarise(
-    count = n(),
-    avg_height = mean(height, na.rm = TRUE)  #<<
-  )
-```
-]
-]
+- We need to specify the range of cells in which the data are stored (or use the **Skip:** field)
+- The **Name:** field is the name under which we'll store the data once imported
+  - Choose something different to avoid overwriting!
 
 ---
 
+## Importing from Excel using the GUI
+
+.center[![The final appearance of the data in the dialog box, from Excel](img/GUIxl/finished-data.png)]
 
 
-## A note on piping and layering
-
-- `%>%` is used in data wrangling pipelines. we _pipe_ the output of the previous line of code as the first input of the next line of code.
-
-- `+` is used in **ggplot2** plots for "layering". We create the plot by _adding_ layers.
+- Check and edit the data types for each variable
+- We don't get separate **double** and **integer** options here: all we can choose is **numeric** (we can fix that later)
 
 ---
 
-## Right and wrong uses
+## Importing from Excel using the GUI
 
+.center[![The final appearance of the code from the dialog box, from Excel](img/GUIxl/final-code-preview.png)]
 
-.pull-left[
-.midi[
-`r emo::ji("x")`
+- Again, let's copy this out using the clipboard icon…
 
-```{r bad_add, eval=FALSE}
-starwars +
-  select(name, height)
+```{r excel-code, echo = T, warning = F}
+library(readxl)
+tube_stations_excel <- read_excel("data/tube-stations.xlsx", 
+    range = "A3:E11", col_types = c("text", 
+        "text", "numeric", "text", "numeric"))
 ```
-```{r bad_add1, echo=FALSE}
-cat("Error in select(name, height) : object \n'name' not found")
-```
-
-`r emo::ji("white_check_mark")`
-
-```{r good_pipe, output.lines = 6}
-starwars %>%
-  select(name, height)
-```
-]
-]
-
-.pull-right[
-.midi[
-`r emo::ji("x")`
-
-```{r bad_pipe, error=TRUE}
-ggplot(starwars, aes(x = gender)) %>%
-  geom_bar()
-```
-
-`r emo::ji("white_check_mark")`
-
-```{r good_add, out.width="25%"}
-ggplot(starwars, aes(x = gender)) +
-  geom_bar()
-```
-
-]
-]
-
-
-
-
-
-
+- I've suppressed the warnings (`warning = F` in the code chunk label) because it gives lots, for every time it changes the data type in a cell
