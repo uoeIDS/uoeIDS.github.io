@@ -1,43 +1,141 @@
 ---
-title: "Lab 02 - Under Constuction"
+title: "Lab 02 - Global plastic waste"
 author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
-library(emo)
-#devtools::install_github("hadley/emo")
-```
+### Load packages and data
 
-This solutions key for the IDS lab is currently under construction. 👷🔨
-
-Please return back to this page later in the course.
-
-
-## In the meantime...
-
-Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
-
-
-
-```{r datasuRus, message = FALSE, fig.height=10}
-library(datasauRus)
+```{r load-packages, message = FALSE, warning=FALSE}
 library(tidyverse)
-library(ggplot2)
-
-ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
-    geom_point()+
-    theme(legend.position = "none")+
-    facet_wrap(~dataset, ncol = 3)
-
-datasaurus_dozen %>% 
-    group_by(dataset) %>% 
-    summarize(
-      mean_x    = mean(x),
-      mean_y    = mean(y),
-      std_dev_x = sd(x),
-      std_dev_y = sd(y),
-      corr_x_y  = cor(x, y)
-    )
+library(readxl)
 ```
+
+
+## Load & join data sets
+
+```{r load-data, message = FALSE}
+# Member 1 write code to load File 1 data here:
+data1 <- read_csv("data/mismanaged-plastic-waste-per-capita.csv")
+
+# Member 2 write code to load File 2 data here:
+data2 <- read_csv2("data/per-capita-ocean-plastic-waste.txt")
+
+# Member 3 write code to load File 3 data here:
+data3 <- read_tsv("data/UN_country_population.tsv")
+
+# Member 4 write code to load File 4 data here:
+data4 <- read_excel("data/UN_country_region.xlsx")
+
+```
+
+
+
+```{r join-data, message = FALSE}
+# Member 1 write code to create object 'plastic_data_all':
+plastic_data_all <- data1
+
+# Member 2 write code to join your data to 'plastic_data_all':
+plastic_data_all <- data2 %>%
+  select(-name) %>%
+  left_join(plastic_data_all, by = "code")
+
+# Member 3 write code to join your data to 'plastic_data_all':
+plastic_data_all <- data3 %>%
+  select(-name) %>%
+  right_join(plastic_data_all, by = "code")
+
+# Member 4 write code to join your data to 'plastic_data_all':
+plastic_data_all <- data4 %>%
+  select(-name) %>%
+  right_join(plastic_data_all, by = "code")
+
+```
+
+
+```{r print-data, message = FALSE}
+# Member 1 adds code here to view the first 10 rows of 'plastic_data_all'
+plastic_data_all %>% head(n = 10)
+
+```
+
+
+
+## Exercises
+
+### Ex 1.
+
+```{r Ex1, message = FALSE}
+# Write your code here to answer exercise 1
+plastic_data_all %>% 
+  count(region, sort = TRUE)
+
+```
+
+
+
+### Ex 2.
+
+```{r Ex2, message = FALSE}
+# Write your code here to answer exercise 2
+
+plastic_data_all <- plastic_data_all %>%
+  mutate(total_mismanaged_plastic = mismanaged_plastic * population)
+
+plastic_data_all %>% 
+  group_by(region) %>%
+  summarise(avg_total = mean(total_mismanaged_plastic))
+
+```
+
+
+### Ex 3.
+
+```{r Ex3_pt1, message = FALSE}
+# Write your code here to answer exercise 3
+plastic_data_all <- plastic_data_all %>%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
+
+plastic_data_all %>% 
+  group_by(region) %>%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))
+
+plastic_data_all %>% filter(code == "SOM")
+```
+
+`NaN` stands for **Not a Number**. This has happened because both mismanaged plastic waste per capita estimates for Somalia is `0`, therefore the percentage calculation is attempting to compute `0/0`! As there is a missing value percentage value for Somalia, then it is not possible to compute the median statistic for Africa, hence why the summary table contains `NA`.
+
+```{r Ex3_pt2, message = FALSE}
+plastic_data_all %>% 
+  drop_na() %>%
+  group_by(region) %>%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean)) %>%
+  arrange(med_pct)
+```
+
+
+
+### Ex 4.
+
+```{r Ex4, message = FALSE}
+# Write your code here to answer exercise 4
+
+plastic_data_all <- plastic_data_all %>%
+  rename(
+    pop = population,
+    ocean_plastic = mismanaged_plastic_ocean,
+    mismanaged = mismanaged_plastic,
+    tot_plastic = total_mismanaged_plastic,
+    pct_ocean = pct_mismanaged_plastic_ocean
+  )
+
+
+plastic_data_all <- plastic_data_all %>%
+  mutate(region = str_replace_all(region, "Latin America and The Caribbean", "LAC"))
+
+plastic_data_all %>% head(n = 10)
+
+```
+
+Create your own table/summary using the edited `plastic_data_all` data frame.
