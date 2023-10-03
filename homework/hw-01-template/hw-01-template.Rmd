@@ -1,0 +1,78 @@
+---
+title: "hw-01"
+author: "Your Name (S000000)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}    
+knitr::opts_chunk$set(out.width = "100%")
+```
+
+
+------------------------------------------------------------------------------
+
+### Load packages and data
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(lubridate)
+
+edibnb <- read_csv("data/edibnb.csv")
+council <- read_csv("data/council_assessments.csv")
+```
+
+------------------------------------------------------------------------------
+
+
+## EXERCISE 1
+
+```{r hw1-ex1}
+# remove this comment and add the code for Exercise 1 here
+
+```
+
+
+_Remove this text, and add your answer for Exercise 1 here._
+
+------------------------------------------------------------------------------
+
+## EXERCISE 2
+
+```{r hw1-ex2}
+# remove this comment and add the code for Exercise 2 here
+
+```
+
+
+_Remove this text, and add your answer for Exercise 2 here._
+
+
+------------------------------------------------------------------------------
+
+## EXERCISE 3
+
+```{r hw1-ex3}
+# remove this comment and add the code for Exercise 3 here
+
+```
+
+
+_Remove this text, and add your answer for Exercise 3 here._
+
+
+
+------------------------------------------------------------------------------
+
+## EXERCISE 4
+
+```{r hw1-ex4}
+# remove this comment and add the code for Exercise 4 here
+
+```
+
+
+_Remove this text, and add your answer for Exercise 4 here._
+
+
+------------------------------------------------------------------------------
