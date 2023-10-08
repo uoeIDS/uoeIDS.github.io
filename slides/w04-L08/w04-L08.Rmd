@@ -1,8 +1,8 @@
 ---
-title: "Importing/Exporting Data"
+title: "Types of visualisations"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/2023 "
+date: "<br> 2023/2024 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -16,660 +16,929 @@ output:
 
 ```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(readxl)
-library(janitor)
-library(skimr)
-library(knitr)
-library(DT)
-library(here)
-library(emo)
+library(magick)
+library(xaringanExtra)
+xaringanExtra::use_panelset()
 ```
-
-
-```{r echo=FALSE, eval = FALSE}
-read_csv2("data/tube-stations.csv")
-read_csv("data/tube-stations2.csv")
-read_tsv("data/tube-stations3.csv")
-read_fwf("data/tube-stations4.txt", fwf_widths(c(30, 15, 20, 15, 50)))  ##does not support first row headers!
-
-read_excel("data/tube-stations.xlsx")
-```
-
 
 class: middle
 
-# Reading and writing rectangular data
+# Understanding your data
 
----
+* There are many types of data visualisation, each designed with a particular purpose.
+* To determine which visualisation style is appropriate, consider:
 
-## Ways of recangular data may be stored
-
-
-.pull-left[
-- comma delimitation
-```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("img/data_structures/delim_comma.png")
-```
-
-- semicolon delimitation
-```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("img/data_structures/delim_semicolon.png")
-```
-]
-
-.pull-right[
-- tab delimitation
-```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("img/data_structures/delim_tab.png")
-```
-
-- MS Excel encoding
-```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("img/data_structures/excel.png")
-```
-]
-
----
-
-
-## Reading data
-
-.pull-left[
-**readr** - part of tidyverse
-- `read_csv()` - comma delimited files
-- `read_csv2()` - semicolon separated files (common in countries where , is used as the decimal place)
-- `read_tsv()` - tab delimited files
-- `read_delim()` - reads in files with any delimiter
-- ...
-
-**readxl** - _not_ part of tidyverse
-- `read_excel()` - read xls or xlsx files
-- ...
-
-]
-
-.pull-right[
-```{r echo=FALSE, out.width="35%", fig.align='center'}
-knitr::include_graphics("img/readr.png")
-```
-<br>
-```{r echo=FALSE, out.width="35%", fig.align='center'}
-knitr::include_graphics("img/readxl.png")
-```
-]
-
----
-
-## Reading data (skipping first few lines)
-
-.pull-left[
-```{r message = FALSE, R.options=list(width = 40)}
-library(readxl)
-tube <- read_excel(
-  path = "data/tube-stations.xlsx")
-glimpse(tube)
-```
-]
-
-.pull-right[
-```{r message = FALSE, R.options=list(width = 40)}
-tube <- read_excel(
-  path = "data/tube-stations.xlsx", 
-  skip = 2)
-glimpse(tube)
-```
-]
-
----
-
-## Writing data to file
-
-Most read functions have a corresponding write function.
-
-```{r}
-write_csv(tube, file = "data/tube-station-comma.csv")
-write_csv2(tube, file = "data/tube-station-semicolon.txt")
-write_tsv(tube, file = "data/tube-station-tab.txt")
-```
-
-Note, a file write is a quiet function (it does return anything to R!)
-
-```{r message = FALSE}
-glimpse( read_tsv("data/tube-station-tab.txt") )
-```
+  1. What are the properties of variables?
+  2. How many variables to include in the data visualisation?
+  3. What aspect of the data do you want to explore, investigate and communicate?
 
 
 ---
 
-class: middle
+## Types of variables
 
-# Variable names
-
----
-
-## Data with bad names
-
-```{r message=FALSE}
-edibnb_badnames <- read_csv("data/edibnb-badnames.csv")
-names(edibnb_badnames)
-```
+- **Quantitative variables** are variables whose data are numerical values.
+  - **Discrete variables** describes count data, typically non-negative integer values. <br />
+    &emsp; Eg, Number of IDS students or number of election votes.
+  - **Continuous variables** are typically real-valued measurements, rounded to a specified number of decimal places or significant figures. <br />
+    &emsp; Eg, Penguin bill length, body mass and flipper length.
 
 
-... but R doesn't allow spaces in variable names
-
-```{r error=TRUE}
-ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
-  geom_point()
-```
+- **Qualitative variable** are variables that are descriptive.
+  - **Categorical (factor) variables** usually identify one option from a small set of cases. <br />
+    &emsp; Eg, Penguin breeds (Adelie, Chinstrap or Gentoo).
+  - **Ordinal variables** are categorical variables that have a natural ordering. <br />
+    &emsp; Degree grades: First, upper-second, lower-second and third.
 
 
 ---
 
-## Option 1 - Manual edit
+## Number of variables involved
 
--   Edit the column names in the raw data file to `snake_name` style
--   OK, provided that you are only ever working with one file
--   Method is not _reproducible_ if developing a data flow where your data file may be updated
--   Can this be done in the code?
+How many variables do you want to use in your data visualisation?
 
-
----
-
-## Option 2 - Define column names
-
-```{r}
-edibnb_col_names <- read_csv("data/edibnb-badnames.csv", skip = 1,
-                             col_names = c("id", "price", "neighbourhood", "accommodates", 
-                                           "bathroom", "bedroom", "bed", 
-                                           "review_scores_rating", "n_reviews", "url"))
-
-names(edibnb_col_names)
-```
+- One variable (Univariate data analysis)
+  <!-- - Investigating a single variable -->
+  - What is the _location_, _spread_ and _shape_ of the data?
+  - Types of visualisations:**histogram**, **box plot**, **bar chart**, etc.
+- Two variables (Bivariate data analysis)
+  - Investigating the relationship between two variables
+  - Positive/negative correlation? Linear or non-linear relationship?
+  - Types of visualisations: **scatter plot**, **box plots**, **segmented bar plot**, etc.
+- Three or more variables (Multivariate data analysis)
+  - Investigating the relationship between many variables simultaneously.
+  - Does the structure of the relationship between two variables change depending on the value of a third?
+  - Use of **colour**, **style** and **faceting** - be creative!
+  - YouTube: Hans Rosling, The Joy of Stats, BBC - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=jbkSRLYSojo)
 
 ---
 
-## Option 3 - `clean_names` to snake_case
+## ggplot2 package
 
-```{r warning=FALSE, message=FALSE}
-library(janitor)       #may need to run: install.packages("janitor")
-```
-```{r warning=FALSE}
-edibnb_clean_names <- read_csv("data/edibnb-badnames.csv") %>%
-  clean_names()
-
-names(edibnb_clean_names)
-```
-
----
-
-class: middle
-
-# Variable types
-
----
-
-## Which type is variable `x`?
-
-.pull-left[
-```{r echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/df-na.png")
-```
-]
-.pull-right[
-```{r eval=FALSE, R.options=list(width = 50)}
-read_csv("data/df-na.csv")
-```
-
-```{r echo=FALSE, R.options=list(width = 50)}
-read_csv("data/df-na.csv") %>% print(n = 10)
-```
-]
-
----
-
-## Option 1. Explicit NAs
-
-```{r eval=FALSE}
-read_csv("data/df-na.csv", 
-         na = c("", "NA", ".", "9999", "Not applicable"))
-```
-
-.pull-left[
-```{r echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/df-na.png")
-```
-]
-.pull-right[
-```{r echo=FALSE,message=FALSE}
-read_csv("data/df-na.csv", 
-  na = c("", "NA", ".", "9999",
-         "Not applicable")) %>% 
-  print(n = 10)
-```
-]
-
----
-
-## Option 2. Specify column types
-
-```{r eval=FALSE}
-read_csv("data/df-na.csv", col_types = list(col_double(), 
-                                            col_character(), 
-                                            col_character()))
-```
-
-```{r echo=FALSE, warning = FALSE}
-read_csv("data/df-na.csv", col_types = list(col_double(), 
-                                            col_character(), 
-                                            col_character())) %>%
-  print(n = 10)
-```
-
----
-
-## Column types
-
-.small[
-**type function**  | **data type**
------------------- | -------------
-`col_character()`  | character
-`col_date()`       | date
-`col_datetime()`   | POSIXct (date-time)
-`col_double()`     | double (numeric)
-`col_factor()`     | factor
-`col_guess()`      | let readr guess (default)
-`col_integer()`    | integer
-`col_logical()`    | logical
-`col_number()`     | numbers mixed with non-number characters
-`col_numeric()`    | double or integer
-`col_skip()`       | do not read
-`col_time()`       | time
-]
-
----
-
-
-class:middle
-
-# Case study: Favourite foods
-
----
-
-## Favourite foods
-
-```{r echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("img/fav-food/fav-food.png")
-```
-
-
-```{r}
-fav_food <- read_excel("data/favourite-food.xlsx") #<<
-fav_food
-```
-
----
-
-## Variable names
-
-```{r echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("img/fav-food/fav-food-names.png")
-```
-
-
-```{r warning=FALSE}
-fav_food <- read_excel("data/favourite-food.xlsx") %>%
-  clean_names() #<<
-fav_food 
-```
-
----
-
-## Handling NAs
-
-```{r echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("img/fav-food/fav-food-nas.png")
-```
-
-
-```{r warning=FALSE}
-fav_food <- read_excel("data/favourite-food.xlsx",
-                       na = c("N/A", "99999")) %>% #<<
-  clean_names()
-fav_food 
-```
-
----
-
-## Make `age` numeric
-
-.pull-left-wide[
-```{r warning=FALSE, R.options=list(width = 60)}
-fav_food <- fav_food %>%
-  mutate( #<<
-    age = if_else(age == "five", "5", age), #<<
-    age = as.numeric(age) #<<
-    ) #<<
-
-glimpse(fav_food) 
-```
+.pull-left-wide[ 
+- **ggplot2** is tidyverse's data visualization package 
+- All visualisations begin with the `ggplot()` command
+- The plot is then constructed by _adding_ (`+`) layers
 ]
 .pull-right-narrow[
-```{r echo=FALSE}
-knitr::include_graphics("img/fav-food/fav-food-age.png")
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("img/ggplot2-logo.png")
 ```
-]
+] 
 
----
-
-## Socio-economic status
-
-.pull-left-wide[
-```{r}
-fav_food %>%
-  count(ses)
+```{r eval = FALSE}
+ggplot(data = [dataset],                                         # Data
+       mapping = aes(x = [x-variable], y = [y-variable])) +      # Aesthetics
+   geom_[*]() +                                                  # Geometries
+   [other options]                                               # ...
 ```
-]
-.pull-right-narrow[
-```{r echo=FALSE, out.width="75%", fig.align='center'}
-knitr::include_graphics("img/fav-food/fav-food-ses.png")
-```
-]
 
-
-
-.question[
-Does the order of the `ses` categories make sense?
-]
+- Today we will examine many of the commonly used features.
+- More information can be found on the [ggplot2 cheat sheet](https://www.rstudio.com/resources/cheatsheets/)
 
 
 ---
 
-## Make `ses` factor
+## Motivating Data Set: Bats `r emoji::emoji('bat')`
 
-.pull-left-wide[
-```{r warning=FALSE}
-fav_food <- fav_food %>%
-  mutate(ses = fct_relevel(ses, "Low", "Middle", "High")) #<<
+* Extracted from the [Atlantic Mammal Traits](https://esajournals.onlinelibrary.wiley.com/doi/10.1002/ecy.2106) survey on animal morphology.
+* Data contains information about 4334 Neotropical fruit bats (_Aribeus_) from South America between 2010-2017.
 
-fav_food %>%
-  count(ses)
+```{r load-data, message = FALSE}
+bat_data <- read_csv("data/bats.csv")
+glimpse(bat_data)
 ```
-]
 
 ---
 
-## Putting it altogether
-
-```{r warning=FALSE}
-fav_food <- read_excel("data/favourite-food.xlsx", na = c("N/A", "99999")) %>%
-  clean_names() %>%
-  mutate(
-    age = if_else(age == "five", "5", age), 
-    age = as.numeric(age),
-    ses = fct_relevel(ses, "Low", "Middle", "High")
-  )
-
-fav_food
-```
-
-
----
-
-## Out and back in
-
-```{r message = FALSE}
-write_csv(fav_food, file = "data/fav-food-clean.csv")
-
-fav_food_clean <- read_csv("data/fav-food-clean.csv")
-```
-
-```{r}
-fav_food_clean %>%
-  count(ses)
-```
-
-.question[
-What happened to the order of `ses` categories?
-]
-
----
-
-## `read_rds()` and `write_rds()`
-
-- CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.
-- An alternative is RDS files ('R data single'), you can read and write them with `read_rds()` and `write_rds()`, respectively.
-
-```{r message = FALSE}
-write_rds(fav_food, file = "data/fav-food-clean.rds")
-fav_food_clean <- read_rds("data/fav-food-clean.rds")
-fav_food_clean %>%
-  count(ses)
-```
-
-
----
-
-class: middle
-
-# Other types of data
-
----
-
-## Other types of data formats
-
-- **googlesheets4:** Google Sheets
-- **haven**: SPSS, Stata, and SAS files
-- **DBI**, along with a database specific backend (e.g. RMySQL, RSQLite, RPostgreSQL etc): allows you to run SQL queries against a database and return a data frame
-- **jsonline**: JSON
-- **xml2**: xml
-- **rvest**: web scraping
-- **httr**: web APIs
-- **sparklyr**: data loaded into spark
+## Data Dictionary
 
 <br>
 
-`r emo::ji("down_arrow")` You may need to install specialised R packages to read data from a specific format
+<br>
+
+| Variable    | Description | Type |
+|:------------|:------------|:-----|
+| `species`   | Name of bat species | Categorical (5 cases) |
+| `body_mass` | Body mass (in grams)| Numerical, continuous |
+| `forearm`   | Forearm length (in mm) | Numerical, continuous |
+| `age`       | Adult or Juvenile | Categorical (2 cases) |
+| `sex`       | Female or Male | Categorical (2 cases) |
+| `year`      | Year of measurement | Numerical, discrete |
 
 
 ---
 
 class: middle
 
-# Using RStudio GUI (graphical user interface)
-
+# Visualising numerical data
 
 ---
 
-## Importing CSV data
+class: middle
 
-- We've talked about the `read_csv` function
+# Histogram - `geom_histogram()`
 
-- The options are a little bit fiddly, especially for wide datasets with many variables
-  
-- You have to inspect the dataset manually to get it right
+---
 
 
-```{r read-csv, echo = T}
-tube <- read_csv("data/tube-stations.csv")
+## Histogram
+
+```{r message = TRUE, out.width = "50%", fig.height = 5, fig.width = 8, fig.align='center'}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram()
+```
+* Message specifies the use of default/assumed values
+
+---
+
+
+## Number of bins
+
+.panelset[
+
+
+
+.panel[.panel-name[Recommended]
+
+.pull-left[
+```{r ref.label = "hist-30", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-30, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) #<<
+```
+]
+]
+
+
+.panel[.panel-name[More bins]
+
+.pull-left[
+```{r ref.label = "hist-80", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-80, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 80)  #<<
+```
+]
+
+]
+
+
+.panel[.panel-name[Fewer bins]
+.pull-left[
+```{r ref.label = "hist-10", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-10, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 10) #<<
+```
+]
+]
+]
+
+---
+
+## Customizing options
+
+.panelset[
+
+.panel[.panel-name[Labels]
+.pull-left[
+```{r ref.label = "hist-labs", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-labs, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs( #<<
+    x = "Body mass (in grams)", #<<
+    y = "Frequency", #<<
+    title = "Body mass of fruit bats",  #<<
+    subtitle = "(2010-2017)" #<<
+  ) #<<
+```
+]
+]
+
+
+
+.panel[.panel-name[Theme]
+.pull-left[
+```{r ref.label = "hist-theme", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-theme, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +   
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+  ) +
+  theme_bw() #<<
 ```
 
-Well, this doesn't seem to have worked!  Let's look at the dataset…
+* See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for more theme defaults.
 
----
-## Tube stations data
+]
+]
 
-```{r show-data, echo = T}
-tube
+
+.panel[.panel-name[Colour]
+.pull-left[
+```{r ref.label = "hist-col", echo = FALSE, warning = FALSE, out.width = "80%"}
 ```
-- The separators are semicolons, not commas!
-- So we could use `read_csv2` - but we have to remember that!
-- Is there an easier way?
+]
+.pull-right[
+```{r hist-col, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(
+    bins = 30,
+    fill = "darkcyan", #<<
+    colour = "darkblue"   #<<
+    ) +     
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+
+]
+]
+
+]
+
 ---
 
-class: inverse
-background-image: url("img/GUI/From-text-readr.png")
+class: middle
 
-## The "Import Dataset" menu
--   **Environment** tab (top-right pane)
--   Several options!  Choose **From Text (readr)...**.
+# Density plot - `geom_density()`
 
 ---
-class: inverse
-background-image: url("img/GUI/Import-box.png")
-background-size: contain
+
+## Density plot
+
+.pull-left[
+```{r ref.label = "density", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+
+]
+.pull-right[
+```{r density, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_density()  #<<
+```
+
+
+Construction:
+```{r eg_den, warning = FALSE, fig.width = 6, fig.height = 3, fig.align='center', echo = FALSE}
+data <- tibble(
+  x = seq(-3,3,by=0.01),
+  y1 = dnorm(x, mean = -1, sd = 0.5)/3,
+  y2 = dnorm(x, mean = -0.5, sd = 0.5)/3,
+  y3 = dnorm(x, mean = 1, sd = 0.5)/3,
+  y = y1 + y2 + y3
+) 
+ggplot() +
+  geom_point(data = data.frame(x = c(-1,-0.5,1), y = c(0,0,0)),
+             mapping = aes(x = x, y = y), cex = 3) + 
+  geom_line(data=data, mapping = aes(x = x, y = y), lwd=2) +
+  geom_line(data=data, mapping = aes(x = x, y = y1), lty=2, col = "blue") + 
+  geom_line(data=data, mapping = aes(x = x, y = y2), lty=2, col = "blue") + 
+  geom_line(data=data, mapping = aes(x = x, y = y3), lty=2, col = "blue") + 
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = -3) + 
+  labs(x = "x", y = "Density") + 
+  theme_minimal() +
+  theme(axis.text.x=element_blank(), axis.text.y=element_blank())
+```
+
+]
+
+
+
+
+
 
 ---
-class: inverse
-background-image: url("img/GUI/Preview-1.png")
-background-size: contain
----
-class: inverse
-background-image: url("img/GUI/Preview-2.png")
-background-size: contain
----
 
-## Choosing a data type from drop-down menu
+
+## Customizing options
 
 
 .pull-left[
-For the "Zone" column
-
-.center[![The drop-down menu for the "Zone" column](img/GUI/Zone-type.png)]
+```{r ref.label = "density-custom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
 ]
-
-
-
 .pull-right[
-For the "Opened" column
 
-.center[![The drop-down menu for the "Opened" column](img/GUI/Date-type.png)]
+```{r density-custom, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) + 
+  geom_density(
+    fill = "darkcyan"
+    ) +   
+  labs(
+    x = "Body mass (in grams)",
+    y = "Density",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
 ]
 
 ---
 
-## Date formats
+class: middle
 
-The default isn't right!
+# Box plot - `geom_boxplot()`
 
-Our dates are of the form `01-JAN-1900`, so we need to type `%d-%b-%Y` into the box. 
+---
 
-(`%b` encondes 3 character months, run `help(col_date)` for more on syntax)
+## Box plot
 
 .pull-left[
-.center[![bad date format](img/GUI/date-1.png)]
+```{r ref.label = "boxplot", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r boxplot, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) + 
+  geom_boxplot( ) +   #<<
+  labs(
+    x = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
 
+
+Construction:
+```{r boxplot_description, echo = FALSE, fig.align='center', fig.width=8, fig.height=3}
+ggplot() +
+  geom_polygon(data = data.frame(x = c(-1,-1,1,1), y=c(0,1,1,0)),
+               mapping = aes(x = x, y = y), fill = "grey60", col="black") +
+  geom_segment(mapping = aes(x = 0, y = 0, xend = 0, yend = 1), lwd = 3) + 
+  geom_segment(mapping = aes(x = 1, y = 0.5, xend = 2.5, yend = 0.5)) + 
+  geom_segment(mapping = aes(x = -1, y = 0.5, xend = -2.5, yend = 0.5)) +
+  geom_text(mapping = aes(x = 0, y = 17/16, label = "Median"), size=5) + 
+  geom_text(mapping = aes(x = 1, y = 13/16, label = "Upper Quartile"), nudge_x = 0.55, size=5)  + 
+  geom_text(mapping = aes(x = -1, y = 13/16, label = "Lower Quartile"), nudge_x = -0.55, size=5) + 
+  geom_text(mapping = aes(x = -2.5, y = 7/16, label = "Minimum"), nudge_x = 0.35, size=5) + 
+  geom_text(mapping = aes(x = 2.5, y = 7/16, label = "Maximum"), nudge_x = -0.35, size=5)  +
+    geom_text(mapping = aes(x = 0, y = -1/16, label = "<-------------- IQR -------------->"), size=5)  +
+    theme_bw() + 
+    theme(axis.text.x=element_blank(), 
+          axis.text.y=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.ticks.y=element_blank(),
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank())+
+  labs(x = "", y = "")
+
+```
+
+]
+
+---
+
+## Customizing options
+
+.panelset[
+
+.panel[.panel-name[Orientation]
+.pull-left[
+```{r ref.label = "box-y", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-y, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(y = body_mass)) +  #<<
+  geom_boxplot( ) +   
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+]
+]
+
+
+
+.panel[.panel-name[Whisker Length]
+.pull-left[
+```{r ref.label = "box-coef", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-coef, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(y = body_mass)) + 
+  geom_boxplot(coef = 1) + # default: 1.5  #<<
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+
+
+]
+]
+
+
+.panel[.panel-name[More Styles]
+.pull-left[
+```{r ref.label = "hist-style", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-style, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(y = body_mass)) + 
+  geom_boxplot(coef = 1,
+    fill = "darkcyan",      #<<
+    colour = "darkblue", #<<
+    lwd = 1.5,          # line width scaling #<<
+    outlier.shape = 4,  # see below #<<
+    outlier.colour = "darkred") +  #<<
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)" ) +
+  theme_bw()
+```
+```{r echo=FALSE, out.width="50%",fig.align='center'}
+knitr::include_graphics("img/point_shapes.PNG")
+```
+
+
+]
+]
+
+]
+
+---
+
+class: middle
+
+# Adding a categorical variable...
+
+---
+
+## ...via aesthetics
+
+.panelset[
+.panel[.panel-name[Histogram]
+.pull-left[
+```{r ref.label = "hist-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist-cat, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass,
+         fill = species   #<<
+         )) +
+  geom_histogram(
+    bins = 30,
+    position = "identity", #<<
+    alpha = 0.5  # opacity #<<
+    ) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" ) 
+```
+]
+]
+
+.panel[.panel-name[Density]
+.pull-left[
+```{r ref.label = "density-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r density-cat, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass,
+         fill = species   #<<
+         )) +
+  geom_density(
+    alpha = 0.5 #<<
+    ) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Density",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" ) 
+```
+]
+]
+
+
+
+.panel[.panel-name[Box plot]
+.pull-left[
+```{r ref.label = "box-cat", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r box-cat, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass, 
+         y = species    #<<
+         )) +
+  geom_boxplot() +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Species",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)" ) 
+```
+]
+]
+
+
+
+]
+
+---
+
+## ...via faceting
+
+
+.panelset[
+.panel[.panel-name[Wrap (same axes)]
+.pull-left[
+```{r ref.label = "facet-wrap", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r facet-wrap, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" )  +
+  facet_wrap(~ species, #<<
+             ncol = 3) #<<
+```
+]
+]
+
+.panel[.panel-name[Wrap (free axes)]
+.pull-left[
+```{r ref.label = "facet-scale", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r facet-scale, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" )  +
+  facet_wrap(~ species, 
+             ncol = 3,
+             scales = "free") #<<
+
+```
+]
+]
+
+
+.panel[.panel-name[Grid]
+.pull-left[
+```{r ref.label = "grid", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r grid, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by age and sex" )  +
+  facet_grid(age ~ sex,       #<<
+             scale = "free")  #<<
+
+```
+]
+]
+
+]
+
+
+---
+
+class: middle
+
+# Relationships numerical variables - `geom_point()` and `geom_bin_2d()`
+
+---
+
+## Scatterplot
+
+.pull-left[
+```{r ref.label = "scatter1", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r scatter1, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   #<<
+         y = body_mass #<<
+         )) +
+  geom_point() +   #<<
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+]
+
+---
+
+## Customise
+
+.panelset[
+
+.panel[.panel-name[Best fit line]
+.pull-left[
+```{r ref.label = "scatter_line", echo = FALSE, warning = FALSE, out.width = "80%", message = FALSE}
+```
+]
+.pull-right[
+```{r scatter_line, fig.show = "hide", warning = FALSE, message = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   
+         y = body_mass
+         )) +
+  geom_point() +  
+  geom_smooth(method = lm) +  #<<
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship",
+    subtitle = "(2010-2017)" )  
+```
+]
+]
+
+
+.panel[.panel-name[Add variables via style]
+.pull-left[
+```{r ref.label = "scatter3rd", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r scatter3rd, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   
+         y = body_mass,
+         colour = species,  #<<
+         shape = age #<<
+         )) +
+  geom_point() +  
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "by species and age" )  
+```
+]
+]
+
+.panel[.panel-name[Zoom]
+.pull-left[
+```{r ref.label = "scatter_zoom", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r scatter_zoom, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes( 
+         x = forearm, y = body_mass, 
+         colour = species, shape = age)) +
+  geom_point() +  
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "by bat species and age" )  +
+  coord_cartesian(    #<<
+    xlim = c(30, 50),  #<<
+    ylim = c(0, 30))    #<<
+```
+]]
+
+]
+
+---
+
+## 2D histogram colour map
+
+.pull-left[
+```{r ref.label = "hist2d", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+.pull-right[
+```{r hist2d, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes( 
+         x = forearm, 
+         y = body_mass
+         )) +
+  geom_bin_2d() +  #<<
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+]
+
+---
+
+class: middle
+
+# Bar plot - `geom_bar()`
+
+Visualizing qualitative/categorical data 
+
+---
+
+## Bar plot
+
+.pull-left[
+```{r ref.label = "barchart", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+
+]
+.pull-right[
+```{r barchart, fig.show = "hide", warning = FALSE}
+ggplot(bat_data, aes(
+    y = species  # y => Horizontal #<<
+    )) +
+  geom_bar() +  #<<
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Bar plot of bat species",
+    subtitle = "(2010-2017)")
+```
+]
+---
+
+## Bar plot variations
+
+
+.panelset[
+.panel[.panel-name[Segmented]
+
+.pull-left[
+```{r ref.label = "segmented", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
 ]
 
 .pull-right[
-.center[![good date format](img/GUI/date-2.png)]
+```{r segmented, fig.show = "hide", warning = FALSE}
+ggplot(bat_data, aes(
+    y = species,  
+    fill = age      #<<
+    )) +
+  geom_bar() +  
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Bar plot of bat species,",
+    subtitle = "segmented by age")
+```
+]]
+
+.panel[.panel-name[Proportions]
+
+.pull-left[
+```{r ref.label = "bar_prop", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+
+.pull-right[
+```{r bar_prop, fig.show = "hide", warning = FALSE}
+ggplot(bat_data, aes(
+    y = species,  
+    fill = age      
+    )) +
+  geom_bar(position = "fill") +   #<<
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Age proportion per bat species",
+    subtitle = "(2010-2017)")
+```
+]
+]
+
+
+.panel[.panel-name[Pie chart]
+
+.pull-left[
+```{r ref.label = "pie", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+
+.pull-right[
+```{r pie, fig.show = "hide", warning = FALSE}
+ggplot(bat_data, aes(
+    x = "", #<<
+    fill = species  #<<  
+    )) +
+  geom_bar(position = "fill") +   #<<
+  coord_polar("y", start = 0) +   #<<
+  theme_void() + #<<
+  labs(
+    title = "Bat sepcies pie chart",
+    subtitle = "(2010-2017)")
+```
+]
+]
+
 ]
 
 ---
 
-## Importing from a CSV using the GUI
 
-.center[![The final appearance of the data table in the import dialog box](img/GUI/finished-data.png)]
-
-- All the data types are correct
-- Note the non-integer Zone has become an `NA` …
-- … but not all NAs have been removed!
----
-## Importing from a CSV using the GUI
-
-.center[![The final appearance of the code in the import dialog box](img/GUI/final-code-preview.png)]
-
-- We can run the code directly from the dialogue box, but that won't help with reproducibility/portability of the code
-- Instead, click the clipboard button (`r emo::ji("clipboard")`) to copy the code into yout editor.
-
----
-## Importing from a CSV using the GUI
+<!-- Add final discussion slide on 'there is no right image', emphasis on the communication message and the 4 respects -->
 
 
+## Data visualisation gallery
 
-```{r csv-data-import, echo = T}
-#library(readr)
-tube_stations <- read_delim("data/tube-stations.csv", 
-    delim = ";", escape_double = FALSE, col_types = cols(Zone = col_integer(), 
-        Opened = col_date(format = "%d-%b-%Y")), 
-    trim_ws = TRUE)
+.pull-left[
+* `ggplot2` is used to create a wide variety of data visualisation styles.
+* It has many customisation tools to support your communication.
+* Use `ggplot2` manual pages (and online searches) to support your creation.
+
+
+* **But**, excessive customisation can be distracting.
+* Remember the 4 respects:
+  1. Respect the **people**
+  2. Respect the **data**
+  3. Respect the **mathematics**
+  4. Respect the **computers**
+
+]
+.pull-right[
+
+<br>
+
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("img/ggplot_plots_gallary.png")
 ```
-It gives us the `readr` library, but if we've already imported the tidyverse we don't need to include that line, and can delete it.
-
-The warning message here is fine---it's telling us that "`not in a zone`" is not an integer, which we already know!
----
-
-## Importing from a CSV using the GUI
-
-Let's prove it worked!
-
-
-```{r csv-summary, echo =T}
-tube_stations %>%
-  summarise(mean_date = mean(Opened), med_zone = median(Zone, na.rm = T))
-```
-
-- The mean date is in the future because we haven't corrected that Year 3000 date yet!
-- .small[FYI, Battersea underground sation opened in 20-SEP-2021.]
----
-
-## Our data in an Excel file
-
-
-.center[![Nearly same data we've been working with, but in an Excel file](img/GUIxl/excel-sheet.png)]
-
----
-class: inverse
-background-image: url("img/GUIxl/From-text-readr.png")
-
-## The "Import Dataset" menu
-
--   **Environment** tab (top-right pane)
--   Now we want **From Excel...**.
-
----
-
-class: inverse
-background-image: url("img/GUIxl/Import-box.png")
-background-size: contain
-
----
-class: inverse
-background-image: url("img/GUIxl/Preview-1.png")
-background-size: contain
----
-
-## Importing from Excel using the GUI
-
-.center[![The final appearance of the Import Options in the dialog box, from Excel](img/GUIxl/Import-options.png)]
-
-- We need to specify the range of cells in which the data are stored (or use the **Skip:** field)
-- The **Name:** field is the name under which we'll store the data once imported
-  - Choose something different to avoid overwriting!
-
----
-
-## Importing from Excel using the GUI
-
-.center[![The final appearance of the data in the dialog box, from Excel](img/GUIxl/finished-data.png)]
-
-
-- Check and edit the data types for each variable
-- We don't get separate **double** and **integer** options here: all we can choose is **numeric** (we can fix that later)
-
----
-
-## Importing from Excel using the GUI
-
-.center[![The final appearance of the code from the dialog box, from Excel](img/GUIxl/final-code-preview.png)]
-
-- Again, let's copy this out using the clipboard icon…
-
-```{r excel-code, echo = T, warning = F}
-library(readxl)
-tube_stations_excel <- read_excel("data/tube-stations.xlsx", 
-    range = "A3:E11", col_types = c("text", 
-        "text", "numeric", "text", "numeric"))
-```
-- I've suppressed the warnings (`warning = F` in the code chunk label) because it gives lots, for every time it changes the data type in a cell
-
-
+]
