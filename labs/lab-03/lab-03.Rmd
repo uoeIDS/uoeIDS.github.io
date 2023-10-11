@@ -1,5 +1,5 @@
 ---
-title: "Lab 03 - Under Constuction"
+title: "Lab 03 - Take a sad plot and make it better"
 output: 
   tufte::tufte_html:
     tufte_variant: "envisioned"
@@ -7,45 +7,462 @@ output:
 link-citations: yes
 ---
 
-
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
-knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
 ```
 
 
-```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
-library(emo)
-#devtools::install_github("hadley/emo")
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Fauxels from Pexels"}
+knitr::include_graphics("img/pexels-fauxels-3184360.jpg")
 ```
 
-This worksheet for the IDS lab is currently under construction. 👷🔨
-
-Please return back to this page later in the course.
 
 
-## In the meantime...
+The American Association of University Professors (AAUP) is a non-profit membership association of faculty and other academic professionals.
+[This report](https://www.aaup.org/sites/default/files/files/AAUP_Report_InstrStaff-75-11_apr2013.pdf) compiled by the AAUP shows trends in instructional staff employees between 1975 and 2011. The report begins with the following data visualisation.
 
-Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/staff-employment-copy.PNG")
+```
+
+In this lab you will discuss in your groups what makes a good data visualisation and create a better visualisation for the above data.
 
 
 
-```{r datasuRus, message = FALSE, fig.height=10}
-library(datasauRus)
+# Learning goals
+
+-   Discuss the qualities of data visualisation.
+-   Create data visualisation.
+-   Working collaboratively via GitHub and learn how to resolve merger conflicts.
+
+
+-----------------------------------------------------------------------
+
+# Set-up
+
+Please find your team members that you formed in last week's workshop. 
+
+In today's lab you will continue to work collaboratively from the same repository. An important learning objective for today is to be aware of **merger conflicts** and learn how to resolve them when pushing changes you your team's shared repository.
+
+As with last week, it is very important that you follow the instructions carefully and that you only selected team members do the activity at stated times.
+
+Give each member of your team a number (it can be different from last week) and look-out for the following emoji sequence to indicate who should be completing the activity:  
+
+* 😄😄😄😄 - All member does the activity.
+* 😄🙂🙂🙂 - Only member 1 does the activity.
+* 🙂😄🙂🙂 - Only member 2 does the activity.
+* 🙂🙂😄🙂 - Only member 3 does the activity.
+* 🙂🙂🙂😄 - Only member 4 does the activity.
+
+If it is not your turn, then advise your team member in doing their task. **Do not** make any changes to your work and **do not** make any pushes to or pulls from GitHub -- Keep your hand off the keyboard!
+
+
+
+----------
+
+## Creating a collaborative repository
+
+Let's first set-up GitHub.
+
+😄🙂🙂🙂 (Member 1 only)
+
+You are the maintainer of the GitHub repository for today's lab worksheet. This means that you will need to take a clone of today's lab template and to add your team members as collaborators so that they can add their contribution.
+
+First, log onto GitHub and create a new repository by cloning  today's lab template project. To remind you of the step:
+
+- Go to *Your repositories* in your GitHub account and then click on the green *New* button.
+
+- Click on *Import a repository* and type/copy the URL of today's lab template project: [https://github.com/uoeIDS/lab-03-template](https://github.com/uoeIDS/lab-03-template)
+
+- Add an appropriate name to your repository, say `lab-03`, and click on *Begin import*.
+
+Next, to add your team members as collaborators:
+
+- Navigate to your version the repository you have just cloned. 
+- Click on  **'setting'** along the top and then **'Collaborators'** in the sidebar. 
+- Add each of your team members as collaborators.
+
+(🙂😄😄😄 - You should receive a collaboration invitation via email, accept this.)
+
+
+-----
+
+In addition to the above set-up, it is important to write the team name and team members on the Wooclap this week. Although this information was collected last week, there was a large number of students that were missing - so we are collecting this data again! It is important to submit this information as it will be used to form the groups for your group project. Please help us on the collection of this information by ...
+
+- Go to the main page of [Wooclap](https://www.wooclap.com/)
+
+- Use the event code to enter: **XGXJOZ** (new code for collecting names to get remaining groups and check inconsistencies)
+
+- Follow the instruction and given example to write your team name and team members.
+
+- Submit your answer in the Wooclap at the end
+
+
+
+-----
+
+## Version control R project
+
+😄😄😄😄 (For all)
+
+Once everyone has been added to the collaborative repository, open RStudio and create a new version control project using the GitHub repository you have just made. To remind you of the steps:
+
+- Open *RStudio* and go to *File* > *New Project...* 
+
+- Select *Version Control* and then *Git*. Type/paste the URL of the repository you have just created. 
+
+- Browse an appropriate location for the project and then click on *Create Project*.
+
+
+**PAUSE**: Ensure that all team members have successfully created an R project and have pulled the current content from GitHub. Everyone, hands off the computer unless it is your turn!
+
+-----
+
+# Information about merges and merge conflicts
+
+**Please read this section before proceeding**
+
+What happens when you push your committed changes from your computer to a repository on GitHub? 
+
+It may appear that GitHub simply replaces the version it has with the latest version that that you have on your computer. This may not appear to be problematic when working by yourself, but there is a major issue when working collaboratively. Say that you and your friend are working collaboratively, your friend pushes their work first and then you push your work afterwards. If GitHub simply replaces old code with new code then you risk loosing your friend's work!
+
+What happens is that GitHub attempts to _merge_ the existing and new files. 
+
+What actually happens is that there is an initial check to verify that version currently on GitHub matches with the version on your computer at the last time you communicated with GitHub (either via a _pull_ or the previous _push_). If they are the same,then GitHub will happily replace the old files with the most version on your computer when you _push_ the latest committed changes.
+
+However, when working collaboratively, your team member may _push_ their changes which would mean that your personal copy of the repository will be behind the version on GitHub.
+
+In this case, GitHub will **stop** you from pushing your changes to the shared repository. When this happens, you will need to explicitly "merge" your work and your collaborator's work before you can push.
+
+If you and your collaborator's changes are in different files or in different parts of the same file, your work will be automatically merged on your next ⬇️ _pull_ from the shared repository. -- This is what happened last week each time when you pulled the latest changes from your team's repository.
+
+However, if you and your collaborator has made changes to the _same part_ of a file, then it is not possible to automatically merge the files. This is what is called a **merge conflict** as the merge procedure does not know which change you want to keep and which to overwrite. The decision to rectify the differences will have to be made by you.
+
+When there is a merge conflict, additional _conflict markers_ will appear in the file to indicate where the conflict is. This will look like:
+
+```{message}
+<<<<<<< HEAD 
+
+goldilocks %>% filter(porridge == "Too Hot")
+
+======= 
+
+goldilocks %>% filter(porridge == "Just Right")
+
+>>>>>>> some1alpha2numeric3string4
+```
+
+The code `<<< HEAD` indicates the start of the conflict and `>>>` identifies the end. The content in the middle is partitioned by `===` to separate your changes (**top**) from the latest version on GitHub (**bottom**). 
+
+Your job is to *reconcile* the changes: edit the file so that it incorporates the best of both versions, and then delete the conflict markers (the `<<<`, `===`, and `>>>` lines).
+
+Once you have reconciled the changes, you should then stage and commit the results. Only then will you will be permitted to _push_ your changes to GitHub.
+
+-------------------------------------------
+
+# Making a merger conflict - add your name
+
+```{marginfigure}
+Whilst you are waiting for your turn, either help each other with their steps or look ahead to the next section on discussing data visualisations.
+```
+
+😄😄😄😄 (For all)
+
+Open `lab-03.Rmd`. Type your own name at the top of the file and 🧶 _Kint_ the document. ✅ _Commit_ your changes, but **do not push** to GitHub!
+
+Everyone, hands off your computer.
+
+😄🙂🙂🙂 (Member 1 only)
+
+Hands on your computer.
+
+⬆️ _Push_ your changes to GitHub. This should happen as usual with no issue.
+
+Hands off your computer.
+
+🙂😄🙂🙂 (Member 2 only)
+
+Hands on your computer.
+
+Attempt to ⬆️ _push_ your changes to GitHub. This time you will see the message similar to:
+
+```{message}
+To https://github.com/StuDent/lab-03
+ ! [rejected]        HEAD -> main (fetch first)
+error: failed to push some refs to 'https://github.com/StuDent/lab-03'
+```
+
+This error message indicates that GitHub has failed to merge the changes that member 2 made with the changes made by member 1.
+
+To resolve the _merge conflict_:
+
+1. ⬇️ _Pull_ the latest version currently on GitHub. You will see the following message:
+
+```{message}
+CONFLICT (content): Merge conflict in lab-03.Rmd
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+2. Return to `lab-03.Rmd` and you should now see the following at the top of your file that indicates where and what was the merge conflict:
+
+```{message}
+---
+title: "Take a sad plot and make it better"
+<<<<<<< HEAD 
+author: "User1, JoKing, User3, User4"
+======= 
+author: "StuDent, User2, User3, User4"
+>>>>>>> 40f6ad0a10c26482b377
+date: "`r Sys.Date()`"
+output: html_document
+---
+```
+
+3. Rectify the conflict so that names of both members 1 and 2 are listed as the author. For example.
+
+```{message}
+---
+title: "Take a sad plot and make it better"
+author: "StuDent, Joking, User3, User4"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```
+
+4. 🧶 _Knit_ your document and verify that the author line in the output is correct.
+
+5. ✅ _Commit_ the changes with an informative message, for example `resolved merger conflict with authors`.
+
+6. ⬆️ _Push_ your changes to GitHub. This time there should not be any issue.
+
+Hands off your computer.
+
+🙂🙂😄🙂 (Member 3 only)
+
+Hands on your computer.
+
+Follow the same instructions as member 2. Begin by attempting to ⬆️ _Push_ your changes, which will result in an error message indicating that your personal version is behind the version on GitHub. Then:
+
+1. ⬇️ _Pull_ the latest updates from GitHub.
+2. Find the merger conflict.
+3. Resolve the merger conflict.
+4. 🧶 _Knit_ your document.
+5. ✅ _Commit_ your changes with an informative message.
+6. ⬆️ _Push_ your changes to GitHub.
+
+Hands off your computer.
+
+🙂🙂🙂😄 (Member 4 only)
+
+Hands on your computer.
+
+It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merger conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes.
+
+Hands off your computer.
+
+😄🙂🙂🙂 (Member 1 only)
+
+Although you have contributed your name to the author, you have not yet had the chance to experience a merger conflict -- it is now your turn!
+
+Hands on your computer.
+
+Edit the author line of your version of `lab-03.Rmd` so that it only has your name and your group's team name. 🧶 _Knit_ the document and ✅ _commit_ your changes.
+
+If you now attempt to ⬇️ _push_ you will be faced with an error message. Follow the above steps to resolve your merger conflict.
+
+Hands off your computer.
+
+😄😄😄😄 (For all)
+
+Finally, everybody ⬇️ _pull_ the latest changes from the shared repository. You all should now have the same document that has everyone's name and your team name. Provided that you all followed the above instructions carefully then there should not be any further merger conflicts.
+
+
+## Tips for collaborating via GitHub
+
+-   Always pull first before you start working.
+-   Resolve a merge conflict (commit and push) *before* continuing your work. Never do new work while resolving a merge conflict.
+-   Knit, commit, and push often to minimize merge conflicts and/or to make merge conflicts easier to resolve.
+-   In the `Git` panel, look out for the message `Your branch is ahead of 'origin/master' by 1 commit`. This indicates that your personal version is ahead of the version on GitHub. In this case, it is advisable to _pull_ before you _push_ anything to minimise any communication errors.
+-   If you find yourself in a situation that is difficult to resolve, ask questions ASAP. Do not let it linger and get bigger.
+
+
+-----
+
+# Questioning data visualisations
+
+Look at the following data visualisations. Have a discussion with your team members at what might be problematic with the images. Do any of the visualisations have a problem with the 4 respects -- *people*, *data*, *mathematics* and *computer*.
+
+### Image 1
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/Speaking-the-world.jpg")
+```
+
+### Image 2
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/rose-pop-density-total-area-bw.jpg")
+```
+
+### Image 3
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/life-expectancy-rule-of-law.png")
+```
+
+### Image 4
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/global-income-dist.PNG")
+```
+
+------
+
+
+# Exercises
+
+In your groups, take it in turn to work collaboratively in answering the following exercises. 
+
+Remember to regularly 🧶 _knit_, ✅ _commit_ and ⬆️ _push_ your work to your shared repository on GitHub. If you are faced with a merge conflict, then carefully follow the above instructions to reconcile the conflict before pushing your changes. If you come across an issue that you are unsure how to resolve, then please ask a tutor for assistance.
+
+
+# Packages & Data
+
+For the following exercises, you will be needing to use some of the data wrangling functions from the `tidyverse` package and the data visualisation code from the `ggplot2` package. Ensure that you have the following two lines of code at the top of `lab-03.Rmd` to make the commands available to you.
+
+```{r load-packages, message=FALSE, eval=TRUE}
 library(tidyverse)
 library(ggplot2)
+```
 
-ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
-    geom_point()+
-    theme(legend.position = "none")+
-    facet_wrap(~dataset, ncol = 3)
+Let's start by loading the data from the AAUP that was used to create the data visualisation shown at the beginning of this worksheet.
 
-datasaurus_dozen %>% 
-    group_by(dataset) %>% 
-    summarize(
-      mean_x    = mean(x),
-      mean_y    = mean(y),
-      std_dev_x = sd(x),
-      std_dev_y = sd(y),
-      corr_x_y  = cor(x, y)
+```{r load-data-staff, message=FALSE, eval=TRUE}
+staff <- read_csv("data/instructional-staff.csv")
+```
+
+
+## Exercise 1.  
+
+View the data. Discuss as a team the following questions and write down your answer.
+
+* What is the difference between *wide format* data and *long format* data?
+* Is the format `staff` data *wide* or *long*?
+* How many observations are there in the data set?
+
+## Exercise 2.
+
+When creating a data visualisation, it is generally preferable to have the data set in a *long* format. That is to say, each row should relate to a unique case/observation.
+
+If the data set is in a *wide* format then we need to reshape its structure by pivoting from wide to long using `pivot_longer()`. The animation below show how this function works, as well as its counterpart `pivot_wider()`.
+
+```{r echo=FALSE}
+knitr::include_graphics("img/tidyr-longer-wider.gif")
+```
+
+
+Quick reminder: the function has the following arguments:
+
+```{r eval=FALSE}
+pivot_longer(data, cols, names_to = "name")
+```
+
+-   The first argument is `data` as usual.
+-   The second argument, `cols`, specifies the columns to pivot into longer format.
+-   The third argument, `names_to`, is the name of the column where column names of pivoted variables go (character string).
+-   The fourth argument, `values_to` is the name of the column where data in pivoted variables go (character string).
+
+
+
+
+Fill in the blanks in the following code chunk to pivot the staff data longer and save it as a new data frame called `staff_long`.
+
+```{r eval=FALSE}
+staff_long <- ___ %>%
+  ___(
+    cols = ____, 
+    names_to = "_____",
+    values_to = "percent"
     )
 ```
+
+Inspect `staff_long`. How many rows does it have? Does this correspond to your answer from Exercise 1?
+
+
+## Exercise 3.  
+
+We will begin by plotting instructional staff employment trends as a dot plot. Copy the following code that creates a dot plot of `percentage` on the y-axis against `year` on the x-axis, with the dots coloured based on the `faculty_type`. Ensure that you understand what each part of the code is doing.
+
+```{r eval=FALSE}
+ggplot(data = staff_long,
+       mapping = aes(x = year, 
+                     y = percent, 
+                     colour = faculty_type)) +
+  geom_point()
+```
+
+## Exercise 4.  
+
+Perhaps the trend over time can be better visualised using lines rather than dots. Edit the above code to use the `geom_line()` command.
+
+What is wrong with the graph? Have a look at the data and the dot plot for clues as to what might be wrong before progressing to the next exercise. (You do not need to say how to fix it here---that is the next question!)
+
+
+## Exercise 5.
+
+In the dot plot from exercise 3, notice that the scaling along the x-axis is not consistent. The physical distance between each of the years are the same, but numerically there are 14 years between the first two cases and 2 years between the last two!
+
+The reason for this is because the `year` variable in `staff_long` is a `"character"` variable, not a numerical variable. 
+
+Complete the following code to edit the variable type of `year` from character to numerical.
+
+```{r eval=FALSE}
+staff_long <- staff_long %>%
+  mutate(year = ______(year))
+```
+
+Now create the line plot described in exercise 4 to illustrate how the faculty proportions have changed over time.
+
+
+## Exercise 6.
+
+Improve the line plot from the previous exercise by fixing up its labels (title, axis labels, and legend label) as well as any other components you think could benefit from improvement.
+
+
+## Exercise 7.
+
+Suppose the objective of this plot was to show that the proportion of part-time faculty have gone up over time compared to other instructional staff types. What changes would you propose making to this plot to tell this story? Write down your idea(s). The more precise you are, the easier the next step will be. Get creative, and think about how you can modify the dataset to give you new/different variables to work with.
+
+## Exercise 8.
+
+Implement at least one of these ideas you came up with in the previous exercise. You should produce an improved data visualisation and accompany your visualisation with a brief paragraph describing the choices you made in your improvement, specifically discussing what you didn't like in the original plot and why, and how you addressed them in the visualisation you created.
+
+
+
+----
+
+
+# Finishing off
+
+At the end of the lab, you need to ensure that you have your own personal copy of today's work. Please follow the following instructions carefully:
+
+😄😄😄😄 (For all)
+
+Everybody, 🧶 _knit_, ✅ _commit_ and ⬆️ _push_ any remaining changes to your group's shared repository on GitHub. In doing so, ensure that you resolve any merger conflicts.
+
+Once the version on GitHub contains everybody's contribution, ⬇️ _Pull_ the latest changes so that your personal copy is up-to-date.
+
+
+🙂😄😄😄 (All except member 1)
+
+On GitHub, create your own copy of the shared repository. You can do this using the same instructions as at the start when copying today's template repository, but instead importing from member 1's GitHub account rather than the course account.
+
+If you want to continue to work on today's lab after the workshop, then you will need to create a new version control project with your personal copy of the repository that you have just created.
+
+😄🙂🙂🙂 (Member 1 only)
+
+At the end of the workshop, you want to ensure that only you can make further changes to the shared repository. To do this, you will need to remove the collaboration permissions of your team members. To do this:
+
+- First ensure that your team members have pulled the latest version of the repository.
+- In the lab worksheet repository on GitHub, go to _Settings_ and then _Collaborators_.
+- Remove your team members so that they can no longer push changes to the repository.
+
