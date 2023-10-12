@@ -13,6 +13,7 @@ library(ggplot2)
 ```
 
 
+
 # Questioning data visualisations
 
 ## Image 1
