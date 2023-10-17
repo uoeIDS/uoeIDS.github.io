@@ -303,7 +303,7 @@ table(yougov_climate) %>%
 
 .question[
 
-  Is the proportion of respondents who said "The climate is changing and human activity is mainly responsible" the same in Great Briton and the United States the same?
+  Is the proportion of respondents who said "The climate is changing and human activity is mainly responsible" in Great Briton and the United States the same?
 
 ]
 
