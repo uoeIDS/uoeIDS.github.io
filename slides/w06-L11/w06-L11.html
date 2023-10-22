@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Programming</title>
+    <title>Ethics in Data Science - Misrepresentation</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -13,7 +15,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Programming
+# Ethics in Data Science - Misrepresentation
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -22,11 +24,10 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2022/2023
+### <br> 2023/2024
 ]
 
 ---
-
 
 
 
@@ -34,483 +35,240 @@ class: center, middle, inverse, title-slide
 
 class: middle
 
-# R environment
+# Case Study: Sunday Art Gallery Attandance
 
 ---
 
-## 🏁 Start with `sessionInfo()`
+## Sunday Art Gallery Attandance
 
-&lt;img src="img/sessioninfo.png" width="110%" /&gt;
+The Guildhall Art Gallery in London investigated Sunday attendance figures for its Loan Collection exhibition during the Spring/Summer season for two years.
 
----
+* Total Sunday Attendance:
+  * Year 1 - 17,530 people
+  * Year 2 - 19,732 people
 
-## For more information
-Use `search` to get the list of all the attached packages in the R search path.
+* Average Sunday Attendance Rate:
+  * Year 1 - 2,921 people per day
+  * Year 2 - 1,517 people per day
 
-.pull-left[
-
-```r
-search()
-```
-
-```
-##  [1] ".GlobalEnv"        "package:DT"       
-##  [3] "package:rvest"     "package:forcats"  
-##  [5] "package:stringr"   "package:dplyr"    
-##  [7] "package:purrr"     "package:readr"    
-##  [9] "package:tidyr"     "package:tibble"   
-## [11] "package:ggplot2"   "package:tidyverse"
-## [13] "package:stats"     "package:graphics" 
-## [15] "package:grDevices" "package:utils"    
-## [17] "package:datasets"  "package:methods"  
-## [19] "Autoloads"         "package:base"
-```
-]
-.pull-right[
-
-```r
-library(evd)
-search() 
-```
-
-```
-##  [1] ".GlobalEnv"        "package:evd"      
-##  [3] "package:DT"        "package:rvest"    
-##  [5] "package:forcats"   "package:stringr"  
-##  [7] "package:dplyr"     "package:purrr"    
-##  [9] "package:readr"     "package:tidyr"    
-## [11] "package:tibble"    "package:ggplot2"  
-## [13] "package:tidyverse" "package:stats"    
-## [15] "package:graphics"  "package:grDevices"
-## [17] "package:utils"     "package:datasets" 
-## [19] "package:methods"   "Autoloads"        
-## [21] "package:base"
-```
-]
-
----
-Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings. 
-
-```r
-ls()
-```
-
-```
-## character(0)
-```
-If I add a variable or a function to the global environment. 
-
-```r
-a &lt;- 1
-b &lt;- 10
-f &lt;- function(x) x &lt;- 1
-ls()
-```
-
-```
-## [1] "a" "b" "f"
-```
-Remove a variable or function from the global environment.
-
-```r
-rm(a, f)
-ls()
-```
-
-```
-## [1] "b"
-```
+.question[In which year was the gallery more popular?]
 
 ---
 
-Use `ls()` to see what is defined in a specific package.
+## 'Sunday Opening in the City'
 
-
-```r
-search()
-```
-
-```
-##  [1] ".GlobalEnv"        "package:evd"       "package:DT"       
-##  [4] "package:rvest"     "package:forcats"   "package:stringr"  
-##  [7] "package:dplyr"     "package:purrr"     "package:readr"    
-## [10] "package:tidyr"     "package:tibble"    "package:ggplot2"  
-## [13] "package:tidyverse" "package:stats"     "package:graphics" 
-## [16] "package:grDevices" "package:utils"     "package:datasets" 
-## [19] "package:methods"   "Autoloads"         "package:base"
-```
-Let's see what is in package `datasets` of the list.
-
-```r
-ls(18)
-```
-
-```
-##  [1] "ability.cov"   "airmiles"      "AirPassengers" "airquality"   
-##  [5] "anscombe"      "attenu"        "attitude"      "austres"      
-##  [9] "beaver1"       "beaver2"       "BJsales"       "BJsales.lead" 
-## [13] "BOD"           "cars"          "ChickWeight"  
-##  [ reached getOption("max.print") -- omitted 89 entries ]
-```
-
----
-Use `ls()` to list all the objects in a package.
-
-```r
-ls("package:datasets")
-```
-
-```
-##  [1] "ability.cov"    "airmiles"       "AirPassengers"  "airquality"    
-##  [5] "anscombe"       "attenu"         "attitude"       "austres"       
-##  [9] "beaver1"        "beaver2"        "BJsales"        "BJsales.lead"  
-## [13] "BOD"            "cars"           "ChickWeight"    "chickwts"      
-## [17] "co2"            "CO2"            "crimtab"        "discoveries"   
-## [21] "DNase"          "esoph"          "euro"           "euro.cross"    
-## [25] "eurodist"       "EuStockMarkets" "faithful"       "fdeaths"       
-## [29] "Formaldehyde"   "freeny"         "freeny.x"       "freeny.y"      
-## [33] "HairEyeColor"   "Harman23.cor"   "Harman74.cor"   "Indometh"      
-## [37] "infert"         "InsectSprays"   "iris"           "iris3"         
-## [41] "islands"        "JohnsonJohnson" "LakeHuron"      "ldeaths"       
-## [45] "lh"            
-##  [ reached getOption("max.print") -- omitted 59 entries ]
-```
-
----
-
-class: middle
-
-# Functions
-
----
-
-## When should you write a function?
-
---
-.pull-left[
-&lt;img src="img/funct-all-things.png" width="100%" /&gt;
-]
---
-.pull-right[
-When you’ve copied and pasted a block of code more than twice.
-]
-
----
-## Why functions?
-
-- Automate common tasks in a more powerful and general way than copy-and-pasting:
-  - Give your function an evocative name that makes your code easier to understand
-  - As requirements change, only need to update code in one place, instead of many
-  - Eliminate chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another)
-
---
-
-- Down the line: Improve your reach as a data scientist by writing functions (and packages!) that others use
-
-
-## Turn your code into a function
-
-- Pick a short but informative **name**, preferably a verb.
-
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
-
-
-```r
-name_function &lt;- 
-```
-
----
-
-## Turn your code into a function
-
-- Pick a short but evocative **name**, preferably a verb.
-- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
-
-&lt;br&gt;
-
-
-```r
-name_function &lt;- function(x){
-  
-  
-  
-}  
-```
-
----
-
-## Turn your code into a function
-
-- Pick a short but informative **name**, preferably a verb.
-- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
-- Place the **code** you have developed in body of the function, a `{` block that immediately follows `function(...)`.
-
-
-```r
-name_function  &lt;- function(x){
-
-  # code you want the function to do
-  # if different outputs add the specific return()
-  
-}
-```
-
----
-
-class: middle
-
-# Writing functions
-
----
-
-## What goes in / what comes out?
-
-.pull-left-wide[
-- They take input(s) defined in the function definition
-
-
-```r
-function([inputs separated by commas]){
-  # what to do with those inputs
-}
-```
-
-- By default they return the last value computed in the function
-
-
-```r
-name_function &lt;- function(x){
-  # do bunch of stuff with the input...
-  
-  # return the final object
-  return(...)
-}
-```
-
-- You can define more outputs to be returned in a list as well as nice print methods (but we won't go there for now...)
-]
-
----
+* Case study from _The Times (London)_, July 25 - August 1, 1895.
+* Series of 5 letters 'To The Editor of the Times'
+* Same data used to argue **for** &amp; **against** Sunday Opening of museums, galleries and libraries.
 
 .question[
-What is going on here?
+
+"I think Lord Beaconsfield said that there were three degrees of veracity - viz, lies, d---d lies, and statistics."
+
+_W. P. Treloar, The Times (London), July 26, 1895_
+]
+
+**Message**: Understand the data and how it is collected. The gallery was open for 6 Sundays in 1894, and for 13 Sundays in 1895 to address overcrowding in the previous year.
+
+
+---
+
+## Case Study: Exercise and Cancer
+
+
+&lt;img src="img/exercise-cancer-time.png" width="100%" /&gt;
+
+.footnote[
+.midi[
+Alice Park. [Exercise Can Lower Risk of Some Cancers By 20%](https://time.com/4330041/reduce-cancer-risk-exercise/). Time Magazine. 16 May 2016.
+]
+]
+
+---
+
+## Original study
+
+Moore, Steven C., et al. **["Association of leisure-time physical activity with risk of 26 types of cancer in 1.44 million adults."](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2521826)** JAMA internal medicine 176.6 (2016): 816-825.
+
+Methods:
+  - A substantive meta-analysis, pooling together research from multiple US &amp; EU studies.
+  - "The median activity level was 8 MET-h/wk. This is equivalent to 150 minutes of moderate intensity activity (e.g. walking) per week, and comparable to the median activity level for the US population."
+  - The hazard ratio for a range of cancers was evaluated by comparing the higher (top 20%) vs the lower (bottom 20%) groups of physical activity.
+
+Findings: 
+  - "High vs low levels of leisure-time physical activity were associated with lower risks of **13 of 26** cancers." (no association in 13 other cancers.)
+
+
+---
+
+## Original study
+
+Moore, Steven C., et al. **["Association of leisure-time physical activity with risk of 26 types of cancer in 1.44 million adults."](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2521826)** JAMA internal medicine 176.6 (2016): 816-825.
+
+
+Acknowledgement of limitations:
+  - "The main limitation of our study is that ... we cannot fully exclude the possibility that residual **confounding** by diet, smoking, or other factors may affect our results."
+  - "An additional limitation is that we used **self-reported** physical activity, which entails some error in recall."
+
+
+**Message**: Clarity in communication is important to minimise misunderstanding. Not only about the methods and findings, but crucially about the _assumptions_ and _limitations_.
+
+
+
+---
+
+## What is data misrepresentation?
+
+- _Data_ is messy, but it contains _Information_.
+- A _Data Scientist_ can access this information through a variety of tools.
+- The use of different tools can obtain different insights into the data.
+- Consequently, a data scientist must be skilled to _understand_ what is the right tool to use.
+- In other words, data scientists must be **data literate**.
+
+.question[
+**Data Literacy** - the ability to _explore_, _understand_ and _communicate_ data in a meaningful way.
 ]
 
 
-```r
-add_2 &lt;- function(x){
-  x + 2
-  1000
-}
-```
 
+.question[
+**Misrepresentation** of data arises from the application of poor data literacy skills, typically resulting in false data interpretations.
+]
 
-```r
-add_2(3)
-```
-
-```
-## [1] 1000
-```
-
-```r
-add_2(10)
-```
-
-```
-## [1] 1000
-```
 
 ---
 
-## Naming functions
-
-&gt; "There are only two hard things in Computer Science: cache invalidation and naming things." - Phil Karlton
-
----
-
-## Naming functions
-
-- Names should be short but clearly evoke what the function does
-
---
-- Names should be verbs, not nouns
-
---
-- Multi-word names should be separated by underscores (`snake_case` as opposed to `snakeCase`)
-
---
-- A family of functions should be named similarly (`scrape_page()`, `scrape_speech()` OR `str_remove()`, `str_replace()` etc.)
-
----
-## Overwriting existing functions
+## Some causes of misrepresentation
 
 
-```r
-mean
-```
-
-```
-## function (x, ...) 
-## UseMethod("mean")
-## &lt;bytecode: 0x5576dec541c0&gt;
-## &lt;environment: namespace:base&gt;
-```
-
-```r
-mean(1:10)
-```
-
-```
-## [1] 5.5
-```
-What happened if we write a function with the same name?
-
-```r
-mean &lt;- function(x){ x+2 }
-mean(1:10)
-```
-
-```
-##  [1]  3  4  5  6  7  8  9 10 11 12
-```
----
-Now `mean` is the new function.
-
-```r
-mean
-```
-
-```
-## function(x){ x+2 }
-```
-To use the later version you can:
-
-```r
-base::mean(1:10)
-```
-
-```
-## [1] 5.5
-```
---
-- Avoid overwriting existing (especially widely used) functions
+* A lack of understanding of the data:
+  - What is the context of the data?
+  - For what purpose was the data collected for?
+  - What do the variables mean?
+* Insufficient or unrepresentative data:
+  - Is there enough observations to conclude something meaningful?
+  - Has the data been collected in a way that represent the studied population?
+* Problems with applying analysis:
+  - Inappropriate use of data science tools
+  - Blind application of methods without considering subtleties
+  - Cherry picking
+* Is the interpretation of findings fair and balanced:
+  - Clarity on assumptions and limitations
+  - Is there an over emphasis of the 'interesting' result?
+  - Incorrect implication of causal relationships
 
 
-```r
-# JUST DON'T
-mean &lt;- function(x){ 
-  x+2
-  }
-```
-
-```r
-rm(mean)
-```
----
-
-## Function in action
-
-Create a function that calculates the area of a circle.
-
-1. The function need as input the `radius` of the circle.
-
-2. The function should return the area of the circle.
-
-```r
-area &lt;- function(r) { pi*r^2 }
-area(2)
-```
-
-```
-## [1] 12.56637
-```
-If the radius is negative?
-
-```r
-area(-2)
-```
-
-```
-## [1] 12.56637
-```
-**Be careful!**
----
-Add a condition, if the input is negative, the function should return an error.
-
-* `message`  prints a message but not stop execution.
-
-* `warning`  prints a warning message but not stop execution.
-
-* `stop`  stops execution of the current expression and executes an error action.
-
-```r
-area &lt;- function(r) {
-  if (r &lt; 0)
-    message("Error, provide positive radius.")
-  else  pi*r^2 }
-area(2)
-```
-
-```
-## [1] 12.56637
-```
-If the radius is negative?
-
-```r
-area(-2)
-```
-
-```
-## Error, provide positive radius.
-```
----
-
-Remember the function **area**.
-
-Evaluate in a character or a logic value.
-
-```r
-area(TRUE)
-```
-
-```
-## [1] 3.141593
-```
-`TRUE` logical is taken as `1`. Add the condition that `radius` should be a numeric value.
-
-```r
-area &lt;- function(r) {
-  if (r &lt; 0 | !is.numeric(r) )
-      return("Error, provide positive numeric radius.")
-  else  pi*r^2 }
-```
-Try again.
-
-```r
-area(TRUE)
-```
-
-```
-## [1] "Error, provide positive numeric radius."
-```
----
-
-class: middle
-
-# Another example 
+&lt;!-- However, since researchers often disagree about the proper use of statistical techniques and other means of representing data, the line between misrepresentation of data and ‘disagreement about research methods’ is often blurry. --&gt;
 
 ---
 
-# Fizzbuzz problem
+## Themes &amp; principles in ethical data science
 
-* Print integers 1 to N, but print `“Fizz”` if an integer is divisible by 3, `“Buzz”` if an integer is divisible by 5, and `“FizzBuzz”` if an integer is divisible by both 3 and 5.
+* **Seek to enhance the values of data science for society**
+  - Data science can be beneficial and detrimental. 
+  - Seek to understand the potential impact. 
+  - Strive to seek fairness
+* **Avoid harm**
+  - Must adhere to laws around data protection and discrimination.
+* **Apply and maintain professional competence**
+  - Minimise uncertainty and risk by complying with professional best practices. 
+* **Seek to preserve or increase trustworthiness**
+  - Work closely with the public and stakeholders to build trust and understanding.
+  - Be open and truthful about the benefits and limitations of data and algorithms.
+* **Maintain accountability and oversight**
+  - Transparency and reproducibility of research.
+  - Oversight considerations in AI decision making.
 
-&lt;img src="img/fizzbuzz.png" width="75%" style="display: block; margin: auto;" /&gt;
+Source: [Institute and Faculty of Actuaries](https://actuaries.org.uk/standards/data-science-ethics/)
+
 ---
+
+## Data Representativeness
+
+.pull-left[
+
+.question[
+**Population**: The entire set of items (eg. people) from which you plan to investigate as part of a statistical study.
+
+**Sample**: A subset of items from the population from which measurements are collected from.
+]
+
+]
+
+.pull-right[
+&lt;img src="img/popVsample.PNG" width="100%" /&gt;
+
+]
+
+* The objective of data science is to summarise the data from the sample to _infer_ properties about the population.
+
+* Unrepresentative **biased** data can result in inappropriate or **biased** findings.
+
+
+---
+
+## Historical Case Study: Landon vs Roosevelt
+
+.pull-left[
+* 1936 US presidential election:
+  - Rep: Alf Landon
+  - Dem: Franklin Roosevelt
+* Opinion poll conducted by Literary Digest magazine:
+  - Polled 10 million individuals
+  - Received 2.27 million responses
+  - Projected winner: Alf Landon
+* Franklin Roosevelt won the election!
+]
+
+.pull-right[
+&lt;img src="img/Landon.jpg" width="40%" /&gt;&lt;img src="img/Roosevelt.jpg" width="40%" /&gt;
+
+]
+
+* Cause for the error - sampling bias!
+  - Sampled from magazine subscribers, registered vehicle owners and telephone users.
+  - Historical context: election happened during the 'Great Depression' (1929-1939)
+  - Consequently, sample disproportionately polled higher-income voters.
+
+
+---
+
+## Case Study: Cambridge Analytica
+
+&lt;img src="img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## The UK General Data Protction Regulation (GDPR)
+
+* Guidelines for the collection and processing of **personal information**.
+* **Personal data** - information that relates to an identified or identifiable individual.
+    - name, identification number, biometric data, digital identifiers, opinions &amp; beliefs, etc.
+* **Informed consent** should be given for the collection and processing of personal data, including the right to withdrawal.
+* Personal data must be **stored securely**:
+  - Limiting access 
+  - Controls against malicious attacks
+  - To anonymize or de-identifying in case of breaches
+  - Case Study: [Police Service of Northern Ireland data breach](https://www.bbc.co.uk/news/uk-northern-ireland-66448442)
+
+---
+
+## Creative Commons Licenses (version 4.0)
+
+* Allows the creator to retain copyright whilst allowing others to copy and distribute their work.
+* This applies to data and the publication of results.
+* Different types of licenses control the use and distribution of copyrighted content.
+* License conditions include:
+  - (BY) Credit must be given to the creator.
+  - (SA) Adaptations must be shared under the same licencing terms.
+  - (NC) Derived products must be for non-commercial purposes.
+  - (ND) Cannot adapt or produce any derivatives of the work.
+
+Source: [Creative Common](https://creativecommons.org/share-your-work/cclicenses/)
+
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
