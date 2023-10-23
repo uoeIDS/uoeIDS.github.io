@@ -1,6 +1,6 @@
 ---
-title: "HW 02 - Yet to be released"
-subtitle: "Due: dd text_month, hh:mm UK time"
+title: "HW 01 - Data Visualisation"
+subtitle: "Due: 3 November, 16:00 noon UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -11,6 +11,7 @@ link-citations: yes
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(cherryblossom)
 
 knitr::opts_chunk$set(
   eval = FALSE,
@@ -18,8 +19,293 @@ knitr::opts_chunk$set(
   )
 ```
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Pierre Bamin from Unsplash"}
-knitr::include_graphics("img/pierre-bamin-18T72jBinvI-unsplash.jpg")
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by roxanawilliams1920 from Pixabay"}
+knitr::include_graphics("img/running-ga8a0c7258_1920.jpg")
 ```
 
-You are very early at looking for the homework assignment. The worksheet is not yet released! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including release dates.
+
+In this assignment you will get to put your newly acquired data visualisation skills into action.
+
+## Prerequisites
+
+This assignment assumes that you have worked through all materials up to and including:
+
+-   [Week 4](https://uoe-ids.netlify.app/week04/) on creating data visualisations, and
+-   [Week 5](https://uoe-ids.netlify.app/week05/) on effectively communicating data science results.
+
+You may need to use some of your data wrangling skills from earlier in the course.
+
+
+----
+
+
+# Getting started
+
+## Accessing the homework template
+
+1.   From your profile in GitHub, go to **Repositories** (along the top) and click on the green **New** button.
+
+2.  Click on the text **Import a repository**.
+
+3.  Type the following URL: `https://github.com/uoeIDS/hw-02-template`
+
+4. Add a name for your repository, for example, `hw-01`.
+
+5. **IMPORTANT**: Set the privacy of your repository to **Private**. If you make your repository public then anyone can see and copy your work. Failure to set your repository private risks incurring an academic misconduct case.
+
+6. Click on the green **Begin import** button
+
+Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework.
+
+1.    In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side.
+
+2.    Next, click on the green **Add people** people button under **Manage access**
+
+3.    Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**.
+
+## Creating a version control R project
+
+1. Open RStudio, click on **File** at the very top and then select **New Project...**.
+
+2. In the new project wizard, select **Version Control** and then **Git**.
+
+3. Go to GitHub and open the repository that you have just created. Click the green **Code** button and copy the HTTPS URL.
+
+4. Return to RStudio and paste the **Repository URL** in the first text box. The project directory name will automatically be filled, it is recommended that you do not change this name.
+
+5. Click on the **Browse...** button to find a location in your file system where you want to save your project.
+
+6. Click on the **Create Project** button
+
+## Warm up
+
+### Step 1. Rename the template worksheet
+
+In the lower right panel in RStudio, click the **Files** tab to see what files are provided in the homework template. You should see an R markdown document called `hw-01-template.Rmd`. Click on the box next to this file and then above (in the same panel) click on the **Rename** button. In the new window, edit the file name to read `hw-01-s<nnnnnn>.Rmd` where `<nnnnnn>` should be your University User Number (UUN). When done, click on **OK**.
+
+### Step 2. Update the document author
+
+Open the R Markdown file that you have just renamed, which will appear in the top left panel of RStudio. At the top, edit the author name to your name and include your UUN. Do not change any of the other details in the YAML (the area between the triple dashes).
+
+Now press the **Knit** button at the top of the R Markdown document, which will compile the code and produce a document with your updated information. Depending on your settings, this will either appear in a new window or within the **Viewer** tab in the bottom right panel.
+
+
+### Step 3. Commit
+
+Now that we have made an important edit to the document, we need to add the changes into the version control.
+
+Go to the **Git pane** in your RStudio. If you have done the above steps then you should see three items: the creation of `hw-01-s<nnnnnn>.Rmd` and the deletion of `hw-01-template.Rmd` as a result of renaming the R Markdown file, and the creation of `hw-01-s<nnnnnn>.html` from the first knit to produce the html document. Any further changes you make to your project will appear hear.
+
+
+Next, click on **Diff**.
+This will pop open a new window that shows you the **diff**erence between the last committed state of the document and its current state that includes your changes.
+If you are happy with these changes, click on the checkboxes of all files in the list. This will **stage** the files ready for committing to the version control structure. Type a short yet informative description of the changes you have made in the **commit message** text box, for example *"Update author name"*. Once done, hit **Commit**.
+
+```{r update-author-name-commit, echo = FALSE, eval = TRUE, fig.align = "left"}
+knitr::include_graphics("img/update-author-name-commit.png")
+```
+
+
+You do not have to commit after every change as this would get quite cumbersome.
+You should consider committing states that are *meaningful to you* for inspection, comparison, or restoration.
+For the homework, we recommend that you make a commit after each time you attempt or make an edit to each exercise.
+
+### Step 3. Push
+
+```{r ready-to-push, fig.margin = TRUE, echo = FALSE, eval = TRUE}
+knitr::include_graphics("img/ready-to-push.png")
+```
+
+Now that you have made an update and committed the changes, it is time to push these changes to the web!
+Or more specifically, to your repo on GitHub.
+Why?
+So that others can see your changes.
+And by others, we mean the course teaching team that you added as a collaborator (you should have made your repository private so that it can only be seen by you and collaborators).
+In order to push your changes to GitHub, you will need to click on the **Push** button.
+
+
+<!--
+However, GitHub recently made some changes for extra security.
+As such, you will first need to follow the [Push and Pull Changes](https://idsed.digital/troubleshoot/setup/openingaproject/#push-and-pull-changes) instructions on the [Opening a Project](https://idsed.digital/troubleshoot/setup/openingaproject/) page.
+The good news is you will only need to do this once per RStudio Cloud project - rather than constantly typing in your username and password every time you want to push a change to GitHub.
+-->
+
+
+---
+
+
+# Exercises
+
+Now let’s get started with the homework exercises!
+
+## Data
+
+The data that we will be looking at is about the runners in the 2017 [Cherry Blossom Run](https://www.cherryblossom.org/), an annual road race held in Washington, DC, the U.S. capital.
+For each runner, we have information on the runner’s age, race time and a number of other variables.
+
+### Getting the data
+
+The data used in this exercise can be found in the **cherryblossom** package, and it is called `run17`.
+You will need to install the **cherryblossom** package by running the following code on the console (lower left panel).
+```{r eval = FALSE}
+install.packages("cherryblossom")
+```
+Warning: Do not include the above code in your R Markdown document! Otherwise RStudio will attempt to download and install the package each time your _knit_ your document.
+
+To use the data, all that we need to do is to load the package into our workflow by including the following command at the beginning of the R Markdown document:
+```{r eval = FALSE}
+library(cherryblossom)
+```
+You should notice that the above code already appears in the homework template worksheet.
+
+You can view the dataset as a spreadsheet using the `View()` function. 
+Note that you should not put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window (and the concept of popping open a window in a static document does not really make sense...).
+When you run this in the console, you will see the following **data viewer** window pop up.
+
+```{r view-data}
+View(run17)
+```
+
+```{r data.viewer, echo = FALSE, eval = TRUE, fig.align = "left"}
+knitr::include_graphics("img/view-data2.png")
+```
+
+You can find out more about the dataset by inspecting its documentation (which contains a **data dictionary**, name of each variable and its description), which you can access by running `?run17` in the Console or using the Help menu in RStudio to search for `run17``.
+
+-----
+
+
+## Exercise 1
+
+The code below produces a simple histogram for the runners of the `"10 Mile"` event. 
+
+```{r ex1, eval = FALSE}
+run17 %>%
+  filter(event == "10 Mile") %>%
+  ggplot(mapping = aes(x = age)) +
+    geom_histogram(binwidth = 2)
+```
+
+a. Copy the above code to create the data visualisation. Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the age distribution of the runners? You may calculate some simple summary statistics to support your comments. (**3 pts**)
+
+b. Create a similar data visualisation for the `"5K"` race event. Describe the _shape_ of this histogram and discuss the similarities/differences of the age distribution between the `"5K"` and `"10 Mile"`races. (**2 pts**)
+
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 1, knit the document, commit your changes with a commit message that says "Completed Exercise 1", and push.*
+
+-----
+
+## Exercise 2
+
+Create a data visualisation based on the following description. (**5 pts**)
+
+> Make a sequence of boxplots for the time (in minutes) that it took the runners to complete the Cherryblossom race (after accounting for the staggered start). The boxplots should be orientated vertically (i.e. side-by-side) based on the runner's identified gender. Furthermore, the data visualisation should consist of two panels for the two different race distances, with independent axes. Finally, add appropriate text to the image in order to assist the reader in understanding the data visualisation.
+
+
+Note: Use good coding practices to format your code so that it is easily readable. For example, add spaces, newlines and indentation in appropriate places.
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
+
+
+-----
+
+## Exercise 3
+
+In the Cherryblossom race there are 17,442 participants of the 10 Mile run. To lessen overcrowding on the course, runners started the race in waves whereby they were placed into groups based on their abilities and were only allowed to cross the start line after the preceding group had started. You can see the effect of the wave start for the 10 Mile run by creating a fine histogram of the difference between the clock and race times:
+
+```{r}
+ggplot(data = run17 %>% filter(event == "10 Mile"), 
+       mapping = aes(x = clock_sec - net_sec)) + 
+  geom_histogram(binwidth = 10)
+```
+
+The runners that were placed in the first wave were predicted to be the fastest runners registered to take part in the race and all passed the starting line within _3 minutes_ of the starting gun. The last wave, consisting of the slowest group of runners, had to wait until at least 23 minutes after the start of the run to be allowed to pass the start line.
+
+The following data visualisation that compares the runner's actual race time against their age for those in the first and last wave of the 10 Mile run. It demonstrates the effectiveness of the grouping for the wave start as the last wave takes on average 45 minutes longer, across all ages, to complete the course compared to the runners in the first wave.
+
+
+```{r ex3, echo = FALSE, eval = TRUE, fig.align = "left"}
+knitr::include_graphics("img/First_Last_Wave_10Mile.png")
+```
+
+* Recreate the above data visualisation. (**5 pts**)
+
+Hint: 
+* You will need to wrangle, filter and transform the `run17` data before creating the data visualisation.
+* The colours used in this data visualisation are `"orange"` and `"forrestgreen"`.
+* The `ggplot2` [cheat sheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html?_gl=1*1uyk3g7*_ga*MTUxMzczNDUyLjE2Nzk1NjY2NDg.*_ga_2C0WZ1JHG0*MTY5ODA0NzI0Ni4yMy4wLjE2OTgwNDcyNDYuMC4wLjA.) may also help as a reference guide with aspects of this data visualisation.
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3, knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
+
+
+-----
+
+## Exercise 4
+
+Find two visualisations:
+
+* One that you think provides a _good_ representation of the data, and
+* One that you think provides a _bad_ representation of the data.
+
+For each case, give _two_ reasons why you consider the data visualisation you have found are good/bad. Your reasons should make reference to the '4 respects' of data visualisations. (**4 pts**)
+
+The images you select should not be any of the data visualisations that you have seen in the lectures/workshops. You should also ensure that you provide an appropriate citation for your images. (**1pt**)
+
+
+### Instructions on adding your image to the R Markdown document.
+
+To add your visualisation to the homework template:
+
+1.    Take a photo of the visualisation or save a copy of the image from the internet.
+
+2.    Copy and paste your image to the `img/` folder of your homework template.
+
+3.    In the corresponding R chunk for this exercise, edit the path within the `include_graphics()` command to the file name of your image.
+
+Citations for where you downloaded your image should be in the following form:
+
+&lt;Author/Organisation>, "&lt;Title of website>" [Online]. Available at: &lt;URL> (Accessed: &lt;day month year>)
+
+For example, the reference for the RStudio logo would be:
+
+RStudio, "RStudio Logo Usage Guidelines" [Online]. Available at: https://www.rstudio.com/about/logos/ (Accessed: 19 September 2022)
+
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 5, knit the document, commit your changes with a commit message that says "Completed Exercise 5", and push.*
+
+
+-------
+
+# Submission
+
+
+⬆️ Once you have answered all of the exercises, please make sure that you have knitted your document and committed all the changes to GitHub.
+
+To submit your homework:
+
+1.    Login to LEARN-ULTRA and navigate to the Introduction to Data Science course.
+
+2.    In the **Assessment** folder, select **Gradescope**.
+
+3.    Click on the **Dashboard** in the left-hand panel and select **Homework Assignment 2 (hw-02)**.
+
+4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
+Once done, press **Save Answer** and then **Submit & View Submissions**.
+
+**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**.
+
+If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
+
+------------------------------------------------------------------------------
+
+## How the homework graded
+
+The homework is grades out of a 25 where:
+
+*   Each exercise is marked out of 5, and
+
+*   Up to five additional marks are awarded based on the clarity of your writing, coding skills, reproducibility and overall presentation. 
+
+## Getting help
+
+If you have any questions about the assignment, please post them on [Piazza!](https://piazza.com/ed.ac.uk/fall2023/math0807720234ss1sem1/info)
