@@ -1,5 +1,5 @@
 ---
-title: "HW 01 - Data Visualisation"
+title: "HW 02 - Data Visualisation"
 subtitle: "Due: 3 November, 16:00 noon UK time"
 output: 
   tufte::tufte_html:
@@ -49,7 +49,7 @@ You may need to use some of your data wrangling skills from earlier in the cours
 
 3.  Type the following URL: `https://github.com/uoeIDS/hw-02-template`
 
-4. Add a name for your repository, for example, `hw-01`.
+4. Add a name for your repository, for example, `hw-02`.
 
 5. **IMPORTANT**: Set the privacy of your repository to **Private**. If you make your repository public then anyone can see and copy your work. Failure to set your repository private risks incurring an academic misconduct case.
 
@@ -81,7 +81,7 @@ Once you have created your repository, you will need to add the course GitHub ac
 
 ### Step 1. Rename the template worksheet
 
-In the lower right panel in RStudio, click the **Files** tab to see what files are provided in the homework template. You should see an R markdown document called `hw-01-template.Rmd`. Click on the box next to this file and then above (in the same panel) click on the **Rename** button. In the new window, edit the file name to read `hw-01-s<nnnnnn>.Rmd` where `<nnnnnn>` should be your University User Number (UUN). When done, click on **OK**.
+In the lower right panel in RStudio, click the **Files** tab to see what files are provided in the homework template. You should see an R markdown document called `hw-02-template.Rmd`. Click on the box next to this file and then above (in the same panel) click on the **Rename** button. In the new window, edit the file name to read `hw-02-s<nnnnnn>.Rmd` where `<nnnnnn>` should be your University User Number (UUN). When done, click on **OK**.
 
 ### Step 2. Update the document author
 
@@ -94,7 +94,7 @@ Now press the **Knit** button at the top of the R Markdown document, which will 
 
 Now that we have made an important edit to the document, we need to add the changes into the version control.
 
-Go to the **Git pane** in your RStudio. If you have done the above steps then you should see three items: the creation of `hw-01-s<nnnnnn>.Rmd` and the deletion of `hw-01-template.Rmd` as a result of renaming the R Markdown file, and the creation of `hw-01-s<nnnnnn>.html` from the first knit to produce the html document. Any further changes you make to your project will appear hear.
+Go to the **Git pane** in your RStudio. If you have done the above steps then you should see three items: the creation of `hw-02-s<nnnnnn>.Rmd` and the deletion of `hw-02-template.Rmd` as a result of renaming the R Markdown file, and the creation of `hw-02-s<nnnnnn>.html` from the first knit to produce the html document. Any further changes you make to your project will appear hear.
 
 
 Next, click on **Diff**.
@@ -186,7 +186,7 @@ run17 %>%
     geom_histogram(binwidth = 2)
 ```
 
-a. Copy the above code to create the data visualisation. Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the age distribution of the runners? You may calculate some simple summary statistics to support your comments. (**3 pts**)
+a. Copy the above code to create the data visualisation. Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the age distribution of the runners? Calculate some simple summary statistics to support your comments. (**3 pts**)
 
 b. Create a similar data visualisation for the `"5K"` race event. Describe the _shape_ of this histogram and discuss the similarities/differences of the age distribution between the `"5K"` and `"10 Mile"`races. (**2 pts**)
 
@@ -230,10 +230,15 @@ knitr::include_graphics("img/First_Last_Wave_10Mile.png")
 
 * Recreate the above data visualisation. (**5 pts**)
 
-Hint: 
-* You will need to wrangle, filter and transform the `run17` data before creating the data visualisation.
-* The colours used in this data visualisation are `"orange"` and `"forrestgreen"`.
-* The `ggplot2` [cheat sheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html?_gl=1*1uyk3g7*_ga*MTUxMzczNDUyLjE2Nzk1NjY2NDg.*_ga_2C0WZ1JHG0*MTY5ODA0NzI0Ni4yMy4wLjE2OTgwNDcyNDYuMC4wLjA.) may also help as a reference guide with aspects of this data visualisation.
+#### Supplementary information for this exercise
+
+You will need to wrangle, filter and transform the `run17` data before creating the data visualisation.
+
+The colours used in this data visualisation are `"orange"` and `"forrestgreen"`.
+
+The `ggplot2` [cheat sheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html?_gl=1*1uyk3g7*_ga*MTUxMzczNDUyLjE2Nzk1NjY2NDg.*_ga_2C0WZ1JHG0*MTY5ODA0NzI0Ni4yMy4wLjE2OTgwNDcyNDYuMC4wLjA.) may also help as a reference guide with aspects of this data visualisation.
+
+<br>
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3, knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
 
@@ -256,7 +261,7 @@ The images you select should not be any of the data visualisations that you have
 
 To add your visualisation to the homework template:
 
-1.    Take a photo of the visualisation or save a copy of the image from the internet.
+1.    Take a photo of the visualisation or save a copy of the image from the internet. Preferred file types for images are `.png` and `.jpeg`.
 
 2.    Copy and paste your image to the `img/` folder of your homework template.
 
@@ -271,7 +276,7 @@ For example, the reference for the RStudio logo would be:
 RStudio, "RStudio Logo Usage Guidelines" [Online]. Available at: https://www.rstudio.com/about/logos/ (Accessed: 19 September 2022)
 
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 5, knit the document, commit your changes with a commit message that says "Completed Exercise 5", and push.*
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4, knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
 
 
 -------
