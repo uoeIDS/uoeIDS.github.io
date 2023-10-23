@@ -197,12 +197,15 @@ b. Create a similar data visualisation for the `"5K"` race event. Describe the _
 
 ## Exercise 2
 
-Create a data visualisation based on the following description. (**5 pts**)
+a. Create a data visualisation based on the following description. (**4 pts**)
 
 > Make a sequence of boxplots for the time (in minutes) that it took the runners to complete the Cherryblossom race (after accounting for the staggered start). The boxplots should be orientated vertically (i.e. side-by-side) based on the runner's identified gender. Furthermore, the data visualisation should consist of two panels for the two different race distances, with independent axes. Finally, add appropriate text to the image in order to assist the reader in understanding the data visualisation.
 
 
 Note: Use good coding practices to format your code so that it is easily readable. For example, add spaces, newlines and indentation in appropriate places.
+
+b. Provide a brief comment about the relationships seen in the data visualisation created by the above description. (**1 pt**)
+
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
 
