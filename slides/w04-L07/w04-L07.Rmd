@@ -100,21 +100,22 @@ $$\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$$
 
 .pull-right[
 
-```{r location, echo=FALSE, fig.height=6}
-stats <- tibble(style = c("Left Skew", "Symmetric","Right Skew"),
+```{r location, echo=FALSE, fig.height = 5, fig.align='center'}
+stats <- tibble(style = c("Right / Positive Skew", "Symmetric","Left / Negative Skew"),
        shape1 = c(2,5,5), shape2 = c(5,5,2) ) %>%
   mutate(avg = shape1/(shape1+shape2), med=qbeta(0.5,shape1,shape2),
          mode = (shape1-1)/(shape1+shape2-2)) %>%
-    mutate(style = fct_relevel(style,"Left Skew","Symmetric", "Right Skew"))
+    mutate(style = fct_relevel(style,"Left / Negative Skew","Symmetric", "Right / Positive Skew"))
 
 vals <- tibble(x=seq(0,1,by=0.01)) %>%
     mutate(
-      `Left Skew` = dbeta(x, stats$shape1[1], stats$shape2[1]),
+      `Right / Positive Skew` = dbeta(x, stats$shape1[1], stats$shape2[1]),
       `Symmetric` = dbeta(x, stats$shape1[2], stats$shape2[2]),
-      `Right Skew` = dbeta(x, stats$shape1[3], stats$shape2[3])
+      `Left / Negative Skew` = dbeta(x, stats$shape1[3], stats$shape2[3])
       ) %>%
-    pivot_longer(cols = c("Left Skew","Symmetric", "Right Skew"), names_to = "style", values_to = "y") %>%
-    mutate(style = fct_relevel(style,"Left Skew","Symmetric", "Right Skew"))
+    pivot_longer(cols = c("Left / Negative Skew","Symmetric", "Right / Positive Skew"),
+                 names_to = "style", values_to = "y") %>%
+    mutate(style = fct_relevel(style,"Right / Positive Skew","Symmetric", "Left / Negative Skew"))
   
 vals %>%
   ggplot(mapping = aes(x=x,y=y,fill=style)) + 
@@ -132,6 +133,9 @@ vals %>%
 
 ```
 
+.small[
+ Note: Skewness indicates the direction of the longer tail.
+ ]
 ]
 
 
