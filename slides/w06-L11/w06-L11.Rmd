@@ -26,11 +26,11 @@ xaringanExtra::use_panelset()
 
 class: middle
 
-# Case Study: Sunday Art Gallery Attandance
+# Case Study: Sunday Art Gallery Attendance
 
 ---
 
-## Sunday Art Gallery Attandance
+## Sunday Art Gallery Attendance
 
 The Guildhall Art Gallery in London investigated Sunday attendance figures for its Loan Collection exhibition during the Spring/Summer season for two years.
 
