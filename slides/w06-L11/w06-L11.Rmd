@@ -176,6 +176,11 @@ Source: [Institute and Faculty of Actuaries](https://actuaries.org.uk/standards/
 
 ---
 
+class: middle
+# Statistical principals
+
+---
+
 ## Data Representativeness
 
 .pull-left[
@@ -231,15 +236,67 @@ knitr::include_graphics("img/Roosevelt.jpg")
 
 ---
 
-## Case Study: Cambridge Analytica
+## Sampling Methods
 
-```{r echo=FALSE, out.width = "75%", fig.align='center'}
-knitr::include_graphics("img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg")
+```{r echo=FALSE, out.width = "70%", fig.align='center'}
+knitr::include_graphics("img/sampling_methods.png")
 ```
+
+.small[
+**Source**: Trivedi (2020) [Probability Sampling](https://conceptshacked.com/probability-sampling/)
+]
 
 ---
 
-## The UK General Data Protction Regulation (GDPR)
+## Bias correction
+
+
+.pull-left[
+* Suppose your sample is biased
+* _And_ you can quantify the scale of the bias
+* Then you should attempt to correct your estimates.
+
+**Example**
+
+* Are you in favour of statement "X"?
+  - Male: 20% in favour
+  - Female: 75% in favour
+]
+
+.pull-right[
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics("img/YouGov_bias_correction.png")
+```
+
+]
+
+
+* Unweighted (biased) overall opinion: $~~~20\%~\frac{948}{2110} + 75\%~\frac{1162}{2110} = 50.3\%$ in favour
+* Weighted (bias correced) overall opinion: $~~~20\%~\frac{1023}{2110} + 75\%~\frac{1087}{2110} = 48.3\%$ in favour
+
+
+---
+
+class: middle
+# When data science meets the law
+
+---
+
+## Case Study: Cambridge Analytica
+
+
+![](img/youtube_logo.png) [The Guardian - Cambridge Analytica whistleblower](https://www.youtube.com/watch?v=FXdYSQ6nu-M) 
+
+
+```{r echo=FALSE, out.width = "70%", fig.align='center'}
+knitr::include_graphics("img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg")
+```
+
+
+---
+
+## The UK General Data Protection Regulation (GDPR)
 
 * Guidelines for the collection and processing of **personal information**.
 * **Personal data** - information that relates to an identified or identifiable individual.
@@ -250,6 +307,9 @@ knitr::include_graphics("img/facebook-cambridge-analytica-scandal-explained-the-
   - Controls against malicious attacks
   - To anonymize or de-identifying in case of breaches
   - Case Study: [Police Service of Northern Ireland data breach](https://www.bbc.co.uk/news/uk-northern-ireland-66448442)
+
+
+See the University's website for further information and training on [Data Protection](https://www.ed.ac.uk/data-protection).
 
 ---
 
