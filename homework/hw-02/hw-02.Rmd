@@ -237,7 +237,7 @@ knitr::include_graphics("img/First_Last_Wave_10Mile.png")
 
 You will need to wrangle, filter and transform the `run17` data before creating the data visualisation.
 
-The colours used in this data visualisation are `"orange"` and `"forrestgreen"`.
+The colours used in this data visualisation are `"orange"` and `"forestgreen"`.
 
 The `ggplot2` [cheat sheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html?_gl=1*1uyk3g7*_ga*MTUxMzczNDUyLjE2Nzk1NjY2NDg.*_ga_2C0WZ1JHG0*MTY5ODA0NzI0Ni4yMy4wLjE2OTgwNDcyNDYuMC4wLjA.) may also help as a reference guide with aspects of this data visualisation.
 
