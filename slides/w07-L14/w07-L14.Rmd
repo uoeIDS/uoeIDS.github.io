@@ -1,8 +1,8 @@
 ---
-title: "Model checking and multiple linear regression"
+title: "Iteration"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -13,1202 +13,525 @@ output:
       highlightLines: true
       highlightStyle: solarized-light
       countIncrementalSlides: false
-
 ---
+
 
 
 ```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(magick)
-library(dplyr)
-library(tidymodels)
-library(ggtext)
-library(knitr)
-library(kableExtra)
-library(xaringanExtra)
-library(Tmisc)
-library(emo)
-library(patchwork)
-library(plotly)
-library(widgetframe)
-
-xaringanExtra::use_panelset()
+library(rvest)
+library(DT)
 ```
 
+class: middle
 
-```{r setup, include=FALSE}
-# R options
-options(
-  htmltools.dir.version = FALSE,
-  dplyr.print_min = 6, 
-  dplyr.print_max = 6,
-  tibble.width = 65,
-  width = 65
-  )
-# figure height, width, dpi
-knitr::opts_chunk$set(echo = TRUE, 
-                      fig.width = 8, 
-                      fig.asp = 0.618,
-                      out.width = "60%",
-                      fig.align = "center",
-                      dpi = 300,
-                      message = FALSE)
-# ggplot2
-ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
-# set seed
-set.seed(1234)
-# fontawesome
-htmltools::tagList(rmarkdown::html_dependency_font_awesome())
-# magick
-dev.off <- function(){
-  invisible(grDevices::dev.off())
+# Iterations
+
+---
+## For loops in R
+
+- The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
+- It is an entry controlled loop, in this loop the **values** are tested first, then the **body of the loop is executed** in each of the values.
+<br>
+<br>
+<br>
+---
+## For loops in R
+
+- The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
+- It is an entry controlled loop, in this loop the **values** are tested first, then the **body of the loop is executed** in each of the values.
+
+R – For loop Syntax:
+```{r,eval=FALSE}
+for (values) {
+  
+  #statement
+  
 }
-# output number of lines
-hook_output <- knitr::knit_hooks$get("output")
-knitr::knit_hooks$set(output = function(x, options) {
-  lines <- options$output.lines
-  if (is.null(lines)) {
-    return(hook_output(x, options))  # pass to default hook
+```
+---
+
+#Example 1
+
+```{r,echo=TRUE}
+for (i in 1:10){
+  
+  print(5*i)
+
   }
-  x <- unlist(strsplit(x, "\n"))
-  more <- "..."
-  if (length(lines)==1) {        # first n lines
-    if (length(x) > lines) {
-      # truncate the output, but add ....
-      x <- c(head(x, lines), more)
-    }
-  } else {
-    x <- c(more, x[lines], more)
-  }
-  # paste these lines together
-  x <- paste(c(x, ""), collapse = "\n")
-  hook_output(x, options)
-})
-
 ```
+---
 
-layout: true
+#Example 2
+
+```{r,echo=TRUE}
+# Create a vector with the days of the week
+week <- c('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+           'Friday', 'Saturday')
+ 
+# using for loop to iterate over the values in the vector
+for (day in week)
+{
+     # displaying each string in the vector
+    print(day)
+}
+```
+---
+
+## While loops in R
+
+- The `while` loop will iterate the expression as long as the component in `condition` is TRUE.
+- In this loop the **test condition** is tested first, then the **body of the loop is executed**, the loop body would not be executed if the test condition is false.
+<br>
+<br>
+<br>
+---
+## While loops in R
+
+- The `while` loop will iterate the expression as long as the component in `condition` is TRUE.
+- In this loop the **test condition** is tested first, then the **body of the loop is executed**, the loop body would not be executed if the test condition is false.
+
+R – While loop Syntax:
+```{r,eval=FALSE}
+while (condition) {
   
-<div class="my-footer">
-<span>
-University of Edinburgh
-</span>
-</div> 
-
----
-## Reminders
-
-- HW03 due on Friday
-- Look through lab sheet in advance of lab tomorrow
-- Meet with your team to work on the project
-
----
-## Topics
-
-- Assessing model fit.
-- Linearity and transformations.
-- Multiple linear regression
-- Model comparison
-- Interaction effects
-
-
----
-class: middle
-
-# Model checking
-
----
-
-## Data: Paris Paintings
-
-```{r message=FALSE}
-pp <- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
-```
-
-- Number of observations: `r nrow(pp)`
-- Number of variables: `r ncol(pp)`
-
----
-
-## "Linear" models
-
-- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
-- But how do we assess this?
-
----
-
-## Graphical diagnostic: residuals plot
-
-.panelset[
-.panel[.panel-name[Plot]
-```{r ref.label = "residuals-plot", echo = FALSE, warning = FALSE, out.width = "60%"}
-```
-]
-.panel[.panel-name[Code]
-```{r residuals-plot, fig.show="hide"}
-ht_wt_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(Height_in ~ Width_in, data = pp)
-
-ht_wt_fit_aug <- augment(ht_wt_fit$fit) #<<
-
-ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted height", y = "Residuals")
-```
-]
-
-.panel[.panel-name[Augment]
-```{r}
-ht_wt_fit_aug
-```
-]
-]
-
----
-
-## More on `augment()`
-
-```{r}
-glimpse(ht_wt_fit_aug)
-```
-
-
----
-
-## Looking for...
-
-- Residuals distributed randomly around 0
-- With no visible pattern along the x or y axes
-
-```{r out.width = "60%", echo=FALSE}
-df <- tibble(
-  fake_resid = rnorm(1000, mean = 0, sd = 30),
-  fake_predicted = runif(1000, min = 0, max = 200)
-)
-ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted", y = "Residuals")
-```
-
----
-
-## Not looking for...
-
-.large[
-**Fan shapes**
-]
-
-```{r out.width = "60%", echo=FALSE}
-set.seed(12346)
-df <- tibble(
-  fake_resid = c(rnorm(100, mean = 0, sd = 1), 
-                 rnorm(100, mean = 0, sd = 15), 
-                 rnorm(100, mean = 0, sd = 25), 
-                 rnorm(100, mean = 0, sd = 20), 
-                 rnorm(100, mean = 0, sd = 25), 
-                 rnorm(100, mean = 0, sd = 50), 
-                 rnorm(100, mean = 0, sd = 35), 
-                 rnorm(100, mean = 0, sd = 40),
-                 rnorm(200, mean = 0, sd = 80)),
-  fake_predicted = seq(0.2, 200, 0.2)
-)
-ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted", y = "Residuals")
-```
-
----
-
-## Not looking for...
-
-.large[
-**Groups of patterns**
-]
-
-```{r out.width = "60%", echo=FALSE}
-set.seed(12346)
-df <- tibble(
-  fake_predicted = seq(0.2, 200, 0.2),
-  fake_resid = c(
-    rnorm(500, mean = -20, sd = 10),
-    rnorm(500, mean = 10, sd = 10)
-  )
-)
-ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted", y = "Residuals")
-```
-
----
-
-## Not looking for...
-
-.large[
-**Residuals correlated with predicted values**
-]
-
-```{r out.width = "60%", echo=FALSE}
-set.seed(12346)
-df <- tibble(
-  fake_predicted = seq(0.2, 200, 0.2),
-  fake_resid = fake_predicted + rnorm(1000, mean = 0, sd = 50)
-)
-ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted", y = "Residuals")
-```
-
----
-
-## Not looking for...
-
-.large[
-**Any patterns!**
-]
-
-```{r out.width = "60%", echo=FALSE}
-set.seed(12346)
-df <- tibble(
-  fake_predicted = seq(-100, 100, 0.4),
-  fake_resid = -5*fake_predicted^2 - 3*fake_predicted + 20000 + rnorm(501, mean = 0, sd = 10000)
-)
-ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted", y = "Residuals")
-```
-
----
-
-.question[
-What patterns does the residuals plot reveal that should make us question whether a linear model is a good fit for modeling the relationship between height and width of paintings?
-]
-
-```{r out.width = "60%", echo=FALSE}
-ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
-  geom_point(alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
-  labs(x = "Predicted height", y = "Residuals")
-```
-
----
-
-class: middle
-
-# Linearity and transformations
-
----
-
-## Data: Paris Paintings
-
-```{r echo=FALSE, out.width = "70%"}
-ggplot(data = pp, aes(x = price)) +
-  geom_histogram(binwidth = 1000) +
-  labs(title = "Prices of paintings")
-```
-
----
-
-## Price vs. width
-
-```{r echo=FALSE, out.width = "70%", warning = FALSE}
-ggplot(data = pp, aes(x = Width_in, y = price)) +
-  geom_point(alpha = 0.5) +
-  labs(x = "Width (in)", y = "Price (livres)")
-```
-
----
-
-## Focus on paintings with `Width_in < 100`
-
-That is, paintings with width < 2.54 m
-
-```{r}
-pp_wt_lt_100 <- pp %>% 
-  filter(Width_in < 100)
-```
-
----
-
-## Price vs. width
-
-.question[
-Which plot shows a more linear relationship?
-]
-
-.small[
+  #statement
   
-.pull-left[
-```{r message=FALSE, echo=FALSE, out.width = "100%"}
-ggplot(data = pp_wt_lt_100, 
-       mapping = aes(x = Width_in, y = price)) +
-  geom_point(alpha = 0.5) +
-  labs(
-    title = "Price vs. width", 
-    subtitle = "For width < 100 in",
-    x = "Width (inches)", 
-    y = "Price (livres)"
-    )
+}
 ```
-]
-
-.pull-right[
-```{r message=FALSE, echo=FALSE, out.width = "100%"}
-ggplot(data = pp_wt_lt_100, 
-       mapping = aes(x = Width_in, y = log(price))) +
-  geom_point(alpha = 0.5) +
-  labs(
-    title = "Log(price) vs. width", 
-    subtitle = "For width < 100 in",
-    x = "Width (inches)", 
-    y = "Log(price) (log livres)"
-    )
-```
-]
-
-]
-
 ---
 
-## Price vs. width, residuals
+#Example 1
 
-.question[
-Which plot shows a residuals that are uncorrelated with predicted values from the model? Also, what is the unit of the residuals?
-]
-  
+```{r,echo=TRUE}
+i <- 0
+
+while (i < 10){
+
+    print(5*i)
+   i <- i+1  # Be careful or is an infinite loop
+
+   }
+```
+---
+
+#Example 2
+
+Program to calculate factorial of a number.
+
 .pull-left[
-```{r message=FALSE, echo=FALSE, out.width = "100%"}
-price_wt_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(price ~ Width_in, data = pp_wt_lt_100)
-price_wt_fit_aug <- augment(price_wt_fit$fit)
+```{r,echo=TRUE}
 
-ggplot(data = price_wt_fit_aug, 
-       mapping = aes(x = .fitted, y = .resid)) +
-  geom_point(alpha = 0.5) +
-  labs(
-    title = "Price vs. width, residuals", 
-    subtitle = "For width < 100 in",
-    x = "Predicted price (livres)", 
-    y = "Residuals"
-    )
+# create variable whose 
+# factorial will be calculated
+n <- 5
+# assigning the factorial variable
+# and iteration variable to 1
+factorial <- 1
+i <- 1
+ 
+# using while loop
+while (i <= n)
+{
+ 
+    # multiplying the factorial variable
+    # with the iteration variable
+    factorial = factorial * i
+ 
+    # add one iteration 
+    i = i + 1
+}
 ```
 ]
 .pull-right[
-```{r message=FALSE, echo=FALSE, out.width = "100%"}
-pp_wt_lt_100 <- pp_wt_lt_100 %>% 
-  mutate(log_price = log(price))
+```{r,echo=TRUE}
 
-lprice_wt_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Width_in, data = pp_wt_lt_100)
-lprice_wt_fit_aug <- augment(lprice_wt_fit$fit)
-
-ggplot(data = lprice_wt_fit_aug, 
-       mapping = aes(x = .fitted, y = .resid)) +
-  geom_point(alpha = 0.5) +
-  labs(
-    title = "Log(Price) vs. width, residuals", 
-    subtitle = "For width < 100 in",
-    x = "Predicted log(price) (log livres)", 
-    y = "Residuals"
-    )
+# displaying the factorial
+print(factorial)
 ```
 ]
-
 ---
-
-## Transforming the data
-
-- We saw that `price` has a right-skewed distribution, and the relationship between price and width of painting is non-linear.
-
---
-- In these situations a transformation applied to the response variable may be useful.
-
---
-- In order to decide which transformation to use, we should examine the distribution of the response variable.
-
---
-- The extremely right skewed distribution suggests that a log transformation may 
-be useful.
-    - log = natural log, $ln$
-    - Default base of the `log` function in R is the natural log: <br>
-    `log(x, base = exp(1))`
-    
----
-
-## Logged price vs. width
-
-.question[
-How do we interpret the slope of this model?
-]
-
-```{r echo=FALSE, message=FALSE, out.width="60%"}
-ggplot(data = pp_wt_lt_100, mapping = aes(x = Width_in, y = log(price))) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", color = "#8E2C90", se = FALSE) +
-  labs(x = "Width (in)", y = "Log(price) (log livres)")
-```
-
----
-
-## Models with log transformation
-
-```{r}
-linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log(price) ~ Width_in, data = pp_wt_lt_100) %>%
-  tidy()
-```
-
----
-
-
-## Interpreting the slope
-
-$$ \widehat{log(price)} = 4.67 + 0.0192 Width $$
-
---
-- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 livres.
-
---
-- which is not a very useful statement...
-
----
-
-## Working with logs
-
-- Subtraction and logs: $log(a) − log(b) = log(a / b)$
-
---
-- Natural logarithm: $e^{log(x)} = x$
-
---
-- We can use these identities to "undo" the log transformation
-
----
-
-## Interpreting the slope
-
-The slope coefficient for the log transformed model is 0.0192, meaning the log price difference between paintings whose widths are one inch apart is predicted to be 0.0192 log livres.
-
---
-
-.question[
-Using this information, and properties of logs that we just reviewed, fill in the blanks in the following alternate interpretation of the slope:
-
->For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
-]
-
-
----
-
->For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
-
-
-$$ log(\text{price for width x+1}) - log(\text{price for width x}) = 0.0192 $$
-
---
-
-$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
-
---
-
-$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
-
---
-
-$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 $$
-
---
-
-For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, by a factor of 1.02.
-
----
-
-## Recap
-
-- Non-constant variance is one of the most common model violations, however it is usually fixable by transforming the response (y) variable.
-
---
-- The most common transformation when the response variable is right skewed is the log transform: $log(y)$, especially useful when the response variable is 
-(extremely) right skewed.
-
---
-- This transformation is also useful for variance stabilization.
-
---
-- When using a log transformation on the response variable the interpretation of 
-the slope changes: *"For each unit increase in x, y is expected on average to be higher/lower <br> by a factor of $e^{b_1}$."*
-
---
-- Another useful transformation is the square root: $\sqrt{y}$, especially 
-useful when the response variable is counts.
-
----
-
-## Transform, or learn more?
-
-- Data transformations may also be useful when the relationship is non-linear
-- However in those cases a polynomial regression may be more appropriate
-  + This is beyond the scope of this course, but you’re welcomed to try it for your final project, and I’d be happy to provide further guidance
-
----
-class: middle
-
-# The linear model with multiple predictors
-
----
-
-## Data: Book weight and volume
-
-The `allbacks` data frame gives measurements on the volume and weight of 15 books, some of which are paperback and some of which are hardback
-
+See the following example to illustrate how similiar for and while loops are:
 .pull-left[
-- Volume - cubic centimetres
-- Area - square centimetres
-- Weight - grams
-]
-.pull-right[
-.small[
-```{r echo=FALSE}
-library(DAAG)
-as_tibble(allbacks) %>%
-  print(n = 15)
-```
-]
-]
+```{r, echo=TRUE, R.options=list(width = 40)}
+values <- 1
 
-.footnote[
-.small[
-These books are from the bookshelf of J. H. Maindonald at Australian National University.
-]
-]
-
----
-
-## Book weight vs. volume
-
-.pull-left[
-```{r}
-linear_reg() %>%
-  set_engine("lm") %>%
-  fit(weight ~ volume, data = allbacks) %>%
-  tidy()
+while(values <= 10) {
+        print(values)
+        values <- values + 1
+}
 ```
 ]
 .pull-right[
-```{r out.width = "75%", echo = FALSE, fig.align = "right"}
-ggplot(allbacks, aes(x = volume, y = weight)) +
-  geom_point(alpha = 0.7, size = 3)
+```{r, echo=TRUE,R.options=list(width = 80)}
+# this for loop provides the same output
+values <- 10
+
+for(i in 1:values) {
+        print(i)
+}
+
 ```
 ]
 
 ---
+# Main differences between for and while loop.
 
-## Book weight vs. volume and cover
+- For loop is used when the number of iterations a code should be run is **known** where a while loop is used when the number of iterations is **not known**.
 
-.pull-left[
-```{r}
-linear_reg() %>%
-  set_engine("lm") %>%
-  fit(weight ~ volume + cover, data = allbacks) %>%
-  tidy()
-```
-]
-.pull-right[
-```{r out.width = "75%", echo = FALSE, fig.align = "right"}
-ggplot(allbacks, aes(x = volume, y = weight, color = cover, shape = cover)) +
-  geom_point(alpha = 0.7, size = 3) +
-  theme(legend.position = "bottom") +
-  scale_color_manual(values = c("#E48957", "#071381"))
-```
-]
+- `while` loops can potentially result in infinite loops if not written properly.
+
+- In `for` loop the initialization once done is never repeated.
+
+- In `while` loop the initialization is done each time the loop iterate.
 
 ---
 
-## Interpretation of estimates
+## Repeat loops in R
 
-```{r echo=FALSE}
-linear_reg() %>%
-  set_engine("lm") %>%
-  fit(weight ~ volume + cover, data = allbacks) %>%
-  tidy()
-```
-
---
-- **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
-
---
-- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardcover books.
-
---
-- **Intercept:** Hardcover books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
-
-
----
-
-## Main vs. interaction effects
-
-.question[
-Suppose we want to predict weight of books from their volume and cover type 
-(hardback vs. paperback). Do you think a model with main effects or 
-interaction effects is more appropriate? Explain your reasoning.
-
-**Hint:** Main effects would mean rate at which weight changes as volume 
-increases would be the same for hardback and paperback books and interaction 
-effects would mean the rate at which weight changes as volume 
-increases would be different for hardback and paperback books.
-]
-
----
-
-```{r book-main-int, echo=FALSE, out.width="65%", fig.asp = 0.8}
-book_main_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(weight ~ volume + cover, data = allbacks)
-book_main_fit_aug <- augment(book_main_fit$fit)
-
-book_int_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(weight ~ volume + cover + volume*cover, data = allbacks)
-book_int_fit_aug <- augment(book_int_fit$fit)
-
-p_main <- ggplot() +
-  geom_point(book_main_fit_aug, 
-             mapping = aes(x = volume, y = weight, color = cover, shape = cover), alpha = 0.7) +
-  geom_line(book_main_fit_aug, 
-            mapping = aes(x = volume, y = .fitted, color = cover)) +
-  labs(title = "Main effects, parallel slopes", 
-       subtitle = "weight-hat = volume + cover") +
-  scale_color_manual(values = c("#E48957", "#071381"))
-
-p_int <- ggplot() +
-  geom_point(book_int_fit_aug, 
-             mapping = aes(x = volume, y = weight, color = cover, shape = cover), alpha = 0.7) +
-  geom_line(book_int_fit_aug, 
-            mapping = aes(x = volume, y = .fitted, color = cover)) +
-  labs(title = "Interaction effects, not parallel slopes", 
-       subtitle = "weight-hat = volume + cover + volume * cover") +
-  scale_color_manual(values = c("#E48957", "#071381"))
-
-p_main /  p_int  + plot_layout(guides = "collect")
-```
-
----
-
-## In pursuit of Occam's razor
-
-- Occam's Razor states that among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.
-
---
-- Model selection follows this principle.
-
---
-- We only want to add another variable to the model if the addition of that variable brings something valuable in terms of predictive power to the model.
-
---
-- In other words, we prefer the simplest best model, i.e. **parsimonious** model.
-
----
-
-.pull-left[
-```{r ref.label = "book-main-int", echo = FALSE, out.width="100%", fig.asp = 0.8}
-```
-]
-.pull-right[
-.question[
-Visually, which of the two models is preferable under Occam's razor?
-]
-]
-
----
-
-## R-squared
-
-- $R^2$ is the percentage of variability in the response variable explained by 
-the regression model.
-
-```{r}
-glance(book_main_fit)$r.squared
-glance(book_int_fit)$r.squared
-```
-
---
-- Clearly the model with interactions has a higher $R^2$.
-
---
-- However using $R^2$ for model selection in models with multiple explanatory variables is not a good idea as $R^2$ increases when **any** variable is added to the model.
-
----
-
-## Adjusted R-squared
-
-... a (more) objective measure for model selection
-
-- Adjusted $R^2$ doesn't increase if the new variable does not provide any new 
-informaton or is completely unrelated, as it applies a penalty for number of 
-variables included in the model.
-- This makes adjusted $R^2$ a preferable metric for model selection in multiple
-regression models.
-
----
-
-## Comparing models
-
-.pull-left[
-```{r}
-glance(book_main_fit)$r.squared
-glance(book_int_fit)$r.squared
-```
-]
-.pull-right[
-```{r}
-glance(book_main_fit)$adj.r.squared
-glance(book_int_fit)$adj.r.squared
-```
-]
-
---
-
-.pull-left-wide[
-.small[
-- Is R-sq higher for int model?
-```{r}
-glance(book_int_fit)$r.squared > glance(book_main_fit)$r.squared 
-```
-
-- Is R-sq adj. higher for int model?
-
-```{r}
-glance(book_int_fit)$adj.r.squared > glance(book_main_fit)$adj.r.squared
-```
-]
-]
----
-
-class: middle
-
-# More detail on multiple predictors
-
----
-class: middle
-
-# Two numerical predictors
-
----
-
-## The data
-
-```{r load-pp, message=FALSE}
-pp <- read_csv(
-  "data/paris-paintings.csv",
-  na = c("n/a", "", "NA")
-) %>%
-  mutate(log_price = log(price))
-```
-
----
-
-## Multiple predictors
-
-- Response variable: `log_price` 
-- Explanatory variables: Width and height
-
-```{r model-price-width-height}
-pp_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Width_in + Height_in, data = pp)
-tidy(pp_fit)
-```
-
----
-
-##  Linear model with multiple predictors
-
-```{r model-price-width-height-tidy, echo=FALSE}
-tidy(pp_fit)
-```
+- The `repeat` loop will run the same `statement` until the `stop condition` has been encountered. 
+- If no stop condition is present in the body of the repeat loop then it will iterate infinitely.
 
 <br>
+<br>
+<br>
+---
+## Repeat loops in R
 
-$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$
+- The `repeat` loop will run the same `statement` until the `stop condition` has been encountered. 
+- If no stop condition is present in the body of the repeat loop then it will iterate infinitely.
+
+R – Repeat loop Syntax:
+```{r,eval=FALSE}
+repeat 
+{ 
+   statement
+ 
+   if( stop condition ) 
+   {
+      break
+   }
+}
+```
+---
+
+#Example 1
+
+```{r,echo=TRUE}
+i <- 1
+
+repeat
+{
+    # statements
+    print(i)
+    i <- i+ 1
+ 
+    # Stop condition
+    if(i > 5)
+    {
+        # using break statement
+        # to terminate the loop
+        break
+    }
+}
+```
+---
+
+#Example 2
+
+```{r,echo=TRUE}
+# initializing the iteration variable with 0
+i <- 0
+repeat
+{
+    # statement to be executed multiple times
+    print("Hello world")
+ 
+    # incrementing the iteration variable
+    i <- i + 1
+ 
+    # checking the stop condition
+    if (i == 5)
+    {
+        # terminate the loop
+        break
+    }
+}
+```
+---
+**Avoid** to create an infinite loop by mistake.
+
+- Be careful with the condition being `TRUE` and `FALSE`.
+
+<br>
+<br>
+<br>
 
 ---
 
-## Visualizing models with multiple predictors
+**Avoid** to create an infinite loop by mistake.
 
-.panelset[
-.panel[.panel-name[Plot]
-.pull-left-wide[
-```{r plotly-plot, echo = FALSE, fig.align="center", warning=FALSE}
-p <- plot_ly(pp,
-  x = ~Width_in, y = ~Height_in, z = ~log_price,
-  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
-                line = list(color = "gray", width = 2))) %>%
-  add_markers() %>%
-  plotly::layout(scene = list(
-    xaxis = list(title = "Width (in)"),
-    yaxis = list(title = "Height (in)"),
-    zaxis = list(title = "log_price")
-  )) %>%
-  config(displayModeBar = FALSE)
-frameWidget(p)
+- Be careful with the condition being `TRUE` and `FALSE`.
+
+Examples
+
+.pull-left[
+```{r, echo=TRUE}
+#EXAMPLE 1
+2/7 + 3/7 + 2/7
+2/7 + 3/7 + 2/7 == 1
+2/7 + 3/7 + 2/7 - 1
+
 ```
 ]
-]
-.panel[.panel-name[Code]
-```{r plotly-code, eval=FALSE}
-p <- plot_ly(pp,
-  x = ~Width_in, y = ~Height_in, z = ~log_price,
-  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
-                line = list(color = "gray", width = 2))) %>%
-  add_markers() %>%
-  plotly::layout(scene = list(
-    xaxis = list(title = "Width (in)"),
-    yaxis = list(title = "Height (in)"),
-    zaxis = list(title = "log_price")
-  )) %>%
-  config(displayModeBar = FALSE)
-frameWidget(p)
+.pull-right[
+```{r, echo=TRUE}
+#EXAMPLE 2
+1 + 10^(-16) == 1
+10^(-16) 
+.Machine$double.eps
 ```
 ]
-]
+---
 
+Instead use a **tolerance** value.
+
+
+```{r, echo=TRUE}
+#EXAMPLE 1
+2/7 + 3/7 + 2/7 == 1
+
+tolerance <- 10^-16  #Something you consider small. 
+
+2/7 + 3/7 + 2/7 - 1 < tolerance
+
+tolerance <- .Machine$double.eps #The machine epsilon
+
+2/7 + 3/7 + 2/7 - 1 < tolerance
+
+```
+---
+
+- R like other numerical software in existence, uses **floating point arithmetic** to do its calculations.
+
+- Represents real numbers approximately, using an integer with a fixed precision, scaled by an integer exponent of a fixed base. 
+
+- For example, $12.345$ can be represented as a base-ten floating-point number:
+$$12345\times10^{-3}$$
+- Be careful and instead use the **tolerance** value inside the `conditions`.
+
+---
+
+##Example
+
+```{r, echo=TRUE}
+
+j <- 0
+while (j < 1) { j <- j+0.1 }; j
+j <- 0
+j + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1
+j + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 < 1
+
+j <- 0
+tolerance <- 10^-16 
+while (j  < 1 - tolerance) { j <- j+0.1 }; j
+
+```
+
+---
+## Avoiding Explicit Loops 
+
+Suppose we have exam 1 and exam 2 scores of 10 students stored in a list...
+
+```{r}
+exam_scores <- list(
+  exam1 <- c(80, 90, 70, 50, 80, 40, 90, 95, 80, 90),
+  exam2 <- c(85, 83, 45, 60, 85, 95, 40, 75, 90, 85)
+)
+```
+
+Calculate the mean of exam 1 and exam 2 using a loop:
+
+```{r, echo=TRUE}
+
+m <- numeric()
+for (i in 1:length(exam_scores)){
+  m[i] <- mean(exam_scores[[i]])
+}
+m
+
+```
 ---
 
 class: middle
-
-# Numerical and categorical predictors
+# We want to make R code both simpler and more efficient.
 
 ---
 
-## Price, surface area, and living artist
+## How does mapping work?
 
-- Explore the relationship between price of paintings and surface area, conditioned 
-on whether or not the artist is still living
-- First visualize and explore, then model
-- But first, prep the data
+Suppose we have exam 1 and exam 2 scores of 10 students stored in a list...
 
-.midi[
 ```{r}
-pp <- pp %>%
-  mutate(artistliving = if_else(artistliving == 0, "Deceased", "Living"))
-
-pp %>%
-  count(artistliving)
+exam_scores <- list(
+  exam1 <- c(80, 90, 70, 50, 80, 40, 90, 95, 80, 90),
+  exam2 <- c(85, 83, 45, 60, 85, 95, 40, 75, 90, 85)
+)
 ```
-]
-
----
-
-## Typical surface area
-
-.panelset[
-.panel[.panel-name[Plot]
-.pull-left-narrow[
-Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). There are very few paintings that have surface area above 5000 square inches.
-]
-.pull-right-wide[
-```{r ref.label = "viz-surf-artistliving", echo = FALSE, warning = FALSE, out.width="90%"}
-```
-]
-]
-.panel[.panel-name[Code]
-```{r viz-surf-artistliving, fig.show = "hide"}
-ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
-  geom_histogram(binwidth = 500) + 
-  facet_grid(artistliving ~ .) +
-  scale_fill_manual(values = c("#E48957", "#071381")) +
-  guides(fill = FALSE) +
-  labs(x = "Surface area", y = NULL) +
-  geom_vline(xintercept = 1000) +
-  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
-```
-]
-]
-
----
-
-## Narrowing the scope
-
-.panelset[
-.panel[.panel-name[Plot]
-For simplicity let's focus on the paintings with `Surface < 5000`:
-
-```{r ref.label = "viz-surf-lt-5000-artistliving", echo = FALSE, warning = FALSE, out.width = "55%"}
-```
-]
-.panel[.panel-name[Code]
-```{r viz-surf-lt-5000-artistliving, fig.show = "hide"}
-pp_Surf_lt_5000 <- pp %>%
-  filter(Surface < 5000)
-
-ggplot(data = pp_Surf_lt_5000, 
-       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
-  geom_point(alpha = 0.5) +
-  labs(color = "Artist", shape = "Artist") +
-  scale_color_manual(values = c("#E48957", "#071381"))
-```
-]
-]
-
----
-
-## Facet to get a better look
-
-.panelset[
-.panel[.panel-name[Plot]
-```{r ref.label = "viz-surf-lt-5000-artistliving-facet", echo = FALSE, warning = FALSE, out.width = "80%", fig.asp = 0.5}
-```
-]
-.panel[.panel-name[Code]
-```{r viz-surf-lt-5000-artistliving-facet, fig.show = "hide"}
-ggplot(data = pp_Surf_lt_5000, 
-       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
-  geom_point(alpha = 0.5) +
-  facet_wrap(~artistliving) +
-  scale_color_manual(values = c("#E48957", "#071381")) +
-  labs(color = "Artist", shape = "Artist")
-```
-]
-]
-
----
-
-## Two ways to model
-
-- **Main effects:** Assuming relationship between surface and logged price 
-**does not vary** by whether or not the artist is living.
-- **Interaction effects:** Assuming relationship between surface and logged 
-price **varies** by whether or not the artist is living.
-
----
-
-## Interacting explanatory variables
-
-- Including an interaction effect in the model allows for different slopes, i.e. 
-nonparallel lines.
-- This implies that the regression coefficient for an explanatory variable would 
-change as another explanatory variable changes.
-- This can be accomplished by adding an interaction variable: the product of two 
-explanatory variables.
-
----
-
-## Two ways to model
-
-.pull-left-narrow[
-- **Main effects:** Assuming relationship between surface and logged price **does not vary** by whether or not the artist is living
-- **Interaction effects:** Assuming relationship between surface and logged price **varies** by whether or not the artist is living
-]
-.pull-right-wide[
-```{r pp-main-int-viz, echo=FALSE, out.width="70%", fig.asp = 0.9}
-pp_main_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
-pp_main_fit_aug <- augment(pp_main_fit$fit)
-
-pp_int_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
-pp_int_fit_aug <- augment(pp_int_fit$fit)
-
-p_main <- ggplot(
-  pp_main_fit_aug,
-  aes(y = log_price, x = Surface, color = artistliving)
-) +
-  geom_point(aes(shape = artistliving), alpha = 0.5) +
-  scale_x_continuous(breaks = c(0, 2500, 5000)) +
-  scale_color_manual(values = c("#E48957", "#071381")) +
-  geom_line(aes(y = .fitted), size = 1.5) +
-  labs(y = "log_price", title = "Main effects", color = "Artist", shape = "Artist")
-
-p_int <- ggplot(
-  pp_int_fit_aug,
-  aes(y = log_price, x = Surface, color = artistliving)
-) +
-  geom_point(aes(shape = artistliving), alpha = 0.5) +
-  scale_x_continuous(breaks = c(0, 2500, 5000)) +
-  scale_color_manual(values = c("#E48957", "#071381")) +
-  geom_line(aes(y = .fitted), size = 1.5) +
-  labs(y = "log_price", title = "Interaction effects", color = "Artist", shape = "Artist")
-
-p_main /
-  p_int  + 
-  plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
-]
-
----
-
-## Fit model with main effects
-
-- Response variable: `log_price`
-- Explanatory variables: `Surface` area and `artistliving`
-
-.midi[
-```{r model-main-effects}
-pp_main_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
-tidy(pp_main_fit)
-```
-]
 
 --
 
-$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$
+...and we find the mean score in each exam
 
----
-
-## Solving the model
-
-- Non-living artist: Plug in 0 for `artistliving`
-
-$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 0$  
-$= 4.88 + 0.000265 \times surface$
-
---
-- Living artist: Plug in 1 for `artistliving`
-
-$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 1$   
-$= 5.017 + 0.000265 \times surface$
-
----
-
-## Visualizing main effects
-
-.pull-left-narrow[
-- **Same slope:** Rate of change in price as the surface area increases does 
-not vary between paintings by living and non-living artists.
-- **Different intercept:** Paintings by living artists are consistently more 
-expensive than paintings by non-living artists.
-]
-.pull-right-wide[
-```{r out.width="100%", echo = FALSE}
-p_main
-```
-]
-
----
-
-## Interpreting main effects
-
-.midi[
-```{r exp-coefs}
-tidy(pp_main_fit) %>% 
-  mutate(exp_estimate = exp(estimate)) %>%
-  select(term, estimate, exp_estimate)
-```
-]
-
-- All else held constant, for each additional square inch in painting's surface area, the price of the painting is predicted, on average, to be higher by a factor of 1.
-- All else held constant, paintings by a living artist are predicted, on average, to be higher by a factor of 1.15 compared to paintings by an artist who is no longer alive.
-- Paintings that are by an artist who is not alive and that have a surface area of 0 square inches are predicted, on average, to be 132 livres.
-
----
-
-## Main vs. interaction effects
-
-- The way we specified our main effects model only lets `artistliving` affect the intercept.
-- Model implicitly assumes that paintings with living and deceased artists have the *same slope* and only allows for *different intercepts*.  
-
-.question[
-What seems more appropriate in this case?
-+ Same slope and same intercept for both colours
-+ Same slope and different intercept for both colours
-+ Different slope and different intercept for both colours
-]
-
----
-
-## Interaction: `Surface * artistliving`
-
-```{r out.width="60%", echo = FALSE}
-p_int
+```{r}
+map(exam_scores, mean)
 ```
 
 ---
 
-## Fit model with interaction effects
+...and suppose we want the results as a numeric (double) vector
 
-- Response variable: log_price
-- Explanatory variables: `Surface` area, `artistliving`, and their interaction
-
-.midi[
-```{r model-interaction-effects}
-pp_int_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
-tidy(pp_int_fit)
+```{r}
+map_dbl(exam_scores, mean)
 ```
-]
+
 
 ---
 
-## Linear model with interaction effects
+## `map_something`
 
-.midi[
-```{r model-interaction-effects-tidy, echo=FALSE}
-tidy(pp_int_fit)
-```
-]
+Functions for looping over an object and returning a value (of a specific type):
 
-$$\widehat{log\_price} = 4.91 + 0.00021 \times surface - 0.126 \times artistliving$$
-$$+ ~ 0.00048 \times surface * artistliving$$
+* `map()` - returns a list
+* `map_lgl()` - returns a logical vector
+* `map_int()` - returns a integer vector
+* `map_dbl()` - returns a double vector
+* `map_chr()` - returns a character vector
+* `map_df()` / `map_dfr()` - returns a data frame by row binding
+* `map_dfc()` - returns a data frame by column binding
+* ...
 
 ---
 
-## Interpretation of interaction effects
-
-- Rate of change in price as the surface area of the painting increases does 
-vary between paintings by living and non-living artists (different slopes), 
-- Some paintings by living artists are more expensive than paintings by
-non-living artists, and some are not (different intercept).
-
-.small[
+Example of the students
+```{r,echo=TRUE}
+exam_scores <- list(
+  exam1 <- c(80, 90, 70, 50, 80, 40, 90, 95, 80, 90),
+  exam2 <- c(85, 83, 45, 60, 85, 95, 40, 75, 90, 85)
+)
+```
+---
+Compare the **times** of the two approaches.
 .pull-left[
-- Non-living artist: 
-$\widehat{log\_price} = 4.91 + 0.00021 \times surface$
-$- 0.126 \times 0 + 0.00048 \times surface \times 0$
-$= 4.91 + 0.00021 \times surface$
-- Living artist: 
-$\widehat{log\_price} = 4.91 + 0.00021 \times surface$
-$- 0.126 \times 1 + 0.00048 \times surface \times 1$
-$= 4.91 + 0.00021 \times surface$
-$- 0.126 + 0.00048 \times surface$
-$= 4.784 + 0.00069 \times surface$
+```{r,echo=TRUE}
+start.time <- Sys.time()
+m <- numeric()
+for (i in 1:length(exam_scores)){
+  m[i] <- mean(exam_scores[[i]])
+}
+m
+end.time <- Sys.time()
+end.time - start.time
+```
 ]
 .pull-right[
-```{r viz-interaction-effects2, out.width="80%", echo = FALSE}
-p_int
+```{r,echo=TRUE}
+start.time <- Sys.time()
+map_dbl(exam_scores, mean)
+end.time <- Sys.time()
+end.time - start.time
 ```
 ]
+---
+
+Example of the students with 10 exams and 100 students.
+```{r,echo=TRUE,R.options=list(max.print = 10)}
+num_students <- 100
+possible_marks <- seq(from = 0, to = 100, by = 1)
+exam_scores <- list(
+  exam1  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam2  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam3  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam4  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam5  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam6  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam7  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam8  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam9  <- sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam10 <- sample(x = possible_marks, size = num_students, replace = TRUE)
+)
+head(exam_scores)
+```
+---
+Compare the **times** of the two approaches.
+.pull-left[
+```{r,echo=TRUE,R.options=list(max.print = 5)}
+start.time <- Sys.time()
+m <- numeric()
+for (i in 1:length(exam_scores)){
+  m[i] <- mean(exam_scores[[i]])
+}
+m
+end.time <- Sys.time()
+end.time - start.time
+```
 ]
+.pull-right[
+```{r,echo=TRUE,R.options=list(max.print = 5)}
+start.time <- Sys.time()
+map_dbl(exam_scores, mean)
+end.time <- Sys.time()
+end.time - start.time
+```
+]
+---
+class: middle
+
+# Useful functions to deal with strings.
+---
+
+## `str` family of functions on package `stringr`
+
+```{r,echo=TRUE}
+ls("package:stringr")
+```
 
 ---
 
-## Comparing models
+## Example
+```{r,echo=TRUE,R.options=list(max.print = 5)}
+#Create character vector
+my_vector <- "Hey there everyone."
 
-It appears that adding the interaction actually increased adjusted $R^2$, so we 
-should indeed use the model with the interactions.
+#remove first occurrence of "e" from vector
+str_remove(my_vector, "e")
 
-```{r}
-glance(pp_main_fit)$adj.r.squared
-glance(pp_int_fit)$adj.r.squared
+#remove all occurrences of "e" from vector
+str_remove_all(my_vector, "e")
+
 ```
 
 ---
 
-## Third order interactions
+## The `separate` function
 
-- Can you? Yes
-- Should you? Probably not if you want to interpret these interactions in context
-of the data.
+## Example
+
+```{r, echo=TRUE}
+#create data frame
+df <- data.frame(player=c('A', 'A', 'B', 'B', 'C', 'C'),
+                 year=c(1, 2, 1, 2, 1, 2),
+                 stats=c('22-2', '29-3', '18-6', '11-8', '12-5', '19-2'))
+
+df
+```
+---
+
+## The `separate` function
+
+## Example
+
+```{r, echo=TRUE}
+
+separate(df, col=stats, into=c('points', 'assists'), sep='-')
+```
