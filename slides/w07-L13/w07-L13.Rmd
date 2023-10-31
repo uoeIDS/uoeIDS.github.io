@@ -339,9 +339,3 @@ Try again.
 ```{r,echo=TRUE}
 area(TRUE)
 ```
----
-
-class: middle
-
-# Another example 
-
