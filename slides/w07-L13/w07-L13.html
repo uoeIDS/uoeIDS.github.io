@@ -359,7 +359,7 @@ mean
 ```
 ## function (x, ...) 
 ## UseMethod("mean")
-## &lt;bytecode: 0x000001b75d394558&gt;
+## &lt;bytecode: 0x00000292fa7cc518&gt;
 ## &lt;environment: namespace:base&gt;
 ```
 
@@ -452,9 +452,9 @@ Add a condition, if the input is negative, the function should return an error.
 
 ```r
 area &lt;- function(r) {
-  if (r &lt; 0)
-    message("Error, provide positive radius.")
-  else  pi*r^2 }
+  if (r &lt; 0) stop("Error, provide positive radius.")
+  return(pi*r^2)
+}
 area(2)
 ```
 
@@ -464,11 +464,7 @@ area(2)
 If the radius is negative?
 
 ```r
-area(-2)
-```
-
-```
-## Error, provide positive radius.
+area(-2)  ## Produce error message
 ```
 ---
 
@@ -488,17 +484,14 @@ area(TRUE)
 ```r
 area &lt;- function(r) {
   if (r &lt; 0 | !is.numeric(r) )
-      return("Error, provide positive numeric radius.")
-  else  pi*r^2 }
+      stop("Error, provide positive numeric radius.")
+  return(pi*r^2)
+  }
 ```
 Try again.
 
 ```r
-area(TRUE)
-```
-
-```
-## [1] "Error, provide positive numeric radius."
+area(TRUE)  ## now creates an error msg
 ```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

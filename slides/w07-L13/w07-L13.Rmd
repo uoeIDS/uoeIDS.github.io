@@ -306,23 +306,23 @@ Add a condition, if the input is negative, the function should return an error.
 * `stop`  stops execution of the current expression and executes an error action.
 ```{r}
 area <- function(r) {
-  if (r < 0)
-    message("Error, provide positive radius.")
-  else  pi*r^2 }
+  if (r < 0) stop("Error, provide positive radius.")
+  return(pi*r^2)
+}
 area(2)
 ```
 If the radius is negative?
-```{r}
-area(-2)
+```{r eval=FALSE}
+area(-2)  ## Produce error message
 ```
 ---
 
 Remember the function **area**.
 ```{r,echo=FALSE}
 area <- function(r) {
-  if (r < 0)
-   message("Error, provide positive radius.")
-  else  pi*r^2 }
+  if (r < 0) stop("Error, provide positive radius.")
+  return(pi*r^2)
+}
 ```
 Evaluate in a character or a logic value.
 ```{r}
@@ -332,10 +332,11 @@ area(TRUE)
 ```{r,echo=TRUE}
 area <- function(r) {
   if (r < 0 | !is.numeric(r) )
-      return("Error, provide positive numeric radius.")
-  else  pi*r^2 }
+      stop("Error, provide positive numeric radius.")
+  return(pi*r^2)
+  }
 ```
 Try again.
-```{r,echo=TRUE}
-area(TRUE)
+```{r,eval = FALSE}
+area(TRUE)  ## now creates an error msg
 ```
