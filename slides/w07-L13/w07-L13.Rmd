@@ -143,7 +143,7 @@ name_function <-
 
 ## Turn your code into a function
 
-- Pick a short but evocative **name**, preferably a verb.
+- Pick a short but informative **name**, preferably a verb.
 - List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
 
 <br>
