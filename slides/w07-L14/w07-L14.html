@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -36,33 +38,32 @@ class: middle
 
 # Iterations
 
+- For loop
+- While loop
+- Mapping
+
 ---
+
+
 ## For loops in R
 
-- The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
-- It is an entry controlled loop, in this loop the **values** are tested first, then the **body of the loop is executed** in each of the values.
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
----
-## For loops in R
-
-- The `for` loop will iterate the expression through the number of components in `values` (list, matrix or vector) one at a time.
+- The `for` loop will iterate the expression through the number of components in `values` (a vector or list) one at a time.
 - It is an entry controlled loop, in this loop the **values** are tested first, then the **body of the loop is executed** in each of the values.
 
 R – For loop Syntax:
 
 ```r
-for (values) {
+for (&lt;index&gt; in &lt;values&gt;) {
   
-  #statement
+  # do something 
   
 }
 ```
 ---
 
-#Example 1
+#Example 1 - with a sequence
 
+.pull-left[
 
 ```r
 for (i in 1:10){
@@ -84,19 +85,34 @@ for (i in 1:10){
 ## [1] 45
 ## [1] 50
 ```
+]
+.pull-right[
+Narrative:
+- START. 
+- Set the loop values as the sequence&lt;br&gt; `1 2 3 4 ... 10`
+- Set index `i` to the 1st value, `1`
+- Compute `5*i` and print.
+- Set `index` to the next value, `2`
+- Compute `5*i` and print.
+- Set `index` to the next value, `3`
+- ... (continue) ...
+- Set `index` to the next value, `10`
+- Compute `5*i` and print.
+- Reached end of the values. 
+- END.
+]
 ---
 
-#Example 2
+#Example 2 - with a general vector
 
 
 ```r
 # Create a vector with the days of the week
-week &lt;- c('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-           'Friday', 'Saturday')
+week &lt;- c('Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+          'Thursday', 'Friday', 'Saturday')
  
 # using for loop to iterate over the values in the vector
-for (day in week)
-{
+for (day in week) {
      # displaying each string in the vector
     print(day)
 }
@@ -111,25 +127,143 @@ for (day in week)
 ## [1] "Friday"
 ## [1] "Saturday"
 ```
+
+---
+
+# Generalising - `seq_len(n)`
+
+.pull-left[
+* Creates a sequence from `1` to `n`.
+* An alternative method to `1:n`.
+* Example:
+
+```r
+seq_len(6)   # same as 1:6
+```
+
+```
+## [1] 1 2 3 4 5 6
+```
+
+
+```r
+n &lt;- 5
+for(i in seq_len(n)){
+  print(LETTERS[i])
+}
+```
+
+```
+## [1] "A"
+## [1] "B"
+## [1] "C"
+## [1] "D"
+## [1] "E"
+```
+
+]
+
+.pull-right[
+- Useful for catching unexpected behaviour
+
+```r
+seq_len(0)  # an empty vector
+```
+
+```
+## integer(0)
+```
+
+
+```r
+# Bad example
+n &lt;- 0
+for(i in 1:0) print(LETTERS[i])
+```
+
+```
+## [1] "A"
+## character(0)
+```
+
+```r
+# Good example
+n &lt;- 0
+for(i in seq_len(n)) print(LETTERS[i])
+```
+
+]
+
+---
+
+# Generalising - `seq_along(x)`
+
+.pull-left[
+* Creates an index sequence based on the input `x`
+
+* Example:
+
+```r
+week &lt;- c('Sun', 'Mon', 'Tues', 'Wed', 
+          'Thurs', 'Fri', 'Sat')
+seq_along(week)
+```
+
+```
+## [1] 1 2 3 4 5 6 7
+```
+]
+
+.pull-right[
+
+```r
+week &lt;- c('Sun', 'Mon', 'Tues', 'Wed', 
+          'Thurs', 'Fri', 'Sat')
+#Compute number of characters in each string
+
+#Set-up blank vector to store calculations
+num_char &lt;- rep(0L, length(week))
+for(i in seq_along(week)){
+  #Do calc. for i-th weekday
+  num_char[i] &lt;- nchar(week[i])
+}
+num_char
+```
+
+```
+## [1] 3 3 4 3 5 3 3
+```
+
+
+```r
+nchar(week)
+```
+
+```
+## [1] 3 3 4 3 5 3 3
+```
+]
+
+---
+
+class: middle
+
+# While loop
+
+
+
 ---
 
 ## While loops in R
 
-- The `while` loop will iterate the expression as long as the component in `condition` is TRUE.
-- In this loop the **test condition** is tested first, then the **body of the loop is executed**, the loop body would not be executed if the test condition is false.
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
----
-## While loops in R
 
-- The `while` loop will iterate the expression as long as the component in `condition` is TRUE.
+- The `while` loop will iterate the expression as long as a logical test continues to return `TRUE`.
 - In this loop the **test condition** is tested first, then the **body of the loop is executed**, the loop body would not be executed if the test condition is false.
 
 R – While loop Syntax:
 
 ```r
-while (condition) {
+while (&lt;condition&gt;) {
   
   #statement
   
@@ -137,18 +271,16 @@ while (condition) {
 ```
 ---
 
-#Example 1
+#Example 1 - for loop as while loop
 
+.pull-left[
 
 ```r
 i &lt;- 0
-
 while (i &lt; 10){
-
-    print(5*i)
-   i &lt;- i+1  # Be careful or is an infinite loop
-
-   }
+  print(5 * i)
+  i &lt;- i + 1
+}
 ```
 
 ```
@@ -163,6 +295,22 @@ while (i &lt; 10){
 ## [1] 40
 ## [1] 45
 ```
+]
+.pull-right[
+Narrative:
+* Initialise `i` with `0`
+* Enter while loop
+* TEST: `i &lt; 10` = `0 &lt; 10` = `TRUE`
+* Compute `5*i` and print
+* Iterate, add `1` to `i` &amp; re-assign
+* TEST: `i &lt; 10` = `1 &lt; 10` = `TRUE`
+* Compute `5*i` and print
+* Iterate, add `1` to `i` &amp; re-assign
+* ... (continue) ...
+* TEST: `i &lt; 10` = `10 &lt; 10` = `FALSE`
+* Exit while loop
+]
+
 ---
 
 #Example 2
@@ -177,7 +325,7 @@ Program to calculate factorial of a number.
 n &lt;- 5
 # assigning the factorial variable
 # and iteration variable to 1
-factorial &lt;- 1
+fact &lt;- 1
 i &lt;- 1
  
 # using while loop
@@ -186,7 +334,7 @@ while (i &lt;= n)
  
     # multiplying the factorial variable
     # with the iteration variable
-    factorial = factorial * i
+    fact = fact * i
  
     # add one iteration 
     i = i + 1
@@ -197,63 +345,89 @@ while (i &lt;= n)
 
 ```r
 # displaying the factorial
-print(factorial)
+fact
 ```
 
 ```
 ## [1] 120
 ```
+
+
+
+```r
+# Check with factorial() command
+factorial(5)
+```
+
+```
+## [1] 120
+```
+
+
 ]
+
+
 ---
-See the following example to illustrate how similiar for and while loops are:
+
+
+# Caution! Infinite loops
+
+
 .pull-left[
 
 ```r
-values &lt;- 1
-
-while(values &lt;= 10) {
-        print(values)
-        values &lt;- values + 1
+i &lt;- 0
+while (i &lt; 10){
+  print(5 * i)
+* i &lt;- i - 1
 }
 ```
 
+
 ```
-## [1] 1
-## [1] 2
-## [1] 3
-## [1] 4
-## [1] 5
-## [1] 6
-## [1] 7
-## [1] 8
-## [1] 9
-## [1] 10
+## [1] 0
+## [1] -5
+## [1] -10
+## [1] -15
+## [1] -20
+## [1] -25
+## [1] -30
+## [1] -35
+## [1] -40
+## [1] -45
+## [1] -50
+## [1] -55
+## [1] -60
+## [1] -65
+## [1] -70
+## [1] -75
+## [1] -80
+## [1] -85
+## [1] -90
+## [1] -95
+## [1] -100
 ```
+
 ]
 .pull-right[
-
-```r
-# this for loop provides the same output
-values &lt;- 10
-
-for(i in 1:values) {
-        print(i)
-}
-```
-
-```
-## [1] 1
-## [1] 2
-## [1] 3
-## [1] 4
-## [1] 5
-## [1] 6
-## [1] 7
-## [1] 8
-## [1] 9
-## [1] 10
-```
+Narrative:
+* Initialise `i` with `0`
+* Enter while loop
+* TEST: `i &lt; 10` = `0 &lt; 10` = `TRUE`
+* Compute `5*i` and print
+* Update `i` (`i = -1`)
+* TEST: `i &lt; 10` = `-1 &lt; 10` = `TRUE`
+* Compute `5*i` and print
+* Update `i` (`i = -2`)
+* ... (continue) ...
+* ... (FOR EVER!) ...
+* .small[... (AND EVER!) ...]
+* .small[... (AND EVER!) ...]
+* .tiny[... (AND EVER!) ...]
+* .tiny[... (AND EVER!) ...]
 ]
+
+
 
 ---
 # Main differences between for and while loop.
@@ -266,114 +440,125 @@ for(i in 1:values) {
 
 - In `while` loop the initialization is done each time the loop iterate.
 
+- If you accidental create an infinite `while` loop, either:
+  - Press the `Esc` key to stop all computation, or
+  - Click on the stop button, 🟥 (for code chunk) or 🛑 (for console/viewer panels)
+
 ---
 
-## Repeat loops in R
+# Maclaurin series of `\(\sin(x)\)`
 
-- The `repeat` loop will run the same `statement` until the `stop condition` has been encountered. 
-- If no stop condition is present in the body of the repeat loop then it will iterate infinitely.
-
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
----
-## Repeat loops in R
-
-- The `repeat` loop will run the same `statement` until the `stop condition` has been encountered. 
-- If no stop condition is present in the body of the repeat loop then it will iterate infinitely.
-
-R – Repeat loop Syntax:
+`$$\sin(x) = \sum_{n = 0}^\infty \frac{(-1)^n}{(2n+1)!} x^{2n+1}, \quad\quad \sin\left(\frac{\pi}{4}\right) = \frac{1}{\sqrt{2}} \approx 0.7071$$`
+.pull-left[
 
 ```r
-repeat 
-{ 
-   statement
- 
-   if( stop condition ) 
-   {
-      break
-   }
+x &lt;- pi/4    
+answer &lt;- 0  # initialise answer
+n &lt;- 0       # initialise index
+while(answer != (1/sqrt(2))){
+  # Calculate and add n-th term
+  answer &lt;- answer + 
+    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
+  
+  #print partial sum
+  print(answer)
+
+  #iterate index
+  n &lt;- n + 1
 }
 ```
----
-
-#Example 1
+]
 
 
-```r
-i &lt;- 1
-
-repeat
-{
-    # statements
-    print(i)
-    i &lt;- i+ 1
- 
-    # Stop condition
-    if(i &gt; 5)
-    {
-        # using break statement
-        # to terminate the loop
-        break
-    }
-}
-```
+.pull-right[
 
 ```
-## [1] 1
-## [1] 2
-## [1] 3
-## [1] 4
-## [1] 5
+## [1] 0.7853982
+## [1] 0.7046527
+## [1] 0.707143
+## [1] 0.7071065
+## [1] 0.7071068
+## [1] 0.7071068
+## [1] 0.7071068
+## [1] 0.7071068
 ```
----
-
-#Example 2
 
 
 ```r
-# initializing the iteration variable with 0
-i &lt;- 0
-repeat
-{
-    # statement to be executed multiple times
-    print("Hello world")
- 
-    # incrementing the iteration variable
-    i &lt;- i + 1
- 
-    # checking the stop condition
-    if (i == 5)
-    {
-        # terminate the loop
-        break
-    }
+answer
+```
+
+```
+## [1] 0.7071068
+```
+]
+
+---
+
+# Maclaurin series of `\(\sin(x)\)`
+
+`$$\sin(x) = \sum_{n = 0}^\infty \frac{(-1)^n}{(2n+1)!} x^{2n+1}, \quad\quad \sin\left(\frac{\pi}{8}\right) = \frac{\sqrt{2-\sqrt{2}}}{2} \approx 0.3827$$`
+
+.pull-left[
+
+```r
+x &lt;- pi/8    
+answer &lt;- 0  # initialise answer
+n &lt;- 0       # initialise index
+while(answer != sqrt(2-sqrt(2))/2){
+  # Calculate and add n-th term
+  answer &lt;- answer + 
+    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
+  
+  #print partial sum
+  print(answer)
+  
+  #iterate index
+  n &lt;- n + 1
 }
 ```
+]
+
+.pull-right[
 
 ```
-## [1] "Hello world"
-## [1] "Hello world"
-## [1] "Hello world"
-## [1] "Hello world"
-## [1] "Hello world"
+## [1] 0.3926991
+## [1] 0.3826059
+## [1] 0.3826837
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
 ```
----
-**Avoid** to create an infinite loop by mistake.
-
-- Be careful with the condition being `TRUE` and `FALSE`.
-
-&lt;br&gt;
-&lt;br&gt;
-&lt;br&gt;
+]
 
 ---
 
-**Avoid** to create an infinite loop by mistake.
-
-- Be careful with the condition being `TRUE` and `FALSE`.
-
-Examples
+## Unexpected behavour with floating point numbers
 
 .pull-left[
 
@@ -429,9 +614,12 @@ Examples
 ## [1] 2.220446e-16
 ```
 ]
+
+
 ---
 
-Instead use a **tolerance** value.
+
+## Use a **tolerance** value.
 
 
 
@@ -463,15 +651,7 @@ tolerance &lt;- .Machine$double.eps #The machine epsilon
 ```
 ## [1] TRUE
 ```
----
 
-- R like other numerical software in existence, uses **floating point arithmetic** to do its calculations.
-
-- Represents real numbers approximately, using an integer with a fixed precision, scaled by an integer exponent of a fixed base. 
-
-- For example, `\(12.345\)` can be represented as a base-ten floating-point number:
-`$$12345\times10^{-3}$$`
-- Be careful and instead use the **tolerance** value inside the `conditions`.
 
 ---
 
@@ -514,7 +694,70 @@ while (j  &lt; 1 - tolerance) { j &lt;- j+0.1 }; j
 ## [1] 1
 ```
 
+
 ---
+
+# Maclaurin series of `\(\sin(x)\)` - revisited
+
+* Exit condition: The difference between iterations is smaller than some threshold.
+
+.pull-left[
+
+```r
+x &lt;- pi/8    
+answer &lt;- 0   
+n &lt;- 0        
+*prev_step &lt;- 1
+*tol &lt;- 10^(-16)
+while(abs(answer-prev_step) &gt; tol){
+  # Store last value
+* prev_step &lt;- answer
+  
+  # Calculate and add n-th term
+  answer &lt;- answer + 
+    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
+  
+  #print partial sum
+  print(answer)
+  
+  #iterate index
+  n &lt;- n + 1
+}
+```
+]
+
+.pull-right[
+
+```
+## [1] 0.3926991
+## [1] 0.3826059
+## [1] 0.3826837
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+## [1] 0.3826834
+```
+
+
+```r
+answer
+```
+
+```
+## [1] 0.3826834
+```
+]
+
+---
+
+class: middle
+
+# Mapping: 
+## To loop or not to loop, that is the question! 
+
+---
+
 ## Avoiding Explicit Loops 
 
 Suppose we have exam 1 and exam 2 scores of 10 students stored in a list...
@@ -541,54 +784,8 @@ m
 ```
 ## [1] 76.5 74.3
 ```
----
 
-class: middle
-# We want to make R code both simpler and more efficient.
-
----
-
-## How does mapping work?
-
-Suppose we have exam 1 and exam 2 scores of 10 students stored in a list...
-
-
-```r
-exam_scores &lt;- list(
-  exam1 &lt;- c(80, 90, 70, 50, 80, 40, 90, 95, 80, 90),
-  exam2 &lt;- c(85, 83, 45, 60, 85, 95, 40, 75, 90, 85)
-)
-```
-
---
-
-...and we find the mean score in each exam
-
-
-```r
-map(exam_scores, mean)
-```
-
-```
-## [[1]]
-## [1] 76.5
-## 
-## [[2]]
-## [1] 74.3
-```
-
----
-
-...and suppose we want the results as a numeric (double) vector
-
-
-```r
-map_dbl(exam_scores, mean)
-```
-
-```
-## [1] 76.5 74.3
-```
+Can we make the R code both simpler and more efficient?
 
 
 ---
@@ -608,7 +805,10 @@ Functions for looping over an object and returning a value (of a specific type):
 
 ---
 
-Example of the students
+## How does mapping work?
+
+Suppose we have `exam1` and `exam2` scores of 10 students stored in a list...
+
 
 ```r
 exam_scores &lt;- list(
@@ -616,115 +816,41 @@ exam_scores &lt;- list(
   exam2 &lt;- c(85, 83, 45, 60, 85, 95, 40, 75, 90, 85)
 )
 ```
----
-Compare the **times** of the two approaches.
-.pull-left[
+
+
+...and we find the mean score in each exam
+
 
 ```r
-start.time &lt;- Sys.time()
-m &lt;- numeric()
-for (i in 1:length(exam_scores)){
-  m[i] &lt;- mean(exam_scores[[i]])
-}
-m
-```
-
-```
-## [1] 76.5 74.3
-```
-
-```r
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.00701499 secs
-```
-]
-.pull-right[
-
-```r
-start.time &lt;- Sys.time()
-map_dbl(exam_scores, mean)
-```
-
-```
-## [1] 76.5 74.3
-```
-
-```r
-end.time &lt;- Sys.time()
-end.time - start.time
-```
-
-```
-## Time difference of 0.004650831 secs
-```
-]
----
-
-Example of the students with 10 exams and 100 students.
-
-```r
-num_students &lt;- 100
-possible_marks &lt;- seq(from = 0, to = 100, by = 1)
-exam_scores &lt;- list(
-  exam1  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam2  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam3  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam4  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam5  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam6  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam7  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam8  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam9  &lt;- sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam10 &lt;- sample(x = possible_marks, size = num_students, replace = TRUE)
-)
-head(exam_scores)
+map(exam_scores, mean)
 ```
 
 ```
 ## [[1]]
-##  [1] 39 93  0 39 90 79 45 70 12 61
-##  [ reached getOption("max.print") -- omitted 90 entries ]
+## [1] 76.5
 ## 
 ## [[2]]
-##  [1] 17 19 38  9 91 29 26 47 33 59
-##  [ reached getOption("max.print") -- omitted 90 entries ]
-## 
-## [[3]]
-##  [1] 98 22 87  7 33 38 24 18 77 25
-##  [ reached getOption("max.print") -- omitted 90 entries ]
-## 
-## [[4]]
-##  [1] 26  0 18 68 99 32 37 18 22 54
-##  [ reached getOption("max.print") -- omitted 90 entries ]
-## 
-## [[5]]
-##  [1] 68 81 59 72 70  5  8 97 81 73
-##  [ reached getOption("max.print") -- omitted 90 entries ]
-## 
-## [[6]]
-##  [1]  8 52 74  5 30 86 19 63 31  9
-##  [ reached getOption("max.print") -- omitted 90 entries ]
+## [1] 74.3
 ```
+
 ---
-Compare the **times** of the two approaches.
+
+## Comparing execution times ⏱
+
 .pull-left[
+* Via looping
 
 ```r
 start.time &lt;- Sys.time()
 m &lt;- numeric()
-for (i in 1:length(exam_scores)){
+for (i in seq_along(exam_scores)){
   m[i] &lt;- mean(exam_scores[[i]])
 }
 m
 ```
 
 ```
-## [1] 44.55 49.67 50.28 48.71 48.92
-##  [ reached getOption("max.print") -- omitted 5 entries ]
+## [1] 76.5 74.3
 ```
 
 ```r
@@ -733,10 +859,11 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.006573915 secs
+## Time difference of 0.006196976 secs
 ```
 ]
 .pull-right[
+* Via mapping
 
 ```r
 start.time &lt;- Sys.time()
@@ -744,8 +871,7 @@ map_dbl(exam_scores, mean)
 ```
 
 ```
-## [1] 44.55 49.67 50.28 48.71 48.92
-##  [ reached getOption("max.print") -- omitted 5 entries ]
+## [1] 76.5 74.3
 ```
 
 ```r
@@ -754,116 +880,113 @@ end.time - start.time
 ```
 
 ```
-## Time difference of 0.002008915 secs
+## Time difference of 0.002041101 secs
 ```
 ]
 ---
-class: middle
 
-# Useful functions to deal with strings.
+## A bigger example
+
+.panelset[
+
+.panel[.panel-name[code]
+
+Simulate data for 10 exams for 100 students.
+
+```r
+num_students &lt;- 100
+possible_marks &lt;- 0:100
+exam_scores &lt;- list(
+  exam1  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam2  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam3  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam4  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam5  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam6  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam7  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam8  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam9  = sample(x = possible_marks, size = num_students, replace = TRUE),
+  exam10 = sample(x = possible_marks, size = num_students, replace = TRUE)
+)
+```
+]
+
+.panel[.panel-name[glimpse]
+
+```r
+glimpse(exam_scores)
+```
+
+```
+## List of 10
+##  $ exam1 : int [1:100] 70 4 51 54 90 39 58 46 1 69 ...
+##  $ exam2 : int [1:100] 58 11 93 15 82 57 45 39 9 6 ...
+##  $ exam3 : int [1:100] 58 74 50 7 83 4 21 1 37 86 ...
+##  $ exam4 : int [1:100] 76 38 18 100 80 86 85 24 63 39 ...
+##  $ exam5 : int [1:100] 52 49 71 71 33 49 39 18 11 56 ...
+##  $ exam6 : int [1:100] 88 52 9 42 3 33 10 82 67 88 ...
+##  $ exam7 : int [1:100] 0 41 53 34 41 19 21 76 67 56 ...
+##  $ exam8 : int [1:100] 95 22 29 29 42 27 17 36 65 3 ...
+##  $ exam9 : int [1:100] 95 95 50 93 14 76 90 68 55 90 ...
+##  $ exam10: int [1:100] 69 23 100 87 80 58 85 3 70 32 ...
+```
+]
+]
 ---
 
-## `str` family of functions on package `stringr`
+## Comparing execution times ⏱
 
-
-```r
-ls("package:stringr")
-```
-
-```
-##  [1] "%&gt;%"               "boundary"          "coll"             
-##  [4] "fixed"             "fruit"             "invert_match"     
-##  [7] "regex"             "sentences"         "str_c"            
-## [10] "str_conv"          "str_count"         "str_detect"       
-## [13] "str_dup"           "str_ends"          "str_equal"        
-## [16] "str_escape"        "str_extract"       "str_extract_all"  
-## [19] "str_flatten"       "str_flatten_comma" "str_glue"         
-## [22] "str_glue_data"     "str_interp"        "str_length"       
-## [25] "str_like"          "str_locate"        "str_locate_all"   
-## [28] "str_match"         "str_match_all"     "str_order"        
-## [31] "str_pad"           "str_rank"          "str_remove"       
-## [34] "str_remove_all"    "str_replace"       "str_replace_all"  
-## [37] "str_replace_na"    "str_sort"          "str_split"        
-## [40] "str_split_1"       "str_split_fixed"   "str_split_i"      
-## [43] "str_squish"        "str_starts"        "str_sub"          
-## [46] "str_sub_all"       "str_sub&lt;-"         "str_subset"       
-## [49] "str_to_lower"      "str_to_sentence"   "str_to_title"     
-## [52] "str_to_upper"      "str_trim"          "str_trunc"        
-## [55] "str_unique"        "str_view"          "str_view_all"     
-## [58] "str_which"         "str_width"         "str_wrap"         
-## [61] "word"              "words"
-```
-
----
-
-## Example
+.pull-left[
+* Via looping
 
 ```r
-#Create character vector
-my_vector &lt;- "Hey there everyone."
-
-#remove first occurrence of "e" from vector
-str_remove(my_vector, "e")
+start.time &lt;- Sys.time()
+m &lt;- numeric()
+for (i in seq_along(exam_scores)){
+  m[i] &lt;- mean(exam_scores[[i]])
+}
+m
 ```
 
 ```
-## [1] "Hy there everyone."
+##  [1] 51.08 50.45 51.99 52.60 49.06 48.16
+##  [7] 44.99 46.58 50.58 50.62
 ```
 
 ```r
-#remove all occurrences of "e" from vector
-str_remove_all(my_vector, "e")
+end.time &lt;- Sys.time()
+end.time - start.time
 ```
 
 ```
-## [1] "Hy thr vryon."
+## Time difference of 0.006400108 secs
 ```
-
----
-
-## The `separate` function
-
-## Example
-
+]
+.pull-right[
+* Via mapping
 
 ```r
-#create data frame
-df &lt;- data.frame(player=c('A', 'A', 'B', 'B', 'C', 'C'),
-                 year=c(1, 2, 1, 2, 1, 2),
-                 stats=c('22-2', '29-3', '18-6', '11-8', '12-5', '19-2'))
-
-df
+start.time &lt;- Sys.time()
+map_dbl(exam_scores, mean)
 ```
 
 ```
-##   player year stats
-## 1      A    1  22-2
-## 2      A    2  29-3
-## 3      B    1  18-6
-## 4      B    2  11-8
-## 5      C    1  12-5
-## 6      C    2  19-2
+##  exam1  exam2  exam3  exam4  exam5 
+##  51.08  50.45  51.99  52.60  49.06 
+##  exam6  exam7  exam8  exam9 exam10 
+##  48.16  44.99  46.58  50.58  50.62
 ```
----
-
-## The `separate` function
-
-## Example
-
 
 ```r
-separate(df, col=stats, into=c('points', 'assists'), sep='-')
+end.time &lt;- Sys.time()
+end.time - start.time
 ```
 
 ```
-##   player year points assists
-## 1      A    1     22       2
-## 2      A    2     29       3
-## 3      B    1     18       6
-## 4      B    2     11       8
-## 5      C    1     12       5
-## 6      C    2     19       2
+## Time difference of 0.001987934 secs
 ```
+]
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
