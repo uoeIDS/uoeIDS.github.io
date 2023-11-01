@@ -54,19 +54,18 @@ search()
 ]
 
 ---
+
 Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings. 
-```{r echo=TRUE,out.width="85%"}
+```{r echo=TRUE}
 ls()
 ```
 If I add a variable or a function to the global environment. 
-```{r echo=TRUE,out.width="85%"}
-a <- 1
-b <- 10
-f <- function(x) x <- 1
+```{r echo=TRUE}
+a <- 1; b <- 10; f <- function(x) x <- 1
 ls()
 ```
 Remove a variable or function from the global environment.
-```{r echo=TRUE,out.width="85%"}
+```{r echo=TRUE}
 rm(a, f)
 ls()
 ```
@@ -114,7 +113,7 @@ When you’ve copied and pasted a block of code more than twice.
 ## Why functions?
 
 - Automate common tasks in a more powerful and general way than copy-and-pasting:
-  - Give your function an evocative name that makes your code easier to understand
+  - Give your function an informative name that makes your code easier to understand
   - As requirements change, only need to update code in one place, instead of many
   - Eliminate chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another)
 
@@ -234,7 +233,7 @@ add_2(10)
 
 ## Naming functions
 
-- Names should be short but clearly evoke what the function does
+- Names should be short but clearly inform on what the function does
 
 --
 - Names should be verbs, not nouns
@@ -266,18 +265,21 @@ To use the later version you can:
 ```{r}
 base::mean(1:10)
 ```
---
+
+
 - Avoid overwriting existing (especially widely used) functions
 
-```{r eval=FALSE}
+
+<!---
+```{r eval=TRUE}
 # JUST DON'T
-mean <- function(x){ 
-  x+2
-  }
-```
-```{r}
+mean <- function(x){ return(x+2) }
 rm(mean)
+mean(1:10)
 ```
+
+--->
+
 ---
 
 ## Function in action
@@ -288,7 +290,9 @@ Create a function that calculates the area of a circle.
 
 2. The function should return the area of the circle.
 ```{r}
-area <- function(r) { pi*r^2 }
+area <- function(r) { 
+  return(pi*r^2)
+}
 area(2)
 ```
 If the radius is negative?
@@ -297,34 +301,28 @@ area(-2)
 ```
 **Be careful!**
 ---
+
 Add a condition, if the input is negative, the function should return an error.
 
 * `message`  prints a message but not stop execution.
-
 * `warning`  prints a warning message but not stop execution.
-
 * `stop`  stops execution of the current expression and executes an error action.
 ```{r}
 area <- function(r) {
-  if (r < 0) stop("Error, provide positive radius.")
+  if (r < 0) 
+    stop("Error, provide positive radius.")
   return(pi*r^2)
 }
 area(2)
 ```
 If the radius is negative?
 ```{r eval=FALSE}
-area(-2)  ## Produce error message
+area(-2)  
+# Error in area(-2) : Error, provide positive radius.
 ```
 ---
 
-Remember the function **area**.
-```{r,echo=FALSE}
-area <- function(r) {
-  if (r < 0) stop("Error, provide positive radius.")
-  return(pi*r^2)
-}
-```
-Evaluate in a character or a logic value.
+Let's try a different input, say with a logic value.
 ```{r}
 area(TRUE)
 ```
@@ -334,9 +332,11 @@ area <- function(r) {
   if (r < 0 | !is.numeric(r) )
       stop("Error, provide positive numeric radius.")
   return(pi*r^2)
-  }
+}
 ```
 Try again.
-```{r,eval = FALSE}
-area(TRUE)  ## now creates an error msg
+```{r eval=FALSE}
+area(TRUE)  
+# Error in area(TRUE) : Error, provide positive numeric radius.
 ```
+

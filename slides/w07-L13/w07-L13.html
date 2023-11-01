@@ -90,6 +90,7 @@ search()
 ]
 
 ---
+
 Use `ls()` to see all the variables and functions that are defined in the current working directory in R. It returns a vector of character strings. 
 
 ```r
@@ -102,9 +103,7 @@ ls()
 If I add a variable or a function to the global environment. 
 
 ```r
-a &lt;- 1
-b &lt;- 10
-f &lt;- function(x) x &lt;- 1
+a &lt;- 1; b &lt;- 10; f &lt;- function(x) x &lt;- 1
 ls()
 ```
 
@@ -202,7 +201,7 @@ When you’ve copied and pasted a block of code more than twice.
 ## Why functions?
 
 - Automate common tasks in a more powerful and general way than copy-and-pasting:
-  - Give your function an evocative name that makes your code easier to understand
+  - Give your function an informative name that makes your code easier to understand
   - As requirements change, only need to update code in one place, instead of many
   - Eliminate chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another)
 
@@ -337,7 +336,7 @@ add_2(10)
 
 ## Naming functions
 
-- Names should be short but clearly evoke what the function does
+- Names should be short but clearly inform on what the function does
 
 --
 - Names should be verbs, not nouns
@@ -359,7 +358,7 @@ mean
 ```
 ## function (x, ...) 
 ## UseMethod("mean")
-## &lt;bytecode: 0x00000292fa7cc518&gt;
+## &lt;bytecode: 0x0000019574f02548&gt;
 ## &lt;environment: namespace:base&gt;
 ```
 
@@ -399,20 +398,26 @@ base::mean(1:10)
 ```
 ## [1] 5.5
 ```
---
+
+
 - Avoid overwriting existing (especially widely used) functions
 
 
-```r
-# JUST DON'T
-mean &lt;- function(x){ 
-  x+2
-  }
-```
+&lt;!---
 
 ```r
+# JUST DON'T
+mean &lt;- function(x){ return(x+2) }
 rm(mean)
+mean(1:10)
 ```
+
+```
+## [1] 5.5
+```
+
+---&gt;
+
 ---
 
 ## Function in action
@@ -424,7 +429,9 @@ Create a function that calculates the area of a circle.
 2. The function should return the area of the circle.
 
 ```r
-area &lt;- function(r) { pi*r^2 }
+area &lt;- function(r) { 
+  return(pi*r^2)
+}
 area(2)
 ```
 
@@ -442,17 +449,17 @@ area(-2)
 ```
 **Be careful!**
 ---
+
 Add a condition, if the input is negative, the function should return an error.
 
 * `message`  prints a message but not stop execution.
-
 * `warning`  prints a warning message but not stop execution.
-
 * `stop`  stops execution of the current expression and executes an error action.
 
 ```r
 area &lt;- function(r) {
-  if (r &lt; 0) stop("Error, provide positive radius.")
+  if (r &lt; 0) 
+    stop("Error, provide positive radius.")
   return(pi*r^2)
 }
 area(2)
@@ -464,13 +471,12 @@ area(2)
 If the radius is negative?
 
 ```r
-area(-2)  ## Produce error message
+area(-2)  
+# Error in area(-2) : Error, provide positive radius.
 ```
 ---
 
-Remember the function **area**.
-
-Evaluate in a character or a logic value.
+Let's try a different input, say with a logic value.
 
 ```r
 area(TRUE)
@@ -486,13 +492,15 @@ area &lt;- function(r) {
   if (r &lt; 0 | !is.numeric(r) )
       stop("Error, provide positive numeric radius.")
   return(pi*r^2)
-  }
+}
 ```
 Try again.
 
 ```r
-area(TRUE)  ## now creates an error msg
+area(TRUE)  
+# Error in area(TRUE) : Error, provide positive numeric radius.
 ```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
