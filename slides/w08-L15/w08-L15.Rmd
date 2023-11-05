@@ -1,8 +1,8 @@
 ---
-title: "Predicting categorical outcomes"
+title: "Introducing linear models"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/24"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -16,6 +16,7 @@ output:
 
 ---
 
+
 ```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(magick)
@@ -26,18 +27,7 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
-library(openintro)
-library(ggridges)
-library(patchwork)
-library(skimr)
-set.seed(1234)
-options(
-  warnPartialMatchArgs = FALSE,
-  warnPartialMatchAttr = FALSE, 
-  warnPartialMatchDollar = FALSE,
-  width = 100
-)
+# library(emo)
 
 xaringanExtra::use_panelset()
 ```
@@ -47,7 +37,7 @@ xaringanExtra::use_panelset()
 # R options
 options(
   htmltools.dir.version = FALSE,
-  dplyr.print_min = 6, 
+  dplyr.print_min = 10, 
   dplyr.print_max = 6,
   tibble.width = 65,
   width = 65
@@ -103,530 +93,926 @@ University of Edinburgh
 </div> 
 
 ---
-## Reminders
-
-- This lecture is being recorded
-- HW4 (final homework) has been released
-- No interactive R tutorial this week, use the time to work on projects. 
-- 2 December final project presentations (final lab of semester)
-
----
 ## Topics
 
-- Modelling categorical outcomes
-- Brief introduction to GLMs
-- Logistic regression
-- Sensitivity, specificity and ROC curves
-- Using models for prediction
+- What is a model?
+- How can we use models?
+- How can we fit linear models in R?
+- How should fitted linear models be interpreted?
+- Differences between models using numerical input data and categorical input data. 
 
 ---
-
 class: middle
 
-# Modelling categorical outcomes
+
+# What is a model?
 
 ---
 
-## Spam filters
+## Modelling
 
-.pull-left-narrow[
-- Data from 3921 emails and 21 variables on them
-- Outcome: whether the email is spam or not
-- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+- Use models to explain the relationship between variables and to make predictions
+- For now we will focus on **linear** models (but remember there are *many* *many* other types of models too!)
+
+.pull-left[
+```{r echo = FALSE, out.width = "90%"}
+df1 <- tibble(x = 1:100, y = x + rnorm(100, mean = 0, sd = 5))
+ggplot(df1, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "#E48957", se = FALSE) +
+  labs(title = "Linear", x = NULL, y = NULL) +
+  theme(
+    axis.text  = element_blank(),
+    axis.ticks = element_blank()
+    )
+```
 ]
-.pull-right-wide[
+.pull-right[
+```{r echo = FALSE, out.width = "90%"}
+df2 <- tibble(x = seq(-6, 5.9, 0.1), y = (1 / (1+exp(-2*x))) + rnorm(120, mean = 0, sd = 0.1))
+ggplot(df2, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "loess", color = "#8E2C90", se = FALSE) +
+  labs(title = "Non-linear", x = NULL, y = NULL) +
+  theme(
+    axis.text  = element_blank(),
+    axis.ticks = element_blank()
+    )
+```
+]
+
+???
+linear models are actually very useful in real life, often prefered to more complicated models
+because they are simple, fast, easy to interpret, they work pretty well most of the times
+
+---
+class: middle
+
+# Data: Paris Paintings
+
+---
+
+## Paris Paintings
+
+```{r message=FALSE}
+pp <- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
+```
+
+- Source: Printed catalogues of 28 auction sales in Paris, 1764 - 1780
+
+- Data curators Sandra van Ginhoven and Hilary Coe Cronheim (who were PhD students in the Duke Art, Law, and Markets Initiative at the time of putting together this dataset) translated and tabulated the catalogues
+
+- `r nrow(pp)` paintings, their prices, and descriptive details from sales catalogues over 60 variables
+
+???
+It's a dataset coming from an auction catalogue, it's made up of 28 auction sales in Paris in ...
+These are paper printed catalogues that people would read and decide what they wanted to bid on.
+Was transcribed by two PhD students in Duke, took these paper records and translated and tabulated into an electronic dataset.
+
+---
+
+## Paris auction market
+
+```{r out.width="60%", echo=FALSE}
+knitr::include_graphics("img/auction-trend-paris.png")
+```
+
+.footnote[
 .small[
-```{r}
-library(openintro)
-glimpse(email)
-```
+Plot credit: Sandra van Ginhoven
 ]
 ]
 
 ---
 
-.question[
-Would you expect longer or shorter emails to be spam?
+## Auctions today
+
+.center[
+<iframe width="840" height="473" src="https://www.youtube.com/embed/apaE1Q7r4so" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ]
 
---
+---
+
+## Auctions back in the day
+
+```{r out.width="65%", echo=FALSE}
+knitr::include_graphics("img/old-auction.png")
+```
+
+.footnote[
+.small[
+Pierre-Antoine de Machy, Public Sale at the Hôtel Bullion, Musée Carnavalet, Paris (18th century)
+]
+]
+
+---
+
+## Départ pour la chasse
+
+```{r out.width="65%", echo=FALSE}
+knitr::include_graphics("img/depart-pour-la-chasse.png")
+```
+
+---
+
+## Auction catalog text
 
 .pull-left[
-```{r echo=FALSE, out.width="100%"}
-email %>%
-  ggplot(aes(x = num_char, y = spam, fill = spam, color = spam)) +
-  geom_density_ridges2(alpha = 0.5) +
-  labs(
-    x = "Number of characters (in thousands)", 
-    y = "Spam",
-    title = "Spam vs. number of characters"
-    ) +
-  guides(color = "none", fill = "none") +
-  scale_fill_manual(values = c("#E48957", "#CA235F")) +
-  scale_color_manual(values = c("#DEB4A0", "#CA235F"))
+```{r out.width="60%", echo=FALSE}
+knitr::include_graphics("img/auction-catalogue.png")
 ```
 ]
 .pull-right[
-```{r echo=FALSE}
-email %>% 
-  group_by(spam) %>% 
-  summarise(mean_num_char = mean(num_char))
-```
+.small[
+Two paintings very rich in composition, of a beautiful execution, and whose merit is very remarkable, each 17 inches 3 lines high, 23 inches wide; the first, painted on wood, comes from the Cabinet of Madame la Comtesse de Verrue; it represents a departure for the hunt: it shows in the front a child on a white horse, a man who gives the horn to gather the dogs, a falconer and other figures nicely distributed across the width of the painting; two horses drinking from a fountain; on the right in the corner a lovely country house topped by a terrace, on which people are at the table, others who play instruments; trees and fabriques pleasantly enrich the background.
+]
 ]
 
 ---
 
-.question[
-Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
-]
-
---
-
-```{r echo=FALSE}
-email %>%
-  ggplot(aes(x = re_subj, fill = spam)) +
-  geom_bar(position = "fill") +
-  labs(
-    x = 'Whether “re:”, "RE:", etc. was in the email subject.', 
-    fill = "Spam", 
-    y = NULL,
-    title = 'Spam vs. "re:" in subject'
-    ) +
-  scale_fill_manual(values = c("#DEB4A0", "#CA235F"))
+```{r out.width="60%", echo=FALSE}
+knitr::include_graphics("img/painting1.png")
+knitr::include_graphics("img/painting2.png")
+knitr::include_graphics("img/painting3.png")
 ```
 
 ---
 
-## Modelling spam
-
-- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam. How do we come up with a model that will let us explore this relationship?
-
---
-- For simplicity, we'll focus on the number of characters (`num_char`) as predictor, but the model we describe can be expanded to take multiple predictors as well.
-
----
-
-## Modelling spam
-
-This isn't something we can reasonably fit a linear model to -- we need something different!
-
-```{r echo=FALSE, out.width="70%"}
-means <- email %>%
-  group_by(spam) %>%
-  summarise(mean_num_char = mean(num_char)) %>%
-  mutate(group = 1)
-
-ggplot(email, aes(x = num_char, y = spam, color = spam)) +
-  geom_jitter(alpha = 0.2) +
-  geom_line(data = means, aes(x = mean_num_char, y = spam, group = group), color = "black", size = 1.5) +
-  labs(x = "Number of characters (in thousands)", y = "Spam") +
-  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
-  guides(color = "none")
+```{r results="hide"}
+pp %>%
+  filter(name == "R1777-89a") %>%
+  glimpse()
 ```
 
----
-
-## Framing the problem
-
-- We can treat each outcome (spam and not) as successes and failures arising from separate Bernoulli trials
-  - Bernoulli trial: a random experiment with exactly two possible outcomes, "success" and "failure", in which the probability of success is the same every time the experiment is conducted
-
---
-- Each Bernoulli trial can have a separate probability of success
-
-$$ y_i ∼ Bern(p_i) $$
-
---
-- We can then use the predictor variables to model that probability of success, $p_i$
-
---
-- We can't just use a linear model for $p_i$ (since $p_i$ must be between 0 and 1) but we can transform the linear model to have the appropriate range
-
----
-
-## Generalized linear models
-
-- This is a very general way of addressing many problems in regression and the resulting models are called **generalized linear models (GLMs)**
-
---
-- Logistic regression is just one example
-
----
-
-## Three characteristics of GLMs
-
-All GLMs have the following three characteristics:
-
-1. A probability distribution describing a generative model for the outcome variable
-
---
-2. A linear model:
-$$\eta = \beta_0 + \beta_1 X_1 + \cdots + \beta_k X_k$$
-
---
-3. A link function that relates the linear model to the parameter of the outcome distribution
-  
----
-
-class: middle
-
-# Logistic regression
-
----
-
-## Logistic regression
-
-- Logistic regression is a GLM used to model a binary categorical outcome using numerical and categorical predictors
-
---
-- To finish specifying the Logistic model we just need to define a reasonable link function that connects $\eta_i$ to $p_i$: logit function
-
---
-- **Logit function:** For $0\le p \le 1$
-
-$$logit(p) = \log\left(\frac{p}{1-p}\right)$$
-
-
-
----
-
-## Logit function, visualised
-
-```{r echo=FALSE}
-d <- tibble(p = seq(0.001, 0.999, length.out = 1000)) %>%
-  mutate(logit_p = log(p/(1-p)))
-
-ggplot(d, aes(x = p, y = logit_p)) + 
-  geom_line() + 
-  xlim(0,1) + 
-  ylab("logit(p)") +
-  labs(title = "logit(p) vs. p")
-```
-
----
-
-## Properties of the logit
-
-- The logit function takes a value between 0 and 1 and maps it to a value between $-\infty$ and $\infty$
-
---
-- Inverse logit (logistic) function:
-$$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$
-
---
-- The inverse logit function takes a value between $-\infty$ and $\infty$ and maps it to a value between 0 and 1
-
---
-- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
-
----
-
-## The logistic regression model
-
-- Based on the three GLM criteria we have
-  - $y_i \sim \text{Bern}(p_i)$
-  - $\eta_i = \beta_0+\beta_1 x_{1,i} + \cdots + \beta_n x_{n,i}$
-  - $\text{logit}(p_i) = \eta_i$
-
---
-- From which we get
-
-$$p_i = \frac{\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}{1+\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}$$
----
-
-## Modeling spam
-
-In R we fit a GLM in the same way as a linear model except we
-
-- specify the model with `logistic_reg()`
-- use `"glm"` instead of `"lm"` as the engine 
-- define `family = "binomial"` for the link function to be used in the model
-
---
-
-```{r}
-spam_fit <- logistic_reg() %>%
-  set_engine("glm") %>%
-  fit(spam ~ num_char, data = email, family = "binomial")
-
-tidy(spam_fit)
-```
-
----
-
-## Spam model
-
-```{r}
-tidy(spam_fit)
-```
-
---
-
-Model:
-$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times \text{num_char}$$
-
----
-
-## P(spam) for an email with 2000 characters 
-
-$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times 2$$
---
-$$\frac{p}{1-p} = \exp(-1.9242) = 0.15 \rightarrow p = 0.15 \times (1 - p)$$
---
-$$p = 0.15 - 0.15p \rightarrow 1.15p = 0.15$$
---
-$$p = 0.15 / 1.15 = 0.13$$
-
----
-
-.question[
-What is the probability that an email with 15000 characters is spam? What about an email with 40000 characters?
-]
-
---
-
+.small[
 .pull-left[
-```{r spam-predict-viz, echo=FALSE, out.width = "100%", fig.asp=0.5}
-newdata <- tibble(
-  num_char = c(2, 15, 40),
-  color    = c("#A7D5E8", "#e9d968", "#8fada7"),
-  shape    = c(22, 24, 23)
-  )
-
-y_hat <- predict(spam_fit, newdata, type = "raw")
-p_hat <- exp(y_hat) / (1 + exp(y_hat))
-
-newdata <- newdata %>%
-  bind_cols(
-    y_hat = y_hat,
-    p_hat = p_hat
-  )
-
-spam_aug <- augment(spam_fit$fit) %>%
-  mutate(prob = exp(.fitted) / (1 + exp(.fitted)))
-
-ggplot(spam_aug, aes(x = num_char)) +
-  geom_point(aes(y = as.numeric(spam)-1, color = spam), alpha = 0.3) +
-  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
-  scale_y_continuous(breaks = c(0, 1)) +
-  guides(color = "none") +
-  geom_line(aes(y = prob)) +
-  geom_point(data = newdata, aes(x = num_char, y = p_hat), 
-             fill = newdata$color, shape = newdata$shape, 
-             stroke = 1, size = 6) +
-  labs(
-    x = "Number of characters (in thousands)",
-    y = "Spam", 
-    title = "Spam vs. number of characters"
-  )
+```{r output.lines=23, echo=FALSE}
+pp %>%
+  filter(name == "R1777-89a") %>%
+  glimpse()
 ```
 ]
 .pull-right[
-- .light-blue[`r paste0(newdata$num_char[1], "K chars: P(spam) = ", round(newdata$p_hat[1], 2))`]
-- .yellow[`r paste0(newdata$num_char[2], "K chars, P(spam) = ", round(newdata$p_hat[2], 2))`]
-- .green[`r paste0(newdata$num_char[3], "K chars, P(spam) = ", round(newdata$p_hat[3], 2))`]
-]
-
----
-
-.question[
-Would you prefer an email with 2000 characters to be labelled as spam or not? How about 40,000 characters?
-]
-
-```{r ref.label="spam-predict-viz", echo=FALSE, fig.asp=0.5}
+```{r output.lines=24:44, echo=FALSE}
+pp %>%
+  filter(name == "R1777-89a") %>%
+  glimpse()
 ```
-
----
-
-class: middle
-
-# Sensitivity and specificity
-
----
-
-## False positive and negative
-
-|                         | Email is spam                 | Email is not spam             |
-|-------------------------|-------------------------------|-------------------------------|
-| Email labelled spam     | True positive                 | False positive (Type 1 error) |
-| Email labelled not spam | False negative (Type 2 error) | True negative                 |
-
---
-- False negative rate = P(Labelled not spam | Email spam) = FN / (TP + FN) 
-
-- False positive rate = P(Labelled spam | Email not spam) = FP / (FP + TN)
-
----
-
-## Sensitivity and specificity
-
-|                         | Email is spam                 | Email is not spam             |
-|-------------------------|-------------------------------|-------------------------------|
-| Email labelled spam     | True positive                 | False positive (Type 1 error) |
-| Email labelled not spam | False negative (Type 2 error) | True negative                 |
-
---
-
-- Sensitivity = P(Labelled spam | Email spam) = TP / (TP + FN)
-  - Sensitivity = 1 − False negative rate
-  
-- Specificity = P(Labelled not spam | Email not spam) = TN / (FP + TN) 
-  - Specificity = 1 − False positive rate
-
----
-
-.question[
-If you were designing a spam filter, would you want sensitivity and specificity to be high or low? What are the trade-offs associated with each decision? 
+]
 ]
 
 ---
+
 class: middle
 
-# Prediction and classification
+# Modeling the relationship between variables
 
 ---
 
-## Goal: Building a spam filter
+## Models as functions
 
-- Data: Set of emails and we know if each email is spam/not and other features 
-- Use logistic regression to predict the probability that an incoming email is spam
-- Use model selection to pick the model with the best predictive performance
-
---
-- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
-
---
-- A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
+- We can represent relationships between variables using **functions**
+- A function is a mathematical concept: the relationship between an output and one or more inputs
+  - Plug in the inputs and receive back the output
+  - Example: The formula $y = 3x + 7$ is a function with input $x$ and output $y$. If $x$ is $5$, $y$ is $22$, $y = 3 \times 5 + 7 = 22$
 
 ---
 
-## A multiple regression approach
+## Heights
+
+.small[
+```{r height-dist, out.width="60%", warning=FALSE}
+ggplot(data = pp, aes(x = Height_in)) +
+  geom_histogram(binwidth = 5) +
+  labs(x = "Height, in inches", y = NULL)
+```
+]
+
+---
+
+## Widths
+
+.small[
+```{r width-dist, out.width="60%", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in)) +
+  geom_histogram(binwidth = 5) +
+  labs(x = "Width, in inches", y = NULL)
+```
+]
+
+---
+
+
+## Height as a function of width
 
 .panelset[
-.panel[.panel-name[Output]
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-01", echo = FALSE, warning = FALSE, out.width = "60%"}
+```
+]
+.panel[.panel-name[Code]
+
+```{r height-width-plot-01, fig.show="hide"}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "lm") + #<<
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+]
+]
+
+???
+here is the representation of the relationship between those two variables
+and the blue line is basically the model that we are fitting to quantify the relationship 
+- positive slope (if the painiting is getting bigger in width, it's also getting bigger in height)
+- code on how drawing the best fit line (discarding NAs)
+- notice the gray band around the blue line: there is uncertainty around our model 
+because we do not have data on all the possible paintings, we have a sample
+- the larger the band, the larger the uncertainty
+
+---
+
+## ... without the measure of uncertainty
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-no-se", echo = FALSE, warning = FALSE, out.width = "60%"}
+```
+]
+.panel[.panel-name[Code]
+
+```{r height-width-plot-no-se, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = FALSE) + #<<
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+]
+]
+
+---
+
+## ... with different cosmetic choices
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-cosmetics", echo = FALSE, warning = FALSE, out.width = "60%"}
+```
+]
+.panel[.panel-name[Code]
+
+```{r height-width-plot-cosmetics, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE,
+              color = "#8E2C90", linetype = "dashed", size = 3) + #<<
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+]
+]
+
+???
+Cosmetic choices
+
+---
+
+## Other smoothing methods: gam
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-gam", echo = FALSE, warning = FALSE, out.width = "50%"}
+```
+]
+.panel[.panel-name[Code]
+
+```{r height-width-plot-gam, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "gam", #<<
+              se = FALSE, color = "#8E2C90") + 
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+]
+]
+
+.footnote[GAM = Generalized additive models]
+
+???
+Generalized additive models are a kind of linear regression, but instead of finding coefficients of predictor variables (e.g., intercepts, slopes), the model finds a “smooth” response function for each predictor. Tipically, a piecewise cubic function (spline)
+
+---
+
+## Other smoothing methods: loess
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-loess", echo = FALSE, warning = FALSE, out.width = "50%"}
+```
+]
+.panel[.panel-name[Code]
+
+```{r height-width-plot-loess, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "loess", #<<
+              se = FALSE, color = "#8E2C90") + 
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+]
+]
+
+.footnote[LOESS = Locally Estimated Scatterplot Smoothing]
+
+???
+Locally Estimated Scatterplot Smoothing (LOESS)
+LOESS smooths are constructed by making a large number of quadratic (or possibly linear) regression lines as a window moves along the x-axis. The predictions from these many local regressions are then computed and plotted as a “smooth” of the data. 
+
+---
+
+## Vocabulary
+
+- **Response variable:** Variable whose behavior or variation you are trying to understand, on the y-axis
+
+--
+- **Explanatory variables:** Other variables that you want to use to explain the variation in the response, on the x-axis
+
+--
+- **Predicted value:** Output of the **model function**
+  - The model function gives the typical (expected) value of the response variable *conditioning* on the explanatory variables
+```{r height-width-plot-02,echo=FALSE, warning = FALSE, out.width = "40%"}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "lm",se=FALSE) +
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+
+---
+
+## Vocabulary
+
+- **Response variable:** Variable whose behavior or variation you are trying to understand, on the y-axis
+- **Explanatory variables:** Other variables that you want to use to explain the variation in the response, on the x-axis
+- **Predicted value:** Output of the **model function**
+  - The model function gives the typical (expected) value of the response variable *conditioning* on the explanatory variables
+- **Residuals:** A measure of how far each case is from its predicted value (based on a particular model)
+  - Residual = Observed value - Predicted value
+  - Tells how far above/below the expected value each case is
+
+---
+
+## Residuals
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "height-width-plot-residuals", echo = FALSE, warning = FALSE, out.width = "60%"}
+```
+]
+.panel[.panel-name[Code]
 .small[
-```{r ref.label = "spam-mlr", echo = FALSE, warning = FALSE}
+```{r height-width-plot-residuals, fig.show="hide", warning=FALSE}
+ht_wt_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp)
+
+ht_wt_fit_tidy <- tidy(ht_wt_fit$fit) 
+ht_wt_fit_aug  <- augment(ht_wt_fit$fit) %>%
+  mutate(res_cat = ifelse(.resid > 0, TRUE, FALSE))
+
+ggplot(data = ht_wt_fit_aug) +
+  geom_point(aes(x = Width_in, y = Height_in, color = res_cat)) +
+  geom_line(aes(x = Width_in, y = .fitted), size = 0.75, color = "#8E2C90") + 
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  ) +
+  guides(color = FALSE) +
+  scale_color_manual(values = c("maroon", "forestgreen")) +
+  geom_text(aes(x = 0, y = 150), label = "Positive residual", color = "forestgreen", hjust = 0, size = 8) +
+  geom_text(aes(x = 150, y = 25), label = "Negative residual", color = "maroon", hjust = 0, size = 8)
+```
+]
+]
+]
+
+---
+
+.question[
+The plot below displays the relationship between height and width of paintings. The only difference from the previous plots is that it uses a smaller alpha value, making the points somewhat transparent. What feature is apparent in this plot that was not (as) apparent in the previous plots? What might be the reason for this feature?
+]
+
+```{r height-width-plot-alpha, warning = FALSE, echo=FALSE, out.width="55%"}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point(alpha = 0.2) +
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+
+---
+
+## Portrait vs landscape paintings
+
+```{r out.width="50%", echo=FALSE}
+knitr::include_graphics("img/height-width-plot-alpha-portrait.png")
+```
+
+---
+
+## Portrait vs landscape paintings
+
+```{r out.width="50%", echo=FALSE}
+knitr::include_graphics("img/height-width-plot-alpha-landscape.png")
+```
+
+
+---
+
+## Landscape paintings
+
+- Landscape painting is the depiction in art of landscapes – natural scenery such as mountains, valleys, trees, rivers, and forests, especially where the main subject is a wide view – with its elements arranged into a coherent
+composition.<sup>1</sup>
+  - Landscape paintings tend to be wider than they are long.
+- Portrait painting is a genre in painting, where the intent is to depict a human subject.<sup>2</sup>
+  - Portrait paintings tend to be longer than they are wide.
+
+.footnote[
+[1] Source: Wikipedia, [Landscape painting](https://en.wikipedia.org/wiki/Landscape_painting)
+
+[2] Source: Wikipedia, [Portait painting](https://en.wikipedia.org/wiki/Portrait_painting)
+]
+
+---
+
+## Multiple explanatory variables
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-narrow[
+.question[
+How, if at all, does the relationship between width and height of paintings vary by whether or not they have any landscape elements?
+]
+]
+.pull-right-wide[
+```{r ref.label = "height-width-landscape", echo = FALSE, warning = FALSE, out.width = "80%"}
 ```
 ]
 ]
 .panel[.panel-name[Code]
-```{r spam-mlr, results = "hide"}
-logistic_reg() %>%
-  set_engine("glm") %>%
-  fit(spam ~ ., data = email, family = "binomial") %>%
-  tidy() %>%
-  print(n = 22)
+```{r height-width-landscape, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Height vs. width of paintings, by landscape features",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)",
+    color = "landscape"
+  ) +
+  scale_color_manual(values = c("#E48957", "#071381"))
 ```
 ]
 ]
 
 ---
 
-## Prediction
+## Extending regression lines
 
-- The mechanics of prediction is **easy**:
-  - Plug in values of predictors to the model equation
-  - Calculate the predicted value of the response variable, $\hat{y}$
-
---
-- Getting it right is **hard**!
-  - There is no guarantee the model estimates you have are correct
-  - Or that your model will perform as well with new data as it did with your sample data
-
----
-
-## Underfitting and overfitting
-
-```{r echo=FALSE, out.width="70%", warning = FALSE}
-lm_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(y4 ~ x2, data = association)
-
-loess_fit <- loess(y4 ~ x2, data = association)
-
-loess_overfit <- loess(y4 ~ x2, span = 0.05, data = association)
-
-association %>%
-  select(x2, y4) %>%
-  mutate(
-    Underfit = augment(lm_fit$fit) %>% select(.fitted) %>% pull(),
-    OK       = augment(loess_fit) %>% select(.fitted) %>% pull(),
-    Overfit  = augment(loess_overfit) %>% select(.fitted) %>% pull(),
-  ) %>%
-  pivot_longer(
-    cols      = Underfit:Overfit,
-    names_to  = "fit",
-    values_to = "y_hat"
-  ) %>%
-  mutate(fit = fct_relevel(fit, "Underfit", "OK", "Overfit")) %>%
-  ggplot(aes(x = x2)) +
-  geom_point(aes(y = y4), color = "darkgray") +
-  geom_line(aes(y = y_hat, group = fit, color = fit), size = 1) +
-  labs(x = NULL, y = NULL, color = NULL) +
-  scale_color_viridis_d(option = "plasma", end = 0.7)
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "extrapolation", echo = FALSE, warning = FALSE, out.width = "65%"}
 ```
+]
+.panel[.panel-name[Code]
+```{r extrapolation, fig.show="hide", warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE,
+              fullrange = TRUE) + #<<
+  labs(
+    title = "Height vs. width of paintings, by landscape features",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)",
+    color = "landscape"
+  ) +
+  scale_color_manual(values = c("#E48957", "#071381"))
+```
+]
+]
 
 ---
 
-## Spending our data
+## Models - upsides and downsides
 
-- Several steps to create a useful model: parameter estimation, model selection, performance assessment, etc.
+- Models can sometimes reveal patterns that are not evident in a graph of the data. This is a great advantage of modeling over simple visual inspection of data. 
+- There is a real risk, however, that a model is imposing structure that is not really there on the scatter plot of the data, just as people imagine animal shapes in the stars. A skeptical approach is always warranted.
 
-- Doing all of this on the entire data we have available can lead to **overfitting**
+---
 
-- Allocate specific subsets of data for different tasks, as opposed to allocating the largest possible amount to the model parameter estimation only (which is what we've done so far)
+## Variation around the model...
+
+is just as important as the model, if not more!  
+
+*Statistics is the explanation of variation in the context of what remains unexplained.*
+
+- The scatter plot of the residuals suggests that there might be other factors that account for large parts of painting-to-painting variability, or perhaps just that randomness plays a big role.
+- Adding more explanatory variables to a model can sometimes usefully reduce the size of the scatter plot of the residuals around the predicted values. (We'll talk more about this later.)
+
+---
+
+## How do we use models?
+
+- Explanation: Characterize the relationship between $y$ and $x$ via *slopes* for numerical explanatory variables or *differences* for categorical explanatory variables
+- Prediction: Plug in $x$, get the predicted $y$
 
 ---
 
 class: middle
 
-# Splitting data
+# Fitting and interpreting models
 
 ---
 
-## Splitting data
+class: middle
 
-- **Training set:**
-  - Sandbox for model building 
-  - Spend most of your time using the training set to develop the model
-  - Majority of the data (usually 80%)
-  
-- **Testing set:**
-  - Held in reserve to determine efficacy of one or two chosen models
-  - Critical to look at it once, otherwise it becomes part of the modeling process
-  - Remainder of the data (usually 20%)
-  
+# Models with numerical explanatory variables
+
 ---
 
-## Performing the split
+## Paris Paintings: Predict height from width
+
+Linear model with one predictor: $$\widehat{height}_{i} = \beta_0 + \beta_1 \times width_{i}$$
+
+```{r height-width-plot, echo=FALSE, warning=FALSE}
+ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "#8E2C90") + 
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Paris auctions, 1764 - 1780",
+    x = "Width (inches)",
+    y = "Height (inches)"
+  )
+```
+
+
+---
+
+```{r out.width="98%", echo=FALSE}
+knitr::include_graphics("img/tidymodels.png")
+```
+
+???
+Aim of tidymodels: make the modeling process simple and logical, and give a unified 
+framework for fitting models
+
+---
+
+## Step 1: Specify model
 
 ```{r}
-# Fix random numbers by setting the seed 
-# Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
-
-# Put 80% of the data into the training set 
-email_split <- initial_split(email, prop = 0.80)
-
-# Create data frames for the two sets:
-train_data <- training(email_split)
-test_data  <- testing(email_split)
+linear_reg()
 ```
 
 ---
 
-## Peek at the split
+## Step 2: Set model fitting *engine*
+
+```{r}
+linear_reg() %>%
+  set_engine("lm") # lm: linear model
+```
+
+---
+
+## Step 3: Fit model & estimate parameters
+
+... using **formula syntax**
+
+```{r fit-model}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp)
+```
+
+---
+
+## A closer look at model output
+
+```{r ref.label="fit-model", echo=FALSE}
+```
+
+.large[
+$$\widehat{height}_{i} = 3.6214 + 0.7808 \times width_{i}$$
+]
+
+---
+
+## A tidy look at model output
+
+```{r}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp) %>%
+  tidy()
+```
+
+.large[
+$$\widehat{height}_{i} = 3.62 + 0.781 \times width_{i}$$
+]
+
+---
+
+## Interpretation: slope and intercept
+
+.large[
+$$\widehat{height}_{i} = 3.62 + 0.781 \times width_{i}$$
+]
+
+--
+
+- **Slope:** For each additional inch the painting is wider, the height is *expected* to be higher, *on average*, by 0.781 inches.
+
+--
+- **Intercept:** Paintings that are 0 inches wide are *expected* to be 3.62 inches high, *on average*. (Does this make sense?)
+
+---
+
+## Correlation does not imply causation
+
+Remember this when interpreting model coefficients
+
+```{r echo=FALSE, out.width="90%"}
+knitr::include_graphics("img/cell_phones.png")
+```
+
+.footnote[
+Source: XKCD, [Cell phones](https://xkcd.com/925/)
+]
+
+---
+
+class: middle
+
+# Parameter estimation
+
+---
+
+## Linear model with a single predictor
+
+- We're interested in $\beta_0$ (population parameter for the intercept) and $\beta_1$ (population parameter for the slope) in the following model:
+
+$$\hat{y}_{i} = \beta_0 + \beta_1~x_{i}$$
+
+--
+- Tough luck, you can't have them...
+
+--
+- So we use sample statistics to estimate them:
+
+$$\hat{y}_{i} = b_0 + b_1~x_{i}$$
+
+---
+
+## Least squares regression
+
+- The regression line minimizes the sum of squared residuals.
+
+--
+- If $e_i = y_i - \hat{y}_i$, then, the regression line minimizes 
+$\sum_{i = 1}^n e_i^2$.
+
+---
+
+## Visualizing residuals
+
+```{r vis-res-1, echo=FALSE, out.width="70%"}
+ht_wt_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp)
+
+ht_wt_fit_tidy <- tidy(ht_wt_fit$fit) 
+ht_wt_fit_aug  <- augment(ht_wt_fit$fit) %>%
+  mutate(res_cat = ifelse(.resid > 0, TRUE, FALSE))
+
+p <- ggplot(data = ht_wt_fit_aug, 
+            aes(x = Width_in, y = Height_in)) +
+  geom_point(alpha = 0.2) + 
+  labs(
+    title = "Height vs. width of paintings",
+    subtitle = "Just the data",
+    x = "Width (inches)",
+    y = "Height (inches)"
+    ) +
+  coord_cartesian(xlim = c(0, 250), ylim = c(0, 200)) +
+  theme(plot.subtitle = element_text(colour = "#E48957", face = "bold", size = rel(1.5)))
+p
+```
+
+---
+
+## Visualizing residuals (cont.)
+
+```{r vis-res-2, echo=FALSE, out.width="70%"}
+p <- p + 
+  geom_smooth(method = "lm", color = "#8E2C90", se = FALSE) +
+  geom_point(mapping = aes(y = .fitted), color = "#E48957") +
+  labs(subtitle = "Data + least squares line")
+p
+```
+
+---
+
+## Visualizing residuals (cont.)
+
+```{r vis-res-3, echo = FALSE, out.width="70%"}
+p + 
+  geom_segment(mapping = aes(xend = Width_in, yend = .fitted), color = "#E48957", alpha = 0.4) +
+  labs(subtitle = "Data + least squares line + residuals")
+```
+
+---
+
+## Properties of least squares regression
+
+- The regression line goes through the center of mass point, the coordinates corresponding to average $x$ and average $y$, $(\bar{x}, \bar{y})$:  
+
+$$\bar{y} = b_0 + b_1 \bar{x} ~ \rightarrow ~ b_0 = \bar{y} - b_1 \bar{x}$$
+
+--
+- The slope has the same sign as the correlation coefficient: $b_1 = r \frac{s_y}{s_x}$
+
+--
+- The sum of the residuals is zero: $\sum_{i = 1}^n e_i = 0$
+
+--
+- The residuals and $x$ values are uncorrelated
+
+---
+
+class: middle
+
+# Models with categorical explanatory variables
+
+---
+
+## Categorical predictor with 2 levels
+
+.pull-left-narrow[
+.small[
+```{r echo=FALSE}
+pp %>% 
+  select(name, Height_in, landsALL) %>%
+  print(n = 20)
+```
+]
+]
+.pull-right-wide[
+- `landsALL = 0`: No landscape features
+- `landsALL = 1`: Some landscape features
+]
+
+---
+
+## Height & landscape features
+
+```{r ht-lands-fit}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ factor(landsALL), data = pp) %>%
+  tidy()
+```
+
+---
+
+## Height & landscape features
+
+$$\widehat{Height_{in}} = 22.7 - 5.645~landsALL$$
+
+- **Slope:** Paintings with landscape features are expected, on average, to be 5.645 inches shorter than paintings that without landscape features
+  - Compares baseline level (`landsALL = 0`) to the other level (`landsALL = 1`)
+    
+- **Intercept:** Paintings that don't have landscape features are expected, on average, to be 22.7 inches tall
+
+---
+
+## Relationship between height and school
+
+```{r ht-school, output.lines=10}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ school_pntg, data = pp) %>%
+  tidy()
+```
+
+---
+
+## Dummy variables
+
+```{r ref.label="ht-school", echo = FALSE}
+```
+
+- When the categorical explanatory variable has many levels, they're encoded to **dummy variables**
+- Each coefficient describes the expected difference between heights in that particular school compared to the baseline level
+
+---
+
+## Categorical predictor with 3+ levels
+
+.pull-left-wide[
+```{r echo=FALSE}
+dummy_df <- pp %>% 
+  select(school_pntg) %>% 
+  group_by(school_pntg) %>% 
+  sample_n(1) %>%
+  mutate(
+    D_FL = as.integer(ifelse(school_pntg == "D/FL", 1L, 0)),
+    F    = as.integer(ifelse(school_pntg == "F", 1L, 0)),
+    G    = as.integer(ifelse(school_pntg == "G", 1L, 0)),
+    I    = as.integer(ifelse(school_pntg == "I", 1L, 0)),
+    S    = as.integer(ifelse(school_pntg == "S", 1L, 0)),
+    X    = as.integer(ifelse(school_pntg == "X", 1L, 0))
+  )
+
+dummy_df %>%
+  kable(align = "lcccccc") %>%
+  kable_styling() %>%
+  column_spec(2, width = "10em", background = spec_color(dummy_df$D_FL[1:7], end = 0.8), color = "white") %>%
+  column_spec(3, width = "10em", background = spec_color(dummy_df$F[1:7], end = 0.8), color = "white") %>%
+  column_spec(4, width = "10em", background = spec_color(dummy_df$G[1:7], end = 0.8), color = "white") %>%
+  column_spec(5, width = "10em", background = spec_color(dummy_df$I[1:7], end = 0.8), color = "white") %>%
+  column_spec(6, width = "10em", background = spec_color(dummy_df$S[1:7], end = 0.8), color = "white") %>%
+  column_spec(7, width = "10em", background = spec_color(dummy_df$X[1:7], end = 0.8), color = "white")
+```
+]
+.pull-right-narrow[
+.small[
+```{r echo=FALSE}
+pp %>% 
+  select(name, Height_in, school_pntg) %>%
+  print(n = 20)
+```
+]
+]
+
+\begin{align}
+ \widehat{ Height_{in}} = 14 &+ 2.32 \times {school\_pntgD/FL} + 10.2 \times { school\_pntgF} \\
+&+ 1.65 \times { school\_pntgG} + 10.3 \times { school\_pntgI} \\
+&+ 30.4 \times { school\_pntgS} + 2.87 \times { school\_pntgX}
+\end{align}
+
+---
+
+## Relationship between height and school
 
 .small[
-.pull-left[
-```{r}
-glimpse(train_data)
+```{r ref.label="ht-school", echo=FALSE}
 ```
+
+- **Austrian school (A)** paintings are expected, on average, to be **14 inches** tall.
+- **Dutch/Flemish school (D/FL)** paintings are expected, on average, to be **2.33 inches taller** than *Austrian school* paintings.
+- **French school (F)** paintings are expected, on average, to be **10.2 inches taller** than *Austrian school* paintings.
+- **German school (G)** paintings are expected, on average, to be **1.65 inches taller** than *Austrian school* paintings.
+- **Italian school (I)** paintings are expected, on average, to be **10.3 inches taller** than *Austrian school* paintings.
+- **Spanish school (S)** paintings are expected, on average, to be **30.4 inches taller** than *Austrian school* paintings.
+- Paintings whose school is **unknown (X)** are expected, on average, to be **2.87 inches taller** than *Austrian school* paintings.
 ]
-.pull-right[
-```{r}
-glimpse(test_data)
-```
-]
-]
+
 

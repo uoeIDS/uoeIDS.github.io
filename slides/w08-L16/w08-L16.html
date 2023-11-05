@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Model building</title>
+    <title>Model checking and multiple linear regression</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -9,6 +9,9 @@
     <script src="libs/panelset/panelset.js"></script>
     <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/pymjs/pym.v1.js"></script>
+    <script src="libs/widgetframe-binding/widgetframe.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -17,7 +20,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Model building
+# Model checking and multiple linear regression
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -26,7 +29,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2022/23
+### <br> 2023/2024
 ]
 
 ---
@@ -49,1054 +52,1106 @@ University of Edinburgh
 ---
 ## Reminders
 
-- Lab tomorrow is the usual format. Next week we return to projects.
-- 2 December final project presentations (final lab of semester).
-- HW04 due midday Friday 18th
+- HW03 due on Friday
+- Look through lab sheet in advance of lab tomorrow
+- Meet with your team to work on the project
 
 ---
 ## Topics
 
-- Prediction (including ROC curves) 
-- Feature engineering and recipes.
-- Workflows - combining recipes and models.
-- More on prediction (making decisions). 
+- Assessing model fit.
+- Linearity and transformations.
+- Multiple linear regression
+- Model comparison
+- Interaction effects
+
+
+---
+class: middle
+
+# Model checking
+
+---
+
+## Data: Paris Paintings
+
+
+```r
+pp &lt;- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
+```
+
+- Number of observations: 3393
+- Number of variables: 61
+
+---
+
+## "Linear" models
+
+- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
+- But how do we assess this?
+
+---
+
+## Graphical diagnostic: residuals plot
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Code]
+
+```r
+ht_wt_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(Height_in ~ Width_in, data = pp)
+
+*ht_wt_fit_aug &lt;- augment(ht_wt_fit$fit)
+
+ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted height", y = "Residuals")
+```
+]
+
+.panel[.panel-name[Augment]
+
+```r
+ht_wt_fit_aug
+```
+
+```
+## # A tibble: 3,135 × 9
+##   .rownames Height_in Width_in .fitted .resid     .hat .sigma
+##   &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1                37     29.5    26.7  10.3  0.000399   8.30
+## 2 2                18     14      14.6   3.45 0.000396   8.31
+## 3 3                13     16      16.1  -3.11 0.000361   8.31
+## 4 4                14     18      17.7  -3.68 0.000337   8.31
+## 5 5                14     18      17.7  -3.68 0.000337   8.31
+## 6 6                 7     10      11.4  -4.43 0.000498   8.31
+## # ℹ 3,129 more rows
+## # ℹ 2 more variables: .cooksd &lt;dbl&gt;, .std.resid &lt;dbl&gt;
+```
+]
+]
+
+---
+
+## More on `augment()`
+
+
+```r
+glimpse(ht_wt_fit_aug)
+```
+
+```
+## Rows: 3,135
+## Columns: 9
+## $ .rownames  &lt;chr&gt; "1", "2", "3", "4", "5", "6", "7", "8", "9",…
+## $ Height_in  &lt;dbl&gt; 37, 18, 13, 14, 14, 7, 6, 6, 15, 9, 9, 16, 1…
+## $ Width_in   &lt;dbl&gt; 29.5, 14.0, 16.0, 18.0, 18.0, 10.0, 13.0, 13…
+## $ .fitted    &lt;dbl&gt; 26.65490, 14.55256, 16.11415, 17.67574, 17.6…
+## $ .resid     &lt;dbl&gt; 10.3451004, 3.4474447, -3.1141481, -3.675740…
+## $ .hat       &lt;dbl&gt; 0.0003991488, 0.0003961825, 0.0003611963, 0.…
+## $ .sigma     &lt;dbl&gt; 8.303538, 8.305367, 8.305409, 8.305336, 8.30…
+## $ .cooksd    &lt;dbl&gt; 3.099689e-04, 3.416655e-05, 2.541574e-05, 3.…
+## $ .std.resid &lt;dbl&gt; 1.24600543, 0.41522347, -0.37507338, -0.4427…
+```
+
+
+---
+
+## Looking for...
+
+- Residuals distributed randomly around 0
+- With no visible pattern along the x or y axes
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Fan shapes**
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Groups of patterns**
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Residuals correlated with predicted values**
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Not looking for...
+
+.large[
+**Any patterns!**
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.question[
+What patterns does the residuals plot reveal that should make us question whether a linear model is a good fit for modeling the relationship between height and width of paintings?
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 class: middle
 
-# Prediction
+# Linearity and transformations
 
 ---
 
+## Data: Paris Paintings
 
-## Continued - Building a spam filter
-
-- Data: Set of emails. We know if each email is spam/not and other features.
-- Use logistic regression to predict the probability that an incoming email is spam.
-- Use model selection to pick the model with the best predictive performance.
-- Reminder: split the data into a training dataset and a test dataset.
-- Use the training dataset to investigate and fit models.
-- Choose 1 or 2 models and test how well they predict the test dataset. 
-- Helps us avoid overfitting.
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## Spam filter dataset
+## Price vs. width
 
-.pull-left-narrow[
-- Data from 3921 emails and 21 variables on them
-- Outcome: whether the email is spam or not
-- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-12-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Focus on paintings with `Width_in &lt; 100`
+
+That is, paintings with width &lt; 2.54 m
+
+
+```r
+pp_wt_lt_100 &lt;- pp %&gt;% 
+  filter(Width_in &lt; 100)
+```
+
+---
+
+## Price vs. width
+
+.question[
+Which plot shows a more linear relationship?
 ]
-.pull-right-wide[
+
 .small[
-
-```r
-library(openintro)
-glimpse(email)
-```
-
-```
-## Rows: 3,921
-## Columns: 21
-## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, …
-## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-## $ cc           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, …
-## $ sent_email   &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, …
-## $ time         &lt;dttm&gt; 2012-01-01 06:16:41, 2012-01-01 07:03:59,…
-## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
-## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
-## $ dollar       &lt;dbl&gt; 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no…
-## $ inherit      &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ password     &lt;dbl&gt; 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ num_char     &lt;dbl&gt; 11.370, 10.504, 7.773, 13.256, 1.231, 1.09…
-## $ line_breaks  &lt;int&gt; 202, 202, 192, 255, 29, 25, 193, 237, 69, …
-## $ format       &lt;fct&gt; 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, …
-## $ re_subj      &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, …
-## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-## $ exclaim_mess &lt;dbl&gt; 0, 1, 6, 48, 1, 1, 1, 18, 1, 0, 2, 1, 0, 1…
-## $ number       &lt;fct&gt; big, small, small, small, none, none, big,…
-```
-]
-]
-
----
-
-## Performing the split
-
-
-```r
-# Fix random numbers by setting the seed 
-# Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
-
-# Put 80% of the data into the training set 
-email_split &lt;- initial_split(email, prop = 0.80)
-
-# Create data frames for the two sets:
-train_data &lt;- training(email_split)
-test_data  &lt;- testing(email_split)
-```
-
----
-
-## Fit a model to the training dataset
-
-
-```r
-email_fit &lt;- logistic_reg() %&gt;%
-  set_engine("glm") %&gt;%
-  fit(spam ~ ., data = train_data, family = "binomial")
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1
-## occurred
-```
-
----
-
-## Categorical predictors
-
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-4-1.png" width="75%" style="display: block; margin: auto;" /&gt;
-
----
-
-## `from` and `sent_email`
-
+  
 .pull-left[
-- `from`: Whether the message was listed as from anyone (this is usually set by default for regular outgoing email)
-
-
-```r
-train_data %&gt;%
-  count(spam, from)
-```
-
-```
-## # A tibble: 3 × 3
-##   spam  from      n
-##   &lt;fct&gt; &lt;fct&gt; &lt;int&gt;
-## 1 0     1      2837
-## 2 1     0         3
-## 3 1     1       296
-```
-]
-.pull-right[
-- `sent_email`: Indicator for whether the sender had been sent an email in the last 30 days
-
-
-```r
-train_data %&gt;%
-  count(spam, sent_email)
-```
-
-```
-## # A tibble: 3 × 3
-##   spam  sent_email     n
-##   &lt;fct&gt; &lt;fct&gt;      &lt;int&gt;
-## 1 0     0           1972
-## 2 0     1            865
-## 3 1     0            299
-```
-]
-
----
-
-## Numerical predictors
-
-.small[
-
-```
-## 
-## ── Variable type: numeric ──────────────────────────────────────────────────────────────────────────
-##    skim_variable spam n_missing complete_rate      mean       sd    p0    p25     p50    p75  p100
-##  1 cc            0            0             1   0.393     2.62   0      0       0       0      68 
-##  2 cc            1            0             1   0.388     3.25   0      0       0       0      50 
-##  3 image         0            0             1   0.0536    0.503  0      0       0       0      20 
-*##  4 image         1            0             1   0.00334   0.0578 0      0       0       0       1 
-##  5 attach        0            0             1   0.124     0.775  0      0       0       0      21 
-##  6 attach        1            0             1   0.227     0.620  0      0       0       0       2 
-##  7 dollar        0            0             1   1.56      5.33   0      0       0       0      64 
-##  8 dollar        1            0             1   0.779     3.01   0      0       0       0      36 
-##  9 inherit       0            0             1   0.0352    0.216  0      0       0       0       6 
-## 10 inherit       1            0             1   0.0702    0.554  0      0       0       0       9 
-*## 11 viagra        0            0             1   0         0      0      0       0       0       0 
-## 12 viagra        1            0             1   0.0268    0.463  0      0       0       0       8 
-## 13 password      0            0             1   0.112     0.938  0      0       0       0      22 
-## 14 password      1            0             1   0.0201    0.182  0      0       0       0       2 
-## 15 num_char      0            0             1  11.4      14.9    0.003  1.97    6.83   15.7   190.
-## 16 num_char      1            0             1   5.63     15.7    0.001  0.468   0.999   3.55  174.
-## 17 line_breaks   0            0             1 247.      326.     2     42     138     318    4022 
-## 18 line_breaks   1            0             1 108.      321.     1     14      23      66.5  3729 
-## 19 exclaim_subj  0            0             1   0.0783    0.269  0      0       0       0       1 
-## 20 exclaim_subj  1            0             1   0.0769    0.267  0      0       0       0       1 
-## 21 exclaim_mess  0            0             1   6.68     50.2    0      0       1       5    1236 
-## 22 exclaim_mess  1            0             1   8.75     88.4    0      0       0       1    1209
-```
-]
-
----
-## Numerical predictors
-
-Closer look at `"image"`: number of images attached.
-
-
-```r
- train_data %&gt;%
-     count(spam, image) %&gt;%
- print(n=12)
-```
-
-```
-## # A tibble: 10 × 3
-##    spam  image     n
-##    &lt;fct&gt; &lt;dbl&gt; &lt;int&gt;
-##  1 0         0  2753
-##  2 0         1    56
-##  3 0         2    15
-##  4 0         3     8
-##  5 0         4     2
-##  6 0         5     1
-##  7 0         9     1
-##  8 0        20     1
-##  9 1         0   298
-## 10 1         1     1
-```
-
-
----
-
-## Fit a model to the training dataset
-
-
-```r
-email_fit &lt;- logistic_reg() %&gt;%
-  set_engine("glm") %&gt;%
-* fit(spam ~ . - from - sent_email - viagra - image, data = train_data, family = "binomial")
-```
-
-.small[
-
-```r
-email_fit
-```
-
-```
-## parsnip model object
-## 
-## 
-## Call:  stats::glm(formula = spam ~ . - from - sent_email - viagra - 
-##     image, family = stats::binomial, data = data)
-## 
-## Coefficients:
-##  (Intercept)  to_multiple1            cc          time        attach        dollar     winneryes  
-##   -9.818e+01    -2.537e+00     2.264e-02     7.363e-08     2.269e-01    -6.260e-02     2.159e+00  
-##      inherit      password      num_char   line_breaks       format1      re_subj1  exclaim_subj  
-##    4.559e-01    -7.173e-01     5.991e-02    -5.604e-03    -9.328e-01    -3.008e+00     1.173e-01  
-## urgent_subj1  exclaim_mess   numbersmall     numberbig  
-##    3.584e+00     1.041e-02    -8.795e-01    -1.658e-01  
-## 
-## Degrees of Freedom: 3135 Total (i.e. Null);  3118 Residual
-## Null Deviance:	    1974 
-## Residual Deviance: 1460 	AIC: 1496
-```
-]
-
----
-
-## Predict outcome on the testing dataset
-
-
-```r
-predict(email_fit, test_data)
-```
-
-```
-## # A tibble: 785 × 1
-##   .pred_class
-##   &lt;fct&gt;      
-## 1 0          
-## 2 0          
-## 3 0          
-## 4 0          
-## 5 0          
-## 6 0          
-## # … with 779 more rows
-```
-
-
----
-
-## Predict probabilities on the testing dataset
-
-
-```r
-email_pred &lt;- predict(email_fit, test_data, type = "prob") %&gt;%
-  bind_cols(test_data %&gt;% select(spam, time))
-
-email_pred
-```
-
-```
-## # A tibble: 785 × 4
-##   .pred_0 .pred_1 spam  time               
-##     &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
-## 1   0.993 0.00665 0     2012-01-01 17:55:06
-## 2   0.998 0.00172 0     2012-01-01 19:38:32
-## 3   0.981 0.0188  0     2012-01-02 05:42:16
-## 4   0.999 0.00110 0     2012-01-02 15:12:51
-## 5   0.988 0.0124  0     2012-01-02 16:45:36
-## 6   0.826 0.174   0     2012-01-02 21:55:03
-## # … with 779 more rows
-```
-
----
-
-## A closer look at predictions
-
-.pull-left-wide[
-
-```r
-email_pred %&gt;%
-  arrange(desc(.pred_1)) %&gt;%
-  print(n = 10)
-```
-
-```
-## # A tibble: 785 × 4
-##    .pred_0 .pred_1 spam  time               
-##      &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
-##  1  0.0939   0.906 1     2012-02-13 12:15:00
-*##  2  0.161    0.839 0     2012-01-27 20:05:06
-##  3  0.175    0.825 1     2012-03-01 05:40:27
-##  4  0.264    0.736 1     2012-03-17 10:13:27
-##  5  0.381    0.619 1     2012-03-21 12:33:12
-##  6  0.446    0.554 1     2012-03-06 11:46:20
-##  7  0.481    0.519 1     2012-02-10 12:53:18
-*##  8  0.486    0.514 0     2012-01-22 21:23:41
-##  9  0.497    0.503 1     2012-02-08 08:00:05
-*## 10  0.509    0.491 0     2012-02-17 01:57:16
-## # … with 775 more rows
-```
-]
-
----
-
-## Evaluate the performance
-
-**Receiver operating characteristic (ROC) curve**&lt;sup&gt;+&lt;/sup&gt; which plots true positive rate vs. false positive rate (1 - specificity)
-
-.pull-left[
-
-```r
-email_pred %&gt;%
-  roc_curve(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  ) %&gt;%
-  autoplot()
-```
-]
-.pull-right[
 &lt;img src="w08-L16_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+
+---
+
+## Price vs. width, residuals
+
+.question[
+Which plot shows a residuals that are uncorrelated with predicted values from the model? Also, what is the unit of the residuals?
+]
+  
+.pull-left[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Transforming the data
+
+- We saw that `price` has a right-skewed distribution, and the relationship between price and width of painting is non-linear.
+
+--
+- In these situations a transformation applied to the response variable may be useful.
+
+--
+- In order to decide which transformation to use, we should examine the distribution of the response variable.
+
+--
+- The extremely right skewed distribution suggests that a log transformation may 
+be useful.
+    - log = natural log, `\(ln\)`
+    - Default base of the `log` function in R is the natural log: &lt;br&gt;
+    `log(x, base = exp(1))`
+    
+---
+
+## Logged price vs. width
+
+.question[
+How do we interpret the slope of this model?
+]
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Models with log transformation
+
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log(price) ~ Width_in, data = pp_wt_lt_100) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.67     0.0585      79.9  0       
+## 2 Width_in      0.0192   0.00226      8.48 3.36e-17
+```
+
+---
+
+
+## Interpreting the slope
+
+$$ \widehat{log(price)} = 4.67 + 0.0192 Width $$
+
+--
+- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 livres.
+
+--
+- which is not a very useful statement...
+
+---
+
+## Working with logs
+
+- Subtraction and logs: `\(log(a) − log(b) = log(a / b)\)`
+
+--
+- Natural logarithm: `\(e^{log(x)} = x\)`
+
+--
+- We can use these identities to "undo" the log transformation
+
+---
+
+## Interpreting the slope
+
+The slope coefficient for the log transformed model is 0.0192, meaning the log price difference between paintings whose widths are one inch apart is predicted to be 0.0192 log livres.
+
+--
+
+.question[
+Using this information, and properties of logs that we just reviewed, fill in the blanks in the following alternate interpretation of the slope:
+
+&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
+]
+
+
+---
+
+&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
+
+
+$$ log(\text{price for width x+1}) - log(\text{price for width x}) = 0.0192 $$
+
+--
+
+$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
+
+--
+
+$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
+
+--
+
+$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 $$
+
+--
+
+For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, by a factor of 1.02.
+
+---
+
+## Recap
+
+- Non-constant variance is one of the most common model violations, however it is usually fixable by transforming the response (y) variable.
+
+--
+- The most common transformation when the response variable is right skewed is the log transform: `\(log(y)\)`, especially useful when the response variable is 
+(extremely) right skewed.
+
+--
+- This transformation is also useful for variance stabilization.
+
+--
+- When using a log transformation on the response variable the interpretation of 
+the slope changes: *"For each unit increase in x, y is expected on average to be higher/lower &lt;br&gt; by a factor of `\(e^{b_1}\)`."*
+
+--
+- Another useful transformation is the square root: `\(\sqrt{y}\)`, especially 
+useful when the response variable is counts.
+
+---
+
+## Transform, or learn more?
+
+- Data transformations may also be useful when the relationship is non-linear
+- However in those cases a polynomial regression may be more appropriate
+  + This is beyond the scope of this course, but you’re welcomed to try it for your final project, and I’d be happy to provide further guidance
+
+---
+class: middle
+
+# The linear model with multiple predictors
+
+---
+
+## Data: Book weight and volume
+
+The `allbacks` data frame gives measurements on the volume and weight of 15 books, some of which are paperback and some of which are hardback
+
+.pull-left[
+- Volume - cubic centimetres
+- Area - square centimetres
+- Weight - grams
+]
+.pull-right[
+.small[
+
+```
+## # A tibble: 15 × 4
+##    volume  area weight cover
+##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;
+##  1    885   382    800 hb   
+##  2   1016   468    950 hb   
+##  3   1125   387   1050 hb   
+##  4    239   371    350 hb   
+##  5    701   371    750 hb   
+##  6    641   367    600 hb   
+##  7   1228   396   1075 hb   
+##  8    412     0    250 pb   
+##  9    953     0    700 pb   
+## 10    929     0    650 pb   
+## 11   1492     0    975 pb   
+## 12    419     0    350 pb   
+## 13   1010     0    950 pb   
+## 14    595     0    425 pb   
+## 15   1034     0    725 pb
+```
+]
 ]
 
 .footnote[
 .small[
-&lt;sup&gt;+&lt;/sup&gt;Originally developed for operators of military radar receivers, hence the name.
+These books are from the bookshelf of J. H. Maindonald at Australian National University.
 ]
 ]
 
 ---
 
-## Evaluate the performance
-
-Find the area under the curve:
+## Book weight vs. volume
 
 .pull-left[
 
 ```r
-email_pred %&gt;%
-  roc_auc(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  )
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(weight ~ volume, data = allbacks) %&gt;%
+  tidy()
 ```
 
 ```
-## # A tibble: 1 × 3
-##   .metric .estimator .estimate
-##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc binary         0.860
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic    p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)  108.      88.4         1.22 0.245     
+## 2 volume         0.709    0.0975      7.27 0.00000626
 ```
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
-]
-
-
----
-class: middle
-
-# Feature engineering
-
----
-
-## Feature engineering
-
-- We prefer simple models when possible, but **parsimony** does not mean sacrificing accuracy (or predictive performance) in the interest of simplicity
-
---
-- Variables that go into the model and how they are represented are just as critical to success of the model
-
---
-- **Feature engineering** allows us to get creative with our predictors in an effort to make them more useful for our model (to increase its predictive performance) 
-
----
-
-## Same training and testing sets as before
-
-
-```r
-# Fix random numbers by setting the seed 
-# Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
-
-# Put 80% of the data into the training set 
-email_split &lt;- initial_split(email, prop = 0.80)
-
-# Create data frames for the two sets:
-train_data &lt;- training(email_split)
-test_data  &lt;- testing(email_split)
-```
-
----
-
-## A simple approach: `mutate()`
-
-
-```r
-train_data %&gt;%
-  mutate(
-    date = date(time),
-    dow  = wday(time),
-    month = month(time)
-    ) %&gt;%
-  select(time, date, dow, month) %&gt;%
-  sample_n(size = 5) # shuffle to show a variety
-```
-
-```
-## # A tibble: 5 × 4
-##   time                date         dow month
-##   &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
-## 1 2012-03-15 18:51:35 2012-03-15     5     3
-## 2 2012-03-03 14:24:02 2012-03-03     7     3
-## 3 2012-01-18 16:55:23 2012-01-18     4     1
-## 4 2012-02-25 04:08:59 2012-02-25     7     2
-## 5 2012-01-11 13:18:51 2012-01-11     4     1
-```
-
----
-
-## Modeling workflow, revisited
-
-- Create a **recipe** for feature engineering steps to be applied to the training data
-
---
-- Fit the model to the training data after these steps have been applied
-
---
-- Using the model estimates from the training data, predict outcomes for the test data
-
---
-- Evaluate the performance of the model on the test data
-
----
-
-class: middle
-
-# Building recipes
-
----
-
-## Initiate a recipe
-
-
-```r
-email_rec &lt;- recipe(
-  spam ~ .,          # formula
-  data = train_data  # data to use for cataloguing names and types of variables
-  )
-
-summary(email_rec)
-```
-
-.xsmall[
-
-```
-## # A tibble: 21 × 4
-##    variable     type    role      source  
-##    &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;   
-##  1 to_multiple  nominal predictor original
-##  2 from         nominal predictor original
-##  3 cc           numeric predictor original
-##  4 sent_email   nominal predictor original
-##  5 time         date    predictor original
-##  6 image        numeric predictor original
-##  7 attach       numeric predictor original
-##  8 dollar       numeric predictor original
-##  9 winner       nominal predictor original
-## 10 inherit      numeric predictor original
-## 11 viagra       numeric predictor original
-## 12 password     numeric predictor original
-## 13 num_char     numeric predictor original
-## 14 line_breaks  numeric predictor original
-## 15 format       nominal predictor original
-## 16 re_subj      nominal predictor original
-## 17 exclaim_subj numeric predictor original
-## 18 urgent_subj  nominal predictor original
-## 19 exclaim_mess numeric predictor original
-## 20 number       nominal predictor original
-## 21 spam         nominal outcome   original
-```
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-22-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
 
 ---
 
-## Remove certain variables
-
-
-```r
-email_rec &lt;- email_rec %&gt;%
-  step_rm(from, sent_email, image, viagra)
-```
-
-.small[
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email, image, viagra
-```
-]
-
----
-
-## Feature engineer date
-
-
-```r
-email_rec &lt;- email_rec %&gt;%
-  step_date(time, features = c("dow", "month")) %&gt;%
-  step_rm(time)
-```
-
-.small[
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email, image, viagra
-## Date features from time
-## Variables removed time
-```
-]
-
----
-
-## Discretize numeric variables
-
-
-```r
-email_rec &lt;- email_rec %&gt;%
-  step_cut(cc, attach, dollar, breaks = c(0, 1)) %&gt;%
-  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20))
-```
-
-.small[
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email, image, viagra
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-```
-]
-
----
-
-## Create dummy variables
-
-
-```r
-email_rec &lt;- email_rec %&gt;%
-  step_dummy(all_nominal(), -all_outcomes())
-```
-
-.small[
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email, image, viagra
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-## Dummy variables from all_nominal(), -all_outcomes()
-```
-]
-
----
-
-## Remove zero variance variables
-
-Variables that contain only a single value
-
-
-```r
-email_rec &lt;- email_rec %&gt;%
-  step_zv(all_predictors())
-```
-
-.small[
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email, image, viagra
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-## Dummy variables from all_nominal(), -all_outcomes()
-## Zero variance filter on all_predictors()
-```
-]
-
----
-
-## All in one place
-
-
-```r
-email_rec &lt;- recipe(spam ~ ., data = email) %&gt;%
-  step_rm(from, sent_email, image, viagra) %&gt;%
-  step_date(time, features = c("dow", "month")) %&gt;%               
-  step_rm(time) %&gt;%
-  step_cut(cc, attach, dollar, breaks = c(0, 1)) %&gt;%
-  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20)) %&gt;%
-  step_dummy(all_nominal(), -all_outcomes()) %&gt;%
-  step_zv(all_predictors())
-```
-
----
-
-class: middle
-
-# Building workflows
-
----
-
-## Define model
-
-
-```r
-email_mod &lt;- logistic_reg() %&gt;% 
-  set_engine("glm")
-
-email_mod
-```
-
-```
-## Logistic Regression Model Specification (classification)
-## 
-## Computational engine: glm
-```
-
----
-
-## Define workflow
-
-**Workflows** bring together models and recipes so that they can be easily applied to both the training and test data.
-
-
-```r
-email_wflow &lt;- workflow() %&gt;% 
-  add_model(email_mod) %&gt;% 
-  add_recipe(email_rec)
-```
-
-.small[
-
-```
-## ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════
-## Preprocessor: Recipe
-## Model: logistic_reg()
-## 
-## ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────
-## 7 Recipe Steps
-## 
-## • step_rm()
-## • step_date()
-## • step_rm()
-## • step_cut()
-## • step_cut()
-## • step_dummy()
-## • step_zv()
-## 
-## ── Model ───────────────────────────────────────────────────────────────────────────────────────────
-## Logistic Regression Model Specification (classification)
-## 
-## Computational engine: glm
-```
-]
-
----
-
-## Fit model to training data
-
-
-```r
-email_fit &lt;- email_wflow %&gt;% 
-  fit(data = train_data)
-```
-
----
-
-.small[
-
-```r
-tidy(email_fit) %&gt;% print(n = 30)
-```
-
-```
-## # A tibble: 30 × 5
-##    term               estimate  std.error statistic  p.value
-##    &lt;chr&gt;                 &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-##  1 (Intercept)        -0.809      0.255     -3.17   1.53e- 3
-##  2 num_char            0.0497     0.0246     2.02   4.38e- 2
-##  3 line_breaks        -0.00544    0.00141   -3.86   1.13e- 4
-##  4 exclaim_subj       -0.163      0.272     -0.599  5.49e- 1
-##  5 exclaim_mess        0.00943    0.00191    4.93   8.02e- 7
-##  6 to_multiple_X1     -2.60       0.348     -7.48   7.37e-14
-##  7 cc_X.1.68.         -0.186      0.461     -0.404  6.86e- 1
-##  8 attach_X.1.21.      1.70       0.329      5.19   2.14e- 7
-##  9 dollar_X.1.64.      0.271      0.215      1.26   2.07e- 1
-## 10 winner_yes          2.13       0.427      4.98   6.30e- 7
-## 11 inherit_X.1.5.     -9.29     753.        -0.0123 9.90e- 1
-## 12 inherit_X.5.10.     2.52       1.45       1.73   8.28e- 2
-## 13 password_X.1.5.    -1.74       0.748     -2.32   2.01e- 2
-## 14 password_X.5.10.  -12.6      499.        -0.0253 9.80e- 1
-## 15 password_X.10.20. -13.9      803.        -0.0173 9.86e- 1
-## 16 password_X.20.22. -13.9     1029.        -0.0135 9.89e- 1
-## 17 format_X1          -0.918      0.158     -5.82   5.91e- 9
-## 18 re_subj_X1         -2.91       0.437     -6.67   2.55e-11
-## 19 urgent_subj_X1      3.50       1.07       3.25   1.14e- 3
-## 20 number_small       -0.896      0.166     -5.40   6.67e- 8
-## 21 number_big         -0.193      0.248     -0.775  4.38e- 1
-## 22 time_dow_Mon       -0.0956     0.305     -0.314  7.54e- 1
-## 23 time_dow_Tue        0.197      0.276      0.714  4.75e- 1
-## 24 time_dow_Wed       -0.0726     0.275     -0.264  7.92e- 1
-## 25 time_dow_Thu       -0.0777     0.281     -0.277  7.82e- 1
-## 26 time_dow_Fri        0.00328    0.281      0.0117 9.91e- 1
-## 27 time_dow_Sat        0.251      0.295      0.848  3.96e- 1
-## 28 time_month_Feb      0.740      0.178      4.15   3.27e- 5
-## 29 time_month_Mar      0.543      0.179      3.03   2.41e- 3
-## 30 time_month_Apr    -13.2      628.        -0.0211 9.83e- 1
-```
-]
-
----
-
-## Make predictions for test data
-
-
-```r
-email_pred &lt;- predict(email_fit, test_data, type = "prob") %&gt;% 
-  bind_cols(test_data) 
-
-email_pred
-```
-
-```
-## # A tibble: 785 × 23
-##   .pred_0  .pred_1 spam  to_multiple from     cc sent_email
-##     &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt; &lt;int&gt; &lt;fct&gt;     
-## 1   0.995 0.00486  0     1           1         0 1         
-## 2   0.999 0.00133  0     0           1         1 1         
-## 3   0.968 0.0322   0     0           1         0 0         
-## 4   0.999 0.000613 0     0           1         1 0         
-## 5   0.993 0.00674  0     0           1         4 0         
-## 6   0.868 0.132    0     0           1         0 0         
-## # … with 779 more rows, and 16 more variables: time &lt;dttm&gt;,
-## #   image &lt;dbl&gt;, attach &lt;dbl&gt;, dollar &lt;dbl&gt;, winner &lt;fct&gt;,
-## #   inherit &lt;dbl&gt;, viagra &lt;dbl&gt;, password &lt;dbl&gt;, num_char &lt;dbl&gt;,
-## #   line_breaks &lt;int&gt;, format &lt;fct&gt;, re_subj &lt;fct&gt;,
-## #   exclaim_subj &lt;dbl&gt;, urgent_subj &lt;fct&gt;, exclaim_mess &lt;dbl&gt;,
-## #   number &lt;fct&gt;
-```
-
----
-
-## Evaluate the performance
+## Book weight vs. volume and cover
 
 .pull-left[
 
 ```r
-email_pred %&gt;%
-  roc_curve(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  ) %&gt;%
-  autoplot()
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(weight ~ volume + cover, 
+      data = allbacks) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic      p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)  198.      59.2         3.34 0.00584     
+## 2 volume         0.718    0.0615     11.7  0.0000000660
+## 3 coverpb     -184.      40.5        -4.55 0.000672
 ```
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-37-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-24-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
 
 ---
 
-## Evaluate the performance
+## Interpretation of estimates
+
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic      p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)  198.      59.2         3.34 0.00584     
+## 2 volume         0.718    0.0615     11.7  0.0000000660
+## 3 coverpb     -184.      40.5        -4.55 0.000672
+```
+
+--
+- **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
+
+--
+- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardcover books.
+
+--
+- **Intercept:** Hardcover books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
+
+
+---
+
+## Main vs. interaction effects
+
+.question[
+Suppose we want to predict weight of books from their volume and cover type 
+(hardback vs. paperback). Do you think a model with main effects or 
+interaction effects is more appropriate? Explain your reasoning.
+
+**Hint:** Main effects would mean rate at which weight changes as volume 
+increases would be the same for hardback and paperback books and interaction 
+effects would mean the rate at which weight changes as volume 
+increases would be different for hardback and paperback books.
+]
+
+---
+
+&lt;img src="w08-L16_files/figure-html/book-main-int-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## In pursuit of Occam's razor
+
+- Occam's Razor states that among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.
+
+--
+- Model selection follows this principle.
+
+--
+- We only want to add another variable to the model if the addition of that variable brings something valuable in terms of predictive power to the model.
+
+--
+- In other words, we prefer the simplest best model, i.e. **parsimonious** model.
+
+---
+
+.pull-left[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-26-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+.question[
+Visually, which of the two models is preferable under Occam's razor?
+]
+]
+
+---
+
+## R-squared
+
+- `\(R^2\)` is the percentage of variability in the response variable explained by 
+the regression model.
+
+
+```r
+glance(book_main_fit)$r.squared
+```
+
+```
+## [1] 0.9274776
+```
+
+```r
+glance(book_int_fit)$r.squared
+```
+
+```
+## [1] 0.9297137
+```
+
+--
+- Clearly the model with interactions has a higher `\(R^2\)`.
+
+--
+- However using `\(R^2\)` for model selection in models with multiple explanatory variables is not a good idea as `\(R^2\)` increases when **any** variable is added to the model.
+
+---
+
+## Adjusted R-squared
+
+... a (more) objective measure for model selection
+
+- Adjusted `\(R^2\)` doesn't increase if the new variable does not provide any new 
+informaton or is completely unrelated, as it applies a penalty for number of 
+variables included in the model.
+- This makes adjusted `\(R^2\)` a preferable metric for model selection in multiple
+regression models.
+
+---
+
+## Comparing models
 
 .pull-left[
 
 ```r
-email_pred %&gt;%
-  roc_auc(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  )
+glance(book_main_fit)$r.squared
 ```
 
 ```
-## # A tibble: 1 × 3
-##   .metric .estimator .estimate
-##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc binary         0.858
+## [1] 0.9274776
+```
+
+```r
+glance(book_int_fit)$r.squared
+```
+
+```
+## [1] 0.9297137
 ```
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-39-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+```r
+glance(book_main_fit)$adj.r.squared
+```
+
+```
+## [1] 0.9153905
+```
+
+```r
+glance(book_int_fit)$adj.r.squared
+```
+
+```
+## [1] 0.9105447
+```
+]
+
+--
+
+.pull-left-wide[
+.small[
+- Is R-sq higher for int model?
+
+```r
+glance(book_int_fit)$r.squared &gt; glance(book_main_fit)$r.squared 
+```
+
+```
+## [1] TRUE
+```
+
+- Is R-sq adj. higher for int model?
+
+
+```r
+glance(book_int_fit)$adj.r.squared &gt; glance(book_main_fit)$adj.r.squared
+```
+
+```
+## [1] FALSE
+```
+]
+]
+---
+
+class: middle
+
+# More detail on multiple predictors
+
+---
+class: middle
+
+# Two numerical predictors
+
+---
+
+## The data
+
+
+```r
+pp &lt;- read_csv(
+  "data/paris-paintings.csv",
+  na = c("n/a", "", "NA")
+) %&gt;%
+  mutate(log_price = log(price))
+```
+
+---
+
+## Multiple predictors
+
+- Response variable: `log_price` 
+- Explanatory variables: Width and height
+
+
+```r
+pp_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Width_in + Height_in, data = pp)
+tidy(pp_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.77     0.0579      82.4  0       
+## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
+## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
+```
+
+---
+
+##  Linear model with multiple predictors
+
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.77     0.0579      82.4  0       
+## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
+## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
+```
+
+&lt;br&gt;
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+
+---
+
+## Visualizing models with multiple predictors
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-wide[
+<div id="htmlwidget-5e1145adb6dc5e0163be" style="width:100%;height:1483.2px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5e1145adb6dc5e0163be">{"x":{"url":"w08-L16_files/figure-html//widgets/widget_plotly-plot.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+]
+]
+.panel[.panel-name[Code]
+
+```r
+p &lt;- plot_ly(pp,
+  x = ~Width_in, y = ~Height_in, z = ~log_price,
+  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
+                line = list(color = "gray", width = 2))) %&gt;%
+  add_markers() %&gt;%
+  plotly::layout(scene = list(
+    xaxis = list(title = "Width (in)"),
+    yaxis = list(title = "Height (in)"),
+    zaxis = list(title = "log_price")
+  )) %&gt;%
+  config(displayModeBar = FALSE)
+frameWidget(p)
+```
+]
 ]
 
 ---
 
 class: middle
 
-# Making decisions
+# Numerical and categorical predictors
 
 ---
 
-## Cutoff probability: 0.5
+## Price, surface area, and living artist
+
+- Explore the relationship between price of paintings and surface area, conditioned 
+on whether or not the artist is still living
+- First visualize and explore, then model
+- But first, prep the data
+
+.midi[
+
+```r
+pp &lt;- pp %&gt;%
+  mutate(artistliving = if_else(artistliving == 0, "Deceased", "Living"))
+
+pp %&gt;%
+  count(artistliving)
+```
+
+```
+## # A tibble: 2 × 2
+##   artistliving     n
+##   &lt;chr&gt;        &lt;int&gt;
+## 1 Deceased      2937
+## 2 Living         456
+```
+]
+
+---
+
+## Typical surface area
 
 .panelset[
-.panel[.panel-name[Output]
-
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.5**.
-
-&lt;table&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is not spam &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is spam &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled not spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 710 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 60 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
+.panel[.panel-name[Plot]
+.pull-left-narrow[
+Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). There are very few paintings that have surface area above 5000 square inches.
+]
+.pull-right-wide[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-33-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
 ]
 .panel[.panel-name[Code]
 
 ```r
-cutoff_prob &lt;- 0.5
-email_pred %&gt;%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 &gt; cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %&gt;%
-  count(spam_pred, spam) %&gt;%
-  pivot_wider(names_from = spam, values_from = n) %&gt;%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
+ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
+  geom_histogram(binwidth = 500) + 
+  facet_grid(artistliving ~ .) +
+  scale_fill_manual(values = c("#E48957", "#071381")) +
+  guides(fill = FALSE) +
+  labs(x = "Surface area", y = NULL) +
+  geom_vline(xintercept = 1000) +
+  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
+```
+
+```
+## Warning: Removed 176 rows containing non-finite values
+## (`stat_bin()`).
 ```
 ]
 ]
 
 ---
 
-## Cutoff probability: 0.25
+## Narrowing the scope
 
 .panelset[
-.panel[.panel-name[Output]
+.panel[.panel-name[Plot]
+For simplicity let's focus on the paintings with `Surface &lt; 5000`:
 
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.25**.
-
-&lt;table&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is not spam &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is spam &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled not spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 665 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 51 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-34-1.png" width="55%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
 ```r
-cutoff_prob &lt;- 0.25
-email_pred %&gt;%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 &gt; cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %&gt;%
-  count(spam_pred, spam) %&gt;%
-  pivot_wider(names_from = spam, values_from = n) %&gt;%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
+pp_Surf_lt_5000 &lt;- pp %&gt;%
+  filter(Surface &lt; 5000)
+
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  labs(color = "Artist", shape = "Artist") +
+  scale_color_manual(values = c("#E48957", "#071381"))
 ```
 ]
 ]
 
 ---
 
-## Cutoff probability: 0.75
+## Facet to get a better look
 
 .panelset[
-.panel[.panel-name[Output]
-
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.75**.
-
-&lt;table&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is not spam &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Email is spam &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled not spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 715 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 65 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Email labelled spam &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
+.panel[.panel-name[Plot]
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
 ```r
-cutoff_prob &lt;- 0.75
-email_pred %&gt;%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 &gt; cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %&gt;%
-  count(spam_pred, spam) %&gt;%
-  pivot_wider(names_from = spam, values_from = n) %&gt;%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~artistliving) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  labs(color = "Artist", shape = "Artist")
 ```
 ]
 ]
 
+---
+
+## Two ways to model
+
+- **Main effects:** Assuming relationship between surface and logged price 
+**does not vary** by whether or not the artist is living.
+- **Interaction effects:** Assuming relationship between surface and logged 
+price **varies** by whether or not the artist is living.
+
+---
+
+## Interacting explanatory variables
+
+- Including an interaction effect in the model allows for different slopes, i.e. 
+nonparallel lines.
+- This implies that the regression coefficient for an explanatory variable would 
+change as another explanatory variable changes.
+- This can be accomplished by adding an interaction variable: the product of two 
+explanatory variables.
+
+---
+
+## Two ways to model
+
+.pull-left-narrow[
+- **Main effects:** Assuming relationship between surface and logged price **does not vary** by whether or not the artist is living
+- **Interaction effects:** Assuming relationship between surface and logged price **varies** by whether or not the artist is living
+]
+.pull-right-wide[
+&lt;img src="w08-L16_files/figure-html/pp-main-int-viz-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Fit model with main effects
+
+- Response variable: `log_price`
+- Explanatory variables: `Surface` area and `artistliving`
+
+.midi[
+
+```r
+pp_main_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
+tidy(pp_main_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term               estimate std.error statistic  p.value
+##   &lt;chr&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        4.88     0.0424       115.   0       
+## 2 Surface            0.000265 0.0000415      6.39 1.85e-10
+## 3 artistlivingLiving 0.137    0.0970         1.41 1.57e- 1
+```
+]
+
+--
+
+`$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$`
+
+---
+
+## Solving the model
+
+- Non-living artist: Plug in 0 for `artistliving`
+
+`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 0\)`  
+`\(= 4.88 + 0.000265 \times surface\)`
+
+--
+- Living artist: Plug in 1 for `artistliving`
+
+`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 1\)`   
+`\(= 5.017 + 0.000265 \times surface\)`
+
+---
+
+## Visualizing main effects
+
+.pull-left-narrow[
+- **Same slope:** Rate of change in price as the surface area increases does 
+not vary between paintings by living and non-living artists.
+- **Different intercept:** Paintings by living artists are consistently more 
+expensive than paintings by non-living artists.
+]
+.pull-right-wide[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Interpreting main effects
+
+.midi[
+
+```r
+tidy(pp_main_fit) %&gt;% 
+  mutate(exp_estimate = exp(estimate)) %&gt;%
+  select(term, estimate, exp_estimate)
+```
+
+```
+## # A tibble: 3 × 3
+##   term               estimate exp_estimate
+##   &lt;chr&gt;                 &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)        4.88           132.  
+## 2 Surface            0.000265         1.00
+## 3 artistlivingLiving 0.137            1.15
+```
+]
+
+- All else held constant, for each additional square inch in painting's surface area, the price of the painting is predicted, on average, to be higher by a factor of 1.
+- All else held constant, paintings by a living artist are predicted, on average, to be higher by a factor of 1.15 compared to paintings by an artist who is no longer alive.
+- Paintings that are by an artist who is not alive and that have a surface area of 0 square inches are predicted, on average, to be 132 livres.
+
+---
+
+## Main vs. interaction effects
+
+- The way we specified our main effects model only lets `artistliving` affect the intercept.
+- Model implicitly assumes that paintings with living and deceased artists have the *same slope* and only allows for *different intercepts*.  
+
+.question[
+What seems more appropriate in this case?
++ Same slope and same intercept for both colours
++ Same slope and different intercept for both colours
++ Different slope and different intercept for both colours
+]
+
+---
+
+## Interaction: `Surface * artistliving`
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-37-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Fit model with interaction effects
+
+- Response variable: log_price
+- Explanatory variables: `Surface` area, `artistliving`, and their interaction
+
+.midi[
+
+```r
+pp_int_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
+tidy(pp_int_fit)
+```
+
+```
+## # A tibble: 4 × 5
+##   term                       estimate std.error statistic p.value
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
+## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
+## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
+```
+]
+
+---
+
+## Linear model with interaction effects
+
+.midi[
+
+```
+## # A tibble: 4 × 5
+##   term                       estimate std.error statistic p.value
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
+## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
+## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
+```
+]
+
+`$$\widehat{log\_price} = 4.91 + 0.00021 \times surface - 0.126 \times artistliving$$`
+`$$+ ~ 0.00048 \times surface * artistliving$$`
+
+---
+
+## Interpretation of interaction effects
+
+- Rate of change in price as the surface area of the painting increases does 
+vary between paintings by living and non-living artists (different slopes), 
+- Some paintings by living artists are more expensive than paintings by
+non-living artists, and some are not (different intercept).
+
+.small[
+.pull-left[
+- Non-living artist: 
+`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 \times 0 + 0.00048 \times surface \times 0\)`
+`\(= 4.91 + 0.00021 \times surface\)`
+- Living artist: 
+`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 \times 1 + 0.00048 \times surface \times 1\)`
+`\(= 4.91 + 0.00021 \times surface\)`
+`\(- 0.126 + 0.00048 \times surface\)`
+`\(= 4.784 + 0.00069 \times surface\)`
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/viz-interaction-effects2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+
+## Comparing models
+
+It appears that adding the interaction actually increased adjusted `\(R^2\)`, so we 
+should indeed use the model with the interactions.
+
+
+```r
+glance(pp_main_fit)$adj.r.squared
+```
+
+```
+## [1] 0.01258977
+```
+
+```r
+glance(pp_int_fit)$adj.r.squared
+```
+
+```
+## [1] 0.01676753
+```
+
+---
+
+## Third order interactions
+
+- Can you? Yes
+- Should you? Probably not if you want to interpret these interactions in context
+of the data.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

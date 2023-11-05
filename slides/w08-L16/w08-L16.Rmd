@@ -1,8 +1,8 @@
 ---
-title: "Model building"
+title: "Model checking and multiple linear regression"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -27,20 +27,10 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
-library(openintro)
-library(lubridate)
-library(knitr)
-library(ggridges)
+# library(emo)
 library(patchwork)
-library(skimr)
-#set.seed(1234)
-options(
-  warnPartialMatchArgs = FALSE,
-  warnPartialMatchAttr = FALSE, 
-  warnPartialMatchDollar = FALSE,
-  width = 100
-)
+library(plotly)
+library(widgetframe)
 
 xaringanExtra::use_panelset()
 ```
@@ -106,648 +96,1113 @@ University of Edinburgh
 </div> 
 
 ---
-## Reminders
-
-- Lab tomorrow is the usual format. Next week we return to projects.
-- 2 December final project presentations (final lab of semester).
-- HW04 due midday Friday 18th
-
----
 ## Topics
 
-- Prediction (including ROC curves) 
-- Feature engineering and recipes.
-- Workflows - combining recipes and models.
-- More on prediction (making decisions). 
+- Assessing model fit.
+- Linearity and transformations.
+- Multiple linear regression
+- Model comparison
+- Interaction effects
+
+
+---
+class: middle
+
+# Model checking
+
+---
+
+## Data: Paris Paintings
+
+```{r message=FALSE}
+pp <- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
+```
+
+- Number of observations: `r nrow(pp)`
+- Number of variables: `r ncol(pp)`
+
+---
+
+## "Linear" models
+
+- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
+- But how do we assess this?
+
+---
+
+## Graphical diagnostic: residuals plot
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "residuals-plot", echo = FALSE, warning = FALSE, out.width = "60%"}
+```
+]
+.panel[.panel-name[Code]
+```{r residuals-plot, fig.show="hide"}
+ht_wt_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp)
+
+ht_wt_fit_aug <- augment(ht_wt_fit$fit) #<<
+
+ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted height", y = "Residuals")
+```
+]
+
+.panel[.panel-name[Augment]
+```{r}
+ht_wt_fit_aug
+```
+]
+]
+
+---
+
+## More on `augment()`
+
+```{r}
+glimpse(ht_wt_fit_aug)
+```
+
+
+---
+
+## Looking for...
+
+- Residuals distributed randomly around 0
+- With no visible pattern along the x or y axes
+
+```{r out.width = "60%", echo=FALSE}
+df <- tibble(
+  fake_resid = rnorm(1000, mean = 0, sd = 30),
+  fake_predicted = runif(1000, min = 0, max = 200)
+)
+ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted", y = "Residuals")
+```
+
+---
+
+## Not looking for...
+
+.large[
+**Fan shapes**
+]
+
+```{r out.width = "60%", echo=FALSE}
+set.seed(12346)
+df <- tibble(
+  fake_resid = c(rnorm(100, mean = 0, sd = 1), 
+                 rnorm(100, mean = 0, sd = 15), 
+                 rnorm(100, mean = 0, sd = 25), 
+                 rnorm(100, mean = 0, sd = 20), 
+                 rnorm(100, mean = 0, sd = 25), 
+                 rnorm(100, mean = 0, sd = 50), 
+                 rnorm(100, mean = 0, sd = 35), 
+                 rnorm(100, mean = 0, sd = 40),
+                 rnorm(200, mean = 0, sd = 80)),
+  fake_predicted = seq(0.2, 200, 0.2)
+)
+ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted", y = "Residuals")
+```
+
+---
+
+## Not looking for...
+
+.large[
+**Groups of patterns**
+]
+
+```{r out.width = "60%", echo=FALSE}
+set.seed(12346)
+df <- tibble(
+  fake_predicted = seq(0.2, 200, 0.2),
+  fake_resid = c(
+    rnorm(500, mean = -20, sd = 10),
+    rnorm(500, mean = 10, sd = 10)
+  )
+)
+ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted", y = "Residuals")
+```
+
+---
+
+## Not looking for...
+
+.large[
+**Residuals correlated with predicted values**
+]
+
+```{r out.width = "60%", echo=FALSE}
+set.seed(12346)
+df <- tibble(
+  fake_predicted = seq(0.2, 200, 0.2),
+  fake_resid = fake_predicted + rnorm(1000, mean = 0, sd = 50)
+)
+ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted", y = "Residuals")
+```
+
+---
+
+## Not looking for...
+
+.large[
+**Any patterns!**
+]
+
+```{r out.width = "60%", echo=FALSE}
+set.seed(12346)
+df <- tibble(
+  fake_predicted = seq(-100, 100, 0.4),
+  fake_resid = -5*fake_predicted^2 - 3*fake_predicted + 20000 + rnorm(501, mean = 0, sd = 10000)
+)
+ggplot(df, mapping = aes(x = fake_predicted, y = fake_resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted", y = "Residuals")
+```
+
+---
+
+.question[
+What patterns does the residuals plot reveal that should make us question whether a linear model is a good fit for modeling the relationship between height and width of paintings?
+]
+
+```{r out.width = "60%", echo=FALSE}
+ggplot(ht_wt_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted height", y = "Residuals")
+```
 
 ---
 
 class: middle
 
-# Prediction
+# Linearity and transformations
 
 ---
 
+## Data: Paris Paintings
 
-## Continued - Building a spam filter
-
-- Data: Set of emails. We know if each email is spam/not and other features.
-- Use logistic regression to predict the probability that an incoming email is spam.
-- Use model selection to pick the model with the best predictive performance.
-- Reminder: split the data into a training dataset and a test dataset.
-- Use the training dataset to investigate and fit models.
-- Choose 1 or 2 models and test how well they predict the test dataset. 
-- Helps us avoid overfitting.
+```{r echo=FALSE, out.width = "70%"}
+ggplot(data = pp, aes(x = price)) +
+  geom_histogram(binwidth = 1000) +
+  labs(title = "Prices of paintings")
+```
 
 ---
 
-## Spam filter dataset
+## Price vs. width
 
-.pull-left-narrow[
-- Data from 3921 emails and 21 variables on them
-- Outcome: whether the email is spam or not
-- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+```{r echo=FALSE, out.width = "70%", warning = FALSE}
+ggplot(data = pp, aes(x = Width_in, y = price)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Width (in)", y = "Price (livres)")
+```
+
+---
+
+## Focus on paintings with `Width_in < 100`
+
+That is, paintings with width < 2.54 m
+
+```{r}
+pp_wt_lt_100 <- pp %>% 
+  filter(Width_in < 100)
+```
+
+---
+
+## Price vs. width
+
+.question[
+Which plot shows a more linear relationship?
 ]
-.pull-right-wide[
+
 .small[
-```{r}
-library(openintro)
-glimpse(email)
-```
-]
-]
-
----
-
-## Performing the split
-
-```{r}
-# Fix random numbers by setting the seed 
-# Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
-
-# Put 80% of the data into the training set 
-email_split <- initial_split(email, prop = 0.80)
-
-# Create data frames for the two sets:
-train_data <- training(email_split)
-test_data  <- testing(email_split)
-```
-
----
-
-## Fit a model to the training dataset
-
-```{r}
-email_fit <- logistic_reg() %>%
-  set_engine("glm") %>%
-  fit(spam ~ ., data = train_data, family = "binomial")
-```
-
----
-
-## Categorical predictors
-
-```{r echo=FALSE, out.width="75%", fig.width=10}
-factor_predictors <- train_data %>%
-  select(where(is.factor), -spam) %>%
-  names()
-
-p_to_multiple <- ggplot(train_data, aes(x = to_multiple, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_from <- ggplot(train_data, aes(x = from, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_sent_email <- ggplot(train_data, aes(x = sent_email, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_winner <- ggplot(train_data, aes(x = winner, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_format <- ggplot(train_data, aes(x = format, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_re_subj <- ggplot(train_data, aes(x = re_subj, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_urgent_subj <- ggplot(train_data, aes(x = urgent_subj, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_number <- ggplot(train_data, aes(x = number, fill = spam)) +
-  geom_bar() +
-  scale_fill_manual(values = c("#E48957", "#CA235F"))
-
-p_to_multiple + p_from + p_sent_email + p_winner + p_format + p_re_subj + p_urgent_subj + p_number +
-  plot_layout(ncol = 4, guides = "collect") & 
-  theme(axis.title.y = element_blank())
-```
-
----
-
-## `from` and `sent_email`
-
+  
 .pull-left[
-- `from`: Whether the message was listed as from anyone (this is usually set by default for regular outgoing email)
+```{r message=FALSE, echo=FALSE, out.width = "100%"}
+ggplot(data = pp_wt_lt_100, 
+       mapping = aes(x = Width_in, y = price)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Price vs. width", 
+    subtitle = "For width < 100 in",
+    x = "Width (inches)", 
+    y = "Price (livres)"
+    )
+```
+]
 
-```{r}
-train_data %>%
-  count(spam, from)
+.pull-right[
+```{r message=FALSE, echo=FALSE, out.width = "100%"}
+ggplot(data = pp_wt_lt_100, 
+       mapping = aes(x = Width_in, y = log(price))) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Log(price) vs. width", 
+    subtitle = "For width < 100 in",
+    x = "Width (inches)", 
+    y = "Log(price) (log livres)"
+    )
+```
+]
+
+]
+
+---
+
+## Price vs. width, residuals
+
+.question[
+Which plot shows a residuals that are uncorrelated with predicted values from the model? Also, what is the unit of the residuals?
+]
+  
+.pull-left[
+```{r message=FALSE, echo=FALSE, out.width = "100%"}
+price_wt_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(price ~ Width_in, data = pp_wt_lt_100)
+price_wt_fit_aug <- augment(price_wt_fit$fit)
+
+ggplot(data = price_wt_fit_aug, 
+       mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Price vs. width, residuals", 
+    subtitle = "For width < 100 in",
+    x = "Predicted price (livres)", 
+    y = "Residuals"
+    )
 ```
 ]
 .pull-right[
-- `sent_email`: Indicator for whether the sender had been sent an email in the last 30 days
+```{r message=FALSE, echo=FALSE, out.width = "100%"}
+pp_wt_lt_100 <- pp_wt_lt_100 %>% 
+  mutate(log_price = log(price))
 
-```{r}
-train_data %>%
-  count(spam, sent_email)
+lprice_wt_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Width_in, data = pp_wt_lt_100)
+lprice_wt_fit_aug <- augment(lprice_wt_fit$fit)
+
+ggplot(data = lprice_wt_fit_aug, 
+       mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Log(Price) vs. width, residuals", 
+    subtitle = "For width < 100 in",
+    x = "Predicted log(price) (log livres)", 
+    y = "Residuals"
+    )
 ```
 ]
 
 ---
 
-## Numerical predictors
+## Transforming the data
 
-.small[
-```{r echo=FALSE, highlight.output=c(7, 14)}
-options(width = 100)
-x <- train_data %>%
-  group_by(spam) %>%
-  select(where(is.numeric)) %>%
-  skim_without_charts()%>%
-  yank("numeric")
+- We saw that `price` has a right-skewed distribution, and the relationship between price and width of painting is non-linear.
 
-print(x, include_summary = FALSE, n=22, width=Inf)
+--
+- In these situations a transformation applied to the response variable may be useful.
 
-```
+--
+- In order to decide which transformation to use, we should examine the distribution of the response variable.
+
+--
+- The extremely right skewed distribution suggests that a log transformation may 
+be useful.
+    - log = natural log, $ln$
+    - Default base of the `log` function in R is the natural log: <br>
+    `log(x, base = exp(1))`
+    
+---
+
+## Logged price vs. width
+
+.question[
+How do we interpret the slope of this model?
 ]
 
----
-## Numerical predictors
-
-Closer look at `"image"`: number of images attached.
-
-```{r}
- train_data %>%
-     count(spam, image) %>%
- print(n=12)
+```{r echo=FALSE, message=FALSE, out.width="60%"}
+ggplot(data = pp_wt_lt_100, mapping = aes(x = Width_in, y = log(price))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "#8E2C90", se = FALSE) +
+  labs(x = "Width (in)", y = "Log(price) (log livres)")
 ```
-
 
 ---
 
-## Fit a model to the training dataset
+## Models with log transformation
 
 ```{r}
-email_fit <- logistic_reg() %>%
-  set_engine("glm") %>%
-  fit(spam ~ . - from - sent_email - viagra - image, data = train_data, family = "binomial") #<<
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log(price) ~ Width_in, data = pp_wt_lt_100) %>%
+  tidy()
 ```
 
-.small[
-```{r}
-email_fit
-```
+---
+
+
+## Interpreting the slope
+
+$$ \widehat{log(price)} = 4.67 + 0.0192 Width $$
+
+--
+- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 livres.
+
+--
+- which is not a very useful statement...
+
+---
+
+## Working with logs
+
+- Subtraction and logs: $log(a) − log(b) = log(a / b)$
+
+--
+- Natural logarithm: $e^{log(x)} = x$
+
+--
+- We can use these identities to "undo" the log transformation
+
+---
+
+## Interpreting the slope
+
+The slope coefficient for the log transformed model is 0.0192, meaning the log price difference between paintings whose widths are one inch apart is predicted to be 0.0192 log livres.
+
+--
+
+.question[
+Using this information, and properties of logs that we just reviewed, fill in the blanks in the following alternate interpretation of the slope:
+
+>For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
 ]
 
----
-
-## Predict outcome on the testing dataset
-
-```{r}
-predict(email_fit, test_data)
-```
-
 
 ---
 
-## Predict probabilities on the testing dataset
+>For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
 
-```{r}
-email_pred <- predict(email_fit, test_data, type = "prob") %>%
-  bind_cols(test_data %>% select(spam, time))
 
-email_pred
-```
+$$ log(\text{price for width x+1}) - log(\text{price for width x}) = 0.0192 $$
+
+--
+
+$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
+
+--
+
+$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
+
+--
+
+$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 $$
+
+--
+
+For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, by a factor of 1.02.
 
 ---
 
-## A closer look at predictions
+## Recap
 
-.pull-left-wide[
-```{r highlight.output=c(5, 11, 13)}
-email_pred %>%
-  arrange(desc(.pred_1)) %>%
-  print(n = 10)
-```
-]
+- Non-constant variance is one of the most common model violations, however it is usually fixable by transforming the response (y) variable.
+
+--
+- The most common transformation when the response variable is right skewed is the log transform: $log(y)$, especially useful when the response variable is 
+(extremely) right skewed.
+
+--
+- This transformation is also useful for variance stabilization.
+
+--
+- When using a log transformation on the response variable the interpretation of 
+the slope changes: *"For each unit increase in x, y is expected on average to be higher/lower <br> by a factor of $e^{b_1}$."*
+
+--
+- Another useful transformation is the square root: $\sqrt{y}$, especially 
+useful when the response variable is counts.
 
 ---
 
-## Evaluate the performance
+## Transform, or learn more?
 
-**Receiver operating characteristic (ROC) curve**<sup>+</sup> which plots true positive rate vs. false positive rate (1 - specificity)
+- Data transformations may also be useful when the relationship is non-linear
+- However in those cases a polynomial regression may be more appropriate
+  + This is beyond the scope of this course, but you’re welcomed to try it for your final project, and I’d be happy to provide further guidance
+
+---
+class: middle
+
+# The linear model with multiple predictors
+
+---
+
+## Data: Book weight and volume
+
+The `allbacks` data frame gives measurements on the volume and weight of 15 books, some of which are paperback and some of which are hardback
 
 .pull-left[
-```{r roc1, fig.show="hide"}
-email_pred %>%
-  roc_curve(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  ) %>%
-  autoplot()
-```
+- Volume - cubic centimetres
+- Area - square centimetres
+- Weight - grams
 ]
 .pull-right[
-```{r ref.label="roc", echo=FALSE, out.width="100%"}
+.small[
+```{r echo=FALSE}
+library(DAAG)
+as_tibble(allbacks) %>%
+  print(n = 15)
 ```
+]
 ]
 
 .footnote[
 .small[
-<sup>+</sup>Originally developed for operators of military radar receivers, hence the name.
+These books are from the bookshelf of J. H. Maindonald at Australian National University.
 ]
 ]
 
 ---
 
-## Evaluate the performance
-
-Find the area under the curve:
+## Book weight vs. volume
 
 .pull-left[
 ```{r}
-email_pred %>%
-  roc_auc(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  )
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(weight ~ volume, data = allbacks) %>%
+  tidy()
 ```
 ]
 .pull-right[
-```{r ref.label="roc", echo=FALSE, out.width="100%"}
-```
-]
-
-
----
-class: middle
-
-# Feature engineering
-
----
-
-## Feature engineering
-
-- We prefer simple models when possible, but **parsimony** does not mean sacrificing accuracy (or predictive performance) in the interest of simplicity
-
---
-- Variables that go into the model and how they are represented are just as critical to success of the model
-
---
-- **Feature engineering** allows us to get creative with our predictors in an effort to make them more useful for our model (to increase its predictive performance) 
-
----
-
-## Same training and testing sets as before
-
-```{r}
-# Fix random numbers by setting the seed 
-# Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
-
-# Put 80% of the data into the training set 
-email_split <- initial_split(email, prop = 0.80)
-
-# Create data frames for the two sets:
-train_data <- training(email_split)
-test_data  <- testing(email_split)
-```
-
----
-
-## A simple approach: `mutate()`
-
-```{r}
-train_data %>%
-  mutate(
-    date = date(time),
-    dow  = wday(time),
-    month = month(time)
-    ) %>%
-  select(time, date, dow, month) %>%
-  sample_n(size = 5) # shuffle to show a variety
-```
-
----
-
-## Modeling workflow, revisited
-
-- Create a **recipe** for feature engineering steps to be applied to the training data
-
---
-- Fit the model to the training data after these steps have been applied
-
---
-- Using the model estimates from the training data, predict outcomes for the test data
-
---
-- Evaluate the performance of the model on the test data
-
----
-
-class: middle
-
-# Building recipes
-
----
-
-## Initiate a recipe
-
-```{r initiate-recipe, results="hide"}
-email_rec <- recipe(
-  spam ~ .,          # formula
-  data = train_data  # data to use for cataloguing names and types of variables
-  )
-
-summary(email_rec)
-```
-
-.xsmall[
-```{r echo=FALSE}
-summary(email_rec) %>% print(n = 21)
+```{r out.width = "75%", echo = FALSE, fig.align = "right"}
+ggplot(allbacks, aes(x = volume, y = weight)) +
+  geom_point(alpha = 0.7, size = 3)
 ```
 ]
 
 ---
 
-## Remove certain variables
-
-```{r}
-email_rec <- email_rec %>%
-  step_rm(from, sent_email, image, viagra)
-```
-
-.small[
-```{r echo=FALSE}
-email_rec
-```
-]
-
----
-
-## Feature engineer date
-
-```{r}
-email_rec <- email_rec %>%
-  step_date(time, features = c("dow", "month")) %>%
-  step_rm(time)
-```
-
-.small[
-```{r echo=FALSE}
-email_rec
-```
-]
-
----
-
-## Discretize numeric variables
-
-```{r}
-email_rec <- email_rec %>%
-  step_cut(cc, attach, dollar, breaks = c(0, 1)) %>%
-  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20))
-```
-
-.small[
-```{r echo=FALSE}
-email_rec
-```
-]
-
----
-
-## Create dummy variables
-
-```{r}
-email_rec <- email_rec %>%
-  step_dummy(all_nominal(), -all_outcomes())
-```
-
-.small[
-```{r echo=FALSE}
-email_rec
-```
-]
-
----
-
-## Remove zero variance variables
-
-Variables that contain only a single value
-
-```{r}
-email_rec <- email_rec %>%
-  step_zv(all_predictors())
-```
-
-.small[
-```{r echo=FALSE}
-email_rec
-```
-]
-
----
-
-## All in one place
-
-```{r}
-email_rec <- recipe(spam ~ ., data = email) %>%
-  step_rm(from, sent_email, image, viagra) %>%
-  step_date(time, features = c("dow", "month")) %>%               
-  step_rm(time) %>%
-  step_cut(cc, attach, dollar, breaks = c(0, 1)) %>%
-  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20)) %>%
-  step_dummy(all_nominal(), -all_outcomes()) %>%
-  step_zv(all_predictors())
-```
-
----
-
-class: middle
-
-# Building workflows
-
----
-
-## Define model
-
-```{r}
-email_mod <- logistic_reg() %>% 
-  set_engine("glm")
-
-email_mod
-```
-
----
-
-## Define workflow
-
-**Workflows** bring together models and recipes so that they can be easily applied to both the training and test data.
-
-```{r}
-email_wflow <- workflow() %>% 
-  add_model(email_mod) %>% 
-  add_recipe(email_rec)
-```
-
-.small[
-```{r echo=FALSE}
-email_wflow
-```
-]
-
----
-
-## Fit model to training data
-
-```{r}
-email_fit <- email_wflow %>% 
-  fit(data = train_data)
-```
-
----
-
-.small[
-```{r}
-tidy(email_fit) %>% print(n = 30)
-```
-]
-
----
-
-## Make predictions for test data
-
-```{r warning=FALSE}
-email_pred <- predict(email_fit, test_data, type = "prob") %>% 
-  bind_cols(test_data) 
-
-email_pred
-```
-
----
-
-## Evaluate the performance
-
-.pull-left[
-```{r roc, fig.show="hide"}
-email_pred %>%
-  roc_curve(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  ) %>%
-  autoplot()
-```
-]
-.pull-right[
-```{r ref.label="roc", echo=FALSE, out.width="100%"}
-```
-]
-
----
-
-## Evaluate the performance
+## Book weight vs. volume and cover
 
 .pull-left[
 ```{r}
-email_pred %>%
-  roc_auc(
-    truth = spam,
-    .pred_1,
-    event_level = "second"
-  )
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(weight ~ volume + cover, 
+      data = allbacks) %>%
+  tidy()
 ```
 ]
 .pull-right[
-```{r ref.label="roc", echo=FALSE, out.width="100%"}
+```{r out.width = "75%", echo = FALSE, fig.align = "right"}
+ggplot(allbacks, aes(x = volume, y = weight, color = cover, shape = cover)) +
+  geom_point(alpha = 0.7, size = 3) +
+  theme(legend.position = "bottom") +
+  scale_color_manual(values = c("#E48957", "#071381"))
 ```
+]
+
+---
+
+## Interpretation of estimates
+
+```{r echo=FALSE}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(weight ~ volume + cover, data = allbacks) %>%
+  tidy()
+```
+
+--
+- **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
+
+--
+- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardcover books.
+
+--
+- **Intercept:** Hardcover books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
+
+
+---
+
+## Main vs. interaction effects
+
+.question[
+Suppose we want to predict weight of books from their volume and cover type 
+(hardback vs. paperback). Do you think a model with main effects or 
+interaction effects is more appropriate? Explain your reasoning.
+
+**Hint:** Main effects would mean rate at which weight changes as volume 
+increases would be the same for hardback and paperback books and interaction 
+effects would mean the rate at which weight changes as volume 
+increases would be different for hardback and paperback books.
+]
+
+---
+
+```{r book-main-int, echo=FALSE, out.width="65%", fig.asp = 0.8}
+book_main_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(weight ~ volume + cover, data = allbacks)
+book_main_fit_aug <- augment(book_main_fit$fit)
+
+book_int_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(weight ~ volume + cover + volume*cover, data = allbacks)
+book_int_fit_aug <- augment(book_int_fit$fit)
+
+p_main <- ggplot() +
+  geom_point(book_main_fit_aug, 
+             mapping = aes(x = volume, y = weight, color = cover, shape = cover), alpha = 0.7) +
+  geom_line(book_main_fit_aug, 
+            mapping = aes(x = volume, y = .fitted, color = cover)) +
+  labs(title = "Main effects, parallel slopes", 
+       subtitle = "weight-hat = volume + cover") +
+  scale_color_manual(values = c("#E48957", "#071381"))
+
+p_int <- ggplot() +
+  geom_point(book_int_fit_aug, 
+             mapping = aes(x = volume, y = weight, color = cover, shape = cover), alpha = 0.7) +
+  geom_line(book_int_fit_aug, 
+            mapping = aes(x = volume, y = .fitted, color = cover)) +
+  labs(title = "Interaction effects, not parallel slopes", 
+       subtitle = "weight-hat = volume + cover + volume * cover") +
+  scale_color_manual(values = c("#E48957", "#071381"))
+
+p_main /  p_int  + plot_layout(guides = "collect")
+```
+
+---
+
+## In pursuit of Occam's razor
+
+- Occam's Razor states that among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.
+
+--
+- Model selection follows this principle.
+
+--
+- We only want to add another variable to the model if the addition of that variable brings something valuable in terms of predictive power to the model.
+
+--
+- In other words, we prefer the simplest best model, i.e. **parsimonious** model.
+
+---
+
+.pull-left[
+```{r ref.label = "book-main-int", echo = FALSE, out.width="100%", fig.asp = 0.8}
+```
+]
+.pull-right[
+.question[
+Visually, which of the two models is preferable under Occam's razor?
+]
+]
+
+---
+
+## R-squared
+
+- $R^2$ is the percentage of variability in the response variable explained by 
+the regression model.
+
+```{r}
+glance(book_main_fit)$r.squared
+glance(book_int_fit)$r.squared
+```
+
+--
+- Clearly the model with interactions has a higher $R^2$.
+
+--
+- However using $R^2$ for model selection in models with multiple explanatory variables is not a good idea as $R^2$ increases when **any** variable is added to the model.
+
+---
+
+## Adjusted R-squared
+
+... a (more) objective measure for model selection
+
+- Adjusted $R^2$ doesn't increase if the new variable does not provide any new 
+informaton or is completely unrelated, as it applies a penalty for number of 
+variables included in the model.
+- This makes adjusted $R^2$ a preferable metric for model selection in multiple
+regression models.
+
+---
+
+## Comparing models
+
+.pull-left[
+```{r}
+glance(book_main_fit)$r.squared
+glance(book_int_fit)$r.squared
+```
+]
+.pull-right[
+```{r}
+glance(book_main_fit)$adj.r.squared
+glance(book_int_fit)$adj.r.squared
+```
+]
+
+--
+
+.pull-left-wide[
+.small[
+- Is R-sq higher for int model?
+```{r}
+glance(book_int_fit)$r.squared > glance(book_main_fit)$r.squared 
+```
+
+- Is R-sq adj. higher for int model?
+
+```{r}
+glance(book_int_fit)$adj.r.squared > glance(book_main_fit)$adj.r.squared
+```
+]
+]
+---
+
+class: middle
+
+# More detail on multiple predictors
+
+---
+class: middle
+
+# Two numerical predictors
+
+---
+
+## The data
+
+```{r load-pp, message=FALSE}
+pp <- read_csv(
+  "data/paris-paintings.csv",
+  na = c("n/a", "", "NA")
+) %>%
+  mutate(log_price = log(price))
+```
+
+---
+
+## Multiple predictors
+
+- Response variable: `log_price` 
+- Explanatory variables: Width and height
+
+```{r model-price-width-height}
+pp_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Width_in + Height_in, data = pp)
+tidy(pp_fit)
+```
+
+---
+
+##  Linear model with multiple predictors
+
+```{r model-price-width-height-tidy, echo=FALSE}
+tidy(pp_fit)
+```
+
+<br>
+
+$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$
+
+---
+
+## Visualizing models with multiple predictors
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-wide[
+```{r plotly-plot, echo = FALSE, fig.align="center", warning=FALSE}
+p <- plot_ly(pp,
+  x = ~Width_in, y = ~Height_in, z = ~log_price,
+  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
+                line = list(color = "gray", width = 2))) %>%
+  add_markers() %>%
+  plotly::layout(scene = list(
+    xaxis = list(title = "Width (in)"),
+    yaxis = list(title = "Height (in)"),
+    zaxis = list(title = "log_price")
+  )) %>%
+  config(displayModeBar = FALSE)
+frameWidget(p)
+```
+]
+]
+.panel[.panel-name[Code]
+```{r plotly-code, eval=FALSE}
+p <- plot_ly(pp,
+  x = ~Width_in, y = ~Height_in, z = ~log_price,
+  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
+                line = list(color = "gray", width = 2))) %>%
+  add_markers() %>%
+  plotly::layout(scene = list(
+    xaxis = list(title = "Width (in)"),
+    yaxis = list(title = "Height (in)"),
+    zaxis = list(title = "log_price")
+  )) %>%
+  config(displayModeBar = FALSE)
+frameWidget(p)
+```
+]
 ]
 
 ---
 
 class: middle
 
-# Making decisions
+# Numerical and categorical predictors
 
 ---
 
-## Cutoff probability: 0.5
+## Price, surface area, and living artist
 
-.panelset[
-.panel[.panel-name[Output]
+- Explore the relationship between price of paintings and surface area, conditioned 
+on whether or not the artist is still living
+- First visualize and explore, then model
+- But first, prep the data
 
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.5**.
+.midi[
+```{r}
+pp <- pp %>%
+  mutate(artistliving = if_else(artistliving == 0, "Deceased", "Living"))
 
-```{r ref.label = "confusion-50,", echo = FALSE}
+pp %>%
+  count(artistliving)
 ```
-]
-.panel[.panel-name[Code]
-```{r confusion-50, results = "hide"}
-cutoff_prob <- 0.5
-email_pred %>%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %>%
-  count(spam_pred, spam) %>%
-  pivot_wider(names_from = spam, values_from = n) %>%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
-```
-]
 ]
 
 ---
 
-## Cutoff probability: 0.25
+## Typical surface area
 
 .panelset[
-.panel[.panel-name[Output]
-
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.25**.
-
-```{r ref.label = "confusion-25,", echo = FALSE}
+.panel[.panel-name[Plot]
+.pull-left-narrow[
+Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). There are very few paintings that have surface area above 5000 square inches.
+]
+.pull-right-wide[
+```{r ref.label = "viz-surf-artistliving", echo = FALSE, warning = FALSE, out.width="90%"}
 ```
 ]
+]
 .panel[.panel-name[Code]
-```{r confusion-25, results = "hide"}
-cutoff_prob <- 0.25
-email_pred %>%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %>%
-  count(spam_pred, spam) %>%
-  pivot_wider(names_from = spam, values_from = n) %>%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
+```{r viz-surf-artistliving, fig.show = "hide"}
+ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
+  geom_histogram(binwidth = 500) + 
+  facet_grid(artistliving ~ .) +
+  scale_fill_manual(values = c("#E48957", "#071381")) +
+  guides(fill = FALSE) +
+  labs(x = "Surface area", y = NULL) +
+  geom_vline(xintercept = 1000) +
+  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
 ```
 ]
 ]
 
 ---
 
-## Cutoff probability: 0.75
+## Narrowing the scope
 
 .panelset[
-.panel[.panel-name[Output]
+.panel[.panel-name[Plot]
+For simplicity let's focus on the paintings with `Surface < 5000`:
 
-Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.75**.
-
-```{r ref.label = "confusion-75,", echo = FALSE}
+```{r ref.label = "viz-surf-lt-5000-artistliving", echo = FALSE, warning = FALSE, out.width = "55%"}
 ```
 ]
 .panel[.panel-name[Code]
-```{r confusion-75, results = "hide"}
-cutoff_prob <- 0.75
-email_pred %>%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %>%
-  count(spam_pred, spam) %>%
-  pivot_wider(names_from = spam, values_from = n) %>%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
+```{r viz-surf-lt-5000-artistliving, fig.show = "hide"}
+pp_Surf_lt_5000 <- pp %>%
+  filter(Surface < 5000)
+
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  labs(color = "Artist", shape = "Artist") +
+  scale_color_manual(values = c("#E48957", "#071381"))
 ```
 ]
 ]
 
+---
+
+## Facet to get a better look
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r ref.label = "viz-surf-lt-5000-artistliving-facet", echo = FALSE, warning = FALSE, out.width = "80%", fig.asp = 0.5}
+```
+]
+.panel[.panel-name[Code]
+```{r viz-surf-lt-5000-artistliving-facet, fig.show = "hide"}
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~artistliving) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  labs(color = "Artist", shape = "Artist")
+```
+]
+]
+
+---
+
+## Two ways to model
+
+- **Main effects:** Assuming relationship between surface and logged price 
+**does not vary** by whether or not the artist is living.
+- **Interaction effects:** Assuming relationship between surface and logged 
+price **varies** by whether or not the artist is living.
+
+---
+
+## Interacting explanatory variables
+
+- Including an interaction effect in the model allows for different slopes, i.e. 
+nonparallel lines.
+- This implies that the regression coefficient for an explanatory variable would 
+change as another explanatory variable changes.
+- This can be accomplished by adding an interaction variable: the product of two 
+explanatory variables.
+
+---
+
+## Two ways to model
+
+.pull-left-narrow[
+- **Main effects:** Assuming relationship between surface and logged price **does not vary** by whether or not the artist is living
+- **Interaction effects:** Assuming relationship between surface and logged price **varies** by whether or not the artist is living
+]
+.pull-right-wide[
+```{r pp-main-int-viz, echo=FALSE, out.width="70%", fig.asp = 0.9}
+pp_main_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
+pp_main_fit_aug <- augment(pp_main_fit$fit)
+
+pp_int_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
+pp_int_fit_aug <- augment(pp_int_fit$fit)
+
+p_main <- ggplot(
+  pp_main_fit_aug,
+  aes(y = log_price, x = Surface, color = artistliving)
+) +
+  geom_point(aes(shape = artistliving), alpha = 0.5) +
+  scale_x_continuous(breaks = c(0, 2500, 5000)) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  geom_line(aes(y = .fitted), linewidth = 1.5) +
+  labs(y = "log_price", title = "Main effects", color = "Artist", shape = "Artist")
+
+p_int <- ggplot(
+  pp_int_fit_aug,
+  aes(y = log_price, x = Surface, color = artistliving)
+) +
+  geom_point(aes(shape = artistliving), alpha = 0.5) +
+  scale_x_continuous(breaks = c(0, 2500, 5000)) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  geom_line(aes(y = .fitted), linewidth = 1.5) +
+  labs(y = "log_price", title = "Interaction effects", color = "Artist", shape = "Artist")
+
+p_main /
+  p_int  + 
+  plot_layout(guides = "collect") & theme(legend.position = "bottom")
+```
+]
+
+---
+
+## Fit model with main effects
+
+- Response variable: `log_price`
+- Explanatory variables: `Surface` area and `artistliving`
+
+.midi[
+```{r model-main-effects}
+pp_main_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
+tidy(pp_main_fit)
+```
+]
+
+--
+
+$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$
+
+---
+
+## Solving the model
+
+- Non-living artist: Plug in 0 for `artistliving`
+
+$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 0$  
+$= 4.88 + 0.000265 \times surface$
+
+--
+- Living artist: Plug in 1 for `artistliving`
+
+$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 1$   
+$= 5.017 + 0.000265 \times surface$
+
+---
+
+## Visualizing main effects
+
+.pull-left-narrow[
+- **Same slope:** Rate of change in price as the surface area increases does 
+not vary between paintings by living and non-living artists.
+- **Different intercept:** Paintings by living artists are consistently more 
+expensive than paintings by non-living artists.
+]
+.pull-right-wide[
+```{r out.width="100%", echo = FALSE}
+p_main
+```
+]
+
+---
+
+## Interpreting main effects
+
+.midi[
+```{r exp-coefs}
+tidy(pp_main_fit) %>% 
+  mutate(exp_estimate = exp(estimate)) %>%
+  select(term, estimate, exp_estimate)
+```
+]
+
+- All else held constant, for each additional square inch in painting's surface area, the price of the painting is predicted, on average, to be higher by a factor of 1.
+- All else held constant, paintings by a living artist are predicted, on average, to be higher by a factor of 1.15 compared to paintings by an artist who is no longer alive.
+- Paintings that are by an artist who is not alive and that have a surface area of 0 square inches are predicted, on average, to be 132 livres.
+
+---
+
+## Main vs. interaction effects
+
+- The way we specified our main effects model only lets `artistliving` affect the intercept.
+- Model implicitly assumes that paintings with living and deceased artists have the *same slope* and only allows for *different intercepts*.  
+
+.question[
+What seems more appropriate in this case?
++ Same slope and same intercept for both colours
++ Same slope and different intercept for both colours
++ Different slope and different intercept for both colours
+]
+
+---
+
+## Interaction: `Surface * artistliving`
+
+```{r out.width="60%", echo = FALSE}
+p_int
+```
+
+---
+
+## Fit model with interaction effects
+
+- Response variable: log_price
+- Explanatory variables: `Surface` area, `artistliving`, and their interaction
+
+.midi[
+```{r model-interaction-effects}
+pp_int_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
+tidy(pp_int_fit)
+```
+]
+
+---
+
+## Linear model with interaction effects
+
+.midi[
+```{r model-interaction-effects-tidy, echo=FALSE}
+tidy(pp_int_fit)
+```
+]
+
+$$\widehat{log\_price} = 4.91 + 0.00021 \times surface - 0.126 \times artistliving$$
+$$+ ~ 0.00048 \times surface * artistliving$$
+
+---
+
+## Interpretation of interaction effects
+
+- Rate of change in price as the surface area of the painting increases does 
+vary between paintings by living and non-living artists (different slopes), 
+- Some paintings by living artists are more expensive than paintings by
+non-living artists, and some are not (different intercept).
+
+.small[
+.pull-left[
+- Non-living artist: 
+$\widehat{log\_price} = 4.91 + 0.00021 \times surface$
+$- 0.126 \times 0 + 0.00048 \times surface \times 0$
+$= 4.91 + 0.00021 \times surface$
+- Living artist: 
+$\widehat{log\_price} = 4.91 + 0.00021 \times surface$
+$- 0.126 \times 1 + 0.00048 \times surface \times 1$
+$= 4.91 + 0.00021 \times surface$
+$- 0.126 + 0.00048 \times surface$
+$= 4.784 + 0.00069 \times surface$
+]
+.pull-right[
+```{r viz-interaction-effects2, out.width="80%", echo = FALSE}
+p_int
+```
+]
+]
+
+---
+
+## Comparing models
+
+It appears that adding the interaction actually increased adjusted $R^2$, so we 
+should indeed use the model with the interactions.
+
+```{r}
+glance(pp_main_fit)$adj.r.squared
+glance(pp_int_fit)$adj.r.squared
+```
+
+---
+
+## Third order interactions
+
+- Can you? Yes
+- Should you? Probably not if you want to interpret these interactions in context
+of the data.
