@@ -77,10 +77,6 @@ class: middle
 &lt;img src="w08-L15_files/figure-html/unnamed-chunk-2-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
-???
-linear models are actually very useful in real life, often prefered to more complicated models
-because they are simple, fast, easy to interpret, they work pretty well most of the times
-
 ---
 class: middle
 
@@ -100,11 +96,6 @@ pp &lt;- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
 - Data curators Sandra van Ginhoven and Hilary Coe Cronheim (who were PhD students in the Duke Art, Law, and Markets Initiative at the time of putting together this dataset) translated and tabulated the catalogues
 
 - 3393 paintings, their prices, and descriptive details from sales catalogues over 60 variables
-
-???
-It's a dataset coming from an auction catalogue, it's made up of 28 auction sales in Paris in ...
-These are paper printed catalogues that people would read and decide what they wanted to bid on.
-Was transcribed by two PhD students in Duke, took these paper records and translated and tabulated into an electronic dataset.
 
 ---
 
@@ -311,15 +302,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 ]
 ]
 
-???
-here is the representation of the relationship between those two variables
-and the blue line is basically the model that we are fitting to quantify the relationship 
-- positive slope (if the painiting is getting bigger in width, it's also getting bigger in height)
-- code on how drawing the best fit line (discarding NAs)
-- notice the gray band around the blue line: there is uncertainty around our model 
-because we do not have data on all the possible paintings, we have a sample
-- the larger the band, the larger the uncertainty
-
 ---
 
 ## ... without the measure of uncertainty
@@ -372,9 +354,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 ]
 ]
 
-???
-Cosmetic choices
-
 ---
 
 ## Other smoothing methods: gam
@@ -402,9 +381,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 ]
 
 .footnote[GAM = Generalized additive models]
-
-???
-Generalized additive models are a kind of linear regression, but instead of finding coefficients of predictor variables (e.g., intercepts, slopes), the model finds a “smooth” response function for each predictor. Tipically, a piecewise cubic function (spline)
 
 ---
 
@@ -434,9 +410,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .footnote[LOESS = Locally Estimated Scatterplot Smoothing]
 
-???
-Locally Estimated Scatterplot Smoothing (LOESS)
-LOESS smooths are constructed by making a large number of quadratic (or possibly linear) regression lines as a window moves along the x-axis. The predictions from these many local regressions are then computed and plotted as a “smooth” of the data. 
 
 ---
 
@@ -649,9 +622,6 @@ Linear model with one predictor: `$$\widehat{height}_{i} = \beta_0 + \beta_1 \ti
 
 &lt;img src="img/tidymodels.png" width="98%" style="display: block; margin: auto;" /&gt;
 
-???
-Aim of tidymodels: make the modeling process simple and logical, and give a unified 
-framework for fitting models
 
 ---
 
