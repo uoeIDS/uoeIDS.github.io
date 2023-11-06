@@ -328,31 +328,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 ]
 ]
 
----
-
-## ... with different cosmetic choices
-
-.panelset[
-.panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-14-1.png" width="60%" style="display: block; margin: auto;" /&gt;
-]
-.panel[.panel-name[Code]
-
-
-```r
-ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE,
-*             color = "#8E2C90", linetype = "dashed", size = 3) +
-  labs(
-    title = "Height vs. width of paintings",
-    subtitle = "Paris auctions, 1764 - 1780",
-    x = "Width (inches)",
-    y = "Height (inches)"
-  )
-```
-]
-]
 
 ---
 
@@ -360,7 +335,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-15-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-14-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -388,7 +363,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-16-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-15-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -420,22 +395,25 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 --
 - **Explanatory variables:** Other variables that you want to use to explain the variation in the response, on the x-axis
 
---
+---
+
+## Vocabulary (..continued)
+
 - **Predicted value:** Output of the **model function**
   - The model function gives the typical (expected) value of the response variable *conditioning* on the explanatory variables
-&lt;img src="w08-L15_files/figure-html/height-width-plot-02-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+  
+&lt;img src="w08-L15_files/figure-html/height-width-plot-02-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
-## Vocabulary
+## Vocabulary (..continued)
 
-- **Response variable:** Variable whose behavior or variation you are trying to understand, on the y-axis
-- **Explanatory variables:** Other variables that you want to use to explain the variation in the response, on the x-axis
-- **Predicted value:** Output of the **model function**
-  - The model function gives the typical (expected) value of the response variable *conditioning* on the explanatory variables
 - **Residuals:** A measure of how far each case is from its predicted value (based on a particular model)
   - Residual = Observed value - Predicted value
   - Tells how far above/below the expected value each case is
+
+&lt;img src="w08-L15_files/figure-html/height-width-plot-03-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -443,7 +421,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 .small[
@@ -459,7 +437,10 @@ ht_wt_fit_aug  &lt;- augment(ht_wt_fit$fit) %&gt;%
 
 ggplot(data = ht_wt_fit_aug) +
   geom_point(aes(x = Width_in, y = Height_in, color = res_cat)) +
-  geom_line(aes(x = Width_in, y = .fitted), size = 0.75, color = "#8E2C90") + 
+  geom_line(aes(x = Width_in, y = .fitted), linewidth = 0.75) +
+  geom_point(mapping = aes(x = Width_in,y = .fitted), color = "#E48957")+
+  geom_segment(mapping = aes(x = Width_in, y = Height_in,
+                             xend = Width_in, yend = .fitted), color = "#E48957", alpha = 0.4) + 
   labs(
     title = "Height vs. width of paintings",
     subtitle = "Paris auctions, 1764 - 1780",
@@ -477,99 +458,14 @@ ggplot(data = ht_wt_fit_aug) +
 
 ---
 
-.question[
-The plot below displays the relationship between height and width of paintings. The only difference from the previous plots is that it uses a smaller alpha value, making the points somewhat transparent. What feature is apparent in this plot that was not (as) apparent in the previous plots? What might be the reason for this feature?
-]
+## Extrapolation (..or extending regression lines)
 
-&lt;img src="w08-L15_files/figure-html/height-width-plot-alpha-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+Please don't do it.
 
----
-
-## Portrait vs landscape paintings
-
-&lt;img src="img/height-width-plot-alpha-portrait.png" width="50%" style="display: block; margin: auto;" /&gt;
-
----
-
-## Portrait vs landscape paintings
-
-&lt;img src="img/height-width-plot-alpha-landscape.png" width="50%" style="display: block; margin: auto;" /&gt;
-
-
----
-
-## Landscape paintings
-
-- Landscape painting is the depiction in art of landscapes – natural scenery such as mountains, valleys, trees, rivers, and forests, especially where the main subject is a wide view – with its elements arranged into a coherent
-composition.&lt;sup&gt;1&lt;/sup&gt;
-  - Landscape paintings tend to be wider than they are long.
-- Portrait painting is a genre in painting, where the intent is to depict a human subject.&lt;sup&gt;2&lt;/sup&gt;
-  - Portrait paintings tend to be longer than they are wide.
+&lt;img src="img/xkcd_extrapolating.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
-[1] Source: Wikipedia, [Landscape painting](https://en.wikipedia.org/wiki/Landscape_painting)
-
-[2] Source: Wikipedia, [Portait painting](https://en.wikipedia.org/wiki/Portrait_painting)
-]
-
----
-
-## Multiple explanatory variables
-
-.panelset[
-.panel[.panel-name[Plot]
-.pull-left-narrow[
-.question[
-How, if at all, does the relationship between width and height of paintings vary by whether or not they have any landscape elements?
-]
-]
-.pull-right-wide[
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-]
-.panel[.panel-name[Code]
-
-```r
-ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(
-    title = "Height vs. width of paintings, by landscape features",
-    subtitle = "Paris auctions, 1764 - 1780",
-    x = "Width (inches)",
-    y = "Height (inches)",
-    color = "landscape"
-  ) +
-  scale_color_manual(values = c("#E48957", "#071381"))
-```
-]
-]
-
----
-
-## Extending regression lines
-
-.panelset[
-.panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/unnamed-chunk-21-1.png" width="65%" style="display: block; margin: auto;" /&gt;
-]
-.panel[.panel-name[Code]
-
-```r
-ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", se = FALSE,
-*             fullrange = TRUE) +
-  labs(
-    title = "Height vs. width of paintings, by landscape features",
-    subtitle = "Paris auctions, 1764 - 1780",
-    x = "Width (inches)",
-    y = "Height (inches)",
-    color = "landscape"
-  ) +
-  scale_color_manual(values = c("#E48957", "#071381"))
-```
-]
+Source: XKCD, [Extrapolating](https://xkcd.com/605/)
 ]
 
 ---
@@ -589,13 +485,6 @@ is just as important as the model, if not more!
 
 - The scatter plot of the residuals suggests that there might be other factors that account for large parts of painting-to-painting variability, or perhaps just that randomness plays a big role.
 - Adding more explanatory variables to a model can sometimes usefully reduce the size of the scatter plot of the residuals around the predicted values. (We'll talk more about this later.)
-
----
-
-## How do we use models?
-
-- Explanation: Characterize the relationship between `\(y\)` and `\(x\)` via *slopes* for numerical explanatory variables or *differences* for categorical explanatory variables
-- Prediction: Plug in `\(x\)`, get the predicted `\(y\)`
 
 ---
 
@@ -1091,6 +980,18 @@ linear_reg() %&gt;%
 - Paintings whose school is **unknown (X)** are expected, on average, to be **2.87 inches taller** than *Austrian school* paintings.
 ]
 
+---
+
+## Recap: How do we use models?
+
+- Explanation: Characterize the relationship between `\(y\)` and `\(x\)` via 
+  
+  - *slopes* for numerical explanatory variables or 
+  
+  - *differences* for categorical explanatory variables
+  
+  
+- Prediction: Plug in `\(x\)`, get the predicted `\(y\)`
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
