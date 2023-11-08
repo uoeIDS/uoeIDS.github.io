@@ -55,14 +55,22 @@ University of Edinburgh
 - Assessing model fit.
 - Linearity and transformations.
 - Multiple linear regression
-- Model comparison
 - Interaction effects
+- Model comparison
+
 
 
 ---
 class: middle
 
 # Model checking
+
+---
+
+## "Linear" models
+
+- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
+- But how do we assess this?
 
 ---
 
@@ -75,13 +83,6 @@ pp &lt;- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
 
 - Number of observations: 3393
 - Number of variables: 61
-
----
-
-## "Linear" models
-
-- We're fitting a "linear" model, which assumes a linear relationship between our explanatory and response variables.
-- But how do we assess this?
 
 ---
 
@@ -131,36 +132,12 @@ ht_wt_fit_aug
 
 ---
 
-## More on `augment()`
-
-
-```r
-glimpse(ht_wt_fit_aug)
-```
-
-```
-## Rows: 3,135
-## Columns: 9
-## $ .rownames  &lt;chr&gt; "1", "2", "3", "4", "5", "6", "7", "8", "9",…
-## $ Height_in  &lt;dbl&gt; 37, 18, 13, 14, 14, 7, 6, 6, 15, 9, 9, 16, 1…
-## $ Width_in   &lt;dbl&gt; 29.5, 14.0, 16.0, 18.0, 18.0, 10.0, 13.0, 13…
-## $ .fitted    &lt;dbl&gt; 26.65490, 14.55256, 16.11415, 17.67574, 17.6…
-## $ .resid     &lt;dbl&gt; 10.3451004, 3.4474447, -3.1141481, -3.675740…
-## $ .hat       &lt;dbl&gt; 0.0003991488, 0.0003961825, 0.0003611963, 0.…
-## $ .sigma     &lt;dbl&gt; 8.303538, 8.305367, 8.305409, 8.305336, 8.30…
-## $ .cooksd    &lt;dbl&gt; 3.099689e-04, 3.416655e-05, 2.541574e-05, 3.…
-## $ .std.resid &lt;dbl&gt; 1.24600543, 0.41522347, -0.37507338, -0.4427…
-```
-
-
----
-
 ## Looking for...
 
 - Residuals distributed randomly around 0
 - With no visible pattern along the x or y axes
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -170,7 +147,7 @@ glimpse(ht_wt_fit_aug)
 **Fan shapes**
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -180,7 +157,7 @@ glimpse(ht_wt_fit_aug)
 **Groups of patterns**
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -190,7 +167,7 @@ glimpse(ht_wt_fit_aug)
 **Residuals correlated with predicted values**
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -200,7 +177,7 @@ glimpse(ht_wt_fit_aug)
 **Any patterns!**
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -208,7 +185,7 @@ glimpse(ht_wt_fit_aug)
 What patterns does the residuals plot reveal that should make us question whether a linear model is a good fit for modeling the relationship between height and width of paintings?
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -220,13 +197,13 @@ class: middle
 
 ## Data: Paris Paintings
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Price vs. width
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-12-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -251,11 +228,11 @@ Which plot shows a more linear relationship?
 .small[
   
 .pull-left[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ]
@@ -269,10 +246,10 @@ Which plot shows a residuals that are uncorrelated with predicted values from th
 ]
   
 .pull-left[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -302,7 +279,7 @@ be useful.
 How do we interpret the slope of this model?
 ]
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -329,84 +306,23 @@ linear_reg() %&gt;%
 
 ## Interpreting the slope
 
-$$ \widehat{log(price)} = 4.67 + 0.0192 Width $$
+$$ \widehat{log(price)} = 4.67 + 0.0192 \times Width $$
 
---
-- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 livres.
+- For each additional inch the painting is wider, the log price of the painting is expected to be higher, on average, by 0.0192 log livres.
 
 --
 - which is not a very useful statement...
 
----
+Instead:
 
-## Working with logs
+- For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, *by a (multiplicative) factor of 1.0192* (1.0192 = exp(0.0192)).
 
-- Subtraction and logs: `\(log(a) − log(b) = log(a / b)\)`
-
---
-- Natural logarithm: `\(e^{log(x)} = x\)`
-
---
-- We can use these identities to "undo" the log transformation
-
----
-
-## Interpreting the slope
-
-The slope coefficient for the log transformed model is 0.0192, meaning the log price difference between paintings whose widths are one inch apart is predicted to be 0.0192 log livres.
 
 --
 
-.question[
-Using this information, and properties of logs that we just reviewed, fill in the blanks in the following alternate interpretation of the slope:
+In other words:
 
-&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
-]
-
-
----
-
-&gt;For each additional inch the painting is wider, the price of the painting is expected to be `___` , on average, by a factor of `___`.
-
-
-$$ log(\text{price for width x+1}) - log(\text{price for width x}) = 0.0192 $$
-
---
-
-$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
-
---
-
-$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
-
---
-
-$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 $$
-
---
-
-For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, by a factor of 1.02.
-
----
-
-## Recap
-
-- Non-constant variance is one of the most common model violations, however it is usually fixable by transforming the response (y) variable.
-
---
-- The most common transformation when the response variable is right skewed is the log transform: `\(log(y)\)`, especially useful when the response variable is 
-(extremely) right skewed.
-
---
-- This transformation is also useful for variance stabilization.
-
---
-- When using a log transformation on the response variable the interpretation of 
-the slope changes: *"For each unit increase in x, y is expected on average to be higher/lower &lt;br&gt; by a factor of `\(e^{b_1}\)`."*
-
---
-- Another useful transformation is the square root: `\(\sqrt{y}\)`, especially 
-useful when the response variable is counts.
+- For each additional inch the painting is wider, the price of the painting is expected to be higher, on average, *by 1.92%* (1.92 = 100 * 0.0192).
 
 ---
 
@@ -421,10 +337,192 @@ class: middle
 
 # The linear model with multiple predictors
 
+### Two numerical predictors
+
 ---
 
-## Data: Book weight and volume
+## The data
 
+
+```r
+pp &lt;- read_csv("data/paris-paintings.csv",na = c("n/a", "", "NA")) %&gt;%
+  mutate(log_price = log(price))
+```
+
+
+
+---
+
+## Multiple predictors
+
+- Response variable: `log_price` 
+- Explanatory variables: Width and height
+
+.pull-left[
+&lt;img src="w08-L16_files/figure-html/logprice-vs-width-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/logprice-vs-height-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+##  Linear model with multiple predictors
+
+
+```r
+pp_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Width_in + Height_in, data = pp)
+tidy(pp_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   4.77     0.0579      82.4  0       
+## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
+## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
+```
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+
+---
+
+##  Linear model with multiple predictors
+
+.small[
+
+```r
+tidy(pp_fit) %&gt;% mutate(exp_estimate = exp(estimate)) %&gt;% 
+  select(term, estimate, exp_estimate)
+```
+
+```
+## # A tibble: 3 × 3
+##   term        estimate exp_estimate
+##   &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)   4.77        118.   
+## 2 Width_in      0.0269        1.03 
+## 3 Height_in    -0.0133        0.987
+```
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+]
+
+
+
+--
+- **Slope - width:** *All else held constant*, for each additional inch the painting is wider, we would expect the log-price to be higher, on average, by 0.0269.
+
+--
+- **Slope - height:** *All else held constant*, for each additional inch the painting is higher, we would expect the log-price to be lower, on average, by 0.0133.
+
+--
+- **Intercept:** The log-price of paintings that are 0 inches wide and 0 inches high is expected to be 4.77, on average. (Doesn't make sense in context.)
+
+
+---
+
+##  Linear model with multiple predictors
+
+.small[
+
+```r
+tidy(pp_fit) %&gt;% mutate(exp_estimate = exp(estimate)) %&gt;% 
+  select(term, estimate, exp_estimate)
+```
+
+```
+## # A tibble: 3 × 3
+##   term        estimate exp_estimate
+##   &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)   4.77        118.   
+## 2 Width_in      0.0269        1.03 
+## 3 Height_in    -0.0133        0.987
+```
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+]
+
+
+.question[
+Interpret the slope for width in terms of price (not log-price).
+]
+
+
+---
+
+##  Linear model with multiple predictors
+
+.small[
+
+```r
+tidy(pp_fit) %&gt;% mutate(exp_estimate = exp(estimate)) %&gt;% 
+  select(term, estimate, exp_estimate)
+```
+
+```
+## # A tibble: 3 × 3
+##   term        estimate exp_estimate
+##   &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)   4.77        118.   
+## 2 Width_in      0.0269        1.03 
+## 3 Height_in    -0.0133        0.987
+```
+
+`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
+]
+
+
+- **Slope - width:** *All else held constant*, for each additional inch the painting is wider, we would expect the *price* to be higher, on average, *by a factor of 1.03*.
+- **Slope - height:** *All else held constant*, for each additional inch the painting is higher, we would expect the *price* to be lower, on average, *by a factor of 0.98*.
+- **Intercept:** The *price* of paintings that are 0 inches wide and 0 inches high is expected to be *118*, on average. (Doesn't make sense in context.)
+
+
+---
+
+## Visualizing models with multiple predictors
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-wide[
+<div id="htmlwidget-5e1145adb6dc5e0163be" style="width:100%;height:1483.2px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5e1145adb6dc5e0163be">{"x":{"url":"w08-L16_files/figure-html//widgets/widget_plotly-plot.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+]
+]
+.panel[.panel-name[Code]
+
+```r
+p &lt;- plot_ly(pp,
+  x = ~Width_in, y = ~Height_in, z = ~log_price,
+  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
+                line = list(color = "gray", width = 2))) %&gt;%
+  add_markers() %&gt;%
+  plotly::layout(scene = list(
+    xaxis = list(title = "Width (in)"),
+    yaxis = list(title = "Height (in)"),
+    zaxis = list(title = "log_price")
+  )) %&gt;%
+  config(displayModeBar = FALSE)
+frameWidget(p)
+```
+]
+]
+
+---
+class: middle
+
+# The linear model with multiple predictors
+
+### Numerical and categorical predictors
+
+---
+  
+## Data: Book weight and volume
+  
 The `allbacks` data frame gives measurements on the volume and weight of 15 books, some of which are paperback and some of which are hardback
 
 .pull-left[
@@ -465,15 +563,16 @@ These books are from the bookshelf of J. H. Maindonald at Australian National Un
 ]
 
 ---
-
+  
 ## Book weight vs. volume
-
+  
 .pull-left[
 
 ```r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
-  fit(weight ~ volume, data = allbacks) %&gt;%
+  fit(weight ~ volume, 
+      data = allbacks) %&gt;%
   tidy()
 ```
 
@@ -486,8 +585,34 @@ linear_reg() %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-22-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-21-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
+
+---
+
+## Book weight vs. volume and cover
+
+.pull-left[
+
+```r
+allbacks %&gt;% 
+  group_by(cover) %&gt;%
+  summarise(mean_weight = mean(weight))
+```
+
+```
+## # A tibble: 2 × 2
+##   cover mean_weight
+##   &lt;fct&gt;       &lt;dbl&gt;
+## 1 hb           796.
+## 2 pb           628.
+```
+
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-23-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
 
 ---
 
@@ -513,7 +638,7 @@ linear_reg() %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-24-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-25-1.png" width="75%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
 
 ---
@@ -530,34 +655,364 @@ linear_reg() %&gt;%
 ## 3 coverpb     -184.      40.5        -4.55 0.000672
 ```
 
---
 - **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
 
 --
-- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardcover books.
-
---
-- **Intercept:** Hardcover books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
-
-
----
-
-## Main vs. interaction effects
 
 .question[
-Suppose we want to predict weight of books from their volume and cover type 
-(hardback vs. paperback). Do you think a model with main effects or 
-interaction effects is more appropriate? Explain your reasoning.
-
-**Hint:** Main effects would mean rate at which weight changes as volume 
-increases would be the same for hardback and paperback books and interaction 
-effects would mean the rate at which weight changes as volume 
-increases would be different for hardback and paperback books.
+What is the interpretation of the slope for cover?
 ]
 
 ---
 
-&lt;img src="w08-L16_files/figure-html/book-main-int-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+## Interpretation of estimates
+
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic      p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)  198.      59.2         3.34 0.00584     
+## 2 volume         0.718    0.0615     11.7  0.0000000660
+## 3 coverpb     -184.      40.5        -4.55 0.000672
+```
+
+- **Slope - volume:** *All else held constant*, for each additional cubic centimetre books are larger in volume, we would expect the weight to be higher, on average, by 0.718 grams.
+
+- **Slope - cover:** *All else held constant*, paperback books weigh, on average, 184 grams less than hardback books.
+
+--
+- **Intercept:** Hardback books with 0 volume are expected to weigh 198 grams, on average. (Doesn't make sense in context.)
+
+---
+
+## Parallel slopes
+
+By adding the **main effect** for `cover` we obtained to parallel lines for each group.
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-28-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+Can we fit a model so that the fitted lines for the two categories of `cover` are 
+not parallel, 
+or in other words, have a different slope?
+
+---
+
+## Two ways to model
+
+- **Main effects:** Assuming relationship between volume and weight 
+**does not vary** by whether the cover is hardback or paperback.
+- **Interaction effects:** Assuming relationship between volume and weight 
+**varies** by whether the cover is hardback or paperback.
+
+---
+
+## Interacting explanatory variables
+
+- Including an interaction effect in the model allows for different slopes, i.e. 
+nonparallel lines.
+- This implies that the regression coefficient for an explanatory variable would 
+change as another explanatory variable changes.
+- This can be accomplished by adding an interaction variable: the product of two 
+explanatory variables.
+
+---
+
+## Two ways to model
+
+.pull-left[
+- **Main effects:** Assuming relationship between volume and weight **does not vary** by whether the cover is hardback or paperback
+
+- **Interaction effects:** Assuming relationship between volume and weight **varies** by whether the cover is hardback or paperback
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/pp-main-int-viz0-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+In this example, the difference is small. 
+Let's look at another example.
+
+---
+
+## Price, surface area, and living artist
+
+- Explore the relationship between price of paintings and surface area, conditioned 
+on whether or not the artist is still living
+- First visualize and explore, then model
+
+
+
+---
+
+## Typical surface area
+
+.panelset[
+.panel[.panel-name[Plot]
+.pull-left-narrow[
+Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). 
+
+There are very few paintings that have surface area above 5000 square inches.
+]
+.pull-right-wide[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-30-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
+  geom_histogram(binwidth = 500) + 
+  facet_grid(artistliving ~ .) +
+  scale_fill_manual(values = c("#E48957", "#071381")) +
+  guides(fill = FALSE) +
+  labs(x = "Surface area", y = NULL) +
+  geom_vline(xintercept = 1000) +
+  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
+```
+
+```
+## Warning: Removed 176 rows containing non-finite values
+## (`stat_bin()`).
+```
+]
+]
+
+---
+
+## Narrowing the scope
+
+For simplicity let's focus on the paintings with `Surface &lt; 5000`:
+.midi[
+
+```r
+pp_Surf_lt_5000 &lt;- pp %&gt;%
+  filter(Surface &lt; 5000)
+```
+]
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-31-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+]
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = pp_Surf_lt_5000, 
+       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~artistliving) +
+  scale_color_manual(values = c("#E48957", "#071381")) +
+  labs(color = "Artist", shape = "Artist")
+```
+]
+]
+
+---
+
+
+## Fit model with main effects
+
+- Response variable: `log_price`
+- Explanatory variables: `Surface` area and `artistliving`
+
+.midi[
+
+```r
+pp_main_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
+tidy(pp_main_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term               estimate std.error statistic  p.value
+##   &lt;chr&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        4.88     0.0424       115.   0       
+## 2 Surface            0.000265 0.0000415      6.39 1.85e-10
+## 3 artistlivingLiving 0.137    0.0970         1.41 1.57e- 1
+```
+]
+
+--
+
+`$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$`
+
+---
+
+## Solving the model
+
+`$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$`
+
+- Non-living artist: Plug in 0 for `artistliving`
+
+`\begin{align}
+\widehat{log\_price} =&amp; \color{#E48957}{4.88} + 0.000265 \times surface + \color{#E48957}{0.137 \times 0}\\
+=&amp; (\color{#E48957}{4.88+0}) + 0.000265 \times surface\\
+=&amp; \color{#E48957}{4.88} + 0.000265 \times surface
+\end{align}`
+
+--
+- Living artist: Plug in 1 for `artistliving`
+
+`\begin{align}
+\widehat{log\_price} =&amp; \color{#2AA3BB}{4.88} + 0.000265 \times surface + \color{#2AA3BB}{0.137 \times 1}\\
+=&amp; (\color{#2AA3BB}{4.88+0.137}) + 0.000265 \times surface\\
+=&amp; \color{#2AA3BB}{5.017} + 0.000265 \times surface
+\end{align}`
+
+---
+
+## Visualizing main effects
+
+.pull-left-narrow[
+- **Same slope:** Rate of change in price as the surface area increases does
+not vary between paintings by living and non-living artists.
+- **Different intercept:** Paintings by living artists are consistently more
+expensive than paintings by non-living artists.
+]
+.pull-right-wide[
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-32-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Interaction: `Surface * artistliving`
+
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-33-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Fit model with interaction effects
+
+- Response variable: log_price
+- Explanatory variables: `Surface` area, `artistliving`, and their interaction
+
+.midi[
+
+```r
+pp_int_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
+tidy(pp_int_fit)
+```
+
+```
+## # A tibble: 4 × 5
+##   term                       estimate std.error statistic p.value
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
+## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
+## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
+```
+]
+
+---
+
+## Fit model with interaction effects
+
+- Response variable: log_price
+- Explanatory variables: `Surface` area, `artistliving`, and their interaction
+
+.midi[
+
+```r
+pp_int_fit &lt;- linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log_price ~ Surface + artistliving + 
+                  Surface * artistliving, data = pp_Surf_lt_5000)
+tidy(pp_int_fit)
+```
+
+```
+## # A tibble: 4 × 5
+##   term                       estimate std.error statistic p.value
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
+## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
+## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
+```
+]
+
+---
+
+## Linear model with interaction effects
+
+.midi[
+
+```
+## # A tibble: 4 × 5
+##   term                       estimate std.error statistic p.value
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
+## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
+## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
+## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
+```
+]
+
+.small[
+`\begin{align}
+\widehat{log\_price} = 4.91 &amp;+ 0.00021 \times surface - 0.126 \times artistliving + 0.00048 \times surface * artistliving
+\end{align}`
+]
+
+---
+
+## Solving the model
+
+.small[
+`\begin{align}
+\widehat{log\_price} = 4.91 &amp;+ 0.00021 \times surface - 0.126 \times artistliving + 0.00048 \times surface * artistliving
+\end{align}`
+]
+
+- Non-living artist: Plug in 0 for `artistliving`
+
+.small[
+`\begin{align}
+\widehat{log\_price} =&amp; \color{#E48957}{4.91} + \color{#FFCE7E}{0.00021} \times surface \color{#E48957}{- 0.126 \times 0} + \color{#FFCE7E}{0.00048 \times 0} \times surface\\
+=&amp; (\color{#E48957}{4.91+0}) + (\color{#FFCE7E}{0.00021+0}) \times surface\\
+=&amp; \color{#E48957}{4.91} + \color{#FFCE7E}{0.00021} \times surface
+\end{align}`
+]
+
+--
+
+- Living artist: Plug in 1 for `artistliving`
+.small[
+`\begin{align}
+\widehat{log\_price} =&amp; \color{#2AA3BB}{4.91} + \color{#ABC8C0}{0.00021} \times surface \color{#2AA3BB}{- 0.126 \times 1} + \color{#ABC8C0}{0.00048 \times 1} \times surface\\
+=&amp; (\color{#2AA3BB}{4.91-0.126}) + (\color{#ABC8C0}{0.00021+0.00048}) \times surface\\
+=&amp; \color{#2AA3BB}{4.784} + \color{#ABC8C0}{0.00069} \times surface
+\end{align}`
+]
+
+
+
+---
+
+## Interpretation of interaction effects
+
+- Rate of change in price as the surface area of the painting increases does
+vary between paintings by living and non-living artists (different slopes),
+- Some paintings by living artists are more expensive than paintings by
+non-living artists, and some are not (different intercept).
+
+---
+class: middle
+
+# Comparing models
+
+---
+
+## Books weight by volume and cover
+
+&lt;img src="w08-L16_files/figure-html/book-main-int-1.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -576,8 +1031,10 @@ increases would be different for hardback and paperback books.
 
 ---
 
+## Comparing models
+
 .pull-left[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-26-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-34-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 .question[
@@ -589,7 +1046,7 @@ Visually, which of the two models is preferable under Occam's razor?
 
 ## R-squared
 
-- `\(R^2\)` is the percentage of variability in the response variable explained by 
+`\(R^2\)` is the percentage of variability in the response variable explained by 
 the regression model.
 
 
@@ -629,7 +1086,7 @@ regression models.
 
 ---
 
-## Comparing models
+## Comparing models with adjusted R-squared
 
 .pull-left[
 
@@ -670,457 +1127,18 @@ glance(book_int_fit)$adj.r.squared
 
 --
 
-.pull-left-wide[
-.small[
-- Is R-sq higher for int model?
-
-```r
-glance(book_int_fit)$r.squared &gt; glance(book_main_fit)$r.squared 
-```
-
-```
-## [1] TRUE
-```
-
-- Is R-sq adj. higher for int model?
-
-
-```r
-glance(book_int_fit)$adj.r.squared &gt; glance(book_main_fit)$adj.r.squared
-```
-
-```
-## [1] FALSE
-```
-]
-]
----
-
-class: middle
-
-# More detail on multiple predictors
-
----
-class: middle
-
-# Two numerical predictors
-
----
-
-## The data
-
-
-```r
-pp &lt;- read_csv(
-  "data/paris-paintings.csv",
-  na = c("n/a", "", "NA")
-) %&gt;%
-  mutate(log_price = log(price))
-```
-
----
-
-## Multiple predictors
-
-- Response variable: `log_price` 
-- Explanatory variables: Width and height
-
-
-```r
-pp_fit &lt;- linear_reg() %&gt;%
-  set_engine("lm") %&gt;%
-  fit(log_price ~ Width_in + Height_in, data = pp)
-tidy(pp_fit)
-```
-
-```
-## # A tibble: 3 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   4.77     0.0579      82.4  0       
-## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
-## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
-```
-
----
-
-##  Linear model with multiple predictors
-
-
-```
-## # A tibble: 3 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   4.77     0.0579      82.4  0       
-## 2 Width_in      0.0269   0.00373      7.22 6.58e-13
-## 3 Height_in    -0.0133   0.00395     -3.36 7.93e- 4
-```
-
-&lt;br&gt;
-
-`$$\widehat{log\_price} = 4.77 + 0.0269 \times width - 0.0133 \times height$$`
-
----
-
-## Visualizing models with multiple predictors
-
-.panelset[
-.panel[.panel-name[Plot]
-.pull-left-wide[
-<div id="htmlwidget-5e1145adb6dc5e0163be" style="width:100%;height:1483.2px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5e1145adb6dc5e0163be">{"x":{"url":"w08-L16_files/figure-html//widgets/widget_plotly-plot.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
-]
-]
-.panel[.panel-name[Code]
-
-```r
-p &lt;- plot_ly(pp,
-  x = ~Width_in, y = ~Height_in, z = ~log_price,
-  marker = list(size = 3, color = "lightgray", alpha = 0.5, 
-                line = list(color = "gray", width = 2))) %&gt;%
-  add_markers() %&gt;%
-  plotly::layout(scene = list(
-    xaxis = list(title = "Width (in)"),
-    yaxis = list(title = "Height (in)"),
-    zaxis = list(title = "log_price")
-  )) %&gt;%
-  config(displayModeBar = FALSE)
-frameWidget(p)
-```
-]
-]
-
----
-
-class: middle
-
-# Numerical and categorical predictors
-
----
-
-## Price, surface area, and living artist
-
-- Explore the relationship between price of paintings and surface area, conditioned 
-on whether or not the artist is still living
-- First visualize and explore, then model
-- But first, prep the data
-
-.midi[
-
-```r
-pp &lt;- pp %&gt;%
-  mutate(artistliving = if_else(artistliving == 0, "Deceased", "Living"))
-
-pp %&gt;%
-  count(artistliving)
-```
-
-```
-## # A tibble: 2 × 2
-##   artistliving     n
-##   &lt;chr&gt;        &lt;int&gt;
-## 1 Deceased      2937
-## 2 Living         456
-```
-]
-
----
-
-## Typical surface area
-
-.panelset[
-.panel[.panel-name[Plot]
-.pull-left-narrow[
-Typical surface area appears to be less than 1000 square inches (~ 80cm x 80cm). There are very few paintings that have surface area above 5000 square inches.
-]
-.pull-right-wide[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-33-1.png" width="90%" style="display: block; margin: auto;" /&gt;
-]
-]
-.panel[.panel-name[Code]
-
-```r
-ggplot(data = pp, aes(x = Surface, fill = artistliving)) +
-  geom_histogram(binwidth = 500) + 
-  facet_grid(artistliving ~ .) +
-  scale_fill_manual(values = c("#E48957", "#071381")) +
-  guides(fill = FALSE) +
-  labs(x = "Surface area", y = NULL) +
-  geom_vline(xintercept = 1000) +
-  geom_vline(xintercept = 5000, linetype = "dashed", color = "gray")
-```
-
-```
-## Warning: Removed 176 rows containing non-finite values
-## (`stat_bin()`).
-```
-]
-]
-
----
-
-## Narrowing the scope
-
-.panelset[
-.panel[.panel-name[Plot]
-For simplicity let's focus on the paintings with `Surface &lt; 5000`:
-
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-34-1.png" width="55%" style="display: block; margin: auto;" /&gt;
-]
-.panel[.panel-name[Code]
-
-```r
-pp_Surf_lt_5000 &lt;- pp %&gt;%
-  filter(Surface &lt; 5000)
-
-ggplot(data = pp_Surf_lt_5000, 
-       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
-  geom_point(alpha = 0.5) +
-  labs(color = "Artist", shape = "Artist") +
-  scale_color_manual(values = c("#E48957", "#071381"))
-```
-]
-]
-
----
-
-## Facet to get a better look
-
-.panelset[
-.panel[.panel-name[Plot]
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-.panel[.panel-name[Code]
-
-```r
-ggplot(data = pp_Surf_lt_5000, 
-       aes(y = log_price, x = Surface, color = artistliving, shape = artistliving)) +
-  geom_point(alpha = 0.5) +
-  facet_wrap(~artistliving) +
-  scale_color_manual(values = c("#E48957", "#071381")) +
-  labs(color = "Artist", shape = "Artist")
-```
-]
-]
-
----
-
-## Two ways to model
-
-- **Main effects:** Assuming relationship between surface and logged price 
-**does not vary** by whether or not the artist is living.
-- **Interaction effects:** Assuming relationship between surface and logged 
-price **varies** by whether or not the artist is living.
-
----
-
-## Interacting explanatory variables
-
-- Including an interaction effect in the model allows for different slopes, i.e. 
-nonparallel lines.
-- This implies that the regression coefficient for an explanatory variable would 
-change as another explanatory variable changes.
-- This can be accomplished by adding an interaction variable: the product of two 
-explanatory variables.
-
----
-
-## Two ways to model
-
-.pull-left-narrow[
-- **Main effects:** Assuming relationship between surface and logged price **does not vary** by whether or not the artist is living
-- **Interaction effects:** Assuming relationship between surface and logged price **varies** by whether or not the artist is living
-]
-.pull-right-wide[
-&lt;img src="w08-L16_files/figure-html/pp-main-int-viz-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-## Fit model with main effects
-
-- Response variable: `log_price`
-- Explanatory variables: `Surface` area and `artistliving`
-
-.midi[
-
-```r
-pp_main_fit &lt;- linear_reg() %&gt;%
-  set_engine("lm") %&gt;%
-  fit(log_price ~ Surface + artistliving, data = pp_Surf_lt_5000)
-tidy(pp_main_fit)
-```
-
-```
-## # A tibble: 3 × 5
-##   term               estimate std.error statistic  p.value
-##   &lt;chr&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)        4.88     0.0424       115.   0       
-## 2 Surface            0.000265 0.0000415      6.39 1.85e-10
-## 3 artistlivingLiving 0.137    0.0970         1.41 1.57e- 1
-```
-]
-
---
-
-`$$\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times artistliving$$`
-
----
-
-## Solving the model
-
-- Non-living artist: Plug in 0 for `artistliving`
-
-`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 0\)`  
-`\(= 4.88 + 0.000265 \times surface\)`
-
---
-- Living artist: Plug in 1 for `artistliving`
-
-`\(\widehat{log\_price} = 4.88 + 0.000265 \times surface + 0.137 \times 1\)`   
-`\(= 5.017 + 0.000265 \times surface\)`
-
----
-
-## Visualizing main effects
-
-.pull-left-narrow[
-- **Same slope:** Rate of change in price as the surface area increases does 
-not vary between paintings by living and non-living artists.
-- **Different intercept:** Paintings by living artists are consistently more 
-expensive than paintings by non-living artists.
-]
-.pull-right-wide[
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-## Interpreting main effects
-
-.midi[
-
-```r
-tidy(pp_main_fit) %&gt;% 
-  mutate(exp_estimate = exp(estimate)) %&gt;%
-  select(term, estimate, exp_estimate)
-```
-
-```
-## # A tibble: 3 × 3
-##   term               estimate exp_estimate
-##   &lt;chr&gt;                 &lt;dbl&gt;        &lt;dbl&gt;
-## 1 (Intercept)        4.88           132.  
-## 2 Surface            0.000265         1.00
-## 3 artistlivingLiving 0.137            1.15
-```
-]
-
-- All else held constant, for each additional square inch in painting's surface area, the price of the painting is predicted, on average, to be higher by a factor of 1.
-- All else held constant, paintings by a living artist are predicted, on average, to be higher by a factor of 1.15 compared to paintings by an artist who is no longer alive.
-- Paintings that are by an artist who is not alive and that have a surface area of 0 square inches are predicted, on average, to be 132 livres.
-
----
-
-## Main vs. interaction effects
-
-- The way we specified our main effects model only lets `artistliving` affect the intercept.
-- Model implicitly assumes that paintings with living and deceased artists have the *same slope* and only allows for *different intercepts*.  
-
 .question[
-What seems more appropriate in this case?
-+ Same slope and same intercept for both colours
-+ Same slope and different intercept for both colours
-+ Different slope and different intercept for both colours
+Using adjusted R-squared, which of the two models is preferable?
 ]
 
 ---
 
-## Interaction: `Surface * artistliving`
+## Paintings price by surface and living artist
 
-&lt;img src="w08-L16_files/figure-html/unnamed-chunk-37-1.png" width="60%" style="display: block; margin: auto;" /&gt;
-
----
-
-## Fit model with interaction effects
-
-- Response variable: log_price
-- Explanatory variables: `Surface` area, `artistliving`, and their interaction
-
-.midi[
-
-```r
-pp_int_fit &lt;- linear_reg() %&gt;%
-  set_engine("lm") %&gt;%
-  fit(log_price ~ Surface * artistliving, data = pp_Surf_lt_5000)
-tidy(pp_int_fit)
-```
-
-```
-## # A tibble: 4 × 5
-##   term                       estimate std.error statistic p.value
-##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
-## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
-## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
-## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
-```
-]
-
----
-
-## Linear model with interaction effects
-
-.midi[
-
-```
-## # A tibble: 4 × 5
-##   term                       estimate std.error statistic p.value
-##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)                 4.91e+0 0.0432       114.   0      
-## 2 Surface                     2.06e-4 0.0000442      4.65 3.37e-6
-## 3 artistlivingLiving         -1.26e-1 0.119         -1.06 2.89e-1
-## 4 Surface:artistlivingLiving  4.79e-4 0.000126       3.81 1.39e-4
-```
-]
-
-`$$\widehat{log\_price} = 4.91 + 0.00021 \times surface - 0.126 \times artistliving$$`
-`$$+ ~ 0.00048 \times surface * artistliving$$`
-
----
-
-## Interpretation of interaction effects
-
-- Rate of change in price as the surface area of the painting increases does 
-vary between paintings by living and non-living artists (different slopes), 
-- Some paintings by living artists are more expensive than paintings by
-non-living artists, and some are not (different intercept).
-
-.small[
 .pull-left[
-- Non-living artist: 
-`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
-`\(- 0.126 \times 0 + 0.00048 \times surface \times 0\)`
-`\(= 4.91 + 0.00021 \times surface\)`
-- Living artist: 
-`\(\widehat{log\_price} = 4.91 + 0.00021 \times surface\)`
-`\(- 0.126 \times 1 + 0.00048 \times surface \times 1\)`
-`\(= 4.91 + 0.00021 \times surface\)`
-`\(- 0.126 + 0.00048 \times surface\)`
-`\(= 4.784 + 0.00069 \times surface\)`
+&lt;img src="w08-L16_files/figure-html/unnamed-chunk-38-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-&lt;img src="w08-L16_files/figure-html/viz-interaction-effects2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-]
-
----
-
-## Comparing models
-
-It appears that adding the interaction actually increased adjusted `\(R^2\)`, so we 
-should indeed use the model with the interactions.
-
 
 ```r
 glance(pp_main_fit)$adj.r.squared
@@ -1137,6 +1155,15 @@ glance(pp_int_fit)$adj.r.squared
 ```
 ## [1] 0.01676753
 ```
+.question[
+Which of the two models is preferable?
+]
+]
+
+--
+
+It appears that adding the interaction actually increased adjusted `\(R^2\)`, so we
+should indeed use the model with the interactions.
 
 ---
 
@@ -1145,6 +1172,71 @@ glance(pp_int_fit)$adj.r.squared
 - Can you? Yes
 - Should you? Probably not if you want to interpret these interactions in context
 of the data.
+
+---
+
+## Back to log-price vs width and height
+
+- Response variable: `log_price` 
+- Explanatory variables: Width and height
+
+.pull-left[
+&lt;img src="w08-L16_files/figure-html/logprice-vs-width2-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="w08-L16_files/figure-html/logprice-vs-height2-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Comparing models with numerical predictors
+
+
+```r
+single_reg_fit = linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log(price) ~ Width_in, data = pp)
+glance(single_reg_fit)$adj.r.squared
+```
+
+```
+## [1] 0.01908747
+```
+
+
+```r
+mult_reg_fit = linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(log(price) ~ Width_in + Height_in, data = pp)
+glance(mult_reg_fit)$adj.r.squared
+```
+
+```
+## [1] 0.02231559
+```
+
+---
+
+## Recap
+
+- The plot of residuals vs predicted/fitted values can be used as diagnostic plot.
+
+--
+
+- Transformations might help, and `\(\log(y)\)` is useful when the response is right skewed and 
+for variance stabilization.
+
+  - In this case, the interpretation of the coefficients uses percentage change.
+
+--
+
+- We learnt how to fit and interpret models with multiple predictors
+
+- When working with categorical predictors, main effects mean parallel lines, while interaction effects mean different slopes.
+
+--
+
+- We learnt about Occam's razor and how to use adjusted `\(R^2\)` to do model comparison.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
