@@ -1,422 +1,624 @@
 ---
-title: "Misrepresentation"
+title: "Predicting categorical outcomes"
 subtitle: "<br><br> Introduction to Data Science"
-date: "November 2022"
+author: "University of Edinburgh"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
     lib_dir: libs
+    anchor_sections: FALSE
     nature:
       ratio: "16:9"
       highlightLines: true
       highlightStyle: solarized-light
       countIncrementalSlides: false
+
 ---
 
 ```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(lubridate)
-library(scales)
-```
-
-class: middle
-
-# Causality
-
----
-
-```{r echo=FALSE, out.width = "100%"}
-knitr::include_graphics("img/exercise-cancer-time.png")
-```
-
-.footnote[
-.midi[
-Alice Park. [Exercise Can Lower Risk of Some Cancers By 20%](https://time.com/4330041/reduce-cancer-risk-exercise/). Time Magazine. 16 May 2016.
-]
-]
-
----
-
-```{r echo=FALSE, out.width = "100%"}
-knitr::include_graphics("img/exercise-cancer-latimes.png")
-```
-
-.footnote[
-.midi[
-Melissa Healy. [Exercising drives down risk for 13 cancers, research shows
-](https://www.latimes.com/science/sciencenow/la-sci-sn-exercising-cancer-20160516-story.html).  
-Los Angeles Times. 16 May 2016.
-]
-]
-
----
-
-## Original study
-
-Moore, Steven C., et al. **["Association of leisure-time physical activity with risk of 26 types of cancer in 1.44 million adults."](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2521826)** JAMA internal medicine 176.6 (2016): 816-825.
-
-- **Volunteers** were **asked** about their physical activity level over the preceding year. 
-- Half exercised less than about 150 minutes per week, half exercised more. 
-- Compared to the bottom 10% of exercisers, the top 10% had lower rates of esophageal, liver, lung, endometrial, colon, and breast cancer.
-- Researchers found no association between exercising and 13 other cancers (e.g. pancreatic, ovarian, and brain).
-
-.footnote[
-.midi[
-Carl Bergstrom and Jevin West. [Calling Bullshit: The art of skepticism in a data-driven world](https://www.callingbullshit.org/).  
-Random House, 2020.  
-Sharon Begley. ["Does exercise prevent cancer?"](https://www.statnews.com/2016/05/16/exercise-prevent-cancer/). StatNews. 16 May 2016. 
-]
-]
-
----
-
-class: middle
-
-# Axes and scale
-
----
-
-.question[
-What is the difference between these two pictures? Which presents a better way to represent these data?
-]
-
-```{r echo=FALSE, out.width="80%"}
-knitr::include_graphics("img/axis-start-at-0.png")
-```
-
-.footnote[
-.midi[
-Christopher Ingraham. ["You’ve been reading charts wrong. Here’s how a pro does it."](https://www.washingtonpost.com/business/2019/10/14/youve-been-reading-charts-wrong-heres-how-pro-does-it/).  
-The Washington Post. 14 October 2019.
-]
-]
-
----
-
-.question[
-What is wrong with this picture? How would you correct it?
-]
-
-```{r echo=FALSE, out.width="70%"}
-knitr::include_graphics("img/cost_of_gas.png")
-```
-
----
-.pull-left-wide[
-```{r echo=FALSE, out.width="80%"}
-df <- tibble(
-  date = ymd(c("2019-11-01", "2020-10-25", "2020-11-01")),
-  cost = c(3.17, 3.51, 3.57)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+# library(emo)
+library(openintro)
+library(ggridges)
+library(patchwork)
+library(skimr)
+set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
 )
-ggplot(df, aes(x = date, y = cost, group = 1)) +
-  geom_point() +
-  geom_line() +
-  geom_label(aes(label = cost), hjust = -0.25) +
-  labs(
-    title = "Cost of gas",
-    subtitle = "National average",
-    x = NULL, y = NULL, 
-    caption = "Source: AAA Fuel Gauge Report"
-  ) +
-  scale_x_continuous(
-    breaks = ymd(c("2019-11-01", "2020-10-25", "2020-11-01")), 
-    labels = c("Last year", "Last week", "Current"),
-    guide = guide_axis(angle = 90),
-    limits = ymd(c("2019-11-01", "2020-11-29")),
-    minor_breaks = ymd(c("2019-11-01", "2020-10-25", "2020-11-01"))
-  ) +
-  scale_y_continuous(labels = label_dollar())
+
+xaringanExtra::use_panelset()
+```
+
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+## Topics
+
+- Modelling categorical outcomes
+- Brief introduction to GLMs
+- Logistic regression
+- Sensitivity, specificity and ROC curves
+- Using models for prediction
+
+---
+
+class: middle
+
+# Modelling categorical outcomes
+
+---
+
+## Spam filters
+
+.pull-left-narrow[
+- Data from 3921 emails and 21 variables on them
+- Outcome: whether the email is spam or not
+- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+]
+.pull-right-wide[
+.small[
+```{r}
+library(openintro)
+glimpse(email)
 ```
 ]
-.pull-right-narrow[
+]
+
+---
+
+.question[
+Would you expect longer or shorter emails to be spam?
+]
+
+--
+
+.pull-left[
 ```{r echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/cost_of_gas.png")
-```
-]
-
----
-
-.question[
-What is wrong with this picture? How would you correct it?
-]
-
-```{r echo=FALSE, out.width="75%", fig.align = "left"}
-knitr::include_graphics("img/ga-dph-declining-bars.jpg")
-```
-
----
-
-## Graph detective
-
-.center[
-<iframe width="900" height="450" src="https://livefreeordichotomize.com/posts/2020-05-17-graph-detective/" frameborder="0"></iframe>  
-]
-
-.footnote[
-.midi[
-Lucy D'Agostino McGowan. [Graph detective](https://livefreeordichotomize.com/posts/2020-05-17-graph-detective/). Live Free or Dichotomize. 17 May 2020.
-]
-]
-
----
-
-class: middle
-
-# Maps and areas
-
----
-
-.question[
-Do you recognize this map? What does it show?
-]
-
-```{r echo=FALSE,  out.width="60%"}
-knitr::include_graphics("img/election-2016-county.png")
-```
-
---
-
-.footnote[
-.midi[
-Lazaro Gamio. ["Election maps are telling you big lies about small things"](https://www.washingtonpost.com/graphics/politics/2016-election/how-election-maps-lie/).  
-The Washington Post. 1 Nov 2016.
-]
-]
-
----
-
-.pull-left[
-```{r echo=FALSE, out.width="60%"}
-knitr::include_graphics("img/citizens-for-trump.png")
-```
-]
---
-.pull-right[
-```{r echo=FALSE, out.width="60%"}
-knitr::include_graphics("img/counties-for-trump.png")
-```
-]
-
-.footnote[
-.midi[
-Alberto Cairo. [Visual Trumpery talk](https://visualtrumperytour.wordpress.com/).
-]
-]
-
----
-
-```{r echo=FALSE, out.width="65%"}
-knitr::include_graphics("img/cairo-vote-percentages.png")
-```
-
-.footnote[
-.midi[
-Alberto Cairo. [Visual Trumpery talk](https://visualtrumperytour.wordpress.com/).
-]
-]
-
----
-
-```{r echo=FALSE, out.width=900}
-knitr::include_graphics("img/cairo-what-matters.png")
-```
-
-.footnote[
-.midi[
-Alberto Cairo. [Visual Trumpery talk](https://visualtrumperytour.wordpress.com/).
-]
-]
-
----
-
-class: middle
-
-# Visualising uncertainty
-
----
-
-On December 19, 2014, the front page of Spanish national newspaper El
-País read *"Catalan public opinion swings toward 'no' for independence, says survey"*.
-
-```{r echo=FALSE,warning=FALSE}
-catalan <- tibble(
-  response = c("No", "Yes", "No answer"),
-  rate     = c(45.3, 44.5, 10.2)
-) %>%
-  mutate(response = fct_relevel(response, "No", "Yes", "No answer"))
-```
-
-```{r catalan-misleading, fig.height=5,fig.width=7, echo=FALSE,warning=FALSE}
-ggplot(catalan, aes(y = fct_rev(response), x = rate, color = response, group = response)) +
-  geom_point() +
-  geom_segment(aes(x = 0, xend = rate, 
-                   y = fct_rev(response), yend = fct_rev(response)),
-               size = 1) +
-  scale_color_manual(values = c("#5C8AA9", "#9D303A", "gray")) +
-  scale_x_continuous(labels = label_percent(scale = 1)) +
-  guides(color = "none") +
-  theme_minimal(base_size = 16) +
+email %>%
+  ggplot(aes(x = num_char, y = spam, fill = spam, color = spam)) +
+  geom_density_ridges2(alpha = 0.5) +
   labs(
-    title = "Do you want Catalonia\nto become an independent state?",
-    caption = "Margin of error: +/-2.95% at 95% confidence level",
-    x = NULL, y = NULL
-  )
-```
-
-.footnote[
-.midi[
-Alberto Cairo. [The truthful art: Data, charts, and maps for communication](http://www.thefunctionalart.com/p/the-truthful-art-book.html). New Riders, 2016.
-]
-]
-
----
-
-.pull-left-wide[
-```{r echo=FALSE, out.width="80%",fig.height=5,fig.width=7,warning=FALSE}
-catalan <- catalan %>%
-  mutate(
-    low = rate - 2.95,
-    high = rate + 2.95
-  )
-ggplot(catalan, aes(y = fct_rev(response), x = rate, color = response, group = response)) +
-  geom_segment(aes(x = low, xend = high, 
-                   y = fct_rev(response), yend = fct_rev(response)),
-               size = 0.8, color = "black") +
-  geom_point(size = 3) +
-  scale_color_manual(values = c("#5C8AA9", "#9D303A", "gray")) +
-  scale_x_continuous(labels = label_percent(scale = 1)) +
-  guides(color = "none") +
-  theme_minimal(base_size = 16) +
-  labs(
-    title = "Do you want Catalonia\nto become an independent state?",
-    caption = "The probability of the tiny difference between the\n'No' and 'Yes' being just due to random chance is very high.",
-    x = NULL, y = NULL
-  )
-```
-]
-.pull-right-narrow[
-```{r ref.label="catalan-misleading", out.width = "100%", echo = FALSE,warning=FALSE}
-```
-]
-
-.footnote[
-.midi[
-Alberto Cairo. ["Uncertainty and Graphicacy: How Should Statisticians Journalists and Designers Reveal Uncertainty in Graphics for Public Consumption?"](https://ec.europa.eu/eurostat/cros/powerfromstatistics/OR/PfS-OutlookReport-Cairo.pdf), Power from Statistics: Data Information and Knowledge, 2017.
-]
-]
-
----
-
-class: middle
-
-# Further reading
-
----
-
-.pull-left[
-```{r echo=FALSE, out.width=350, fig.align="right"}
-knitr::include_graphics("img/cairo-how-charts-lie.jpg")
+    x = "Number of characters (in thousands)", 
+    y = "Spam",
+    title = "Spam vs. number of characters"
+    ) +
+  guides(color = "none", fill = "none") +
+  scale_fill_manual(values = c("#E48957", "#CA235F")) +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F"))
 ```
 ]
 .pull-right[
-[How Charts Lie](http://www.thefunctionalart.com/p/reviews.html)  
-Getting Smarter about Visual Information  
-
-by Alberto Cairo
-]
-
----
-
-.pull-left[
-```{r echo=FALSE, out.width=350, fig.align="right"}
-knitr::include_graphics("img/calling-bullshit.png")
+```{r echo=FALSE}
+email %>% 
+  group_by(spam) %>% 
+  summarise(mean_num_char = mean(num_char))
 ```
-]
-.pull-right[
-[Calling Bullshit](https://www.callingbullshit.org/)  
-The Art of Skepticism in a  
-Data-Driven World   
-
-by Carl Bergstrom and Jevin West
-]
----
-
-class: middle
-
-# Case study: 
-# AOL search data leak 
-
----
-
-```{r echo=FALSE, out.width="80%"}
-knitr::include_graphics("img/aol-data-leak.png")
-```
-
-.footnote[
-.midi[
-Michael Barbaro and Tom Zeller Jr. [A Face Is Exposed for AOL Searcher No. 4417749](https://www.nytimes.com/2006/08/09/technology/09aol.html).  
-New York Times. 9 August 2006.
-]
-]
-
----
-
-class: middle
-
-# Data privacy
----
-
-class: middle
-
-# Case study: 
-# OK Cupid
-
----
-
-## OK Cupid data breach
-
-- In 2016, researchers published data of 70,000 OkCupid users—including usernames, political leanings, drug usage, and intimate sexual details
-
-- Researchers didn't release the real names and pictures of OKCupid users, but their identities could easily be uncovered from the details provided, e.g. usernames
-
---
-
-.pull-left-wide[
->Some may object to the ethics of gathering and releasing this data. However, all the data found in the dataset are or were already publicly available, so releasing this dataset merely presents it in a more useful form. 
->
->Researchers Emil Kirkegaard and Julius Daugbjerg Bjerrekær
 ]
 
 ---
 
 .question[
-In analysis of data that individuals willingly shared publicly on a given platform (e.g. social media), how do you make sure you don't violate reasonable expectations of privacy?
+Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
 ]
+
+--
 
 ```{r echo=FALSE}
-knitr::include_graphics("img/okcupid-tweet.png")
+email %>%
+  ggplot(aes(x = re_subj, fill = spam)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = 'Whether “re:”, "RE:", etc. was in the email subject.', 
+    fill = "Spam", 
+    y = NULL,
+    title = 'Spam vs. "re:" in subject'
+    ) +
+  scale_fill_manual(values = c("#DEB4A0", "#CA235F"))
 ```
 
+---
+
+## Modelling spam
+
+- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam. How do we come up with a model that will let us explore this relationship?
+
+--
+- For simplicity, we'll focus on the number of characters (`num_char`) as predictor, but the model we describe can be expanded to take multiple predictors as well.
+
+---
+
+## Modelling spam
+
+This isn't something we can reasonably fit a linear model to -- we need something different!
+
+```{r echo=FALSE, out.width="70%"}
+means <- email %>%
+  group_by(spam) %>%
+  summarise(mean_num_char = mean(num_char)) %>%
+  mutate(group = 1)
+
+ggplot(email, aes(x = num_char, y = spam, color = spam)) +
+  geom_jitter(alpha = 0.2) +
+  geom_line(data = means, aes(x = mean_num_char, y = spam, group = group), color = "black", linewidth = 1.5) +
+  labs(x = "Number of characters (in thousands)", y = "Spam") +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
+  guides(color = "none")
+```
+
+---
+
+## Framing the problem
+
+- We can treat each outcome (spam and not) as successes and failures arising from separate Bernoulli trials
+  - Bernoulli trial: a random experiment with exactly two possible outcomes, "success" and "failure", in which the probability of success is the same every time the experiment is conducted
+
+--
+- Each Bernoulli trial can have a separate probability of success
+
+$$ y_i ∼ Bern(p_i) $$
+
+--
+- We can then use the predictor variables to model that probability of success, $p_i$
+
+--
+- We can't just use a linear model for $p_i$ (since $p_i$ must be between 0 and 1) but we can transform the linear model to have the appropriate range
+
+---
+
+## Generalized linear models
+
+- This is a very general way of addressing many problems in regression and the resulting models are called **generalized linear models (GLMs)**
+
+--
+- Logistic regression is just one example
+
+---
+
+## Three characteristics of GLMs
+
+All GLMs have the following three characteristics:
+
+1. A probability distribution describing a generative model for the outcome variable
+
+--
+2. A linear model:
+$$\eta = \beta_0 + \beta_1 X_1 + \cdots + \beta_k X_k$$
+
+--
+3. A link function that relates the linear model to the parameter of the outcome distribution
+  
+---
+
+class: middle
+
+# Logistic regression
+
+---
+
+## Logistic regression
+
+- Logistic regression is a GLM used to model a binary categorical outcome using numerical and categorical predictors
+
+--
+- To finish specifying the Logistic model we just need to define a reasonable link function that connects $\eta_i$ to $p_i$: logit function
+
+--
+- **Logit function:** For $0\le p \le 1$
+
+$$logit(p) = \log\left(\frac{p}{1-p}\right)$$
+
+
+
+---
+
+## Logit function, visualised
+
+```{r echo=FALSE}
+d <- tibble(p = seq(0.001, 0.999, length.out = 1000)) %>%
+  mutate(logit_p = log(p/(1-p)))
+
+ggplot(d, aes(x = p, y = logit_p)) + 
+  geom_line() + 
+  xlim(0,1) + 
+  ylab("logit(p)") +
+  labs(title = "logit(p) vs. p")
+```
+
+---
+
+## Properties of the logit
+
+- The logit function takes a value between 0 and 1 and maps it to a value between $-\infty$ and $\infty$
+
+--
+- Inverse logit (logistic) function:
+$$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$
+
+--
+- The inverse logit function takes a value between $-\infty$ and $\infty$ and maps it to a value between 0 and 1
+
+--
+- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
+
+---
+
+## The logistic regression model
+
+- Based on the three GLM criteria we have
+  - $y_i \sim \text{Bern}(p_i)$
+  - $\eta_i = \beta_0+\beta_1 x_{1,i} + \cdots + \beta_n x_{n,i}$
+  - $\text{logit}(p_i) = \eta_i$
+
+--
+- From which we get
+
+$$p_i = \frac{\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}{1+\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}$$
+---
+
+## Modeling spam
+
+In R we fit a GLM in the same way as a linear model except we
+
+- specify the model with `logistic_reg()`
+- use `"glm"` instead of `"lm"` as the engine 
+- define `family = "binomial"` for the link function to be used in the model
+
+--
+
+```{r}
+spam_fit <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ num_char, data = email, family = "binomial")
+
+tidy(spam_fit)
+```
+
+---
+
+## Spam model
+
+```{r}
+tidy(spam_fit)
+```
+
+--
+
+Model:
+$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times \text{num_char}$$
+
+---
+
+## P(spam) for an email with 2000 characters 
+
+$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times 2$$
+--
+$$\frac{p}{1-p} = \exp(-1.9242) = 0.15 \rightarrow p = 0.15 \times (1 - p)$$
+--
+$$p = 0.15 - 0.15p \rightarrow 1.15p = 0.15$$
+--
+$$p = 0.15 / 1.15 = 0.13$$
+
+---
+
+.question[
+What is the probability that an email with 15000 characters is spam? What about an email with 40000 characters?
+]
+
+--
+
+.pull-left[
+```{r spam-predict-viz, echo=FALSE, out.width = "100%", fig.asp=0.5}
+newdata <- tibble(
+  num_char = c(2, 15, 40),
+  color    = c("#A7D5E8", "#e9d968", "#8fada7"),
+  shape    = c(22, 24, 23)
+  )
+
+y_hat <- predict(spam_fit, newdata, type = "raw")
+p_hat <- exp(y_hat) / (1 + exp(y_hat))
+
+newdata <- newdata %>%
+  bind_cols(
+    y_hat = y_hat,
+    p_hat = p_hat
+  )
+
+spam_aug <- augment(spam_fit$fit) %>%
+  mutate(prob = exp(.fitted) / (1 + exp(.fitted)))
+
+ggplot(spam_aug, aes(x = num_char)) +
+  geom_point(aes(y = as.numeric(spam)-1, color = spam), alpha = 0.3) +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  guides(color = "none") +
+  geom_line(aes(y = prob)) +
+  geom_point(data = newdata, aes(x = num_char, y = p_hat), 
+             fill = newdata$color, shape = newdata$shape, 
+             stroke = 1, size = 6) +
+  labs(
+    x = "Number of characters (in thousands)",
+    y = "Spam", 
+    title = "Spam vs. number of characters"
+  )
+```
+]
+.pull-right[
+- .light-blue[`r paste0(newdata$num_char[1], "K chars: P(spam) = ", round(newdata$p_hat[1], 2))`]
+- .yellow[`r paste0(newdata$num_char[2], "K chars, P(spam) = ", round(newdata$p_hat[2], 2))`]
+- .green[`r paste0(newdata$num_char[3], "K chars, P(spam) = ", round(newdata$p_hat[3], 2))`]
+]
+
+---
+
+.question[
+Would you prefer an email with 2000 characters to be labelled as spam or not? How about 40,000 characters?
+]
+
+```{r ref.label="spam-predict-viz", echo=FALSE, fig.asp=0.5}
+```
 
 ---
 
 class: middle
 
-# Case study: 
-# Facebook & Cambridge Analytica
+# Sensitivity and specificity
 
 ---
 
-```{r echo=FALSE, out.width="75%"}
-knitr::include_graphics("img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg")
+## False positive and negative
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+- False negative rate = P(Labelled not spam | Email spam) = FN / (TP + FN) 
+
+- False positive rate = P(Labelled spam | Email not spam) = FP / (FP + TN)
+
+---
+
+## Sensitivity and specificity
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+
+- Sensitivity = P(Labelled spam | Email spam) = TP / (TP + FN)
+  - Sensitivity = 1 − False negative rate
+  
+- Specificity = P(Labelled not spam | Email not spam) = TN / (FP + TN) 
+  - Specificity = 1 − False positive rate
+
+---
+
+.question[
+If you were designing a spam filter, would you want sensitivity and specificity to be high or low? What are the trade-offs associated with each decision? 
+]
+
+---
+class: middle
+
+# Prediction and classification
+
+---
+
+## Goal: Building a spam filter
+
+- Data: Set of emails and we know if each email is spam/not and other features 
+- Use logistic regression to predict the probability that an incoming email is spam
+- Use model selection to pick the model with the best predictive performance
+
+--
+- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
+
+--
+- A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
+
+---
+
+## A multiple regression approach
+
+.panelset[
+.panel[.panel-name[Output]
+.small[
+```{r ref.label = "spam-mlr", echo = FALSE, warning = FALSE}
+```
+]
+]
+.panel[.panel-name[Code]
+```{r spam-mlr, results = "hide"}
+logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ ., data = email, family = "binomial") %>%
+  tidy() %>%
+  print(n = 22)
+```
+]
+]
+
+---
+
+## Prediction
+
+- The mechanics of prediction is **easy**:
+  - Plug in values of predictors to the model equation
+  - Calculate the predicted value of the response variable, $\hat{y}$
+
+--
+- Getting it right is **hard**!
+  - There is no guarantee the model estimates you have are correct
+  - Or that your model will perform as well with new data as it did with your sample data
+
+---
+
+## Underfitting and overfitting
+
+```{r echo=FALSE, out.width="70%", warning = FALSE}
+lm_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(y4 ~ x2, data = association)
+
+loess_fit <- loess(y4 ~ x2, data = association)
+
+loess_overfit <- loess(y4 ~ x2, span = 0.05, data = association)
+
+association %>%
+  select(x2, y4) %>%
+  mutate(
+    Underfit = augment(lm_fit$fit) %>% select(.fitted) %>% pull(),
+    OK       = augment(loess_fit) %>% select(.fitted) %>% pull(),
+    Overfit  = augment(loess_overfit) %>% select(.fitted) %>% pull(),
+  ) %>%
+  pivot_longer(
+    cols      = Underfit:Overfit,
+    names_to  = "fit",
+    values_to = "y_hat"
+  ) %>%
+  mutate(fit = fct_relevel(fit, "Underfit", "OK", "Overfit")) %>%
+  ggplot(aes(x = x2)) +
+  geom_point(aes(y = y4), color = "darkgray") +
+  geom_line(aes(y = y_hat, group = fit, color = fit), linewidth = 1) +
+  labs(x = NULL, y = NULL, color = NULL) +
+  scale_color_viridis_d(option = "plasma", end = 0.7)
 ```
 
-.footnote[
-.midi[
-Carole Cadwalladr and Emma Graham-Harrison. [How Cambridge Analytica turned Facebook ‘likes’ into a lucrative political tool](https://www.theguardian.com/technology/2018/mar/17/facebook-cambridge-analytica-kogan-data-algorithm). The Guardian. 17 March 2018.
-]
-]
 ---
 
-[Protection of privacy](https://www.youtube.com/watch?v=pT19VwBAqKA)
+## Spending our data
+
+- Several steps to create a useful model: parameter estimation, model selection, performance assessment, etc.
+
+- Doing all of this on the entire data we have available can lead to **overfitting**
+
+- Allocate specific subsets of data for different tasks, as opposed to allocating the largest possible amount to the model parameter estimation only (which is what we've done so far)
+
 ---
+
+class: middle
+
+# Splitting data
+
+---
+
+## Splitting data
+
+- **Training set:**
+  - Sandbox for model building 
+  - Spend most of your time using the training set to develop the model
+  - Majority of the data (usually 80%)
+  
+- **Testing set:**
+  - Held in reserve to determine efficacy of one or two chosen models
+  - Critical to look at it once, otherwise it becomes part of the modeling process
+  - Remainder of the data (usually 20%)
+  
+---
+
+## Performing the split
+
+```{r}
+# Fix random numbers by setting the seed 
+# Enables analysis to be reproducible when random numbers are used 
+set.seed(1116)
+
+# Put 80% of the data into the training set 
+email_split <- initial_split(email, prop = 0.80)
+
+# Create data frames for the two sets:
+train_data <- training(email_split)
+test_data  <- testing(email_split)
+```
+
+---
+
+## Peek at the split
+
+.small[
+.pull-left[
+```{r}
+glimpse(train_data)
+```
+]
+.pull-right[
+```{r}
+glimpse(test_data)
+```
+]
+]
+
