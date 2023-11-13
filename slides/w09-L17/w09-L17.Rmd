@@ -191,7 +191,7 @@ email %>%
 
 ## Modelling spam
 
-- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam. How do we come up with a model that will let us explore this relationship?
+- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam.  How do we come up with a model that will let us explore this relationship?
 
 --
 - For simplicity, we'll focus on the number of characters (`num_char`) as predictor, but the model we describe can be expanded to take multiple predictors as well.
