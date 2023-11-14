@@ -108,7 +108,7 @@ University of Edinburgh
 - Modelling categorical outcomes
 - Brief introduction to GLMs
 - Logistic regression
-- Sensitivity, specificity and ROC curves
+- Sensitivity and specificity
 - Using models for prediction
 
 ---
@@ -141,7 +141,17 @@ glimpse(email)
 Would you expect longer or shorter emails to be spam?
 ]
 
---
+Connect to Wooclap using code **KZSBNR** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qrcode.png")
+```
+
+---
+
+.question[
+Would you expect longer or shorter emails to be spam?
+]
 
 .pull-left[
 ```{r echo=FALSE, out.width="100%"}
@@ -172,7 +182,18 @@ email %>%
 Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
 ]
 
---
+Connect to Wooclap using code **KZSBNR** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qrcode.png")
+```
+
+---
+
+.question[
+Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
+]
+
 
 ```{r echo=FALSE}
 email %>%
@@ -311,6 +332,20 @@ $$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$
 --
 - This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
 
+---
+
+## Logistic function, visualised
+
+```{r echo=FALSE}
+d <- tibble(x = seq(-10, 10, length.out = 1000)) %>%
+  mutate(logistic_x = 1/(1+exp(-x)))
+
+ggplot(d, aes(x = x, y = logistic_x)) + 
+  geom_line() + 
+  ylim(0,1) + 
+  ylab("logistic(x)") +
+  labs(title = "logistic(x) vs. x")
+```
 ---
 
 ## The logistic regression model
@@ -471,6 +506,13 @@ class: middle
 If you were designing a spam filter, would you want sensitivity and specificity to be high or low? What are the trade-offs associated with each decision? 
 ]
 
+Connect to Wooclap using code **KZSBNR** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qrcode.png")
+```
+
+
 ---
 class: middle
 
@@ -595,7 +637,7 @@ class: middle
 ```{r}
 # Fix random numbers by setting the seed 
 # Enables analysis to be reproducible when random numbers are used 
-set.seed(1116)
+set.seed(1114)
 
 # Put 80% of the data into the training set 
 email_split <- initial_split(email, prop = 0.80)
@@ -622,3 +664,12 @@ glimpse(test_data)
 ]
 ]
 
+---
+
+## Recap
+
+- How to model categorical outcomes
+- Introduction to GLMs
+- Logistic regression
+- Sensitivity and specificity
+- Splitting the data in train and test set.
