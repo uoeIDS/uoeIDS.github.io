@@ -306,8 +306,8 @@ however you like, this is just one option!</span></span></p>
 <h2>Exercise 1: Create a linear regression model</h2>
 <p>Consider the numerical values <code>educ</code> and <code>emailhr</code> from your new data set <code>gss16_advfront</code>.</p>
 <ol style="list-style-type: lower-alpha">
-<li><p>Fit a linear regression model to predicting <code>emailhr</code> based on the <code>educ</code>. From your output, state the formula for the line-of-best fit and give an interpretation of the <code>emailhr</code> estimate.</p></li>
-<li><p>Comment on the overall performance of the linear regression model. Support your statements with an appropriate data visualisation and model fit statistics.</p></li>
+<li><p>Fit a linear regression model to predicting <code>emailhr</code> based on the <code>educ</code>. From your output, state the formula for the line-of-best fit and give an interpretation of the <code>emailhr</code> estimate. (3 pts)</p></li>
+<li><p>Comment on the overall performance of the linear regression model. Support your statements with an appropriate data visualisation and model fit statistics. (2 pts)</p></li>
 </ol>
 <p><label for="tufte-mn-3" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-3" class="margin-toggle"><span class="marginnote"><span style="display: block;">Use the specific function <code>glance()</code> to see all
 details.</span></span></p>
@@ -329,7 +329,7 @@ naming these <code>_1</code>.</span></span></p>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>gss16_train <span class="ot">&lt;-</span> <span class="fu">training</span>(gss16_split)</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>gss16_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(gss16_split)</span></code></pre></div>
 <ol style="list-style-type: lower-alpha">
-<li>Build a workflow for the training data that consists of a recipe (<code>gss16_rec_1</code>) and a model (<code>gss16_mod_1</code>). Name this workflow <code>gss16_wflow_1</code>.</li>
+<li>Build a workflow for the training data that consists of a recipe (<code>gss16_rec_1</code>) and a model (<code>gss16_mod_1</code>). Name this workflow <code>gss16_wflow_1</code>. (4 pts)</li>
 </ol>
 <p>The recipe (named <code>gss16_rec_1</code>) should contain the following steps for predicting <code>advfront</code> from <code>educ</code>:</p>
 <ul>
@@ -337,7 +337,7 @@ naming these <code>_1</code>.</span></span></p>
 <li><p>The model (named <code>gss16_mod_1</code>) should specify a model that is appropriate for the data as well as the computational engine.</p></li>
 </ul>
 <ol start="2" style="list-style-type: lower-alpha">
-<li>Explain why you have chosen the model that you have selected.</li>
+<li>Explain why you have chosen the model that you have selected. (1 pt)</li>
 </ol>
 <p><label for="tufte-mn-5" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-5" class="margin-toggle"><span class="marginnote"><span style="display: block;">You can de-select things using the minus sign, just as you can when
 using <code>select</code>, and in this case it’s fine to combine
@@ -348,8 +348,8 @@ positive and negative selections.</span></span></p>
 <div id="exercise-3-logistic-regression-with-single-predictor" class="section level2">
 <h2>Exercise 3: Logistic regression with single predictor</h2>
 <ol style="list-style-type: lower-alpha">
-<li><p>Apply the workflow you defined earlier to the training dataset and named the model as <code>gss16_fit_1</code>. Display the resulting tibble containing the fitted model parameters.</p></li>
-<li><p>Use the fitted models to predict the test data, plot the ROC curve for the predictions.</p></li>
+<li><p>Apply the workflow you defined earlier to the training dataset and named the model as <code>gss16_fit_1</code>. Display the resulting tibble containing the fitted model parameters. (2 pts)</p></li>
+<li><p>Use the fitted models to predict the test data, plot the ROC curve for the predictions. (3 pts)</p></li>
 </ol>
 <p>✏️️🧶 ✅ ⬆️ <em>Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says “Completed Exercise 3”, and push.</em></p>
 <hr />
@@ -367,7 +367,7 @@ positive and negative selections.</span></span></p>
 </ul>
 <p>Apply the new workflow to the training dataset and create a new model fit
 named as <code>gss16_fit_2</code>.</p>
-<p>Then use the fitted models to predict the test data, plot the ROC curve for the predictions for both models, and calculate the areas under the ROC curves.</p>
+<p>Then use the fitted models to predict the test data, plot the ROC curve for the predictions for both models, and calculate the areas under the ROC curves. (3 pts)</p>
 <p><label for="tufte-mn-6" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-6" class="margin-toggle"><span class="marginnote"><span style="display: block;">Mainly, this exercise is an extension to the earlier model by adding
 <code>polviews</code> and <code>wrkstat</code> as extra explanatory
 variables.</span></span></p>
@@ -378,7 +378,7 @@ variables.</span></span></p>
 <li>the model only including <code>educ</code>, as model 1 (<code>gss16_fit_1</code>)</li>
 <li>the model including <code>polviews</code>, <code>wrkstat</code>, and <code>educ</code> with <code>gss16_split</code> as model 2 (<code>gss16_fit_2</code>)</li>
 </ul>
-<p>Explain your reasoning.</p>
+<p>Explain your reasoning. (2 pts)</p>
 <p>✏️️🧶 ✅ ⬆️ <em>Write your answer in your R Markdown document under Exercise 4 knit the document, commit your changes with a commit message that says “Completed Exercise 4”, and push.</em></p>
 <hr />
 <hr />
