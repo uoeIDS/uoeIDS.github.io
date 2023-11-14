@@ -182,9 +182,9 @@ You now have the cleaned and pre-processe data to use for modelling, you can con
 
 Consider the numerical values `educ` and `emailhr` from your new data set `gss16_advfront`.
 
-a) Fit a linear regression model to predicting `emailhr` based on the `educ`. From your output, state the formula for the line-of-best fit and give an interpretation of the `emailhr` estimate.
+a) Fit a linear regression model to predicting `emailhr` based on the `educ`. From your output, state the formula for the line-of-best fit and give an interpretation of the `emailhr` estimate. (3 pts)
 
-b) Comment on the overall performance of the linear regression model. Support your statements with an appropriate data visualisation and model fit statistics.
+b) Comment on the overall performance of the linear regression model. Support your statements with an appropriate data visualisation and model fit statistics. (2 pts)
 
 ```{marginfigure}
 Use the specific function `glance()` to see all details. 
@@ -216,7 +216,7 @@ gss16_train <- training(gss16_split)
 gss16_test  <- testing(gss16_split)
 ```
 
-a) Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_mod_1`). Name this workflow `gss16_wflow_1`.
+a) Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_mod_1`). Name this workflow `gss16_wflow_1`. (4 pts)
     
 The recipe (named `gss16_rec_1`) should contain the following steps for predicting `advfront` from `educ`:
 
@@ -224,7 +224,7 @@ The recipe (named `gss16_rec_1`) should contain the following steps for predicti
 
   - The model (named `gss16_mod_1`) should specify a model that is appropriate for the data as well as the computational engine.
 
-b) Explain why you have chosen the model that you have selected.
+b) Explain why you have chosen the model that you have selected. (1 pt)
 
 
 ```{marginfigure}
@@ -238,9 +238,9 @@ You can de-select things using the minus sign, just as you can when using `selec
 
 ## Exercise 3: Logistic regression with single predictor
 
-a) Apply the workflow you defined earlier to the training dataset and named the model as `gss16_fit_1`. Display the resulting tibble containing the fitted model parameters. 
+a) Apply the workflow you defined earlier to the training dataset and named the model as `gss16_fit_1`. Display the resulting tibble containing the fitted model parameters. (2 pts)
 
-b) Use the fitted models to predict the test data, plot the ROC curve for the predictions.
+b) Use the fitted models to predict the test data, plot the ROC curve for the predictions. (3 pts)
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
 
@@ -261,7 +261,7 @@ Now the new recipe (named `gss16_rec_2`) should contain the followings for predi
 Apply the new workflow to the training dataset and create a new model fit 
 named as `gss16_fit_2`. 
 
-Then use the fitted models to predict the test data, plot the ROC curve for the predictions for both models, and calculate the areas under the ROC curves.
+Then use the fitted models to predict the test data, plot the ROC curve for the predictions for both models, and calculate the areas under the ROC curves. (3 pts)
 
 ```{marginfigure}
 Mainly, this exercise is an extension to the earlier model by adding `polviews` and `wrkstat` as extra explanatory variables.
@@ -272,7 +272,7 @@ b) Comment on which model performs better
   * the model only including `educ`, as model 1 (`gss16_fit_1`) 
   * the model including `polviews`, `wrkstat`, and `educ` with `gss16_split` as model 2 (`gss16_fit_2`)
   
-Explain your reasoning.
+Explain your reasoning. (2 pts)
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4 knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
 
