@@ -125,11 +125,19 @@ class: middle
 ## Continued - Building a spam filter
 
 - Data: Set of emails. We know if each email is spam/not and other features.
+
 - Use logistic regression to predict the probability that an incoming email is spam.
+
 - Use model selection to pick the model with the best predictive performance.
+
+--
+
 - Reminder: split the data into a training dataset and a test dataset.
+
 - Use the training dataset to investigate and fit models.
+
 - Choose 1 or 2 models and test how well they predict the test dataset. 
+
 - Helps us avoid overfitting.
 
 ---
@@ -246,6 +254,20 @@ train_data %>%
 
 ---
 
+## `from` and `sent_email`
+
+.question[
+If we predict "spam" using only "sent_email", what do you think is the prediction for an email with *sent_email = 1*?
+]
+
+Connect to Wooclap using code **TDOGLC** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qrcode.png")
+```
+
+---
+
 ## Numerical predictors
 
 .small[
@@ -354,7 +376,21 @@ email_pred %>%
 
 ## Evaluate the performance
 
-Find the area under the curve:
+.question[
+In this plot, what is the ideal point = (1-specificity, sensitivity) that we would like our curve to go through?
+]
+
+Connect to Wooclap using code **TDOGLC** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qrcode.png")
+```
+
+---
+
+## Evaluate the performance
+
+Find the **area under the curve**:
 
 .pull-left[
 ```{r}
@@ -694,16 +730,9 @@ email_pred %>%
 
 ## Cutoff probability: 0.25
 
-.panelset[
-.panel[.panel-name[Output]
-
 Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.25**.
 
-```{r ref.label = "confusion-25,", echo = FALSE}
-```
-]
-.panel[.panel-name[Code]
-```{r confusion-25, results = "hide"}
+```{r confusion-25, echo = FALSE}
 cutoff_prob <- 0.25
 email_pred %>%
   mutate(
@@ -714,23 +743,14 @@ email_pred %>%
   pivot_wider(names_from = spam, values_from = n) %>%
   kable(col.names = c("", "Email is not spam", "Email is spam"))
 ```
-]
-]
 
 ---
 
 ## Cutoff probability: 0.75
 
-.panelset[
-.panel[.panel-name[Output]
-
 Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.75**.
 
-```{r ref.label = "confusion-75,", echo = FALSE}
-```
-]
-.panel[.panel-name[Code]
-```{r confusion-75, results = "hide"}
+```{r confusion-75, echo=FALSE}
 cutoff_prob <- 0.75
 email_pred %>%
   mutate(
@@ -741,6 +761,16 @@ email_pred %>%
   pivot_wider(names_from = spam, values_from = n) %>%
   kable(col.names = c("", "Email is not spam", "Email is spam"))
 ```
-]
-]
+
+---
+
+## Recap
+
+- ROC curve and AUC
+
+- Feature engineering
+
+- Workflows and recipes
+
+- Making decisions
 

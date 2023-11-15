@@ -66,11 +66,19 @@ class: middle
 ## Continued - Building a spam filter
 
 - Data: Set of emails. We know if each email is spam/not and other features.
+
 - Use logistic regression to predict the probability that an incoming email is spam.
+
 - Use model selection to pick the model with the best predictive performance.
+
+--
+
 - Reminder: split the data into a training dataset and a test dataset.
+
 - Use the training dataset to investigate and fit models.
+
 - Choose 1 or 2 models and test how well they predict the test dataset. 
+
 - Helps us avoid overfitting.
 
 ---
@@ -198,6 +206,18 @@ train_data %&gt;%
 ## 3 1     0            299
 ```
 ]
+
+---
+
+## `from` and `sent_email`
+
+.question[
+If we predict "spam" using only "sent_email", what do you think is the prediction for an email with *sent_email = 1*?
+]
+
+Connect to Wooclap using code **TDOGLC** or QR code
+
+&lt;img src="img/qrcode.png" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -398,7 +418,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w09-L18_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w09-L18_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .footnote[
@@ -411,7 +431,19 @@ email_pred %&gt;%
 
 ## Evaluate the performance
 
-Find the area under the curve:
+.question[
+In this plot, what is the ideal point = (1-specificity, sensitivity) that we would like our curve to go through?
+]
+
+Connect to Wooclap using code **TDOGLC** or QR code
+
+&lt;img src="img/qrcode.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Evaluate the performance
+
+Find the **area under the curve**:
 
 .pull-left[
 
@@ -432,7 +464,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w09-L18_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w09-L18_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -817,7 +849,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w09-L18_files/figure-html/unnamed-chunk-37-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w09-L18_files/figure-html/unnamed-chunk-39-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -843,7 +875,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="w09-L18_files/figure-html/unnamed-chunk-39-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w09-L18_files/figure-html/unnamed-chunk-41-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -903,9 +935,6 @@ email_pred %&gt;%
 
 ## Cutoff probability: 0.25
 
-.panelset[
-.panel[.panel-name[Output]
-
 Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.25**.
 
 &lt;table&gt;
@@ -929,29 +958,10 @@ Suppose we decide to label an email as spam if the model predicts the probabilit
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-]
-.panel[.panel-name[Code]
-
-```r
-cutoff_prob &lt;- 0.25
-email_pred %&gt;%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 &gt; cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %&gt;%
-  count(spam_pred, spam) %&gt;%
-  pivot_wider(names_from = spam, values_from = n) %&gt;%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
-```
-]
-]
 
 ---
 
 ## Cutoff probability: 0.75
-
-.panelset[
-.panel[.panel-name[Output]
 
 Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.75**.
 
@@ -976,22 +986,18 @@ Suppose we decide to label an email as spam if the model predicts the probabilit
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-]
-.panel[.panel-name[Code]
 
-```r
-cutoff_prob &lt;- 0.75
-email_pred %&gt;%
-  mutate(
-    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
-    spam_pred = if_else(.pred_1 &gt; cutoff_prob, "Email labelled spam", "Email labelled not spam")
-    ) %&gt;%
-  count(spam_pred, spam) %&gt;%
-  pivot_wider(names_from = spam, values_from = n) %&gt;%
-  kable(col.names = c("", "Email is not spam", "Email is spam"))
-```
-]
-]
+---
+
+## Recap
+
+- ROC curve and AUC
+
+- Feature engineering
+
+- Workflows and recipes
+
+- Making decisions
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
