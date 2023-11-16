@@ -202,21 +202,19 @@ You should read the data into RStudio using the following code:</p>
 <div id="exercise-1-exploratory-data-analysis" class="section level1">
 <h1>Exercise 1: Exploratory Data Analysis</h1>
 <p>We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and trasform them into factors.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>weather <span class="sc">%&gt;%</span> </span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.character),<span class="sc">-</span>Date) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span></code></pre></div>
-<pre><code>## [1] &quot;Location&quot;     &quot;WindGustDir&quot;  &quot;WindDir9am&quot;   &quot;WindDir3pm&quot;   &quot;RainToday&quot;   
-## [6] &quot;RainTomorrow&quot;</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># weather &lt;- weather %&gt;% </span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#   mutate_at(vars(all_of(variables_to_transform)),factor)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>variables_to_transform <span class="ot">=</span> weather <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.character),<span class="sc">-</span>Date) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(<span class="fu">all_of</span>(variables_to_transform)),factor)</span></code></pre></div>
 <p>To simplify things, today we will not be using some categorical explanatory variables, because they have a very large number of categories and might make our model interpretation more complex. Specifically we will exclude <code>WindGustDir</code>, <code>WindDir9am</code> and <code>WindDir3pm</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>WindGustDir,<span class="sc">-</span>WindDir9am,<span class="sc">-</span>WindDir3pm)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>WindGustDir,<span class="sc">-</span>WindDir9am,<span class="sc">-</span>WindDir3pm)</span></code></pre></div>
 <p>Note that some of these variables have a large number of missing values:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>weather <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">any</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">mean</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">col =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">&quot;Variable&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Prop_NA&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Prop_NA))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>weather <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">any</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">mean</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">col =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">&quot;Variable&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Prop_NA&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Prop_NA))</span></code></pre></div>
 <pre><code>## # A tibble: 18 × 2
 ##    Variable      Prop_NA
 ##    &lt;chr&gt;           &lt;dbl&gt;
@@ -246,8 +244,8 @@ You should read the data into RStudio using the following code:</p>
 <div id="exercise-2-logistic-regression" class="section level1">
 <h1>Exercise 2: Logistic regression</h1>
 <p>We will focus our analysis on the city of <code>Portland</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>weather_Portland <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">filter</span>(Location <span class="sc">==</span> <span class="st">&quot;Portland&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>weather_Portland <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">filter</span>(Location <span class="sc">==</span> <span class="st">&quot;Portland&quot;</span>)</span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><p>Try to predict <code>RainTomorrow</code> by fitting a linear regression using the variable <code>RainToday</code> and print the output using <code>tidy()</code>.</p></li>
 <li><p>For each point in our dataset, what are the fitted probabilities that tomorrow it’s going to rain?</p></li>
@@ -261,37 +259,98 @@ You should read the data into RStudio using the following code:</p>
 <ul>
 <li>Are there any missing values? Why?</li>
 </ul>
-<ol start="3" style="list-style-type: decimal">
-<li>Fit now a multiple logistic regression, i.e. using multiple explanatory variables, to predict
-<code>RainTomorrow</code>. We will use as predictors the variables <code>MinTemp</code>, <code>MaxTemp</code>, <code>RainToday</code> and <code>Rainfall</code>. Print your output using <code>tidy()</code>.</li>
-</ol>
-<ul>
-<li>Plot the predicted probabilities now. What do you notice?</li>
-</ul>
 </div>
 <div id="exercise-3-split-the-data-and-build-workflows" class="section level1">
 <h1>Exercise 3: Split the data and build workflows</h1>
 <p>Let us set a seed and perform a split of our data.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">111723</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">111723</span>)</span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><p>Split the data into a training set (80% of your Portland data) and a testing set.</p></li>
-<li><p>We will use workflows to fit this model on our training data.</p></li>
+<li><p>Refit the simple logistic regression using <code>RainToday</code> as predictor on this training data, using <code>tidymodels</code> recipes and workflows.</p></li>
 </ol>
 <ul>
-<li>Start by the recipe. This will be a simple recipe, because we have not done many pre-processing steps:</li>
+<li>Start by the recipe. First initialize the recipe, then remove observations with missing values using <code>step_naomit()</code> and finally use <code>step_dummy</code> to convert categorical to dummy variables.</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>weather_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  RainTomorrow <span class="sc">~</span> ___<span class="sc">+</span>___<span class="sc">+</span>___<span class="sc">+</span>___, <span class="co"># include your formula</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">data =</span> weather_Portland</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>weather_rec1 <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  RainTomorrow <span class="sc">~</span> RainToday, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">data =</span> weather_Portland</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="fu">step_naomit</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>())</span></code></pre></div>
 <ul>
-<li><p>Save the model, workflow and finally, let’s fit to the training data.</p></li>
-<li><p>Create a ROC curve and get the AUC value.</p></li>
+<li>Build your workflow combining model and recipe</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>weather_mod1 <span class="ot">&lt;-</span> ___ <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">set_engine</span>(___)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>weather_wflow1 <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> <span class="co"># initiate workflow</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">___</span>(___) <span class="sc">%&gt;%</span>                   <span class="co"># add model</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">___</span>(___)                       <span class="co"># add recipe</span></span></code></pre></div>
+<ul>
+<li>Now fit your model on the training data</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>weather_fit1 <span class="ot">&lt;-</span> weather_wflow1 <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ___)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">tidy</span>(weather_fit1)</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Fit now a multiple logistic regression, i.e. using multiple explanatory variables, to predict
+<code>RainTomorrow</code>. We will use as predictors the variables <code>MinTemp</code>, <code>MaxTemp</code>, <code>RainToday</code> and <code>Rainfall</code>. Similarly to question 2, use workflows to fit this model on our training data.</li>
+</ol>
+<ul>
+<li>Start by the recipe. This will be a simple recipe, because we have not done many pre-processing steps, but do remove missing values and transform categorical variables into dummy variables:</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>weather_rec2 <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  RainTomorrow <span class="sc">~</span> ___<span class="sc">+</span>___<span class="sc">+</span>___<span class="sc">+</span>___, <span class="co"># include your formula</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">data =</span> weather_Portland</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="fu">step_naomit</span>(___) <span class="sc">%&gt;%</span>.          <span class="co"># exclude cases with missing values in all predictors</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>(), ___) <span class="co"># exclude all outcomes</span></span></code></pre></div>
+<ul>
+<li>Save the model, workflow and finally, let’s fit to the training data.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Now let’s evaluate the predictive performance of these two models on our test set.</li>
+</ol>
+<ul>
+<li>Create the ROC curve and get the AUC (area under the curve) value for your first simple logistic regression model.</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>weather_pred2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(___, test_data, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">bind_cols</span>(test_data)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>weather_pred2 <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="fu">___</span>(                      <span class="co"># plot ROC curve</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="at">truth =</span> RainTomorrow,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>    .pred_Yes,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>    <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>weather_pred2 <span class="sc">%&gt;%</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="fu">___</span>(                  <span class="co"># get AUC value</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>    <span class="at">truth =</span> RainTomorrow,</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>    .pred_Yes,</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>    <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>  )</span></code></pre></div>
+<ul>
+<li><p>Create now the ROC curve and get the AUC (area under the curve) value for your second model.</p></li>
+<li><p>Which model seems to have a better performance?</p></li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>Now focus on the second model. Consider several thresholds for predicting <code>RainTomorrow</code> and look at the number of false positives and false negatives. For example:</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>cutoff_prob <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>weather_pred2 <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="at">RainTomorrow      =</span> <span class="fu">if_else</span>(RainTomorrow <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;It rains&quot;</span>, <span class="st">&quot;It does not rain&quot;</span>),</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="at">RainTomorrow_pred =</span> <span class="fu">if_else</span>(.pred_Yes <span class="sc">&gt;</span> cutoff_prob, <span class="st">&quot;Predicted rain&quot;</span>, <span class="st">&quot;Predicted no rain&quot;</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>  <span class="fu">count</span>(RainTomorrow_pred, RainTomorrow)</span></code></pre></div>
+<ul>
+<li><p>What is the the false positive rate with <code>cutoff_prob = 0.3</code>?</p></li>
+<li><p>What about the false negative rate?</p></li>
 </ul>
 </div>
-<div id="exercise-4-extend-our-model" class="section level1">
-<h1>Exercise 4: Extend our model</h1>
+<div id="exercise-4-extend-our-model-optional" class="section level1">
+<h1>Exercise 4: Extend our model [OPTIONAL]</h1>
 <p>We will now try to improve our fit by building a model using additional explanatory variables.</p>
 <ol style="list-style-type: decimal">
 <li>Let us analyze the various variables in our dataset.</li>

@@ -63,7 +63,7 @@ weather <- read.csv("data/weatherAUS.csv", header = TRUE)
 We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and trasform them into factors.
 
 ```{r mutate-char}
-weather %>% 
+variables_to_transform = weather %>% 
   select(where(is.character),-Date) %>% names()
 weather <- weather %>% 
   mutate_at(vars(all_of(variables_to_transform)),factor)
@@ -195,7 +195,7 @@ weather_pred2 %>%
 
 4. Now focus on the second model. Consider several thresholds for predicting `RainTomorrow` and look at the number of false positives and false negatives. For example:
 
-```{r}
+```{r eval = FALSE}
 cutoff_prob <- 0.5
 weather_pred2 %>%
   mutate(
@@ -225,3 +225,4 @@ We will now try to improve our fit by building a model using additional explanat
 3. Let's now combine everything into recipes and workflows. Then fit the model on the training data and use the test data for calculating the AUC and plotting the ROC curve.
 
 4. Is this model better than the one we fitted in Exercise 3?
+
