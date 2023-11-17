@@ -2,7 +2,7 @@
 title: "Cross Validation"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -26,7 +26,7 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
+# library(emo)
 library(openintro)
 library(ggridges)
 library(patchwork)
@@ -102,14 +102,6 @@ University of Edinburgh
 </span>
 </div> 
 
----
-## Reminders
-
-- This lecture is being recorded.
-- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
-- Look through lab sheet 8.
-- Lecture next Tuesday will be projects Q&A.
-- Application exercise uploaded to website.
 
 ---
 ## Topics

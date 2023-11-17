@@ -2,7 +2,7 @@
 title: "Quantifying uncertainty"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -25,7 +25,7 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
+# library(emo)
 library(openintro)
 library(ggridges)
 library(patchwork)
@@ -103,15 +103,6 @@ layout: true
 University of Edinburgh
 </span>
 </div> 
-
----
-
-## Reminders
-
-- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
-- Look through lab sheet 8. Labs tomorrow last chance to discuss with tutors. See marking criteria on lab sheet 9. 
-- Lecture next Tuesday will be projects Q&A. Send questions!
-- Application exercise and interactive R tutorial uploaded to website.
 
 ---
 ## Topics
@@ -783,7 +774,7 @@ ggplot(data = edi_3br, mapping = aes(x = rent)) +
 
 ## Observed sample
 
-Sample mean ≈ £`r edi_3br %>% summarise(med_rent = mean(rent)) %>% pull() %>% round()` `r emo::ji("scream")`
+Sample mean ≈ £`r edi_3br %>% summarise(med_rent = mean(rent)) %>% pull() %>% round()`.
 
 <br>
 
@@ -795,7 +786,7 @@ knitr::include_graphics("img/rent-bootsamp.png")
 
 ## Bootstrap population
 
-Generated assuming there are more flats like the ones in the observed sample... Population mean = `r emo::ji("question")`
+Generated assuming there are more flats like the ones in the observed sample... Population mean = ??
 
 ```{r echo=FALSE, out.width="65%"}
 knitr::include_graphics("img/rent-bootpop.png")
@@ -923,7 +914,7 @@ upper_bound <- boot_df %>% summarize(upper_bound = quantile(stat, 0.975)) %>% pu
 ```{r echo=FALSE, out.width="70%"}
 ggplot(data = boot_df, mapping = aes(x = stat)) +
   geom_histogram(binwidth = 100) +
-  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", size = 2) +
+  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", linewidth = 2) +
   labs(title = "Bootstrap distribution of means",
        subtitle = "and 95% confidence interval")
 ```
@@ -976,9 +967,9 @@ u99 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.995)) %>% round(2) %
 
 ggplot(data = boot_df, mapping = aes(x = stat)) +
   geom_histogram(binwidth = 100) +
-  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", lty = 2, size = 2) +
-  geom_vline(xintercept = c(l90, u90), color = "chartreuse4", lty = 3, size = 2) +
-  geom_vline(xintercept = c(l99, u99), color = "orange", lty = 6, size = 2) +
+  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", lty = 2, linewidth = 2) +
+  geom_vline(xintercept = c(l90, u90), color = "chartreuse4", lty = 3, linewidth = 2) +
+  geom_vline(xintercept = c(l99, u99), color = "orange", lty = 6, linewidth = 2) +
   labs(title = "Bootstrap distribution of means",
        subtitle = "and various confidence intervals")
 ```

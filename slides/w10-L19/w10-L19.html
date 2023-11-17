@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2022/23
+### <br> 2023/2024
 ]
 
 ---
@@ -44,14 +44,6 @@ University of Edinburgh
 &lt;/span&gt;
 &lt;/div&gt; 
 
----
-## Reminders
-
-- This lecture is being recorded.
-- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
-- Look through lab sheet 8.
-- Lecture next Tuesday will be projects Q&amp;A.
-- Application exercise uploaded to website.
 
 ---
 ## Topics
@@ -92,7 +84,7 @@ office_ratings
 ## 4      1       4 The Alliance          8.1        2886 2005-04-12
 ## 5      1       5 Basketball            8.4        3179 2005-04-19
 ## 6      1       6 Hot Girl              7.8        2852 2005-04-26
-## # … with 182 more rows
+## # ℹ 182 more rows
 ```
 
 .footnote[
@@ -308,24 +300,6 @@ office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
 ```r
 office_rec
 ```
-
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##         ID          1
-##    outcome          1
-##  predictor          4
-## 
-## Operations:
-## 
-## Date features from air_date
-## Variables removed air_date
-## Dummy variables from contains("month")
-## Zero variance filter on all_predictors()
-```
 ]
 ]
 ]
@@ -441,7 +415,7 @@ office_train_pred
 ## 4  8.05         8.1 Baby Shower        
 ## 5  7.82         7.3 Lotto              
 ## 6  7.89         7.5 Christening        
-## # … with 135 more rows
+## # ℹ 135 more rows
 ```
 
 ---
@@ -563,7 +537,7 @@ office_test_pred
 ## 4  8.54         8.6 The Client         
 ## 5  8.55         8.4 E-Mail Surveillance
 ## 6  8.98         8.8 Christmas Party    
-## # … with 41 more rows
+## # ℹ 41 more rows
 ```
 
 ---
