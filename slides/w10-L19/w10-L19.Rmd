@@ -219,7 +219,7 @@ class: middle
 - Create an initial split
 
 ```{r}
-set.seed(1123)
+set.seed(1122)
 office_split <- initial_split(office_ratings) # prop = 3/4 by default
 ```
 
@@ -274,7 +274,7 @@ office_rec <- recipe(imdb_rating ~ ., data = office_train) %>%
 .panel[.panel-name[Output]
 .small[
 ```{r}
-office_rec
+print(office_rec)
 ```
 ]
 ]
@@ -343,6 +343,8 @@ office_train_pred
 
 ## R-squared
 
+--
+
 Percentage of variability in the IMDB ratings explained by the model
 
 ```{r}
@@ -354,6 +356,23 @@ rsq(office_train_pred, truth = imdb_rating, estimate = .pred)
 .question[
 Are models with high or low $R^2$ more preferable?
 ]
+
+
+---
+
+## R-squared
+
+.question[
+Are models with high or low $R^2$ more preferable?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qr_code.png")
+```
+
+
 
 ---
 
@@ -374,6 +393,20 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 .question[
 Are models with high or low RMSE are more preferable?
 ]
+
+---
+
+## RMSE
+
+.question[
+Are models with high or low RMSE are more preferable?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+```{r out.width="30%", echo=FALSE}
+knitr::include_graphics("img/qr_code.png")
+```
 
 ---
 
@@ -462,6 +495,18 @@ tibble(
   bind_cols(comparison = c("RMSE lower for training", "R-squared higher for training")) %>%
   kable()
 ```
+
+.question[
+Are we doing better or worse on testing data?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+```{r out.width="10%", echo=FALSE}
+knitr::include_graphics("img/qr_code.png")
+```
+
+
 
 ---
 

@@ -224,7 +224,7 @@ class: middle
 
 
 ```r
-set.seed(1123)
+set.seed(1122)
 office_split &lt;- initial_split(office_ratings) # prop = 3/4 by default
 ```
 
@@ -298,7 +298,7 @@ office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
 .small[
 
 ```r
-office_rec
+print(office_rec)
 ```
 ]
 ]
@@ -370,18 +370,18 @@ tidy(office_fit) %&gt;%
 ## # A tibble: 12 × 5
 ##    term                estimate std.error statistic  p.value
 ##    &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-##  1 (Intercept)         6.10     0.339       18.0    6.56e-37
-##  2 season              0.00954  0.0198       0.481  6.31e- 1
-##  3 episode             0.0435   0.0108       4.04   9.18e- 5
-##  4 total_votes         0.000719 0.0000918    7.84   1.49e-12
-##  5 air_date_month_Feb -0.0121   0.129       -0.0934 9.26e- 1
-##  6 air_date_month_Mar -0.316    0.146       -2.16   3.24e- 2
-##  7 air_date_month_Apr -0.253    0.135       -1.87   6.37e- 2
-##  8 air_date_month_May -0.0945   0.173       -0.547  5.85e- 1
-##  9 air_date_month_Sep  0.515    0.185        2.78   6.16e- 3
-## 10 air_date_month_Oct  0.366    0.142        2.57   1.12e- 2
-## 11 air_date_month_Nov  0.224    0.130        1.72   8.77e- 2
-## 12 air_date_month_Dec  0.444    0.165        2.69   8.02e- 3
+##  1 (Intercept)         7.23     0.205        35.4   3.14e-68
+##  2 season             -0.0499   0.0157       -3.18  1.86e- 3
+##  3 episode             0.0353   0.0101        3.50  6.44e- 4
+##  4 total_votes         0.000352 0.0000448     7.85  1.39e-12
+##  5 air_date_month_Feb  0.0242   0.147         0.165 8.69e- 1
+##  6 air_date_month_Mar -0.145    0.144        -1.01  3.16e- 1
+##  7 air_date_month_Apr -0.106    0.140        -0.759 4.49e- 1
+##  8 air_date_month_May  0.0575   0.175         0.329 7.43e- 1
+##  9 air_date_month_Sep  0.440    0.191         2.30  2.30e- 2
+## 10 air_date_month_Oct  0.321    0.150         2.13  3.50e- 2
+## 11 air_date_month_Nov  0.237    0.138         1.72  8.81e- 2
+## 12 air_date_month_Dec  0.443    0.190         2.34  2.09e- 2
 ```
 ]
 ]
@@ -407,20 +407,22 @@ office_train_pred
 
 ```
 ## # A tibble: 141 × 3
-##   .pred imdb_rating title              
-##   &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;              
-## 1  8.10         8.6 Happy Hour         
-## 2  8.10         8.2 Shareholder Meeting
-## 3  7.72         7.8 The Boat           
-## 4  8.05         8.1 Baby Shower        
-## 5  7.82         7.3 Lotto              
-## 6  7.89         7.5 Christening        
+##   .pred imdb_rating title            
+##   &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;            
+## 1  7.90         8.1 Garden Party     
+## 2  8.43         7.9 The Chump        
+## 3  7.81         7.1 Here Comes Treble
+## 4  7.94         6.7 Get the Girl     
+## 5  7.92         7.9 Tallahassee      
+## 6  8.29         7.7 The Inner Circle 
 ## # ℹ 135 more rows
 ```
 
 ---
 
 ## R-squared
+
+--
 
 Percentage of variability in the IMDB ratings explained by the model
 
@@ -433,7 +435,7 @@ rsq(office_train_pred, truth = imdb_rating, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rsq     standard       0.539
+## 1 rsq     standard       0.500
 ```
 
 --
@@ -441,6 +443,21 @@ rsq(office_train_pred, truth = imdb_rating, estimate = .pred)
 .question[
 Are models with high or low `\(R^2\)` more preferable?
 ]
+
+
+---
+
+## R-squared
+
+.question[
+Are models with high or low `\(R^2\)` more preferable?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+&lt;img src="img/qr_code.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+
 
 ---
 
@@ -461,7 +478,7 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard       0.349
+## 1 rmse    standard       0.373
 ```
 
 --
@@ -469,6 +486,18 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 .question[
 Are models with high or low RMSE are more preferable?
 ]
+
+---
+
+## RMSE
+
+.question[
+Are models with high or low RMSE are more preferable?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+&lt;img src="img/qr_code.png" width="30%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -487,7 +516,7 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard       0.349
+## 1 rmse    standard       0.373
 ```
 
 --
@@ -502,7 +531,7 @@ office_train %&gt;%
 ## # A tibble: 1 × 2
 ##     min   max
 ##   &lt;dbl&gt; &lt;dbl&gt;
-## 1   6.7   9.3
+## 1   6.7   9.7
 ```
 
 ---
@@ -529,14 +558,14 @@ office_test_pred
 
 ```
 ## # A tibble: 47 × 3
-##   .pred imdb_rating title              
-##   &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;              
-## 1  8.44         8.3 Diversity Day      
-## 2  8.10         8.1 The Alliance       
-## 3  8.99         8.7 The Dundies        
-## 4  8.54         8.6 The Client         
-## 5  8.55         8.4 E-Mail Surveillance
-## 6  8.98         8.8 Christmas Party    
+##   .pred imdb_rating title          
+##   &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;          
+## 1  8.52         8.4 Office Olympics
+## 2  8.54         8.6 The Client     
+## 3  8.90         8.8 Christmas Party
+## 4  8.71         9   The Injury     
+## 5  8.50         8.2 Boys and Girls 
+## 6  8.46         8.4 Dwight's Speech
 ## # ℹ 41 more rows
 ```
 
@@ -555,7 +584,7 @@ rmse(office_test_pred, truth = imdb_rating, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard       0.636
+## 1 rmse    standard       0.386
 ```
 
 - `\(R^2\)` of model fit to testing data
@@ -569,7 +598,7 @@ rsq(office_test_pred, truth = imdb_rating, estimate = .pred)
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rsq     standard       0.524
+## 1 rsq     standard       0.556
 ```
 
 ---
@@ -590,18 +619,28 @@ rsq(office_test_pred, truth = imdb_rating, estimate = .pred)
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.349 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.636 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.373 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.386 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; RMSE lower for training &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; R-squared &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.539 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.524 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.500 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.556 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; R-squared higher for training &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+
+.question[
+Are we doing better or worse on testing data?
+]
+
+Connect to Wooclap using code **YGPLTL** or QR code
+
+&lt;img src="img/qr_code.png" width="10%" style="display: block; margin: auto;" /&gt;
+
+
 
 ---
 
@@ -723,8 +762,8 @@ collect_metrics(office_fit_rs)
 ## # A tibble: 2 × 6
 ##   .metric .estimator  mean     n std_err .config             
 ##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-## 1 rmse    standard   0.379     5  0.0277 Preprocessor1_Model1
-## 2 rsq     standard   0.435     5  0.0759 Preprocessor1_Model1
+## 1 rmse    standard   0.403     5  0.0336 Preprocessor1_Model1
+## 2 rsq     standard   0.413     5  0.0727 Preprocessor1_Model1
 ```
 
 ---
@@ -743,16 +782,16 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 ## # A tibble: 10 × 5
 ##    id    .metric .estimator .estimate .config             
 ##    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-##  1 Fold1 rmse    standard       0.483 Preprocessor1_Model1
-##  2 Fold1 rsq     standard       0.274 Preprocessor1_Model1
-##  3 Fold2 rmse    standard       0.362 Preprocessor1_Model1
-##  4 Fold2 rsq     standard       0.585 Preprocessor1_Model1
-##  5 Fold3 rmse    standard       0.368 Preprocessor1_Model1
-##  6 Fold3 rsq     standard       0.236 Preprocessor1_Model1
-##  7 Fold4 rmse    standard       0.316 Preprocessor1_Model1
-##  8 Fold4 rsq     standard       0.485 Preprocessor1_Model1
-##  9 Fold5 rmse    standard       0.365 Preprocessor1_Model1
-## 10 Fold5 rsq     standard       0.592 Preprocessor1_Model1
+##  1 Fold1 rmse    standard       0.430 Preprocessor1_Model1
+##  2 Fold1 rsq     standard       0.134 Preprocessor1_Model1
+##  3 Fold2 rmse    standard       0.368 Preprocessor1_Model1
+##  4 Fold2 rsq     standard       0.496 Preprocessor1_Model1
+##  5 Fold3 rmse    standard       0.452 Preprocessor1_Model1
+##  6 Fold3 rsq     standard       0.501 Preprocessor1_Model1
+##  7 Fold4 rmse    standard       0.289 Preprocessor1_Model1
+##  8 Fold4 rsq     standard       0.529 Preprocessor1_Model1
+##  9 Fold5 rmse    standard       0.475 Preprocessor1_Model1
+## 10 Fold5 rsq     standard       0.403 Preprocessor1_Model1
 ```
 ]
 .panel[.panel-name[Tidy]
@@ -767,28 +806,28 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Fold1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.483 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.274 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.430 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.134 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Fold2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.362 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.585 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.368 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.496 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Fold3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.368 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.236 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.452 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.501 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Fold4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.316 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.485 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.289 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.529 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Fold5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.365 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.592 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.475 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.403 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -804,9 +843,9 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 
 ```
 ## # A tibble: 1 × 6
-##     min   max  mean   med     sd     IQR
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-## 1 0.316 0.483 0.379 0.365 0.0619 0.00614
+##     min   max  mean   med     sd    IQR
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 0.289 0.475 0.403 0.430 0.0751 0.0841
 ```
 
 - Training data IMDB score stats
@@ -816,7 +855,7 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 ## # A tibble: 1 × 6
 ##     min   max  mean   med    sd   IQR
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1   6.7   9.3  8.23   8.2 0.516 0.700
+## 1   6.7   9.7  8.24   8.2 0.530 0.600
 ```
 
 ---
