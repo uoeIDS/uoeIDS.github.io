@@ -277,13 +277,13 @@ If you want to estimate a population parameter, do you prefer to report a range 
 
 .center[
 ```{r echo=FALSE, out.width="80%"}
-knitr::include_graphics("img/Gallup_COP.png")
+knitr::include_graphics("img/gallup_nhs.jpeg")
 ```
 ]
 
 .footnote[
 .midi[
-Source: Gallup. [World Less Than Satisfied With Climate Efforts](https://news.gallup.com/poll/405215/climate-efforts-falling-short-across-globe.aspx), 22 Nov 2022.
+Source: Gallup. [Britons' Satisfaction With Healthcare, Transportation Falters](https://news.gallup.com/poll/505682/britons-satisfaction-healthcare-transportation-falters.aspx), 23/11/23.
 ]
 ]
 
@@ -949,6 +949,18 @@ class: middle
 
 - Suppose we took many samples from the original population and built a 95% confidence interval based on each sample.
 - Then about 95% of those intervals would contain the true population parameter.
+
+--
+
+```{r echo=FALSE, out.width="30%"}
+knitr::include_graphics("img/ci-1.gif")
+```
+
+.footnote[
+.small[
+Source: Minitab blog [Understanding Hypothesis Tests: Confidence Intervals and Confidence Levels](https://blog.minitab.com/en/adventures-in-statistics-2/understanding-hypothesis-tests-confidence-intervals-and-confidence-levels), 22 Nov 2023.
+]
+]
 
 ---
 
