@@ -2,7 +2,7 @@
 title: "Projects Q&A"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -24,7 +24,7 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
+library(emoji)
 library(openintro)
 library(ggridges)
 library(patchwork)
@@ -107,7 +107,12 @@ University of Edinburgh
 
 ## Reminders
 
-- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+- Last workshop of semester (project presentations on December 1) in different rooms. 
+
+  * **9.00-10.30** at Venue1: JCMB 4325c (Groups: 18, 2,20,21,22,23)	Venue2: JCMB 5326 (Groups: 42,43,45,47,48). 
+  * **10.30-12.00** at Venue1: JCMB 4325c (Groups: 13, 14, 16, 24, 25, 55)	Venue2: JCMB 5326 (Groups: 27, 7, 9, 52, 26).
+  * **12.00-13.30** at Venue1: JCMB 4325c (Groups: 1,5,6,8,56)	Venue2: JCMB 5326 (Groups: 12,15,19,28,57)	Venue3: JCMB 4325b (Groups: 29,30,41,44,49).
+  * **13.30-13.30** at Venue1: JCMB 1206c (Groups: 10, 11, 17, 3, 53, 54)	Venue2: JCMB 5326 (Groups: 31, 32, 33, 34, 35, 36)	Venue3: JCMB 4325b (Groups: 37, 38, 39, 4, 40, 46, 51).
 
 --
 
@@ -118,7 +123,20 @@ University of Edinburgh
 - Office hours on Thursday and Piazza for last minute questions.
 
 ---
-## Presentation tips
+
+## General Presentation tips
+
+- Engaging Opening: Start with an interesting fact, question, or story coming from your analysis to grab the audience’s attention and set the tone for your presentation.
+
+- Clear and Logical Flow: Structure your presentation logically. Start with an introduction, follow with the main content, and conclude with a summary or call to action.
+
+- Use Visual Aids: Enhance your presentation with slides, charts, and visuals when they are necessary. Make sure they are clear, simple, and support what you’re saying.
+
+- Prepare for Questions: Anticipate questions and prepare answers. This shows depth of knowledge and preparation.
+
+---
+
+## Extra Presentation tips
 
 - Practice with your team. Don't go over time (you will lose marks for this).
 
@@ -128,7 +146,7 @@ University of Edinburgh
 
 --
 
-- Use plots/ tables rather than lots of text.
+- Use plots / tables rather than lots of text.
 
 --
 
@@ -148,21 +166,30 @@ knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
 
 ---
 
+## Report Structure
+
+- **Introduction** – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?
+
+--
+- **Methods** – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.
+
+--
+- **Results** – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.
+
+--
+- **Discussion** – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings? If you had more time, what would you have done?
+
+---
+
 ## Write-up tips
 
-- Should be a written version of your presentation, with a bit of extra room to expand on some points. 
-
---
-- Think: Tidy, Transform, Visualise, Model (if you did this), Communicate.
-
---
-- Limitations: were there any problems with data, assumptions etc? Any suggestions to deal with those? It's better to be honest about your data and conclusions and explain why you had those problems that to be misleading. Not all real data questions can be answered!
-
---
-- Extensions: if you had more time, what would you have done?
-
---
 - Be clear. Minimise jargon, make sure explanations are clear. Get someone else in your team to read and edit your text. 
+
+--
+- Use a consistent font, size, and heading style. This enhances readability and gives your report a professional look.
+
+--
+- Use a consistent citation style throughout your report. This adds credibility and allows readers to verify your sources.
 
 --
 - Do a good job on the basics rather than trying to do everything. Remember you only have 1,500 words. 
@@ -174,7 +201,7 @@ knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
 
 --
 
-- Everyone should have contributed equally.
+- Everyone should have contributed equally. When completing the peer evaluation, if you are suggesting that an individual did less than 10% of the work then you must provide a justifiable explanation.
 
 --
 
@@ -186,22 +213,24 @@ knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
 
 --
 
-- Don't worry if you have had problems (they do happen!) -  our expectation is that larger teams will have done more work than smaller teams. We will account for issues in the marks.
-
---
-
 - Everyone has different backgrounds, so you should try and work together and include everyone in the project. 
 
 ---
-## Hand-in
+## Delivarables
 
-- Deadline: 9am on 2 December. 
+- Presentation - due Friday, 1 December, at 09:00 UK
+
+- Report - due Friday, 1 December, at 16:00 UK
+
+- Peer evaluation - due Saturday 2 Dec, at 09:00 UK
 
 --
 - Submission is via Gradescope in the same way as homework assignments. 
 
---
-- Make sure you check the [website](https://ids2022.netlify.app/assessments/project/#submission-and-github-repository) and include everything that you need to with the submission. 
+---
+## About Submission
+
+- Make sure you check the [website](https://uoe-ids.netlify.app/assessments/project/) and include everything that you need to with the submission. 
 
 --
 - **Each individual** needs to submit a peer evaluation survey on Gradescope. 
@@ -210,10 +239,9 @@ knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
 - **One person** from each team needs to submit a html version of the write-up **and** a html version of the presentation. This person needs to add their group members to the submission using the drop down list. 
 
 --
-- Make sure you include a link to your GitHub repo with the write-up and add the course GitHub account to the repo.
+- Make sure you include a link to your GitHub repo with the write-up and add the course GitHub account to the repo. Also remember to write your project group number announced before (Available in the Learn Ultra page)
 
 ---
 class:middle
 
 #Questions?
-
