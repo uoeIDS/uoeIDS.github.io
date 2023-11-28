@@ -1,17 +1,217 @@
 ---
-title: "hw-03-key"
-author: "Your Name (S000000)"
-date: "`r Sys.Date()`"
+title: "HW 03 - Modelling"
+subtitle: "Due: 24 November, 16:00 UK time"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
+### Notes
+
+------------------------------------------------------------------------
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(tidymodels)
+
+knitr::opts_chunk$set(out.width = "100%", eval = TRUE)
 ```
 
-![Photo by Joshua Hoehne on Unsplash](img/joshua-hoehne-WPrTKRw8KRQ-unsplash.jpg)
+# Part 1 - General Social Survey
+
+## Data Load and Preparation
+
+```{r read_data}
+gss16<-read.csv("data/gss16.csv")
+```
 
 
-## Tut-tut! 
-You should not be looking for solutions to the homework assignment before the deadline has passed! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including dateline dates and the policy around late submission.
+Selecting and removing missing observations
+
+```{r}
+gss16_advfront <- gss16 %>%
+  select(advfront, emailhr, educ, polviews, wrkstat) %>%
+  drop_na()
+```
+
+Re-level the `advfront` variable such that it has two levels:
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    advfront = case_when(
+      advfront == "Strongly agree" ~ "Agree",
+      advfront == "Agree" ~ "Agree",
+      TRUE ~ "Not agree"
+    ),
+    advfront = fct_relevel(advfront, "Not agree", "Agree")
+  )
+```
+
+
+Combine the levels of the `polviews` variable (political views) such that levels that have the word "liberal" in them are lumped into a level called `"Liberal"` and those that have the word "conservative" in them are lumped into a level called `"Conservative"`. Then, re-order the levels in the following order: `"Conservative"` , `"Moderate"`, and `"Liberal"`
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    polviews = case_when(
+      str_detect(polviews, "[Cc]onservative") ~ "Conservative",
+      str_detect(polviews, "[Ll]iberal") ~ "Liberal",
+      TRUE ~ polviews
+    ),
+    polviews = fct_relevel(polviews, "Conservative", "Moderate", "Liberal")
+  )
+```
+
+Here are the first few rows of the cleaned and prepared data:
+
+```{r}
+gss16_advfront %>% head(n = 10)
+```
+
+
+### Ex. 1. a)
+
+```{r}
+linear_fit <- linear_reg() %>%
+set_engine("lm") %>%
+fit(emailhr ~ educ, data = gss16_advfront) 
+
+linear_fit %>% tidy()
+```
+
+Formula of the fitted model (roughly): $$\widehat{emailhr} = -2.76 + 0.685 \times educ$$. 
+
+The given coefficient for the `educ` in the model explains that in average, 1 unit increase on the education level results in 0.685 increase on the number of hours spent on email weekly.
+
+### Ex. 1. b)
+
+```{r}
+glance(linear_fit)
+```
+
+When the simple linear regression is considered for the `emailhr` variable, the model results in poor performance. In the model parameter estimations, intercept term seems to be not statistically significant (`p-value` > 0.05). Besides, the model R-squared value is very close to the zero (0.0291) so this shows that why such a linear regression model is not a good option to work with. 
+
+```{r}
+ggplot(data = gss16_advfront, mapping = aes(x = educ, y = emailhr)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm", se = FALSE, formula = "y ~ x") +
+  labs(
+    x = "Number of years in education.", 
+    y = "Number of hours spent on email weekly.", 
+    title = "Education vs. Hours for email"
+    )
+```
+
+Plot shows that it is not a good example of assuming linear relationship but still there is a slight increasing pattern on spent hours on email weekly over the x-axis (years in education). However, as we explored with model summary results, we get a poor performance results. 
+
+### Ex. 2.
+
+```{r}
+set.seed(1234)
+gss16_split <- initial_split(gss16_advfront)
+gss16_train <- training(gss16_split)
+gss16_test  <- testing(gss16_split)
+```
+
+a) Building the workflow step by step
+
+#### recipe
+
+```{r}
+set.seed(1234)
+gss16_rec_1 <- recipe(advfront ~ educ, data = gss16_train) %>%
+  step_dummy(all_nominal(), -all_outcomes())
+```
+
+
+#### model
+
+```{r}
+gss16_mod_1 <- logistic_reg() %>%
+  set_engine("glm")
+```
+
+#### workflow
+
+```{r}
+gss16_wflow_1 <- workflow() %>%
+  add_model(gss16_mod_1) %>%
+  add_recipe(gss16_rec_1)
+```
+
+b) **Narrative:** A logistic regression is the appropriate model to use here because the response variable is binary (agree or not agree).
+
+### Ex. 3. a)
+
+```{r}
+gss16_fit_1 <- gss16_wflow_1 %>%
+  fit(gss16_train)
+tidy(gss16_fit_1)
+
+```
+
+### Ex. 3. b)
+
+```{r}
+# Model 1
+gss16_test_pred_1 <- predict(gss16_fit_1, new_data = gss16_test, type = "prob") %>%
+  bind_cols(gss16_test %>% select(advfront))
+
+gss16_test_pred_1 %>%
+  roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
+  autoplot()
+
+gss16_test_pred_1 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+```
+
+
+### Ex. 4. a)
+
+Model workflow steps:
+
+```{r}
+set.seed(1234)
+gss16_rec_2 <- recipe(advfront ~ polviews + wrkstat + educ, data = gss16_train) %>%
+  step_dummy(all_nominal(), -all_outcomes())
+
+gss16_mod_2 <- logistic_reg() %>%
+  set_engine("glm")
+
+gss16_wflow_2 <- workflow() %>%
+  add_model(gss16_mod_2) %>%
+  add_recipe(gss16_rec_2)
+
+```
+
+Fitting the model to the training data: 
+
+```{r}
+gss16_fit_2 <- gss16_wflow_2 %>%
+  fit(gss16_train)
+tidy(gss16_fit_2)
+
+```
+
+
+```{r}
+# Model 2
+gss16_test_pred_2 <- predict(gss16_fit_2, new_data = gss16_test, type = "prob") %>%
+  bind_cols(gss16_test %>% select(advfront))
+
+gss16_test_pred_2 %>%
+  roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
+  autoplot()
+
+gss16_test_pred_2 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+```
+
+b) It seems there that the area under ROC curve for the second model (0.539) is moderately less than the first model (0.581). 
+
+#### Narrative
+
+Model 1 has better AUC (area under ROC curve) than model 2, although whether this performance is a substantive improvement is arguable. Never-the-less, as model 1 has fewer variables, which is generally favoured due to reduced model complexity, run time, and better generalisability, this model should be favoured.
+
+As a general suggestion, in your project, make sure that you are applying the correct recipe while analyzing your data!
