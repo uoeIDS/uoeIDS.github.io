@@ -2,14 +2,14 @@
 title: "Recap and Looking Beyond IDS"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2022/23"
+date: "<br> 2023/2024"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
     lib_dir: libs
     nature:
       ratio: "16:9"
-      highlightLines: true
+      highlightLines: false
       highlightStyle: solarized-light
       countIncrementalSlides: false
 ---
@@ -24,13 +24,13 @@ library(knitr)
 library(kableExtra)
 library(xaringanExtra)
 library(Tmisc)
-library(emo)
+#library(emo)
 library(openintro)
 library(ggridges)
 library(patchwork)
 library(skimr)
 library(webshot)
-library(datasauRus)
+#library(datasauRus)
 
 set.seed(1234)
 options(
@@ -109,120 +109,95 @@ University of Edinburgh
 
 ## Reminders
 
-- Last workshop of semester (project presentations) in a different room. MST_G.203 (teaching room 2), doorway 3, Medical School.
+  * **9.00-10.30**
+      - Venue1: JCMB 4325c (Groups: 18, 2,20,21,22,23)	
+      - Venue2: JCMB 5326 (Groups: 42,43,45,47,48). 
+  * **10.30-12.00** 
+      - Venue1: JCMB 4325c (Groups: 13, 14, 16, 24, 25, 55)	
+      - Venue2: JCMB 5326 (Groups: 27, 7, 9, 52, 26).
+  * **12.00-13.30** 
+      - Venue1: JCMB 4325c (Groups: 1,5,6,8,56)	
+      - Venue2: JCMB 5326 (Groups: 12,15,19,28,57)
+      - Venue3: JCMB 4325b (Groups: 29,30,41,44,49).
+  * **13.30-13.30** 
+      - Venue1: JCMB 1206c (Groups: 10, 11, 17, 3, 53, 54)	
+      - Venue2: JCMB 5326 (Groups: 31, 32, 33, 34, 35, 36)	
+      - Venue3: JCMB 4325b (Groups: 37, 38, 39, 4, 40, 46, 51).
+
+---
+
+## Reminders
+
+- Check your html file knits and loads properly
 
 --
 
-- Check your html file loads properly
+- HDMI port on laptop, if you need converter let us know
 
 --
 
-- HDMI port on laptop
-
---
-
-- Don't forget your peer evaluation
+- Don't forget your peer evaluation form
 
 --
 
 - Don't forget to add the course GitHub page to your project
 
+-- 
 
+- Try to complete each requirement step by step and do submission on time to avoid extra stress!
 
 ---
-## Topics
+## Topics for today
 
 - Recap - what did people find difficult?
+
 - Where can you go for more information?
+
 - Next steps in R
+
 - What else for Data Science?
 
 
 ---
-## What have you learnt?
 
+## What have you learnt?
 
 | Week | Topic                                     |
 |------|-------------------------------------------|
-| 1    | Welcome                                   |
-| 2    | Visualising data                          |
+| 1    | Welcome and Toolkit                       |
+| 2    | Importing and recoding data               |
 | 3    | Wrangling and tidying data                |
-| 4    | Importing and recoding data               |
+| 4    | Visualising data                          |
 | 5    | Communicating effectively                 |
-| 6    | Programming                               |
-| 7    | Modelling                                 |
-| 8    | Classification and model building         |
-| 9    | Ethics                                    |
+| 6    | Ethics                                    |
+| 7    | Programming and Functions                 |
+| 8    | Predictive Modelling                      |
+| 9    | Classification and model building         |
 | 10   | Validation and uncertainty quantification |
 | 11   | Looking beyond IDS                        |
 
+Which week did you find more difficult ? Wooclap using code **SJTGNO**
 
 ---
+
 class:middle 
 
-## Recap - some of the difficult bits
+## IDS overall reflection
 
----
-## Linear regression with categorical variables. Q07, q3-5
+(hopefully) Positive impacts
 
-- Q3
-```{r, eval=FALSE}
-loans_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(interest_rate ~ verified_income, data = loans)
-  tidy(loans_fit)
-```
-  
-  - Q4
-```{r, eval=FALSE}
-  loans_fit_2 <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(interest_rate ~verified_income+bankruptcy, data = loans)
-  
-  tidy(loans_fit_2)
-```
+  - You worked on generally the basics of data science pipeline in R language
+  - Getting familiar with main steps of data analysis in general
+  - IDS can be a good starting point for your personal further interest in Data Science
 
----
-## R-squared. Q08, q4
+(Can be) Limited 
 
-- $R^2$ is the percentage of variability in the response variable explained by 
-the regression model.
+  - Not so much space for statistical terms and methods (definitely will learn more later) 
+  - Maybe some re-ordering of the weekly topics can be discussed
+  - Further details on modeling part is a must (you will learn later)
 
---
-
-- It always increases as the number of predictors increases.
-
---
-
-- This is why the adjusted R-squared is preferred to compare models with a different number of predictors.
-
-
----
-## Linear correlation - Q08, q5
-
-```{r echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/Correlation_examples2.svg")
-```
-
----
-## Confidence Intervals - Q09, q6-10
-
-```{r eval=FALSE}
-boot_df <- stats_scores %>% 
-  # specify the variable of interest 
-  specify(response = scores) %>% 
-  # generate 20000 bootstrap samples 
-  generate(reps = 20000, type = "bootstrap") %>% 
-  # calculate the median of each bootstrap sample 
-  calculate(stat = "median") %>% 
-  # get the 90% confidence interval
-  summarise(
-    lower = quantile(stat, 0.05),
-    upper = quantile(stat, 0.95)
-  )
-  
-  boot_df
-```
+What do you want to add ?
+- Connect to Wooclap using code **SJTGNO**
 
 ---
 
@@ -232,39 +207,68 @@ class:middle
 
 ---
 
-## Books
+## Books - I
 
- 
 
 ```{r, echo=FALSE, out.width="25%", fig.show='hold', fig.align="center", fig.cap="  "}
 knitr::include_graphics(c("img/IMS.png", "img/R4DS.jpeg", "img/AdvancedR.png"))
 ```
 
 ---
+
+## Books - II
+
+
+```{r, echo=FALSE, out.width="25%", fig.show='hold', fig.align="center", fig.cap="  "}
+knitr::include_graphics(c("img/StatLiteracy.jpeg", "img/ArtofStats.jpg", "img/StatswithoutTears.jpg"))
+```
+
+---
+
+
 ## Courses 
 
-- Statistics (year 2)
+- [Statistics (year 2)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath08051.htm)
+  * Estimators, including MLEs
+  * Hypothesis Testing 
+  * Linear Regression with theory
+--
+
+- [Statistical computing (year 3)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10093.htm)
+  * optimising functions in R
+  * programming statistical techniques and interpreting the results (including bootstrap algorithms)
+--
+
+- [Statistical methodology (year 3)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10095.htm)
+  * maximum likelihood estimation
+  * likelihood ratio tests
+  * Bayes theorem and posterior distribution
+
+---
+
+## Courses 
+
+- [Statistical Case Studies (year 4)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10102.htm)
+  * Two real-world statistical projects that are meant to simulate consultancy-style work in a business/research environment
 
 --
 
-- Statistical computing (year 3)
+- [Machine Learning in Python (year 4)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath11205.htm)
+  * Supervised and Unsupervised learning methods
+  * Coding with Python, two different projects.
 
 --
 
-- Machine Learning in Python (year 4)
-
---
-
-- Projects
+- Projects in the last year
 
 ---
 class:middle
 
-## Shiny Apps
+## R capabilities: Special case
 
 ---
 
-## Shiny
+## Shiny Apps
 
 .pull-left[
 - Shiny is an R package that makes it easy to build interactive web apps straight from R
@@ -288,16 +292,25 @@ knitr::include_graphics("img/shiny.png")
 
 - When your app is deployed, the computer serving your app is a web server
 
+- If you want to try making your own, try working through the reading [here](https://mastering-shiny.org/basic-app.html)
+
 ---
 
-## Examples
+## Some others
 
-Here's an example:
-.center[
-[minecr.shinyapps.io/fm-speeches-covid19-simple](https://minecr.shinyapps.io/fm-speeches-covid19-simple/)
-]
+- Dynamic reporting with Rmd files with different programming language
 
-If you want to try making your own, try working through the reading [here](https://mastering-shiny.org/basic-app.html)
+- Widely considered the best tool for making beautiful graphs and visualizations. 
+
+- Possible to find advanced statistics packages for high-level modeling.
+
+--
+
+**Key message**: If you learn a programming language to some extent, you can learn other tools intuitively  even if there are some differences on syntax. The battle of R vs Python is already over!
+
+```{r echo=FALSE, out.width="20%"}
+knitr::include_graphics("img/RPyhton.png")
+```
 
 ---
 class:middle
@@ -312,7 +325,51 @@ class:middle
 knitr::include_graphics("img/Turing.png")
 ```
 
+
 ---
 class:middle
 
+## Beyond your courses
+
+---
+## Royal Statistical Society
+
+They offer free membership to all students in full-time education with an interest in statistics and data science.
+
+The membership is called e-student so find out [benefits from here](https://rss.org.uk/membership/join-now/e-student/)
+
+
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("img/RSSlogo.jpeg")
+```
+
+---
+
+## Digital Skills Programme (UoE)
+
+They offer various different training courses to develop your digital skills
+
+- Introduction to Data Science
+
+- Basic Data Visualizations
+
+- Data and AI Ethics
+
+- Introduction to R or Python
+
+You can find more details from [digital skills programme for students](https://digitalskills.ed.ac.uk)
+
+
+---
+
 ## Good luck!
+
+for your project presentations and career after IDS...
+
+Please give us some time to complete this small survey 
+
+You can see the form [from the link](https://forms.office.com/e/T9qDnSXNUZ)
+
+```{r echo=FALSE, out.width="30%"}
+knitr::include_graphics("img/QRCodeIDSfeedback.png")
+```
