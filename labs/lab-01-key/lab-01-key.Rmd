@@ -1,295 +1,43 @@
 ---
-title: "Lab 01 - UK Attractions"
-author: "INSERT YOUR NAME HERE"
+title: "Lab 01 - Under Constuction"
+author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-### Load packages and data
-
-```{r load-packages, message=FALSE}
-library(tidyverse) 
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
 ```
 
-```{r load-data, message=FALSE}
-visitors <- read_csv("data/UK-visitor-numbers.csv")
-```
+This solutions key for the IDS lab is currently under construction. 👷🔨
 
+Please return back to this page later in the course.
 
 
-# Wrangling Data
+## In the meantime...
 
-## Question 1
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
 
-_How many tourist attractions are there in the data set?_
 
-```{r Q1}
-visitors %>% count()
-```
 
-### Exercise a.
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
+library(tidyverse)
+library(ggplot2)
 
-_Create a frequency table of the number of tourist attractions in the data set by `region`._
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
 
-```{r Ex_a}
-visitors %>% count(region)
-```
-
-### Exercise b.
-
-_Create a frequency table by `admission` and `setting`._
-
-```{r Ex_b}
-visitors %>% count(admission, setting)
-```
-
-## Question 2
-
-_What are the variable data types?_
-
-```{r Q2_part1}
-class(visitors$n_2022)
-```
-
-```{r Q2_part2}
-visitors %>% summarise_all(class)
-```
-
-
-## Question 3
-
-_Which attraction had the most number of visitors in 2022?_
-
-```{r Q3}
-visitors %>% arrange(desc(n_2022))
-```
-
-### Exercise c.
-
-_What are the top 10 most visited attractions in 2021?_
-```{r Ex_c}
-visitors %>% 
-  arrange(desc(n_2021)) %>%
-  head(n = 10)
-```
-
-## Question 4
-
-_What is the admission charge for the `"National Museum of Scotland"`?_
-
-```{r Q4}
-visitors %>% filter(attraction == "National Museum of Scotland")
-```
-
-
-### Exercise d.
-
-_Which attraction had exactly 565,772 visitors in 2022?_
-
-```{r Ex_d}
-visitors %>% filter(n_2022 == 565772)
-```
-
-### Exercise e.
-
-_How many attraction had more than 1 million visitors in 2022?_
-
-```{r Ex_e}
-visitors %>% 
-  filter(n_2022 > 10^6) %>%
-  count()
-```
-
-## Question 5
-
-_How many `"O"`utside attractions are there in the `"Yorkshire and the Humber"` region that gives `"Members"` free admission, which had more than 100,000 visitors in 2022?_
-
-```{r Q5}
-visitors %>%
-  filter(
-    setting == "O",
-    region == "Yorkshire and the Humber",
-    admission == "Members",
-    n_2022 >= 100000
-    ) %>%
-  count()
-```
-
-### Exercise f.
-
-_How many attractions had between 50,000 and 100,000 visitors in 2022?_
-
-```{r Ex_f}
-visitors %>% 
-  filter(
-    n_2022 > 50000,
-    n_2022 < 100000 ) %>%
-  count()
-```
-
-### Exercise g.
-
-_How many regions have more than 50 tourist attraction in the data set? (Hint: You will need to tabulate the data before filtering.)_
-
-```{r Ex_g}
-visitors %>% 
-  count(region) %>%
-  filter(n > 50)
-```
-
-
-
-# Summarising Data
-
-## Question 6
-
-_What are the mean and median visitor numbers in 2022 across all attractions?_
-
-```{r Q6}
-visitors %>% 
-  summarise(
-    mean_2022 = mean(n_2022),
-    med_2022 = median(n_2022)
-  )
-```
-
-
-### Exercise h.
-
-_Perform the same calculation for the 2021 admissions data._
-
-```{r Ex_h}
-visitors %>% 
-  summarise(
-    mean_2021 = mean(n_2021),
-    med_2021 = median(n_2021)
-  )
-```
-
-All values in the output are `NA`!
-
-### Exercise i.
-
-_What does `NA` stand for and why are you getting this as your answer to the previous question._
-
-`NA` stands for **Not Available**. This means there is a missing value in the data set. There can be many reasons for why data might be missing -- perhaps the venue does not collect this data or perhaps they failed to submit their data to the Association of Leading Visitor Attractions. Alternatively, it might be possible that the attraction only started in 2022 or perhaps it remained closed in 2021 due COVID-19 risks. It is not possible to determine the correct reason, and manually specifying a value of `0` would not be appropriate as it would imply that the attraction was open but nobody visited!
-
-The mean and median statistics require a full data set in order to be calculated. If there exists at least one `NA` then the only appropriate mean and median calculation would also be `NA`.
-
-### Exercise j.
-
-_Look at the help pages for the `mean()` and `median()` commands to see what the input argument `na.rm` does. Edit your code from exercise h so that it computes the summary statistics where data is available._
-
-To open the manual page for the `mean()` command either:
-
-* Go to the 'help' tab (bottom right panel) and type `mean` in the search box, or
-* Run `?mean` on the console (bottom left panel).
-
-The input argument `na.rm` is a logical input that takes the value `TRUE` or `FALSE`. If the value is `TRUE` then any entries that are `NA` are removed before calculating the statistic.
-
-```{r Ex_j}
-visitors %>% 
-  summarise(
-    mean_2021 = mean(n_2021, na.rm = TRUE),
-    med_2021 = median(n_2021, na.rm = TRUE)
-  )
-```
-
-## Question 7
-
-_Which setting (inside, outside or mixed) has the largest mean visitor numbers in 2022?_
-
-```{r Q7}
-visitors %>% 
-  group_by(setting) %>%
-  summarise(
-    mean_2022 = mean(n_2022),
-    med_2022 = median(n_2022)
-  )
-```
-
-### Exercise k.
-
-_Observe in question 6 that the mean statistics across all settings are much larger than the corresponding median statistics. Discuss in your group what this suggests about the data._
-
-A reminder of the definitions:
-
-* The mean is the average value of the data and it is calculated by adding together all of the numbers and dividing by the total.
-* The median is the mid-point in the data where 50% of the data are larger than the median statistic, and 50% of the data are lower.
-
-The mean statistic is a very well understood summary of data by a wide range of people, however it has one important limitation - it is highly sensitive to very extreme values compared to the other values of the data. For example:
-```{r Ex_k}
-x <- c(1, 2, 3, 4, 5, 6, 7*10^9)
-mean(x)      # about 10^9
-median(x)    # 4
-```
-Clearly the last value of 7 billion is very extreme compared to the other values, which therefore pulls the mean statistic towards a larger value of about 1 billion. However, the median statistic does not care if the last value is 7 or 7 billion.
-
-In terms of the visitor numbers, a larger mean statistic compared to the median statistic implies that the range of the upper half of the data set is wider than the width of the lower half. In otherwords, the shape of the visitor data is *positively skewed*.
-
-
-## Question 8
-
-_What is the interquartile range (the width of the middle 50% of data set between the lower and upper quartiles) the for each of the four nations of the UK?_
-
-```{r Q8}
-visitors_with_nations <- visitors %>%
-  mutate(
-    nation = case_when(
-      region == "Northern Ireland" ~ "Northern Ireland",
-      region == "Scotland" ~ "Scotland",
-      region == "Wales" ~ "Wales",
-      TRUE ~ "England"
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
     )
-  )
-
-visitors_with_nations %>% 
-  group_by(nation) %>%
-  summarise(
-    IQR_2022 = IQR(n_2022)
-  )
 ```
-
-### Exercise l.
-
-_How many tourist attractions are there in each of the 4 nations? From this, discuss in your group how reliable you think the inter-quartile estimates are._
-
-
-```{r Ex_l}
-visitors_with_nations %>%
-  count(nation)
-```
-
-There are only 2 attractions in Wales. This is a very low sample size, meaning that the inter-quartile range is not a very accurate estimate.
-
-
-
-# Challenging Exercises
-
-### Exercise m.
-
-_Within each of the 4 nations, what is the proportion of tourist attractions that have free admission for all visitors?_
-
-```{r Ex_m}
-visitors_with_nations %>%
-  group_by(nation) %>% 
-  count(admission) %>%
-  mutate(pct = 100 * n / sum(n)) %>%
-  filter(admission == "Free") %>%
-  arrange(desc(pct))
-```
-
-
-### Exercise n.
-
-_Calculate the percentage change in visitor admissions from 2021 to 2022. Of the tourist attractions in Scotland, sort into increasing numerical order the types of admission charges based on the mean percentage change in visitor numbers._
-
-```{r Ex_n}
-visitors_with_nations %>%
-  mutate(pct_change = (n_2022-n_2021)/n_2021) %>%
-  filter(nation == "Scotland") %>%
-  group_by(admission) %>%
-  summarise(mean_pct_change = mean(pct_change, na.rm = TRUE)) %>%
-  arrange(mean_pct_change)
-```
-

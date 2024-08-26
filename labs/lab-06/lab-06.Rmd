@@ -1,5 +1,5 @@
 ---
-title: "Lab 06 - Functions and iterations"
+title: "Lab 06 - Under Constuction"
 output: 
   tufte::tufte_html:
     tufte_variant: "envisioned"
@@ -7,229 +7,45 @@ output:
 link-citations: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = TRUE)
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
+knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
 ```
 
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Joan Gamell on Unsplash"}
-knitr::include_graphics("img/joan-gamell-XmZ4GDAp9G0-unsplash.jpg")
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
 ```
 
+This worksheet for the IDS lab is currently under construction. 👷🔨
+
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
 
 
 
-# Learning goals
-
-The objective of this workshop is to:
-
--   Learn how to write your own function for transformation and summarising.
--   Be cautious about inputs potential inputs and creating warning messages. 
-
----
-
-# Set-up
-
-In this workshop you will be working individually. 
-Begin by doing the following set-up steps:
-
-* Create your own copy of today's template repository from [https://github.com/uoeIDS/lab-06-template](https://github.com/uoeIDS/lab-06-template).
-* Create a new version control project in RStudio that links to _your_ copy of today's template.
-* Open `lab-06.Rmd` and change the `author` at the top of the file to your name.
-* Verify that everything is set-up correctly: 🧶 _knit_ your document, ✅ _commit_ your changes and ⬆️ _push_ the commits to GitHub.
-
-----
-
-## Packages & Data
-
-In today's lab we will using the **tidyverse** and **ggplot2** packages and their dependencies. At the top of your template you will find the following code that will load this library whenever you *knit* your document.
-
-```{r load-packages, message=FALSE, eval=TRUE}
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
 library(ggplot2)
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
+
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```
-
-The `diamonds` data set part of the *ggplot2* package and is readily available once you have loaded the package. You can inspect the content of the data set by running:
-
-```{r diamon_view, eval=FALSE}
-View(diamonds)
-```
-
-You can read the data dictionary for the `diamonds` data set by opening its manual page:
-
-```{r diamon_help, eval=FALSE}
-help(diamonds)
-```
-
-Further information about what each of the variables mean can be found in this [RPubs article](https://rpubs.com/Davo2812/1102821#:~:text=The%20diamonds%20dataset%20is%20a,cut%2C%20clarity%2C%20and%20color.) by David Curtis.
-
-Some of the variable names are generic, so the following code can be used to rename the variables so that they are more informative.
-
-```{r diamon_rename, eval=FALSE}
-diamonds <- diamonds %>% rename(
-    depth_pct = depth,
-    length_mm = x,
-    width_mm = y,
-    depth_mm = z,
-    table_pct = table
-  )
-```
-
-----
-
-## Exercise 1
-
-Explore the structures within the `diamonds` data set. Create some frequency tables, summary statistics and/or data visualisations to examine the relationship between the variables.
-
-Where applicable, make appropriate decisions on how to clean the data by removing rows or transforming variables.
-
-<details>
-
-<summary>
-
-Hint:
-
-</summary>
-
-<i> 
-
-* Can a diamond have a dimension length of 0mm?
-* How do the diamond dimension variables relate to the depth percentage variable?
-
-</i>
-
-</details>
-
-## Exercise 2
-
-The `table_pct` variable is a percentage between the width the table (the diamond's top face) and the diamond's overall width. Copy the following code to calculate the table width in millimetres.
-
-```{r dia_table, eval = FALSE}
-diamonds <- diamonds %>%
-  mutate(table_mm = table_pct * width_mm / 100)
-```
-
-* Calculate the arithmetic mean of the table lengths variable across all diamonds in the data set.
-* Calculate the arithmetic mean for `table_mm` within each of the 8 `clarity` categories.
-* Comment on the relationship between clarity and average table length.
-
-----
-
-
-In the course we have discussed the three different ways of measuring the location of data: the (arithmetic) mean, median and mode. However, these are only three of the main ways of measuring [central tendancy](https://en.wikipedia.org/wiki/Central_tendency) but there are many more variations, each with their own applications and uses. 
-
-In this lab we are going to take a closer look at some different 'mean' values.
-
-**The Geometric Mean**
-
-When thinking about the 'mean' you usually think about adding all of the data values together and then divide by the overall sample size. Instead of adding the points together, why not multiply? In this case we obtain the definition of the _geometric mean_:
-
-$$\bar{x}_g = \sqrt[n]{\prod_{i=1}^n x_i}$$
-
-
-
-## Exercise 3
-
-* Use exponent and logarithm rules to prove that the geometric mean is equal to the exponential of the arithmetic mean of the natural logarithm transformed data:
-$$\bar{x}_g = \exp\left( \frac{1}{n}\sum_{i=1}^n \ln x_i\right)$$
-
-
-## Exercise 4
-
-Create a function called `gmean` that computes the geometric mean statistic. The function must do the following:
-
-* Take a single input called `x` representing the data vector.
-* Computes the geometric mean using the formula in exercise 3. (Hint: the command `log()` computes the natural logarithm).
-* Returns a single value representing the geometric mean of the input data.
-
-## Exercise 5
-
-Now that you have created your `gmean()` command, it is now good to test that it works as you expect it to.
-
-Below is a list containing 6 small data sets to test your function.
-
-```{r test_data}
-test_data <- list(
-  test1 = c(2.1, 3.8, 4.2),
-  test2 = c(1, 10, 100, 1000),
-  test3 = c(0, 1, 4),
-  test4 = c(0.38,  0.94, -1.56),
-  test5 = c(TRUE, TRUE),
-  test6 = c("6", "7", "8")
-)
-```
-
-
-Create a `for` loop where in each iteration you:
-- Applies the `gmean()` to the test data
-- Prints the output.
-
-
-Does your `gmean()` function work on all test data sets? If not, then why not?
-
-
-## Exercise 6
-
-Hopefully you should notice that some of the test data sets produce some problematic results. This is because the geometric mean is only valid for strictly positive data values.
-
-To make the command `gmean()` robust to potentially invalid input data, a check needs to be performed and an informative message needs to be returned.
-
-* Edit your `gmean()` command to include the following check at an appropriate location. 
-```{r err_code, eval = FALSE}
-if( any(x <= 0) ){
-  warning("<ERROR MESSAGE>")
-  return(NaN)
-}
-```
-* Ensure that you know what the above code is doing.
-* Change the error message to something that concise and informative.
-* Re-test the `gmean()` command using the examples in exercise 5.
-
-
-As an optional extension to this exercise, what other conditions do we require on the input `x` in order for the `gmean()` command to work correctly? Add extra if statements to the start of your function to check for any other potential bad inputs.
-
-## Exercise 7
-
-With the `diamonds` data set, summarise the `table_mm` variable by computing the (arithmetic) mean, median and geometric mean for each `clarity` category. Caution, if you have not cleaned the data in exercise 1 then you may need to filter your data first.
-
-Comment on the relationship between `table_mm` and `clarity` using the summarised values.
-
-
-## Exercise 8 (optional)
-
-In the construction of the command `gmean()` you may have questioned why do we need to perform the logarithm and exponential transformation? Why cannot we compute the geometric mean based on the original definition, using `prod(x)^(1/length(x))`?
-
-* Create a function called `gmean2()` that computes the geometric mean using the original product definition.
-* Try `gmean2()` on the test examples. Do they work and produce the same result?
-* Try `gmean2()` with the `table_mm` variable. 
-* Hopefully, you will see an problem with the calculation. Why do you think `gmean2()` did not work in this case?
-
-
-## Exercise 9 (optional)
-
-An alternative measurement of central tendency is the **Harmonic Mean**, which is calculated by the reciprocal of the arithmetic mean of the reciprocals: 
-
-$$\bar{x}_h = \frac{1}{\frac{1}{n}\sum_{i=1}^n \frac{1}{x_i}}$$
-As with the geometric mean, this is only valid for positive value data.
-
-* Create a new function called `hmean()` that takes a single numerical vector `x` as input that computes and returns the harmonic mean statistic.
-* Test your function on the 4 test examples and add appropriate input checks where necessary.
-* Apply the `hmean()` command to the `table_mm` variable from the `diamonds` data set.
-
-
-
-----
-
-# I have time left ...
-
-Once you're done with this week's lab, you can spend some time working on your projects. Reflect on the comments you received from your check-in last week and discuss with your team what (if anything) you might want to change about your approach. Is there anything we learnt this week that you might apply to your project?
-
-----
-
-# Wrapping up
-
-That's the end of this lab! 
-
-Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.
-
-Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time.

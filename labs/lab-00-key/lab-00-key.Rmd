@@ -1,73 +1,43 @@
 ---
-title: "Lab 00 - Hello IDS!"
+title: "Lab 00 - Under Constuction"
 author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-### Load packages and data
-
-```{r load-packages, message=FALSE}
-library(tidyverse) 
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
 ```
 
-### Exercises 16-17
+This solutions key for the IDS lab is currently under construction. 👷🔨
 
-We set up the data frame. Edit the data below to include information about your team members.
+Please return back to this page later in the course.
 
-```{r setup-tibble}
-team_data <- tibble(
-  name = c("Peter Rabbit", "Bugs Bunny", "White Rabbit", 
-           "Judy Hopps", "Thumper"),
-  github_username = c("mcgregors-garden", "whats-up-doc", "Im-late", 
-                      "have-to-try", "say-nothing"), 
-  colour = c("powderblue", "darkorange", "white", 
-             "seagreen1", "plum"),
-  hobby = c("Hopping", "Comedy", "Tailoring", 
-            "Driving", "Drumming"),
-  favourite_number = c(2, 8, 5, 7, 10)
-  )
 
-team_data
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
+library(tidyverse)
+library(ggplot2)
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
+
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```
-
-### Exercise 18
-
-We now work on visualising our data. 
-
-```{r bar-plot}
-p1 <- ggplot(data = team_data, 
-             mapping = aes(x = github_username, 
-                           y = favourite_number,
-                           fill = colour), 
-             ) +
-   geom_col() +
-   scale_fill_identity()
-p1
-```
-
-The code generates a bar plot if each member's favourite number with the colour of each bar representing the team member's favourite colour.
-
-
-### Exercises 19
-
-Change the text of the plot title and axis labels.
-
-```{r labelled-bar-plot}
-p1 + labs(x = "GitHub Username", 
-          y = "Favourite Number",
-          title = "Data collected from team Rabbit")
-```
-
-The command `labs()` allows us to manually specify the axis labels and plot title for the data visualisation.
-
-
-### Exercise 20
-
-```{r new-bar-plot}
-p2 <- ggplot(team_data, aes(x = hobby)) +
-  geom_bar()
-p2
-```
-
-This bar plot is not a good data visualisation because each person has a different hobby. If we collected more data from everybody on the course then there will be many more different hobbies (i.e. more values along the x-axis) with relatively few repeats (i.e. not much vertical variation).
