@@ -2,7 +2,7 @@
 title: "Tidy Data and Data Wrangling"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2023/2024"
+date: "<br> 2024/2025"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
