@@ -113,7 +113,7 @@ Is this version tidy?
 
 
 ```{r hiv-est-prevalence-15-49-tidy, echo=FALSE, out.width="35%", fig.align = "center", caption = "Estimated HIV prevalence among 15-49 year olds", out.width = "35%"}
-knitr::include_graphics("img/hiv-est-prevalence-15-49-tidy.png")
+knitr::include_graphics("img/hiv-est-prevalence-15-49-tidy.PNG")
 ```
 
 
