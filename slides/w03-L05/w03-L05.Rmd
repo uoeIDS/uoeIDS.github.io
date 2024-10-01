@@ -640,7 +640,7 @@ background-size: contain
 
 ## Importing from Excel using the GUI
 
-.center[![The final appearance of the Import Options in the dialog box, from Excel](img/GUIxl/Import-options.png)] 
+.center[![The final appearance of the Import Options in the dialog box, from Excel](img/GUIxl/import-options.png)]
 
 - We need to specify the range of cells in which the data are stored (or use the **Skip:** field)
 - The **Name:** field is the name under which we'll store the data once imported
