@@ -759,7 +759,7 @@ prices
 .pull-right[
 ```{r}
 purchases %>%
-  left_join(prices) #<<
+  left_join(prices, by = "item") #<<
 ```
 ]
 

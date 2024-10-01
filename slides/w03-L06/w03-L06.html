@@ -1192,11 +1192,7 @@ prices
 
 ``` r
 purchases %&gt;%
-* left_join(prices)
-```
-
-```
-## Joining with `by = join_by(item)`
+* left_join(prices, by = "item")
 ```
 
 ```
