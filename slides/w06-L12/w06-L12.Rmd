@@ -63,10 +63,13 @@ knitr::include_graphics("img/modelling-process.PNG")
 df <- tibble(x = c(0.491, 0.833, 0.758, 0.902, 0.278, 0.446, 0.272, 0.33, 0.864, 0.11),
              y = c(0.466, 0.817, 0.696, 0.992, 0.179, 0.531, 0.353, 0.283, 0.948, 0.209))
 df_new <- tibble(x = seq(0,1,by=0.01))
+df_point <- tibble(x = 0.625)
 M1 <- lm(y ~ x, data = df)
 M2 <- lm(y ~ poly(x, 7), data = df)
 df_new$y_M1 <- predict(M1,newdata = df_new)
 df_new$y_M2 <- predict(M2,newdata = df_new)
+df_point$y_M1 <- predict(M1,newdata = df_point)
+df_point$y_M2 <- predict(M2,newdata = df_point)
 
 ggplot(data = df, mapping = aes(x=x, y=y)) +
   geom_point(cex = 2) + 
@@ -107,7 +110,8 @@ ggplot(data = df, mapping = aes(x=x, y=y)) +
   theme_bw() +
   labs(x = "x", y = "y", title = "Model 1") +
   coord_cartesian(xlim=c(0,1), ylim = c(0, 1)) +
-  geom_line(data = df_new, mapping = aes(x=x,y=y_M1), lwd = 1.2)
+  geom_line(data = df_new, mapping = aes(x=x,y=y_M1), lwd = 1.2) +
+  geom_point(data = df_point, mapping = aes(x=x,y=y_M1), col="red", pch="X",cex=10)
 ```
 
 ]
@@ -118,7 +122,8 @@ ggplot(data = df, mapping = aes(x=x, y=y)) +
   theme_bw() +
   labs(x = "x", y = "y", title = "Model 2") +
   coord_cartesian(xlim=c(0,1), ylim = c(0, 1)) +
-  geom_line(data = df_new, mapping = aes(x=x,y=y_M2), lwd = 1.2)
+  geom_line(data = df_new, mapping = aes(x=x,y=y_M2), lwd = 1.2)+
+  geom_point(data = df_point, mapping = aes(x=x,y=y_M2), col="red", pch="X",cex=10)
 ```
 ]
 
