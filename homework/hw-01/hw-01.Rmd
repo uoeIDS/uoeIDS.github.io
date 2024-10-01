@@ -1,6 +1,6 @@
 ---
-title: "HW 01 - Yet to be released"
-subtitle: "Due: dd text_month, hh:mm UK time"
+title: "HW 01 - All about Edinburgh"
+subtitle: "Due: 11 October, 16:00 UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -11,15 +11,210 @@ link-citations: yes
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-
-knitr::opts_chunk$set(
-  eval = FALSE,
-  out.width = "100%"
-  )
+library(lubridate)
+library(ggplot2)
+    
+knitr::opts_chunk$set(out.width = "100%")
 ```
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Pierre Bamin from Unsplash"}
-knitr::include_graphics("img/pierre-bamin-18T72jBinvI-unsplash.jpg")
+```{r unsplash, fig.margin = TRUE, echo = FALSE, fig.cap = "Photo by Peiheng Yang on Unsplash"}
+knitr::include_graphics("img/peiheng-yang-wa8U2Y01nmY-unsplash.jpg")
 ```
 
-You are very early at looking for the homework assignment. The worksheet is not yet released! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including release dates.
+
+In this assignment, you will get to put your newly acquired skills of data wrangling into use, as well as continue practicing working with Git and GitHub.
+
+## Prerequisites
+
+- This assignment assumes that you have worked through all materials up to and including [week 2](https://uoe-ids.netlify.app/week02/) and [week 3](https://uoe-ids.netlify.app/week03/).
+- Make sure you are familiar with this content.
+- If you have not completed the first time setup instructions found on the [Setup & Troubleshooting](https://uoe-ids.netlify.app/troubleshoot/) page, please follow these now before starting to your first assignment.
+
+## Workflow
+
+### **Step 1. Cloning the homework template in GitHub:** 
+
+From your profile in GitHub, go to **Repositories** and click on the green **New** button. Click on the text **Import a repository** and type the following URL: [`https://github.com/uoeIDS/hw-01-template`](https://github.com/uoeIDS/hw-01-template). Add an appropriate name to your repository, e.g. `hw-01`.
+
+* **IMPORTANT**: Set the privacy of your repository to **Private**.
+
+Once done, click on the green **Begin import** button.
+
+* **IMPORTANT**: Since your repository is private to you, we ask that you add the GitHub account `uoeIDS` as a **Collaborator** so that the teaching team can see your work and provide technical support if needed.
+
+### **Step 2. Go to RStudio:** 
+
+Open RStudio, click on **File** and then **New Project...**. In the wizard, select **Version Control**, then **Git** and then paste the HTTPS URL of the homework GitHub repository you have just created. Browse your local file system to find a convenient place to save your project and then click **Create Project**
+
+
+### **Step 3: Initial commit:**
+
+Under the **Files** tab (bottom-right pane), tick the box next to the file `hw-01-template.Rmd` and then click on the **Rename** button. Rename your R markdown file to read `hw-01-s<nnnnnn>.Rmd` where you should replace `<nnnnnn>` with your UUN.
+
+Open the R markdown file you have renamed and update the document's author to your name and UUN.
+
+Go to the **Git** pane (top-right) and click on **Commit**. Stage all the files by ticking the boxes and commit the changes with an informative message, e.g. `Initial commit`. Finally, push your changes to GitHub. 
+
+* **IMPORTANT**: Remember to **periodically** stage, commit and push your work. 
+
+
+## Necessary Packages
+
+This assignment will use the following main packages:
+
+-   `tidyverse`: a collection of packages for doing data analysis in a "tidy" way
+-   `lubridate`: a package for formatting dates in R
+
+<!-- * **NOTE**: You may also optionally load the `dsbox` package as this relates to the data used in this homework, but you will not be expected to use any of the commands from this package. -->
+
+As usual, we use the `library()` function to load packages.
+
+- In your R Markdown document you should see an R chunk labelled `load-packages` which has the necessary code for loading both packages.
+- You should also load these packages in your Console, which you can do by sending the code to your Console by clicking on the **Run Current Chunk** icon (green arrow pointing right icon).
+
+```{r load-packages-chunk, echo = FALSE, fig.align = "left"}
+knitr::include_graphics("img/load-packages-chunk_b.png")
+```
+
+Note that these packages are loaded in your R Markdown environment when you **Knit** your R Markdown document.
+
+------------------------------------------------------------------------------
+
+## Airbnb listings in Edinburgh
+
+Airbnb is an online marketplace where people can book short-term stays in hotels or in other people's houses. 
+Recent developments in Edinburgh regarding the growth of Airbnb and its impact on the housing market means a better understanding of the Airbnb listings is needed.
+Using data provided by Airbnb, we can explore how Airbnb availability and prices vary by neighbourhood.
+
+The dataset for this assignment can be found as a comma separated value (`.csv`) file in the `data` directory of the latest update to the `hw-01` template repository. To read this data, ensure that you have the following code near the beginning of your R Markdown file.
+
+```{r load-edibnb-data, message = FALSE}
+edibnb <- read_csv("data/edibnb.csv")
+```
+
+------------------------------------------------------------------------------
+
+<!-- Alternatively, the data can be found in the **dsbox** package, and it is called `edibnb`. -->
+<!-- Since the dataset is distributed with the package, we do not need to load it separately; it becomes available to us when we load the package. -->
+
+You can view the dataset as a spreadsheet using the `View()` function.
+Note that **you should _not_ put this function in your R Markdown document**, but instead type it directly in the Console, as it pops open a new window.
+When you run this in the console, you will see the following **data viewer** window pop up.
+
+```{r view-data, eval = FALSE}
+View(edibnb)
+```
+
+You can find out more about the dataset by inspecting its documentation, which you can find in the file `data/edibnb_readme.md`. You can open this file with RStudio or with your preferred text editor. Mainly, the `edibnb` data set contain `r nrow(edibnb)` listings in Edinburgh, with values about `r ncol(edibnb)` different variables that includes the property neighbourhood location, number of rooms and review ratings.
+
+------------------------------------------------------------------------------
+
+Edinburgh council collects the second data set from their assessments of a randomly selected sample of listings. The variables in this data set are:
+
+  -   `id`, the ID number of the listing (according to `edibnb`)
+  -   `rating`, the council's rating of the listing of the property either being good, adequate or poor.
+  -   `assessment_date`, the date the council performed their assessment of the property.
+  
+The data is contained in the file `council_assessments.csv` within the `data/` directory. It can be loaded into your workflow using the following code.
+
+```{r message = FALSE}
+council <- read_csv("data/council_assessments.csv")
+```
+
+------------------------------------------------------------------------------
+
+## EXERCISE 1
+
+In the `edibnb` data set, 
+
+- which variables have missing observations, i.e. **NA**s as an entry? State the name of variables **(2 pts)**
+
+- what is the ID of the listing that has the highest number of reviews with a perfect review score of 100%? **(3 pts)**
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 1, knit the document, commit your changes with a commit message that says "Completed Exercise 1", and push.*
+
+------------------------------------------------------------------------------
+
+## EXERCISE 2
+
+In the `edibnb` data set,
+
+- Find the number of Airbnb properties located in **Old Town** having the one night stay price larger than 100 GBP. **(2 pts)**
+
+- Calculate the minimum, maximum, and average price from the Airbnb properties in **Southside** for a single night stay for four people. 
+(Note, four people can stay in a property for four or more people.) **(3 pts)**
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
+
+------------------------------------------------------------------------------
+
+## EXERCISE 3
+
+In the `edibnb` data set,
+
+- Create a frequency table for the number of `bathrooms` in the data set for the properties located in **Newington** **(2 pts)**
+
+When looking at the data (or the frequency table you generated) you will notice that some of the listings have a value for the number of bathrooms that is not a whole number, e.g. 1.5 or 2.5. 
+
+- For the whole data set, mutate the `bathrooms` variable to round the number of bathrooms _up_ to the nearest whole number (hint, look at `ceiling()`). Using this mutated variable, how many listings have more bathrooms than bedrooms? **(3 pts)**
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
+
+------------------------------------------------------------------------------
+
+## EXERCISE 4
+
+- On reading the `council` data, R interprets the variable `assessment_date` as a character. Using the **lubridate** package to correct the class of the `assessment_date` variable, and use this variable to evaluate how many properties the council assessed in the month of May. (Hint: have a look at the [lubridate cheat sheet](https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf) for what functions may be useful in this exercise.) **(2 pts)**
+
+Join the `edibnb` to the `council` data frames with a suitable function. For the merged new data set, 
+
+<!-- - Create a bar plot of the `neighbourhood` variable for the properties that have been assessed by the council (remember to iterate the data visualisation to make it as informative as possible). What does the data visualisation suggest? Is the council targeting all neighborhoods within Edinburgh equally? **(3 pts)** -->
+
+- Create the frequency table of the `neighbourhood` variable for the properties that have been assessed by the council. What does the frequency table suggest? Is the council targeting all neighborhoods within Edinburgh equally? **(2 pts)**
+- Is there a more effective data summary to determine if some neighborhoods 
+have been targeted more than others? Explain your approach in words (no code necessary).  **(1 pts)**
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4, knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
+
+------------------------------------------------------------------------------
+
+### Review your work
+
+✏️ After answering each of the exercise, take a moment to review your work and to check that your code is clear and understandable. A proportion of the homework assignment marks are attributable to how you present your work, both code and written.
+
+When reviewing your code, add new lines, tabs and spaces where appropriate to help aid the reader to understand what your code is doing. *Even if the exercise does not explicitly ask you to write some text, it is also good practice to add a short sentence to be explicit about what is your answer to the question.*
+
+------------------------------------------------------------------------------
+
+# Submission
+
+⬆️ Once you have answered all of the exercises, please make sure that you have knitted your document and committed all the changes to GitHub.
+
+To submit your homework:
+
+1.    Login to LEARN-ULTRA and navigate to the Introduction to Data Science course.
+
+2.    In the **Assessment** folder, select **Gradescope**.
+
+3.    Click on the **Dashboard** in the left-hand panel and select **Homework Assignment 1 (hw-01)**.
+
+4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
+Once done, press **Save Answer** and then **Submit & View Submissions**.
+
+**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**.
+
+If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
+
+------------------------------------------------------------------------------
+
+## How the homework graded
+
+The homework is grades out of a 25 where:
+
+*   Each exercise is marked out of 5, and
+
+*   Up to five additional marks are awarded based on the clarity of your writing, coding skills, reproducibility and overall presentation. 
+
+## Getting help
+
+If you have any questions about the assignment, please post them on [Piazza!](https://piazza.com/ed.ac.uk/fall2024/math0807720245ss1sem1/home)
