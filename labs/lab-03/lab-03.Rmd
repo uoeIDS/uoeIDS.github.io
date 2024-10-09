@@ -170,7 +170,7 @@ If Git can automatically resolve the merge conflict, you might see the following
 knitr::include_graphics("img/pull_rebase_message.png")
 ```
 
-We recommend running the first command shown in the _command line_ (not the R console): 
+If this happens, we recommend running the first command shown in the _command line_ (not the R console): 
 `git config pull.rebase false`. 
 Once you do this, the message should not appear again in the future.
 
