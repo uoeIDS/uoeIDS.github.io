@@ -33,7 +33,7 @@ In this lab you will discuss in your groups what makes a good data visualisation
 
 -   Discuss the qualities of data visualisation.
 -   Create data visualisation.
--   Working collaboratively via GitHub and learn how to resolve merger conflicts.
+-   Working collaboratively via GitHub and learn how to resolve merge conflicts.
 
 
 -----------------------------------------------------------------------
@@ -42,7 +42,7 @@ In this lab you will discuss in your groups what makes a good data visualisation
 
 Please find your team members that you formed in last week's workshop. 
 
-In today's lab you will continue to work collaboratively from the same repository. An important learning objective for today is to be aware of **merger conflicts** and learn how to resolve them when pushing changes you your team's shared repository.
+In today's lab you will continue to work collaboratively from the same repository. An important learning objective for today is to be aware of **merge conflicts** and learn how to resolve them when pushing changes you your team's shared repository.
 
 As with last week, it is very important that you follow the instructions carefully and that only specified team members do the activity at stated times.
 
@@ -162,9 +162,21 @@ Your job is to *reconcile* the changes: edit the file so that it incorporates th
 
 Once you have reconciled the changes, you should then stage and commit the results. Only then will you will be permitted to _push_ your changes to GitHub.
 
+## Note
+
+If Git can automatically resolve the merge conflict, you might see the following message:
+
+```{r pull_rebase, echo = FALSE, eval = TRUE}
+knitr::include_graphics("img/pull_rebase_message.png")
+```
+
+We recommend running the first command shown in the _command line_ (not the R console): 
+`git config pull.rebase false`. 
+Once you do this, the message should not appear again in the future.
+
 -------------------------------------------
 
-# Making a merger conflict - add your name
+# Making a merge conflict - add your name
 
 ```{marginfigure}
 Whilst you are waiting for your turn, either help each other with their steps or look ahead to the next section on discussing data visualisations.
@@ -235,7 +247,7 @@ output: html_document
 
 4. 🧶 _Knit_ your document and verify that the author line in the output is correct.
 
-5. ✅ _Commit_ the changes with an informative message, for example `resolved merger conflict with authors`.
+5. ✅ _Commit_ the changes with an informative message, for example `resolved merge conflict with authors`.
 
 6. ⬆️ _Push_ your changes to GitHub. This time there should not be any issue.
 
@@ -248,8 +260,8 @@ Hands on your computer.
 Follow the same instructions as member 3. Begin by attempting to ⬆️ _Push_ your changes, which will result in an error message indicating that your personal version is behind the version on GitHub. Then:
 
 1. ⬇️ _Pull_ the latest updates from GitHub.
-2. Find the merger conflict.
-3. Resolve the merger conflict.
+2. Find the merge conflict.
+3. Resolve the merge conflict.
 4. 🧶 _Knit_ your document.
 5. ✅ _Commit_ your changes with an informative message.
 6. ⬆️ _Push_ your changes to GitHub.
@@ -260,7 +272,7 @@ Hands off your computer.
 
 <!-- Hands on your computer. -->
 
-<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merger conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
+<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merge conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
 
 <!-- Hands off your computer. -->
 
@@ -268,7 +280,7 @@ Hands off your computer.
 
 <!-- Hands on your computer. -->
 
-<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merger conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
+<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merge conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
 
 <!-- Hands off your computer. -->
 
@@ -276,25 +288,25 @@ Hands off your computer.
 
 <!-- Hands on your computer. -->
 
-<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merger conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
+<!-- It is now your turn to follow the above procedure. First attempt to ⬆️ _push_ your changes to get the error message. Then ⬇️ _pull_, find and resolve the merge conflict, 🧶 _knit_, ✅ _commit_ and finally ⬆️ _push_ your changes. -->
 
 <!-- Hands off your computer. -->
 
 🚘🧭😐😐😐😐 (Member 1 only - pair 1)
 
-Although you have contributed your name to the author, you have not yet had the chance to experience a merger conflict -- it is now your turn!
+Although you have contributed your name to the author, you have not yet had the chance to experience a merge conflict -- it is now your turn!
 
 Hands on your computer.
 
 Edit the author line of your version of `lab-03.Rmd` so that it only has your name and your group's team name. 🧶 _Knit_ the document and ✅ _commit_ your changes.
 
-If you now attempt to ⬇️ _push_ you will be faced with an error message. Follow the above steps to resolve your merger conflict.
+If you now attempt to ⬇️ _push_ you will be faced with an error message. Follow the above steps to resolve your merge conflict.
 
 Hands off your computer.
 
 🚘🚘🚘🚘🚘🚘 (For all)
 
-Finally, everybody ⬇️ _pull_ the latest changes from the shared repository. You all should now have the same document that has everyone's name and your team name. Provided that you all followed the above instructions carefully then there should not be any further merger conflicts.
+Finally, everybody ⬇️ _pull_ the latest changes from the shared repository. You all should now have the same document that has everyone's name and your team name. Provided that you all followed the above instructions carefully then there should not be any further merge conflicts.
 
 
 ## Tips for collaborating via GitHub
@@ -362,6 +374,11 @@ staff <- read_csv("data/instructional-staff.csv")
 
 
 ## Exercise 1.  
+
+```{marginfigure}
+While you work on these exercises, aim to create a merge conflict so that members 2, 4 and 6 can also practice resolving one. For example in pair 1, member 1 can make a minor edit in the answer box (like adding placeholder text), then commit and push this change to the repository. At the same time, member 2 should work on the actual answer for the exercise (without pulling the recent changes). When member 2 tries to push, they’ll encounter an error due to a merge conflict. Follow the instructions provided above to resolve the conflict.
+```
+
 
 View the data. Discuss as a team the following questions and write down your answer.
 
@@ -467,7 +484,7 @@ At the end of the lab, you need to ensure that you have your own personal copy o
 
 🚘🚘🚘🚘🚘🚘For all)
 
-Everybody, 🧶 _knit_, ✅ _commit_ and ⬆️ _push_ any remaining changes to your group's shared repository on GitHub. In doing so, ensure that you resolve any merger conflicts.
+Everybody, 🧶 _knit_, ✅ _commit_ and ⬆️ _push_ any remaining changes to your group's shared repository on GitHub. In doing so, ensure that you resolve any merge conflicts.
 
 Once the version on GitHub contains everybody's contribution, ⬇️ _Pull_ the latest changes so that your personal copy is up-to-date.
 
