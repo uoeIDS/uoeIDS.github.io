@@ -491,7 +491,6 @@ ucbadmit %>%
 ggplot(ucbadmit, aes(y = gender, fill = admit)) +
   geom_bar(position = "fill") +
   facet_wrap(. ~ dept, nrow = 1) +
-  scale_x_continuous(labels = label_percent()) +
   labs(title = "Admissions by gender and department",
        x = "Proportion", 
        y = NULL,
