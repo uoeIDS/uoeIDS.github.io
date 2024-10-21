@@ -111,6 +111,32 @@ Acknowledgement of limitations:
 **Message**: Clarity in communication is important to minimise misunderstanding. Not only about the methods and findings, but crucially about the _assumptions_ and _limitations_.
 
 
+---
+
+## Absolute vs Relative Risk
+
+```{r absVrel, echo = FALSE, fig.align='center', fig.width = 12, fig.height=6}
+x1 <- 0.5
+x2 <- 0.05
+data.frame(
+    x = c(x1,x1*0.2, x2, x2*0.2)*100, 
+    grp = factor(c("before", "after", "before","after"), levels = c("before", "after")), 
+    eg = c("Example 1", "Example 1", "Example 2", "Example 2")
+    ) %>%
+ggplot(mapping = aes(x = grp, y = x, fill = grp)) +
+  geom_col() + 
+  geom_text(aes(label = paste0(round(x),"%")), vjust = -0.5) +
+  facet_wrap(~eg) +
+  coord_cartesian(ylim = c(0,max(x1,x2))*100) + 
+  labs(y = 'Absolute Risk', 
+       x = '', 
+       title = 'Illustration of a relative risk reduction of 20%.')+
+  theme(legend.position="none")
+
+```
+
+**Message**: Take care about the _meaning_ of statistics. Are you giving the full picture?
+
 
 ---
 
