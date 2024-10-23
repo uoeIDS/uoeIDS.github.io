@@ -63,7 +63,7 @@ knitr::include_graphics("img/modelling-process.PNG")
 df <- tibble(x = c(0.491, 0.833, 0.758, 0.902, 0.278, 0.446, 0.272, 0.33, 0.864, 0.11),
              y = c(0.466, 0.817, 0.696, 0.992, 0.179, 0.531, 0.353, 0.283, 0.948, 0.209))
 df_new <- tibble(x = seq(0,1,by=0.01))
-df_point <- tibble(x = 0.625)
+df_point <- tibble(x = c(0.16,0.63))
 M1 <- lm(y ~ x, data = df)
 M2 <- lm(y ~ poly(x, 7), data = df)
 df_new$y_M1 <- predict(M1,newdata = df_new)
@@ -82,7 +82,8 @@ ggplot(data = df, mapping = aes(x=x, y=y)) +
 ]
 .pull-right[
 
-Fit accuracy (residual sum of squares):
+Fit accuracy: (residual sum of squares)
+$\sum_{i=1}^n (y_i - \hat{y}_i)^2$ 
 * Model 1: `r sum((predict(M1)-df$y)^2)`
 * Model 2: `r sum((predict(M2)-df$y)^2)`
 
@@ -90,10 +91,6 @@ Fit accuracy (residual sum of squares):
 Q1: Which model gives a better fit to the data?
 ]
 
-
-.question[
-Q2: From the data, suggest what is a reasonable $y$ value when $x=0.625$? 
-]
 
 ]
 
@@ -104,36 +101,35 @@ Q2: From the data, suggest what is a reasonable $y$ value when $x=0.625$?
 
 .pull-left[
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.height = 5}
 ggplot(data = df, mapping = aes(x=x, y=y)) +
   geom_point(cex = 2) + 
   theme_bw() +
   labs(x = "x", y = "y", title = "Model 1") +
   coord_cartesian(xlim=c(0,1), ylim = c(0, 1)) +
   geom_line(data = df_new, mapping = aes(x=x,y=y_M1), lwd = 1.2) +
-  geom_point(data = df_point, mapping = aes(x=x,y=y_M1), col="red", pch="X",cex=10)
+  geom_point(data = df_point, mapping = aes(x=x,y=y_M1), col=c("blue","red"), pch="X",cex=10)
 ```
 
 ]
 .pull-right[
-```{r echo=FALSE}
+```{r echo=FALSE, fig.height = 5}
 ggplot(data = df, mapping = aes(x=x, y=y)) +
   geom_point(cex = 2) + 
   theme_bw() +
   labs(x = "x", y = "y", title = "Model 2") +
   coord_cartesian(xlim=c(0,1), ylim = c(0, 1)) +
   geom_line(data = df_new, mapping = aes(x=x,y=y_M2), lwd = 1.2)+
-  geom_point(data = df_point, mapping = aes(x=x,y=y_M2), col="red", pch="X",cex=10)
+  geom_point(data = df_point, mapping = aes(x=x,y=y_M2), col=c("blue","red"), pch="X",cex=10)
 ```
 ]
 
----
+.question[
+Q2: For which model are you more likely to trust the predictions at $x=0.16$ and $x=0.63$
+]
 
-## Be cautious with model chaining
 
-```{r out.width="80%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("img/Model-chaining.PNG")
-```
+
 
 ---
 
@@ -167,12 +163,35 @@ Julia Angwin, Jeff Larson, Surya Mattu, and Lauren Kirchner. [Machine Bias](http
 ## A tale of two convicts
 
 .pull-left[
-![](img/propublica-prater-broden-1.png)
+![](img/propublica-prater-broden-edit-1.png)
 ]
---
+
 .pull-right[
-![](img/propublica-prater-broden-2.png)
+
+Brisha Borden
+* Was running late to pick up her child from school.
+* Stole a child's bike, and was spotted by a neighbor.
+* Brisha was arrested for the 1st time.
+
+Vernon Prater
+* Arrested after shoplifting $86.35 worth of tools.
+* Previously convicted of armed robbery, served 5 years.
+
+
+.question[Who is more likely to re-offend?]
+
+<!--![](img/propublica-prater-broden-2.png)-->
 ]
+
+
+---
+
+## What the computer said?!
+
+```{r load_image, echo=FALSE, fig.align='center', out.width="50%"}
+knitr::include_graphics("img/propublica-prater-broden-edit-2.png")
+```
+
 
 ---
 
@@ -201,8 +220,8 @@ Risk scores assigned to more than 7,000 people arrested in Broward County, Flori
 ```{r echo=FALSE, out.width = "85%"}
 knitr::include_graphics("img/propublica-results.png")
 ```
-- Algorithm was more likely to falsely flag black defendants as future criminals, at almost twice the rate as white defendants
-- White defendants were mislabelled as low risk more often than black defendants
+- Algorithm was more likely to falsely flag African American defendants as future criminals, at almost twice the rate as White defendants
+- White defendants were mislabeled as low risk more often than African American defendants
 
 
 
