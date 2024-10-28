@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.3.0/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -386,7 +388,7 @@ mean
 ```
 ## function (x, ...) 
 ## UseMethod("mean")
-## &lt;bytecode: 0x1393245a0&gt;
+## &lt;bytecode: 0x15051afa0&gt;
 ## &lt;environment: namespace:base&gt;
 ```
 
@@ -624,6 +626,249 @@ area(TRUE)
 
 
 ---
+
+## Anonymous functions
+
+Sometimes we want to define a function without giving it a name, such as when 
+we need to apply a function to multiple columns of a data frame.
+
+The `airquality` dataset (in the `datasets` package) contains daily air quality 
+measurements in New York, May to September 1973.
+
+
+``` r
+head(airquality)
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5
+## 6    28      NA 14.9   66     5   6
+```
+
+---
+
+## Anonymous functions
+
+Let's find the mean of the first four columns:
+
+
+
+``` r
+airquality %&gt;% summarize(
+  across(Ozone:Temp,
+         mean)
+)
+```
+
+```
+##   Ozone Solar.R     Wind     Temp
+## 1    NA      NA 9.957516 77.88235
+```
+
+--
+
+Can we remove missing values?
+
+
+``` r
+airquality %&gt;% summarize(
+  across(Ozone:Temp,
+         function(x) mean(x, na.rm = TRUE) # anonymous or lambda function
+  )
+)
+```
+
+```
+##      Ozone  Solar.R     Wind     Temp
+## 1 42.12931 185.9315 9.957516 77.88235
+```
+
+---
+
+
+
+
+## Anonymous functions
+
+Many approaches to do the same thing:
+
+.panelset[
+.panel[.panel-name[Version 1]
+
+``` r
+airquality %&gt;% summarize(
+  across(Ozone:Temp,
+         function(x) mean(x, na.rm = TRUE)
+  )
+)
+```
+
+```
+##      Ozone  Solar.R     Wind     Temp
+## 1 42.12931 185.9315 9.957516 77.88235
+```
+]
+
+.panel[.panel-name[Version 2]
+
+``` r
+airquality %&gt;% summarize(
+  across(Ozone:Temp,
+         \(x) mean(x, na.rm = TRUE) # Base R style
+  )
+)
+```
+
+```
+##      Ozone  Solar.R     Wind     Temp
+## 1 42.12931 185.9315 9.957516 77.88235
+```
+]
+
+.panel[.panel-name[Version 3]
+
+``` r
+airquality %&gt;% summarize(
+  across(Ozone:Temp,
+         ~ mean(.x, na.rm = TRUE) # formula style
+  )
+)
+```
+
+```
+##      Ozone  Solar.R     Wind     Temp
+## 1 42.12931 185.9315 9.957516 77.88235
+```
+]
+]
+
+---
+
+## Passing column names as input
+
+What if you want to apply a function to different columns (and different datasets)?
+
+Maybe we keep writing code that filters values of a column above a given threshold:
+
+.panelset[
+.panel[.panel-name[Temperature]
+
+``` r
+airquality %&gt;%
+    filter(Temp &gt; 95) # 95F = 35C degrees
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1    76     203  9.7   97     8  28
+## 2    84     237  6.3   96     8  30
+```
+]
+
+.panel[.panel-name[Wind]
+
+``` r
+airquality %&gt;%
+    filter(Wind &gt; 15) # (miles per hour)
+```
+
+```
+##    Ozone Solar.R Wind Temp Month Day
+## 1      8      19 20.1   61     5   9
+## 2      6      78 18.4   57     5  18
+## 3     11     320 16.6   73     5  22
+## 4     NA      66 16.6   57     5  25
+## 5     NA     242 16.1   67     6   3
+## 6     37     284 20.7   72     6  17
+## 7     21     259 15.5   77     8  21
+## 8     32      92 15.5   84     9   6
+## 9     21     259 15.5   76     9  12
+## 10    14      20 16.6   63     9  25
+```
+]
+
+.panel[.panel-name[Ozone]
+
+``` r
+airquality %&gt;%
+    filter(Ozone &gt; 100) # (parts per billion)
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1   115     223  5.7   79     5  30
+## 2   135     269  4.1   84     7   1
+## 3   108     223  8.0   85     7  25
+## 4   122     255  4.0   89     8   7
+## 5   110     207  8.0   90     8   9
+## 6   168     238  3.4   81     8  25
+## 7   118     225  2.3   94     8  29
+```
+]
+]
+
+---
+
+## Passing column names as input
+
+We can define a new function `filter_above` that we can use on any dataset, 
+by providing the column name and the threshold:
+
+
+``` r
+filter_above &lt;- function(data, column, threshold) {
+  data %&gt;%
+    filter({{ column }} &gt; threshold)
+}
+```
+
+The `{{ }}` allows your function to work similarly to other `dplyr` functions. 
+You can pass the name of the variable you'd like to filer, without using quotes.
+
+
+``` r
+filter_above(airquality, Temp, 95)
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1    76     203  9.7   97     8  28
+## 2    84     237  6.3   96     8  30
+```
+
+---
+
+## Passing column names as input
+
+We can define a new function `filter_above` that we can use on any dataset, 
+by providing the column name and the threshold:
+
+
+``` r
+filter_above &lt;- function(data, column, threshold) {
+  data %&gt;%
+    filter({{ column }} &gt; threshold)
+}
+```
+
+
+You can even use it with the pipe `%&gt;%`!
+
+
+``` r
+airquality %&gt;% filter_above(Temp,95)
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1    76     203  9.7   97     8  28
+## 2    84     237  6.3   96     8  30
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

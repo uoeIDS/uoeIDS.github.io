@@ -442,3 +442,158 @@ area(TRUE)
 
 
 ---
+
+## Anonymous functions
+
+Sometimes we want to define a function without giving it a name, such as when 
+we need to apply a function to multiple columns of a data frame.
+
+The `airquality` dataset (in the `datasets` package) contains daily air quality 
+measurements in New York, May to September 1973.
+
+```{r}
+head(airquality)
+```
+
+---
+
+## Anonymous functions
+
+Let's find the mean of the first four columns:
+
+
+```{r}
+airquality %>% summarize(
+  across(Ozone:Temp,
+         mean)
+)
+```
+
+--
+
+Can we remove missing values?
+
+```{r}
+airquality %>% summarize(
+  across(Ozone:Temp,
+         function(x) mean(x, na.rm = TRUE) # anonymous or lambda function
+  )
+)
+```
+
+---
+
+```{r packages2, echo = FALSE, message=FALSE, warning=FALSE}
+library(xaringanExtra)
+xaringanExtra::use_panelset()
+```
+
+
+## Anonymous functions
+
+Many approaches to do the same thing:
+
+.panelset[
+.panel[.panel-name[Version 1]
+```{r}
+airquality %>% summarize(
+  across(Ozone:Temp,
+         function(x) mean(x, na.rm = TRUE)
+  )
+)
+```
+]
+
+.panel[.panel-name[Version 2]
+```{r}
+airquality %>% summarize(
+  across(Ozone:Temp,
+         \(x) mean(x, na.rm = TRUE) # Base R style
+  )
+)
+```
+]
+
+.panel[.panel-name[Version 3]
+```{r}
+airquality %>% summarize(
+  across(Ozone:Temp,
+         ~ mean(.x, na.rm = TRUE) # formula style
+  )
+)
+```
+]
+]
+
+---
+
+## Passing column names as input
+
+What if you want to apply a function to different columns (and different datasets)?
+
+Maybe we keep writing code that filters values of a column above a given threshold:
+
+.panelset[
+.panel[.panel-name[Temperature]
+```{r}
+airquality %>%
+    filter(Temp > 95) # 95F = 35C degrees
+```
+]
+
+.panel[.panel-name[Wind]
+```{r}
+airquality %>%
+    filter(Wind > 15) # (miles per hour)
+```
+]
+
+.panel[.panel-name[Ozone]
+```{r}
+airquality %>%
+    filter(Ozone > 100) # (parts per billion)
+```
+]
+]
+
+---
+
+## Passing column names as input
+
+We can define a new function `filter_above` that we can use on any dataset, 
+by providing the column name and the threshold:
+
+```{r}
+filter_above <- function(data, column, threshold) {
+  data %>%
+    filter({{ column }} > threshold)
+}
+```
+
+The `{{ }}` allows your function to work similarly to other `dplyr` functions. 
+You can pass the name of the variable you'd like to filer, without using quotes.
+
+```{r}
+filter_above(airquality, Temp, 95)
+```
+
+---
+
+## Passing column names as input
+
+We can define a new function `filter_above` that we can use on any dataset, 
+by providing the column name and the threshold:
+
+```{r}
+filter_above <- function(data, column, threshold) {
+  data %>%
+    filter({{ column }} > threshold)
+}
+```
+
+
+You can even use it with the pipe `%>%`!
+
+```{r}
+airquality %>% filter_above(Temp,95)
+```
