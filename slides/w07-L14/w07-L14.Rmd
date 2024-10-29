@@ -38,10 +38,11 @@ class: middle
 
 ## For loops in R
 
-- The `for` loop will iterate the expression through the number of components in `values` (a vector or list) one at a time.
-- It is an entry controlled loop, in this loop the **values** are tested first, then the **body of the loop is executed** in each of the values.
+- The `for` loop iterates over each element in **values** (which can be a vector, list, or any other iterable object), executing the specified block of code once for each element.
+- It is an entry controlled loop, i.e. first the expression in **values** is evaluated, 
+then the **body of the loop is executed** for each of the values. 
 
-R – For loop Syntax:
+For loop Syntax in R:
 ```{r,eval=FALSE}
 for (<index> in <values>) {
   
@@ -51,15 +52,15 @@ for (<index> in <values>) {
 ```
 ---
 
-#Example 1 - with a sequence
+## Example 1 - with a sequence
 
 .pull-left[
 ```{r,echo=TRUE}
 for (i in 1:10){
   
   print(5*i)
-
-  }
+  
+}
 ```
 ]
 .pull-right[
@@ -79,23 +80,23 @@ Narrative:
 ]
 ---
 
-#Example 2 - with a general vector
+## Example 2 - with a general vector
 
 ```{r,echo=TRUE}
 # Create a vector with the days of the week
 week <- c('Sunday', 'Monday', 'Tuesday', 'Wednesday', 
           'Thursday', 'Friday', 'Saturday')
- 
+
 # using for loop to iterate over the values in the vector
 for (day in week) {
-     # displaying each string in the vector
-    print(day)
+  # displaying each string in the vector
+  print(day)
 }
 ```
 
 ---
 
-# Generalising - `seq_len(n)`
+## Generalising - `seq_len(n)`
 
 .pull-left[
 * Creates a sequence from `1` to `n`.
@@ -134,7 +135,7 @@ for(i in seq_len(n)) print(LETTERS[i])
 
 ---
 
-# Generalising - `seq_along(x)`
+## Generalising - `seq_along(x)`
 
 .pull-left[
 * Creates an index sequence based on the input `x`
@@ -180,10 +181,10 @@ class: middle
 ## While loops in R
 
 
-- The `while` loop will iterate the expression as long as a logical test continues to return `TRUE`.
-- In this loop the **test condition** is tested first, then the **body of the loop is executed**, the loop body would not be executed if the test condition is false.
+- The `while` loop in R repeatedly executes a block of code as long as the specified **condition** evaluates to `TRUE`.
+- In this loop, the **test condition** is evaluated at the beginning of each iteration; if it evaluates to `TRUE`, the **body of the loop** is executed.
 
-R – While loop Syntax:
+While loop Syntax in R:
 ```{r,eval=FALSE}
 while (<condition>) {
   
@@ -193,14 +194,14 @@ while (<condition>) {
 ```
 ---
 
-#Example 1 - for loop as while loop
+## Example 1 - for loop as while loop
 
 .pull-left[
 ```{r, echo=TRUE}
 i <- 0
 while (i < 10){
   print(5 * i)
-  i <- i + 1
+  i <- i + 1 # IMPORTANT!
 }
 ```
 ]
@@ -208,67 +209,20 @@ while (i < 10){
 Narrative:
 * Initialise `i` with `0`
 * Enter while loop
-* TEST: `i < 10` = `0 < 10` = `TRUE`
+* TEST: `i < 10`, i.e. `0 < 10` -> `TRUE`
 * Compute `5*i` and print
-* Iterate, add `1` to `i` & re-assign
-* TEST: `i < 10` = `1 < 10` = `TRUE`
+* Add `1` to `i` & re-assign (`i == 1`)
+* TEST: `i < 10`, i.e. `1 < 10` -> `TRUE`
 * Compute `5*i` and print
-* Iterate, add `1` to `i` & re-assign
+* Add `1` to `i` & re-assign (`i == 2`)
 * ... (continue) ...
-* TEST: `i < 10` = `10 < 10` = `FALSE`
+* TEST: `i < 10`, i.e. `10 < 10` -> `FALSE`
 * Exit while loop
 ]
 
 ---
 
-#Example 2
-
-Program to calculate factorial of a number.
-
-.pull-left[
-```{r,echo=TRUE}
-# create variable whose 
-# factorial will be calculated
-n <- 5
-# assigning the factorial variable
-# and iteration variable to 1
-fact <- 1
-i <- 1
- 
-# using while loop
-while (i <= n)
-{
- 
-    # multiplying the factorial variable
-    # with the iteration variable
-    fact = fact * i
- 
-    # add one iteration 
-    i = i + 1
-}
-```
-]
-.pull-right[
-```{r,echo=TRUE}
-
-# displaying the factorial
-fact
-```
-
-
-```{r,echo=TRUE}
-# Check with factorial() command
-factorial(5)
-```
-
-
-]
-
-
----
-
-
-# Caution! Infinite loops
+## Caution! Infinite loops
 
 
 .pull-left[
@@ -291,10 +245,10 @@ for(i in 0:-20){
 Narrative:
 * Initialise `i` with `0`
 * Enter while loop
-* TEST: `i < 10` = `0 < 10` = `TRUE`
+* TEST: `i < 10`, i.e. `0 < 10` -> `TRUE`
 * Compute `5*i` and print
 * Update `i` (`i = -1`)
-* TEST: `i < 10` = `-1 < 10` = `TRUE`
+* TEST: `i < 10`, i.e. `-1 < 10` -> `TRUE`
 * Compute `5*i` and print
 * Update `i` (`i = -2`)
 * ... (continue) ...
@@ -305,18 +259,17 @@ Narrative:
 * .tiny[... (AND EVER!) ...]
 ]
 
-
-
 ---
-# Main differences between for and while loop.
+## Main differences between for and while loop.
 
-- For loop is used when the number of iterations a code should be run is **known** where a while loop is used when the number of iterations is **not known**.
+- A `for` loop is used when the number of iterations a code should be run is **known**;
+a `while` loop is used when the number of iterations is **not known**.
 
 - `while` loops can potentially result in infinite loops if not written properly.
 
-- In `for` loop the initialization once done is never repeated.
+- In `for` loops the evaluation of the iteration <tt>values</tt> is done once and never repeated.
 
-- In `while` loop the initialization is done each time the loop iterate.
+- In `while` loops the test condition is evaluated each time the loop iterates.
 
 - If you accidental create an infinite `while` loop, either:
   - Press the `Esc` key to stop all computation, or
@@ -324,97 +277,72 @@ Narrative:
 
 ---
 
-# Maclaurin series of $\sin(x)$
+## Example 2 - convergence of algorithm
 
-$$\sin(x) = \sum_{n = 0}^\infty \frac{(-1)^n}{(2n+1)!} x^{2n+1}, \quad\quad \sin\left(\frac{\pi}{4}\right) = \frac{1}{\sqrt{2}} \approx 0.7071$$
-.pull-left[
-```{r eval = FALSE, echo = TRUE}
-x <- pi/4    
-answer <- 0  # initialise answer
-n <- 0       # initialise index
-while(answer != (1/sqrt(2))){
-  # Calculate and add n-th term
-  answer <- answer + 
-    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  
-  #print partial sum
-  print(answer)
+.panelset[
+.panel[.panel-name[Gradient descent algorithm]
+Use gradient descent algorithm to minimize a function. 
 
-  #iterate index
-  n <- n + 1
+- Initialize the starting point $x_1$ 
+- Set the learning rate $\alpha>0$
+- $x_{n+1} = x_n - \alpha \cdot f'(x_n)$
+- Stop when $\vert x_{n+1}-x_n \vert < \epsilon$
+
+For example, let's find the minimum of $f(x) = x^2 -4x+4$.
+]
+
+.panel[.panel-name[Code]
+```{r grad, results='hide'}
+f <- function(x) { x^2 - 4*x + 4 }
+df <- function(x) { 2*x - 4 }
+epsilon <- 1e-5   # Convergence criterion (tolerance)
+alpha <- 0.3      # Learning rate
+x <- 3            # Initial guess
+error <- 1        # For initial step
+iter <- 1
+
+while(error > epsilon) {  # Gradient descent algorithm
+  gradient <- df(x)
+  new_x <- x - alpha * gradient
+  error <- abs(new_x - x) # Update error
+  x <- new_x              # Update the guess
+  cat("Iteration", iter, ": x =", x, "error =", error, "f(x) =", f(x), "\n")
+  iter <- iter + 1        # Update the iteration
 }
 
+cat("Minimum occurs at x =", x, "\n")
 ```
 ]
 
-
-.pull-right[
-```{r eval = TRUE, echo = FALSE}
-x <- pi/4    
-answer <- 0  # initialise answer
-n <- 0       # initialise index
-while(answer != (1/sqrt(2))){
-  # Calculate and add n-th term
-  answer <- answer + 
-    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  
-  #print partial sum
-  print(answer)
-
-  #iterate index
-  n <- n + 1
-}
+.panel[.panel-name[Output]
+```{r ref.label = "grad", echo = FALSE, warning = FALSE}
 ```
-
-```{r}
-answer
-```
+]
 ]
 
 ---
 
-# Maclaurin series of $\sin(x)$
+## Example 2 - convergence of algorithm
 
-$$\sin(x) = \sum_{n = 0}^\infty \frac{(-1)^n}{(2n+1)!} x^{2n+1}, \quad\quad \sin\left(\frac{\pi}{8}\right) = \frac{\sqrt{2-\sqrt{2}}}{2} \approx 0.3827$$
-
-.pull-left[
-```{r echo = TRUE, eval = FALSE}
-x <- pi/8    
-answer <- 0  # initialise answer
-n <- 0       # initialise index
-while(answer != sqrt(2-sqrt(2))/2){
-  # Calculate and add n-th term
-  answer <- answer + 
-    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  
-  #print partial sum
-  print(answer)
-  
-  #iterate index
-  n <- n + 1
+Note that I used 
+```{r eval = FALSE}
+while(error > epsilon){
+  # ...
 }
 ```
-]
 
-.pull-right[
-```{r echo = FALSE, eval = TRUE}
-x <- pi/8    # sin(pi/8) = sqrt(2-sqrt(2))/2 ~= 0.3827
-
-answer <- 0  # initialise answer
-n <- 0       # initialise index
-while(answer != sqrt(2-sqrt(2))/2 | n <= 30){
-  # Calculate and add n-th term
-  new_term <- x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  answer <- answer + new_term
-  
-  #print partial sum
-  print(answer)
-  
-  #iterate index
-  n <- n + 1
+instead of 
+```{r eval = FALSE}
+while(error != 0){
+  # ...
 }
 ```
-]
+
+Why? 
+
+--
+
+Floating point calculations!
 
 ---
 
@@ -426,9 +354,9 @@ while(answer != sqrt(2-sqrt(2))/2 | n <= 30){
 2/7 + 3/7 + 2/7
 2/7 + 3/7 + 2/7 == 1
 2/7 + 3/7 + 2/7 - 1
-
 ```
 ]
+--
 .pull-right[
 ```{r, echo=TRUE}
 #EXAMPLE 2
@@ -441,99 +369,56 @@ while(answer != sqrt(2-sqrt(2))/2 | n <= 30){
 
 ---
 
+## Solutions: use a **tolerance** value, or `near`.
 
-## Use a **tolerance** value.
-
-
-```{r, echo=TRUE}
+```{r}
 #EXAMPLE 1
 2/7 + 3/7 + 2/7 == 1
-
-tolerance <- 10^-16  #Something you consider small. 
-
-2/7 + 3/7 + 2/7 - 1 < tolerance
-
-tolerance <- .Machine$double.eps #The machine epsilon
-
-2/7 + 3/7 + 2/7 - 1 < tolerance
-
 ```
-
-
----
-
-##Example
-
-```{r, echo=TRUE}
-
-j <- 0
-while (j < 1) { j <- j+0.1 }; j
-j <- 0
-j + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1
-j + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 + .1 < 1
-
-j <- 0
-tolerance <- 10^-16 
-while (j  < 1 - tolerance) { j <- j+0.1 }; j
-
-```
-
-
----
-
-# Maclaurin series of $\sin(x)$ - revisited
-
-* Exit condition: The difference between iterations is smaller than some threshold.
 
 .pull-left[
-```{r echo = TRUE, eval = FALSE}
-x <- pi/8    
-answer <- 0   
-n <- 0        
-prev_step <- 1       #<<
-tol <- 10^(-16)   #<<
-while(abs(answer-prev_step) > tol){
-  # Store last value
-  prev_step <- answer  #<<
-  
-  # Calculate and add n-th term
-  answer <- answer + 
-    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  
-  #print partial sum
-  print(answer)
-  
-  #iterate index
-  n <- n + 1
-}
+```{r, echo=TRUE}
+tolerance <- 10^-16  # Something small
+
+2/7 + 3/7 + 2/7 - 1 < tolerance
+```
+]
+--
+.pull-right[
+```{r, echo=TRUE}
+# default tol = .Machine$double.eps^0.5
+# which approx is 1.5e-8 
+near(2/7 + 3/7 + 2/7,1)
 ```
 ]
 
-.pull-right[
-```{r echo = FALSE, eval = TRUE}
-x <- pi/8    
-answer <- 0   
-n <- 0        
-prev_step <- 1       #<<
-epsilon <- 10^(-16)   #<<
-while(abs(answer-prev_step) > epsilon){
-  # Store last value
-  prev_step <- answer  #<<
-  
-  # Calculate and add n-th term
-  answer <- answer + 
-    x^(2*n+1) * (-1)^n / factorial(2*n + 1)
-  
-  #print partial sum
-  print(answer)
-  
-  #iterate index
-  n <- n + 1
+---
+
+## `next` and `break` statements
+
+- The `next` statement terminates the current iteration early and immediately proceeds to the next iteration of the loop.
+- The `break` statement exits the entire loop prematurely, halting any further iterations.
+
+.pull-left[
+```{r}
+for(i in 1:6){
+  if(i %% 2 == 0){
+    next
+  }
+  print(i)
 }
 ```
-
+]
+.pull-right[
 ```{r}
-answer
+i <- 1
+while(i < 6){
+  if(i == 3){
+    break
+  }
+  print(i)
+  i <- i + 1
+}
 ```
 ]
 
@@ -561,8 +446,8 @@ Calculate the mean of exam 1 and exam 2 using a loop:
 
 ```{r, echo=TRUE}
 
-m <- numeric()
-for (i in 1:length(exam_scores)){
+m <- numeric(length(exam_scores))
+for (i in seq_along(exam_scores)){
   m[i] <- mean(exam_scores[[i]])
 }
 m
@@ -603,10 +488,16 @@ exam_scores <- list(
 
 ...and we find the mean score in each exam
 
+.pull-left[
 ```{r}
 map(exam_scores, mean)
 ```
-
+]
+.pull-right[
+```{r}
+map_dbl(exam_scores, mean)
+```
+]
 ---
 
 ## Comparing execution times ⏱
@@ -615,12 +506,12 @@ map(exam_scores, mean)
 * Via looping
 ```{r,echo=TRUE}
 start.time <- Sys.time()
-m <- numeric()
+m <- numeric(length(exam_scores))
 for (i in seq_along(exam_scores)){
   m[i] <- mean(exam_scores[[i]])
 }
-m
 end.time <- Sys.time()
+m
 end.time - start.time
 ```
 ]
@@ -628,73 +519,121 @@ end.time - start.time
 * Via mapping
 ```{r,echo=TRUE}
 start.time <- Sys.time()
-map_dbl(exam_scores, mean)
+out <- map_dbl(exam_scores, mean)
 end.time <- Sys.time()
+out
 end.time - start.time
 ```
 ]
 ---
 
-## A bigger example
+## Examples
 
-```{r echo=FALSE}
-set.seed(123)
+```{r}
+map_dbl(mtcars, median)
 ```
 
+
+```{r}
+map_lgl(mtcars,~any(is.na(.x)))
+```
+
+```{r}
+week <- c('Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+          'Thursday', 'Friday', 'Saturday')
+map_chr(week, \(word) paste(word,"has",nchar(word),"letters."))
+```
+
+
+---
+
+## Chat-GPT, give examples of `for` loops
+
+I asked Chat-GPT (actually, ELM) to give me examples of uses of for-loops in R for students taking an Introduction to Data Science class.
 
 .panelset[
-
-.panel[.panel-name[code]
-
-Simulate data for 10 exams for 100 students.
-```{r,echo=TRUE}
-num_students <- 100
-possible_marks <- 0:100
-exam_scores <- list(
-  exam1  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam2  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam3  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam4  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam5  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam6  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam7  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam8  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam9  = sample(x = possible_marks, size = num_students, replace = TRUE),
-  exam10 = sample(x = possible_marks, size = num_students, replace = TRUE)
-)
-```
-]
-
-.panel[.panel-name[glimpse]
-```{r eval=TRUE}
-glimpse(exam_scores)
-```
-]
-]
----
-
-## Comparing execution times ⏱
-
+.panel[.panel-name[Example 1]
+Summarize each column of a dataset
 .pull-left[
-* Via looping
-```{r,echo=TRUE,R.options=list(width = 40)}
-start.time <- Sys.time()
-m <- numeric()
-for (i in seq_along(exam_scores)){
-  m[i] <- mean(exam_scores[[i]])
+```{r eval = FALSE}
+mean_values <- numeric(ncol(mtcars))
+for (i in 1:ncol(mtcars)) {
+  mean_values[i] <- mean(mtcars[[i]])
 }
-m
-end.time <- Sys.time()
-end.time - start.time
 ```
 ]
 .pull-right[
-* Via mapping
-```{r,echo=TRUE,R.options=list(width = 40)}
-start.time <- Sys.time()
-map_dbl(exam_scores, mean)
-end.time <- Sys.time()
-end.time - start.time
+```{r eval = FALSE}
+mtcars %>% 
+  summarise(across(everything(), mean))
 ```
 ]
+]
+.panel[.panel-name[Example 2]
+Modify the value of a variable
+.pull-left[
+```{r eval = FALSE}
+for (i in 1:nrow(mtcars)) {
+  if(mtcars$am[i] == 1){
+    mtcars$am[i] <- "manual"
+  } else {
+    mtcars$am[i] <- "automatic"
+  }
+}
+```
+]
+.pull-right[
+```{r eval = FALSE}
+mtcars %>% 
+  mutate(am=ifelse(am == 1,
+                   "manual","automatic"))
+```
+]
+]
+.panel[.panel-name[Example 3]
+Bootstrap (come back in w10L20!)
+.pull-left[
+```{r eval = FALSE}
+n_bootstraps <- 1000
+bootstrap_means <- numeric(n_bootstraps)
+for (i in 1:n_bootstraps) {
+  resample <- sample(mtcars$mpg, replace = TRUE)
+  bootstrap_means[i] <- mean(resample)
+}
+```
+]
+.pull-right[
+```{r eval = FALSE}
+replicate(1000, mtcars$mpg %>% 
+            sample(size = length(.), 
+                   replace = TRUE) %>% 
+            mean())
+```
+]
+]
+.panel[.panel-name[Example 4]
+Processing multiple files
+.pull-left[
+```{r eval = FALSE}
+# files <- ... # provide list of files
+data_list <- list()
+for (file in files) {
+  dat <- read.csv(file)
+  # user-defined function to process data
+  cleaned <- clean_data(dat) 
+  data_list[[file]] <- cleaned
+}
+```
+]
+.pull-right[
+```{r eval = FALSE}
+data_list <- map(files, 
+                 ~ read_csv(.x) %>% 
+                   clean_data)
+```
+]
+]
+]
+
+
 
