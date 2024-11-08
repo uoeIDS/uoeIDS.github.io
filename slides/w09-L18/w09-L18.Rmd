@@ -1,0 +1,765 @@
+---
+title: "Model building"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2024/2025"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    anchor_sections: FALSE
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+
+---
+
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+# library(emo)
+library(openintro)
+library(lubridate)
+library(knitr)
+library(ggridges)
+library(patchwork)
+library(skimr)
+#set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
+)
+
+xaringanExtra::use_panelset()
+```
+
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+## Topics
+
+- Prediction (including ROC curves) 
+- Feature engineering and recipes.
+- Workflows - combining recipes and models.
+- More on prediction (making decisions). 
+
+---
+
+class: middle
+
+# Prediction
+
+---
+
+
+## Continued - Building a spam filter
+
+- Data: Set of emails. We know if each email is spam/not and other features.
+
+- Use logistic regression to predict the probability that an incoming email is spam.
+
+- Use model selection to pick the model with the best predictive performance.
+
+--
+
+- Reminder: split the data into a training dataset and a test dataset.
+
+- Use the training dataset to investigate and fit models.
+
+- Choose 1 or 2 models and test how well they predict the test dataset. 
+
+- Helps us avoid overfitting.
+
+---
+
+## Spam filter dataset
+
+.pull-left-narrow[
+- Data from 3921 emails and 21 variables on them
+- Outcome: whether the email is spam or not
+- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+]
+.pull-right-wide[
+.small[
+```{r}
+library(openintro)
+glimpse(email)
+```
+]
+]
+
+---
+
+## Performing the split
+
+```{r}
+# Fix random numbers by setting the seed 
+# Enables analysis to be reproducible when random numbers are used 
+set.seed(1116)
+
+# Put 80% of the data into the training set 
+email_split <- initial_split(email, prop = 0.80)
+
+# Create data frames for the two sets:
+train_data <- training(email_split)
+test_data  <- testing(email_split)
+```
+
+---
+
+## Fit a model to the training dataset
+
+```{r}
+email_fit <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ ., data = train_data, family = "binomial")
+```
+
+---
+
+## Categorical predictors
+
+```{r echo=FALSE, out.width="75%", fig.width=10}
+factor_predictors <- train_data %>%
+  select(where(is.factor), -spam) %>%
+  names()
+
+p_to_multiple <- ggplot(train_data, aes(x = to_multiple, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_from <- ggplot(train_data, aes(x = from, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_sent_email <- ggplot(train_data, aes(x = sent_email, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_winner <- ggplot(train_data, aes(x = winner, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_format <- ggplot(train_data, aes(x = format, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_re_subj <- ggplot(train_data, aes(x = re_subj, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_urgent_subj <- ggplot(train_data, aes(x = urgent_subj, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_number <- ggplot(train_data, aes(x = number, fill = spam)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+
+p_to_multiple + p_from + p_sent_email + p_winner + p_format + p_re_subj + p_urgent_subj + p_number +
+  plot_layout(ncol = 4, guides = "collect") & 
+  theme(axis.title.y = element_blank())
+```
+
+---
+
+## `from` and `sent_email`
+
+.pull-left[
+- `from`: Whether the message was listed as from anyone (this is usually set by default for regular outgoing email)
+
+```{r}
+train_data %>%
+  count(spam, from)
+```
+]
+.pull-right[
+- `sent_email`: Indicator for whether the sender had been sent an email in the last 30 days
+
+```{r}
+train_data %>%
+  count(spam, sent_email)
+```
+]
+
+---
+
+## `from` and `sent_email`
+
+.question[
+If we predict "spam" using only "sent_email", what do you think is the prediction for an email with *sent_email = 1*?
+]
+
+---
+
+## Numerical predictors
+
+.small[
+```{r echo=FALSE, highlight.output=c(7, 14)}
+options(width = 100)
+x <- train_data %>%
+  group_by(spam) %>%
+  select(where(is.numeric)) %>%
+  skim_without_charts()%>%
+  yank("numeric")
+
+print(x, include_summary = FALSE, n=22, width=Inf)
+
+```
+]
+
+---
+## Numerical predictors
+
+Closer look at `"image"`: number of images attached.
+
+```{r}
+ train_data %>%
+     count(spam, image) %>%
+ print(n=12)
+```
+
+
+---
+
+## Fit a model to the training dataset
+
+```{r}
+email_fit <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ . - from - sent_email - viagra - image, data = train_data, family = "binomial") #<<
+```
+
+.small[
+```{r}
+email_fit
+```
+]
+
+---
+
+## Predict outcome on the testing dataset
+
+```{r}
+predict(email_fit, test_data)
+```
+
+
+---
+
+## Predict probabilities on the testing dataset
+
+```{r}
+email_pred <- predict(email_fit, test_data, type = "prob") %>%
+  bind_cols(test_data %>% select(spam, time))
+
+email_pred
+```
+
+---
+
+## A closer look at predictions
+
+.pull-left-wide[
+```{r highlight.output=c(5, 11, 13)}
+email_pred %>%
+  arrange(desc(.pred_1)) %>%
+  print(n = 10)
+```
+]
+
+---
+
+## Evaluate the performance
+
+**Receiver operating characteristic (ROC) curve**<sup>+</sup> which plots true positive rate vs. false positive rate (1 - specificity)
+
+.pull-left[
+```{r roc1, fig.show="hide"}
+email_pred %>%
+  roc_curve(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  ) %>%
+  autoplot()
+```
+]
+.pull-right[
+```{r ref.label="roc", echo=FALSE, out.width="100%"}
+```
+]
+
+.footnote[
+.small[
+<sup>+</sup>Originally developed for operators of military radar receivers, hence the name.
+]
+]
+
+---
+
+## Evaluate the performance
+
+.question[
+In this plot, what is the ideal point = (1-specificity, sensitivity) that we would like our curve to go through?
+]
+
+
+---
+
+## Evaluate the performance
+
+Find the **area under the curve**:
+
+.pull-left[
+```{r}
+email_pred %>%
+  roc_auc(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  )
+```
+]
+.pull-right[
+```{r ref.label="roc", echo=FALSE, out.width="100%"}
+```
+]
+
+
+---
+class: middle
+
+# Feature engineering
+
+---
+
+## Feature engineering
+
+- We prefer simple models when possible, but **parsimony** does not mean sacrificing accuracy (or predictive performance) in the interest of simplicity
+
+--
+- Variables that go into the model and how they are represented are just as critical to success of the model
+
+--
+- **Feature engineering** allows us to get creative with our predictors in an effort to make them more useful for our model (to increase its predictive performance) 
+
+---
+
+## Same training and testing sets as before
+
+```{r}
+# Fix random numbers by setting the seed 
+# Enables analysis to be reproducible when random numbers are used 
+set.seed(1116)
+
+# Put 80% of the data into the training set 
+email_split <- initial_split(email, prop = 0.80)
+
+# Create data frames for the two sets:
+train_data <- training(email_split)
+test_data  <- testing(email_split)
+```
+
+---
+
+## A simple approach: `mutate()`
+
+```{r}
+train_data %>%
+  mutate(
+    date = date(time),
+    dow  = wday(time),
+    month = month(time)
+    ) %>%
+  select(time, date, dow, month) %>%
+  sample_n(size = 5) # shuffle to show a variety
+```
+
+---
+
+## Modeling workflow, revisited
+
+- Create a **recipe** for feature engineering steps to be applied to the training data
+
+--
+- Fit the model to the training data after these steps have been applied
+
+--
+- Using the model estimates from the training data, predict outcomes for the test data
+
+--
+- Evaluate the performance of the model on the test data
+
+---
+
+class: middle
+
+# Building recipes
+
+---
+
+## Initiate a recipe
+
+```{r initiate-recipe, results="hide"}
+email_rec <- recipe(
+  spam ~ .,          # formula
+  data = train_data  # data to use for cataloguing names and types of variables
+  )
+
+summary(email_rec)
+```
+
+.xsmall[
+```{r echo=FALSE}
+summary(email_rec) %>% print(n = 21)
+```
+]
+
+---
+
+## Remove certain variables
+
+```{r}
+email_rec <- email_rec %>%
+  step_rm(from, sent_email, image, viagra)
+```
+
+.small[
+```{r echo=FALSE}
+email_rec
+```
+]
+
+---
+
+## Feature engineer date
+
+```{r}
+email_rec <- email_rec %>%
+  step_date(time, features = c("dow", "month")) %>%
+  step_rm(time)
+```
+
+.small[
+```{r echo=FALSE}
+email_rec
+```
+]
+
+---
+
+## Discretize numeric variables
+
+```{r}
+email_rec <- email_rec %>%
+  step_cut(cc, attach, dollar, breaks = c(0, 1)) %>%
+  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20))
+```
+
+.small[
+```{r echo=FALSE}
+email_rec
+```
+]
+
+---
+
+## Create dummy variables
+
+```{r}
+email_rec <- email_rec %>%
+  step_dummy(all_nominal(), -all_outcomes())
+```
+
+.small[
+```{r echo=FALSE}
+email_rec
+```
+]
+
+---
+
+## Remove zero variance variables
+
+Variables that contain only a single value
+
+```{r}
+email_rec <- email_rec %>%
+  step_zv(all_predictors())
+```
+
+.small[
+```{r echo=FALSE}
+email_rec
+```
+]
+
+---
+
+## All in one place
+
+```{r}
+email_rec <- recipe(spam ~ ., data = email) %>%
+  step_rm(from, sent_email, image, viagra) %>%
+  step_date(time, features = c("dow", "month")) %>%               
+  step_rm(time) %>%
+  step_cut(cc, attach, dollar, breaks = c(0, 1)) %>%
+  step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20, 100)) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_zv(all_predictors())
+```
+
+---
+
+class: middle
+
+# Building workflows
+
+---
+
+## Define model
+
+```{r}
+email_mod <- logistic_reg() %>% 
+  set_engine("glm")
+
+email_mod
+```
+
+---
+
+## Define workflow
+
+**Workflows** bring together models and recipes so that they can be easily applied to both the training and test data.
+
+```{r}
+email_wflow <- workflow() %>% 
+  add_model(email_mod) %>% 
+  add_recipe(email_rec)
+```
+
+.small[
+```{r echo=FALSE}
+email_wflow
+```
+]
+
+---
+
+## Fit model to training data
+
+```{r}
+email_fit <- email_wflow %>% 
+  fit(data = train_data)
+```
+
+---
+
+.small[
+```{r}
+tidy(email_fit) %>% print(n = 30)
+```
+]
+
+---
+
+## Make predictions for test data
+
+```{r warning=FALSE}
+email_pred <- predict(email_fit, test_data, type = "prob") %>% 
+  bind_cols(test_data) 
+
+email_pred
+```
+
+---
+
+## Evaluate the performance
+
+.pull-left[
+```{r roc, fig.show="hide"}
+email_pred %>%
+  roc_curve(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  ) %>%
+  autoplot()
+```
+]
+.pull-right[
+```{r ref.label="roc", echo=FALSE, out.width="100%"}
+```
+]
+
+---
+
+## Evaluate the performance
+
+.pull-left[
+```{r}
+email_pred %>%
+  roc_auc(
+    truth = spam,
+    .pred_1,
+    event_level = "second"
+  )
+```
+]
+.pull-right[
+```{r ref.label="roc", echo=FALSE, out.width="100%"}
+```
+]
+
+---
+
+class: middle
+
+# Making decisions
+
+---
+
+## Cutoff probability: 0.5
+
+.panelset[
+.panel[.panel-name[Output]
+
+Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.5**.
+
+```{r ref.label = "confusion-50,", echo = FALSE}
+```
+]
+.panel[.panel-name[Code]
+```{r confusion-50, results = "hide"}
+cutoff_prob <- 0.5
+email_pred %>%
+  mutate(
+    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
+    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
+    ) %>%
+  count(spam_pred, spam) %>%
+  pivot_wider(names_from = spam, values_from = n) %>%
+  kable(col.names = c("", "Email is not spam", "Email is spam"))
+```
+]
+]
+
+---
+
+## Cutoff probability: 0.25
+
+Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.25**.
+
+```{r confusion-25, echo = FALSE}
+cutoff_prob <- 0.25
+email_pred %>%
+  mutate(
+    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
+    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
+    ) %>%
+  count(spam_pred, spam) %>%
+  pivot_wider(names_from = spam, values_from = n) %>%
+  kable(col.names = c("", "Email is not spam", "Email is spam"))
+```
+
+---
+
+## Cutoff probability: 0.75
+
+Suppose we decide to label an email as spam if the model predicts the probability of spam to be **more than 0.75**.
+
+```{r confusion-75, echo=FALSE}
+cutoff_prob <- 0.75
+email_pred %>%
+  mutate(
+    spam      = if_else(spam == 1, "Email is spam", "Email is not spam"),
+    spam_pred = if_else(.pred_1 > cutoff_prob, "Email labelled spam", "Email labelled not spam")
+    ) %>%
+  count(spam_pred, spam) %>%
+  pivot_wider(names_from = spam, values_from = n) %>%
+  kable(col.names = c("", "Email is not spam", "Email is spam"))
+```
+
+---
+
+## Recap
+
+- ROC curve and AUC
+
+- Feature engineering
+
+- Workflows and recipes
+
+- Making decisions
+
