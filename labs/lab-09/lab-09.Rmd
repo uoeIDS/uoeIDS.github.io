@@ -1,51 +1,138 @@
 ---
-title: "Lab 09 - Under Constuction"
+title: "Make progress on projects"
 output: 
   tufte::tufte_html:
+    css: ../lab.css
     tufte_variant: "envisioned"
     highlight: pygments
 link-citations: yes
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
-knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
+This week you'll be working on your projects.
+
+# Before we start...
+
+To assist with the evaluation of the reproducibility and organization of your repository, please make sure to <ins>include the name, student ID and Github username of each team member</ins> in the `README.md` file of your project repository. 
+To do so, please include a text like the one provided below in your `README.md` file - make sure to replace the text with the correct names and IDs!
+
+```{}
+## Team members
+
+- Jon Snow (s1234567), johnsnow123
+- Arya Stark (s1122334), thefaceless
+- Daenerys Targaryen (s4433221), dragon_queen
+- Tyrion Lannister (s1111111), t.lannister
 ```
 
 
-```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
-library(emo)
-#devtools::install_github("hadley/emo")
-```
 
-This worksheet for the IDS lab is currently under construction. 👷🔨
+# Logistics
 
-Please return back to this page later in the course.
+**Review evaluation criteria:** When evaluating your project, we will consider the following questions:
+
+**Presentation (50 points)**
+
+- Content: Is the research question well designed and are the data being used relevant to the research question?
+
+- Statistical Knowledge: Did the team use appropriate plots and statistical procedures. Are results interpreted accurately?
+
+- Slides: Are the slides well organised, readable, not full of text, featuring figures with legible labels, legends, etc.?
+
+- Professionalism: How well did the team present? Does the presentation appear to be well practised? Did everyone get a chance to say something meaningful about the project? Did the team divide the time well among themselves or got cut off going over time?
+
+- Teamwork: Did the team present a unified story, or did it seem like independent pieces of work patched together?
+
+**Write-up (30 points)**
+
+- Clarity of aim: The work’s aim is stated in a simple manner, questions are concrete and testable.
+
+- Methodology: Accurately describes the data and use of data science techniques to meet the aim(s) of the project. Data science techniques chosen are appropriate. 
+
+- Interpretation: Addresses the project questions or hypothesis, conclusions are supported by the data and results.
+
+- Creativity and Critical Thought: Is the project carefully thought out? Are the limitations carefully considered? Does the project demonstrate originality of thought or approach?
+
+- Concise/use of language: Is it concise but detailed enough (e.g. avoids repetition and wordiness)? Is it understandable for people not familiar with the data? Does it clearly communicate thoughts and concepts whilst utilizing an appropriate language and style?
+
+**Reproducibility and Organization (10 points)**
+
+- Repository Organisation: Are files well named and in sensible locations?
+
+- Effort: Does it appear that time and effort went into the planning and implementation of the project? (i.e. files in extra folder)
+
+- Code style: Is the code easy to follow, does it have a consistent style? Is the code well organised with clear variables and function names?
+
+- Reproduciblility/Replicability: Does the code appear to be able to be run by others (e.g. no specific paths like "/cloud/project"), will they get the same results (e.g. seed set?).
+
+**Team peer evaluation (10 points)**
+
+- You will need to complete an evaluation of the input of your teammates. This is to check that everyone contributed equally. Anyone judged to not have sufficiently contributed to the final product will have their grade penalised. 
+
+- Note: the peer-evaluation score will be based on *WebPA*. This is a transparent system for assigning individual marks, based on each student's contribution to the group; you can find out more, together with a worked example [here](https://webpaproject.lboro.ac.uk/WorkedExample). The peer-evaluation score calculated by WebPA will affect 10% of the mark, multiplicatively. 
+
+- You will need to provide explanation for each score, but it is especially important that you provide justification and explanation for any score of "No contribution" or "Very poor". Note that the teaching team will be able to use your project's commit history to assess the accuracy and validity of any strong statements made in the peer assessement.
+
+# Project progress
+
+Now back to your project...
+
+1. **Craft your to-do list:** Discuss your plan for your project as a team, review existing issues and open new ones as needed. Not every issue needs to have a checklist, but you might want to include checklists in some of them to remind yourselves the exact steps you discussed to tackle the issue. Then assign **at least one** issue to each team member. 
+
+2. **Cite your data:** Now is the time to fix up those citations! In your project summary there is a link to a resource for properly citing data. Develop a citation for your dataset and add it under the data section using this guidance. If you have questions, ask a tutor for help!
+
+3. **Strongly recommended:** Get a hold of a tutor and run your ideas by them. Give them a 30 second version of your presentation and ask for their feedback.
+
+----------------
+
+The following might be useful when writing your report.
+
+## Demonstrating key IDS skills
+
+Between your presentation and report, you should be able to demonstrate your skills with each component of the course as part of your investigation. Some specific topics that we will be looking for include:
+
+- Loading, processing and cleaning of data
+- Effective summarisation of the data in both numerical and visual forms
+- Appropriate management of various variable types, specifically with numerical and categorical variables.
+- Evidence of effective communication, whether of numerical output & in data visualisations.
+- Highlighting any ethical considerations as part of your data science investigation. (The applicability of this item may differ depending on the chosen context of your data.)
+- Construction of an appropriate model, either a linear or logistic model.
+- Valid assessment/interpretation of model output.
+
+It is not expected that each individual person to demonstrate their own skills in each of the above areas. However, it is important that you work as a group and to pull on each team member’s strengths so that you, as a group, demonstrate engagement with the key IDS skills. For example, one member may be more skilled than the others in wrangling and summarising data, another may be more suited in constructing and evaluating models, whereas another may be more capable at communicating results effectively. Pull on each other’s strengths to make a fair contribution to your project.
+
+## Report structure
+
+The report should be a summary of the investigation that you have performed. It is suggested that you follow the standard IMRD structure (Introduction, Methods, Results, Discussion). Use headings and subheadings for clarity if you need in your Rmd file. The type of questions/points that you should try to address in each section are:
+
+*Introduction* – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?
+
+*Methods* – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.
+
+*Results* – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.
+
+*Discussion* – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings?
+
+Make sure to also check these technical aspects:
+
+- *Proofreading and Editing*: Check for grammatical errors, typos, and formatting inconsistencies while creating your report. A well-edited report is easier to read and appears more professional. Good to make regular checks after adding new content into your report.
+
+- *Consistent Formatting*: Use a consistent font, size, and heading style. This enhances readability and gives your report a professional look.
+
+- *References and Citations*: Use a consistent citation style throughout your report. This adds credibility and allows readers to verify your sources.
 
 
-## In the meantime...
+## General Presentation Tips
 
-Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+- *Engaging Opening*: Start with an interesting fact, question, or story coming from your analysis to grab the audience’s attention and set the tone for your presentation.
 
+- *Clear and Logical Flow*: Structure your presentation logically. Start with an introduction, follow with the main content, and conclude with a summary or call to action.
 
+- *Use Visual Aids*: Enhance your presentation with slides, charts, and visuals when they are necessary. Make sure they are clear, simple, and support what you’re saying.
 
-```{r datasuRus, message = FALSE, fig.height=10}
-library(datasauRus)
-library(tidyverse)
-library(ggplot2)
+- *Practice, Practice, Practice*: Rehearse your presentation multiple times. This helps with pacing, tone, and familiarity with the content. Practice on using a confident body language and maintain eye contact with the audience. . Practice timing your presentation to ensure you cover all points without rushing or overextending. Good to consider other team members
 
-ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
-    geom_point()+
-    theme(legend.position = "none")+
-    facet_wrap(~dataset, ncol = 3)
-
-datasaurus_dozen %>% 
-    group_by(dataset) %>% 
-    summarize(
-      mean_x    = mean(x),
-      mean_y    = mean(y),
-      std_dev_x = sd(x),
-      std_dev_y = sd(y),
-      corr_x_y  = cor(x, y)
-    )
-```
+- *Prepare for Questions*: Anticipate questions and prepare answers. This shows depth of knowledge and preparation.
