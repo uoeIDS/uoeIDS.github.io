@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Ethics in Data Science - Misrepresentation</title>
+    <title>Under Construction!!! (w06-L11)</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.27/header-attrs.js"></script>
-    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.3.0/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -15,7 +13,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Ethics in Data Science - Misrepresentation
+# Under Construction!!! (w06-L11)
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -24,318 +22,17 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2024/2025
+### <br>
 ]
 
 ---
 
 
-
-
-
-class: middle
-
-# Case Study: Sunday Art Gallery Attendance
-
----
-
-## Sunday Art Gallery Attendance
-
-The Guildhall Art Gallery in London investigated Sunday attendance figures for its Loan Collection exhibition during the Spring/Summer season for two years.
-
-* Total Sunday Attendance:
-  * Year 1 - 17,530 people
-  * Year 2 - 19,732 people
-
-.question[In which year was the gallery more popular?]
-
---
-
-* Average Sunday Attendance Rate:
-  * Year 1 - 2,921 people per day
-  * Year 2 - 1,517 people per day
-
-.question[In which year was the gallery more popular?]
-
----
-
-## 'Sunday Opening in the City'
-
-* Case study from _The Times (London)_, July 25 - August 1, 1895.
-* Series of 5 letters 'To The Editor of the Times'
-* Same data used to argue **for** &amp; **against** Sunday Opening of museums, galleries and libraries.
-
-.question[
-
-"I think Lord Beaconsfield said that there were three degrees of veracity - viz, lies, d---d lies, and statistics."
-
-_W. P. Treloar, The Times (London), July 26, 1895_
-]
-
-**Message**: Understand the data and how it is collected. The gallery was open for 6 Sundays in 1894, and for 13 Sundays in 1895 to address overcrowding in the previous year.
-
-
----
-
-## Case Study: Exercise and Cancer
-
-
-&lt;img src="img/exercise-cancer-time.png" width="100%" /&gt;
-
-.footnote[
-.midi[
-Alice Park. [Exercise Can Lower Risk of Some Cancers By 20%](https://time.com/4330041/reduce-cancer-risk-exercise/). Time Magazine. 16 May 2016.
-]
-]
-
----
-
-## Original study
-
-Moore, Steven C., et al. **["Association of leisure-time physical activity with risk of 26 types of cancer in 1.44 million adults."](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2521826)** JAMA internal medicine 176.6 (2016): 816-825.
-
-Methods:
-  - A substantive meta-analysis, pooling together research from multiple US &amp; EU studies.
-  - "The median activity level was 8 MET-h/wk. This is equivalent to 150 minutes of moderate intensity activity (e.g. walking) per week, and comparable to the median activity level for the US population."
-  - The hazard ratio for a range of cancers was evaluated by comparing the higher (top 20%) vs the lower (bottom 20%) groups of physical activity.
-
-Findings: 
-  - "High vs low levels of leisure-time physical activity were associated with lower risks of **13 of 26** cancers." (no association in 13 other cancers.)
-
-
----
-
-## Original study
-
-Moore, Steven C., et al. **["Association of leisure-time physical activity with risk of 26 types of cancer in 1.44 million adults."](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2521826)** JAMA internal medicine 176.6 (2016): 816-825.
-
-
-Acknowledgement of limitations:
-  - "The main limitation of our study is that ... we cannot fully exclude the possibility that residual **confounding** by diet, smoking, or other factors may affect our results."
-  - "An additional limitation is that we used **self-reported** physical activity, which entails some error in recall."
-
-
-**Message**: Clarity in communication is important to minimise misunderstanding. Not only about the methods and findings, but crucially about the _assumptions_ and _limitations_.
-
-
----
-
-## Absolute vs Relative Risk
-
-&lt;img src="w06-L11_files/figure-html/absVrel-1.png" style="display: block; margin: auto;" /&gt;
-
-**Message**: Take care about the _meaning_ of statistics. Are you giving the full picture?
-
-
----
-
-## What is data misrepresentation?
-
-- _Data_ is messy, but it contains _Information_.
-- A _Data Scientist_ can access this information through a variety of tools.
-- The use of different tools can obtain different insights into the data.
-- Consequently, a data scientist must be skilled to _understand_ what is the right tool to use.
-- In other words, data scientists must be **data literate**.
-
-.question[
-**Data Literacy** - the ability to _explore_, _understand_ and _communicate_ data in a meaningful way.
-]
-
-
-
-.question[
-**Misrepresentation** of data arises from the application of poor data literacy skills, typically resulting in false data interpretations.
-]
-
-
----
-
-## Some causes of misrepresentation
-
-
-* A lack of understanding of the data:
-  - What is the context of the data?
-  - For what purpose was the data collected for?
-  - What do the variables mean?
-* Insufficient or unrepresentative data:
-  - Is there enough observations to conclude something meaningful?
-  - Has the data been collected in a way that represent the studied population?
-* Problems with applying analysis:
-  - Inappropriate use of data science tools
-  - Blind application of methods without considering subtleties
-  - Cherry picking
-* Is the interpretation of findings fair and balanced:
-  - Clarity on assumptions and limitations
-  - Is there an over emphasis of the 'interesting' result?
-  - Incorrect implication of causal relationships
-
-
-&lt;!-- However, since researchers often disagree about the proper use of statistical techniques and other means of representing data, the line between misrepresentation of data and ‘disagreement about research methods’ is often blurry. --&gt;
-
----
-
-## Themes &amp; principles in ethical data science
-
-* **Seek to enhance the values of data science for society**
-  - Data science can be beneficial and detrimental. 
-  - Seek to understand the potential impact. 
-  - Strive to seek fairness
-* **Avoid harm**
-  - Must adhere to laws around data protection and discrimination.
-* **Apply and maintain professional competence**
-  - Minimise uncertainty and risk by complying with professional best practices. 
-* **Seek to preserve or increase trustworthiness**
-  - Work closely with the public and stakeholders to build trust and understanding.
-  - Be open and truthful about the benefits and limitations of data and algorithms.
-* **Maintain accountability and oversight**
-  - Transparency and reproducibility of research.
-  - Oversight considerations in AI decision making.
-
-Source: [Institute and Faculty of Actuaries](https://actuaries.org.uk/standards/data-science-ethics/)
-
----
-
-class: middle
-# Statistical principals
-
----
-
-## Data Representativeness
-
-.pull-left[
-
-.question[
-**Population**: The entire set of items (eg. people) from which you plan to investigate as part of a statistical study.
-
-**Sample**: A subset of items from the population from which measurements are collected from.
-]
-
-]
-
-.pull-right[
-&lt;img src="img/popVsample.PNG" width="100%" /&gt;
-
-]
-
-* The objective of data science is to summarise the data from the sample to _infer_ properties about the population.
-
-* Unrepresentative **biased** data can result in inappropriate or **biased** findings.
-
-
----
-
-## Historical Case Study: Landon vs Roosevelt
-
-.pull-left[
-* 1936 US presidential election:
-  - Rep: Alf Landon
-  - Dem: Franklin Roosevelt
-* Opinion poll conducted by Literary Digest magazine:
-  - Polled 10 million individuals
-  - Received 2.27 million responses
-  - Projected winner: Alf Landon
-* Franklin Roosevelt won the election!
-]
-
-.pull-right[
-&lt;img src="img/Landon.jpg" width="40%" /&gt;&lt;img src="img/Roosevelt.jpg" width="40%" /&gt;
-
-]
-
-* Cause for the error - sampling bias!
-  - Sampled from magazine subscribers, registered vehicle owners and telephone users.
-  - Historical context: election happened during the 'Great Depression' (1929-1939)
-  - Consequently, sample disproportionately polled higher-income voters.
-
-
----
-
-## Sampling Methods
-
-&lt;img src="img/sampling_methods.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-.small[
-**Source**: Trivedi (2020) [Probability Sampling](https://conceptshacked.com/probability-sampling/)
-]
-
----
-
-## Bias correction
-
-
-.pull-left[
-* Suppose your sample is biased
-* _And_ you can quantify the scale of the bias
-* Then you should attempt to correct your estimates.
-
-**Example**
-
-* Are you in favour of statement "X"?
-  - Male: 20% in favour
-  - Female: 75% in favour
-]
-
-.pull-right[
-
-&lt;img src="img/YouGov_bias_correction.png" width="100%" style="display: block; margin: auto;" /&gt;
-
-]
-
-
-* Unweighted (biased) overall opinion: `\(~~~20\%~\frac{948}{2110} + 75\%~\frac{1162}{2110} = 50.3\%\)` in favour
-* Weighted (bias correced) overall opinion: `\(~~~20\%~\frac{1023}{2110} + 75\%~\frac{1087}{2110} = 48.3\%\)` in favour
-
-
----
-
-class: middle
-# When data science meets the law
-
----
-
-## Case Study: Cambridge Analytica
-
-
-![](img/youtube_logo.png) [The Guardian - Cambridge Analytica whistleblower](https://www.youtube.com/watch?v=FXdYSQ6nu-M) 
-
-
-&lt;img src="img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg" width="70%" style="display: block; margin: auto;" /&gt;
-
-
----
-
-## The UK General Data Protection Regulation (GDPR)
-
-* Guidelines for the collection and processing of **personal information**.
-* **Personal data** - information that relates to an identified or identifiable individual.
-    - name, identification number, biometric data, digital identifiers, opinions &amp; beliefs, etc.
-* **Informed consent** should be given for the collection and processing of personal data, including the right to withdrawal.
-* Personal data must be **stored securely**:
-  - Limiting access 
-  - Controls against malicious attacks
-  - To anonymize or de-identifying in case of breaches
-  - Case Study: [Police Service of Northern Ireland data breach](https://www.bbc.co.uk/news/uk-northern-ireland-66448442)
-
-
-See the University's website for further information and training on [Data Protection](https://www.ed.ac.uk/data-protection).
-
----
-
-## Creative Commons Licenses (version 4.0)
-
-* Allows the creator to retain copyright whilst allowing others to copy and distribute their work.
-* This applies to data and the publication of results.
-* Different types of licenses control the use and distribution of copyrighted content.
-* License conditions include:
-  - (BY) Credit must be given to the creator.
-  - (SA) Adaptations must be shared under the same licencing terms.
-  - (NC) Derived products must be for non-commercial purposes.
-  - (ND) Cannot adapt or produce any derivatives of the work.
-
-Source: [Creative Common](https://creativecommons.org/share-your-work/cclicenses/)
-
-
-
+# Under Construction!!! (w06-L11)
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="img/pexels-philipp-silbernagl-962889.jpg" alt="Photo by Philipp Silbernagl on Pexels" width="30%" /&gt;
+&lt;p class="caption"&gt;Photo by Philipp Silbernagl on Pexels&lt;/p&gt;
+&lt;/div&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
