@@ -1,5 +1,5 @@
 ---
-title: "Lab 01 - UK Attractions"
+title: "Lab 01 - Under Constuction"
 output: 
   tufte::tufte_html:
     tufte_variant: "envisioned"
@@ -7,432 +7,45 @@ output:
 link-citations: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
+knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
 ```
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Bryony Elena on Unsplash"}
-knitr::include_graphics("img/bryony-elena-M34XfDDZ-yg-unsplash.jpg")
+
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
 ```
 
-The travel and tourism is an important sector to the UK that employees over [300 million people](https://www.statista.com/statistics/1268465/number-of-travel-and-tourism-jobs-worldwide/#:~:text=Travel%20and%20tourism%20employment%20worldwide%202019%2D2023&text=Despite%20the%20increase%2C%20the%20number,to%20320%20million%20in%202023) and in 2022 contributed roughly [£237 billion](https://www.statista.com/statistics/598093/travel-and-tourism-gdp-total-contribution-united-kingdom-uk/) to the country's gross domestic product, representing approximately 10% of the UK's economy. An essential part of this sector are visitor attractions, ranging from castles and stately homes, zoos and aquariums, to botanical gardens and national parks. In this lab we will explore data published by the [Association of Leading Visitor Attractions](https://www.alva.org.uk/index.cfm) on visitor numbers in 2022 to a range of tourist attractions across the UK.
+This worksheet for the IDS lab is currently under construction. 👷🔨
 
-# Learning goals
-
--   To load data into your workbook.
--   Experience with doing some data wrangling.
--   Compute some summary statistics.
--   To interpret output.
--   Get more practice using with Git and GitHub.
+Please return back to this page later in the course.
 
 
-Before we get stated, please ensure that you have RStudio installed, a GitHub account and are able to push and pull correctly. If not, please follow the set-up instructions [here](https://uoe-ids.netlify.app/troubleshoot/). Ask a tutor for help if you have any problems.
+## In the meantime...
 
-# Getting started
-
-Find your workshop group. If you do not know what group you are in, go to your course timetable and you will see that the title of this class is "Introduction to Data Science - Workshop/&lt;nn>" where "&lt;nn>" is your group number. 
-
-
-Please help each other in your group in answering the workshop exercises and de-bugging each other's code. If you are stuck or unsure as to what you need to do, raise your hand and a tutor will come over to help you.
-
-
-## Clone repository & create a vesion control project
-
-Log onto GitHub and create a new repository by cloning  today's lab template project. To remind you of the step:
-
-* Go to *Your repositories* in your GitHub account and then click on the green *New* button.
-* Click on *Import a repository* and type/copy the URL of today's lab template project: [https://github.com/uoeIDS/lab-01-template](https://github.com/uoeIDS/lab-01-template)
-* Add an appropriate name to your repository, say `lab-01`, and click on *Begin import*.
-    
-Open RStudio and create a new version control project using the GitHub repository you have just made. To remind you of the steps:
-
-- Open *RStudio* and go to *File* > *New Project...* 
-- Select *Version Control* and then *Git*. Type/paste the URL of the repository you have just created. 
-- Browse an appropriate location for the project and then click on *Create Project*.
-
-Open the R Markdown document `lab-01.Rmd` and change the author to your name. *Knit* the document and make sure that it complies correctly without any errors.
-
-`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Commit and push your changes to GitHub with an appropriate commit message. As a reminder of the steps:
-
-- Go to the `Git` tab (top right panel) and click on *Commit*.
-- In the new window, click the tick box next to each file that you want to stage and add an informative *Commit message* (eg, changed author text).
-- Click the *Commit* button.
-- Click on the *Push* button to send your changes to GitHub.
-
-`r emo::ji("exclamation")` Make sure you are familiar with the above steps as you will need to do this for you homework and future labs. Furthermore, remember do good version control practices by periodically keeping your repository on GitHub up-to-date by staging and committing any substantial changes, and then push them to GitHub.
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
 
 
 
-## Packages
-
-In today's lab we will using the **tidyverse** package and its dependencies. At the top of your template you will find the following code that will load this library whenever you *knit* your document.
-
-```{r load-packages, message=FALSE, eval=TRUE}
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
-```
-
-If you do not have this library installed, then your document may fail to knit. To install any R packages:
-
--   Go do the `Packages` tab (bottom right panel)
--   Click on the `Install` button
--   Type the name of the package you wish to install (in this case `tidyverse`), and ensure that the option `Install dependencies` is ticked.
--   Click on the `Install` button.
--   You may be asked to select a *CRAN mirror*. It does not matter which server you use, but it is recommended to choose one that is close to your location geographically. 
-
-Alternatively, you can install the `tidyverse` package by running the command `install.packages("tidyverse")` once on the console (bottom left panel). **Do not** write this command in your Rmd file, otherwise as RStudio will attempt to re-install the package each you knit your document!
-
-RStudio will then download and install the `tidyverse` package and any other dependent packages. Read the messages that are printed to the console and check that there are no installation errors.
-
-
-
-
-## Data
-
-The dataset for this assignment can be found as a comma separated value (`.csv`) file in the `data` folder of your repository.
-You can read it into your work using the following code. (We will discuss more about importing and exporting data next week.)
-
-```{r load-data, message=FALSE, eval=TRUE}
-visitors <- read_csv("data/UK-visitor-numbers.csv")
-```
-
-Use the `head()` command as demonstrated below to view the first 10 rows of the data set.
-```{r head-data, message=FALSE, eval=FALSE}
-visitors %>% head(n = 10)
-```
-
-The variable in the `visitors` data set are:
-
-| Variable | Description |
-|:--|:---|
-| `attraction` | Name of the tourist attraction. |
-| `n_2021` | number of visitors in 2021. |
-| `n_2022` | number of visitors in 2022. |
-| `admission` | Whether admission is "Free" for all, free for "Members" or everyone is "Charged".  |
-| `setting` | Whether the attraction is "O"utside, "I"nside or has a "M"ix of inside and outside settings. |
-| `region` | Which region of the UK the attraction is located. |
-
-<br>
-
-# Warm-up Exercises
-
-Let's first inspect the data. Load the data into your environment by click on the green play button at the top-right corner of the R code chunks, and then on the console (bottom left panel) type `View(visitors)`. This will open a new tab in the top left panel showing a spreadsheet of the data.
-
-In your teams, have a look at the spreadsheet to answer the following questions:
-
-1. How many tourist attractions are there in the data set?
-2. What are the variable data types?
-3. Which attraction had the most number of visitors in 2022?
-4. What is the admission charge for the `"National Museum of Scotland"`?
-5. How many `"O"`utside attractions are there in the `"Yorkshire and the Humber"` region that gives `"Members"` free admission, which had more than 100,000 visitors in 2022?
-
-
-Once you have answered the above questions, check your answers -- no cheating!
-
-<details>
-
-<summary>
-
-Show answers
-
-</summary>
-
-<i> 
-
-1. There are _348_ tourist attractions in the data set.
-2. The variables labelled as `n_2021` and `n_2022` are both numerical variables (specifically `<dbl>` specifies that they are double floating point numbers), whilst the remaining variables are text or character variables (indicated by `<chr>`).
-3. The attraction that had the most number of visitors in 2022 was _The Crown Estate at Windsor Great Park_ with 5.6 million visitors.
-4. The admission to the National Museum of Scotland is _free_ for all -- you should [visit!](https://www.nms.ac.uk/national-museum-of-scotland/)
-5. There are _three_ tourist attractions that satisfy these condition, which are Fountains Abbey Estate, Kirkstall Abbey and the Royal Horticultural Society (RHS) Gardens at Harlow Carr.
-
-</i>
-
-</details>
-
-# Wrangling Data
-
-Answering the above questions can be done by visually searching through a spreadsheet of the data, but this can become very tedious when the question becomes only slightly more complicated -- How long did it take you to answer the last question compared to the first? Wouldn't it be better if we could use a computer to help us.
-
-Welcome to data wrangling!
-
-Let's take a look at each of the above questions in turn and see how we might answer them using R code.
-
-<br>
-
-## Question 1
-
-_How many tourist attractions are there in the data set?_
-
-Each row in the data set corresponds to a different visitor attraction, so to answer this question we need to do is to count how many rows there are. The simplest solution is to run the command `nrow(visitors)` that calculates the number of rows there are in the `visitors` data set (similarly `ncol(visitors)` calculates the number of columns, i.e., the number of variables). 
-
-Alternatively, we can use the `count()` command using the `%>%` pipework as follows:
-```{r Q1-count, eval = FALSE}
-visitors %>% count()
-```
-
-The `count()` command can also be used for creating **frequency tables** by putting the name of a specific variable into the command. For example, the following creates a frequency table for the different `admission` types:
-```{r Q1-table, eval = FALSE}
-visitors %>% count(admission)
-```
-
-### Exercises
-
-a. Create a frequency table of the number of tourist attractions in the data set by `region`.
-b. Create a frequency table by `admission` and `setting`.
-
-<br>
-
-
-## Question 2
-
-_What are the variable data types?_
-
-On viewing a printout of the data set either on the console or on the knitted document, the line immediately under the variables names indicate the data type of that variable. A detailed list of variable types can be found [here](https://tibble.tidyverse.org/articles/types.html). 
-
-
-To find this information using R code, we can use the `class()` command. For example, showing that the data type of the `n_2022` variable is numerical can be achieved using the following code.
-```{r Q_extra1}
-class(visitors$n_2022)
-```
-
-Applying the class command to each individual variable can be very tedious, especially if the data set contains many variables. Alternatively, we can use the `summarise_all()` command that applies a specified function to all of the columns of the data set. Therefore, we can extract the data type for all of the variables as follows:
-
-```{r Q_extra2}
-visitors %>% summarise_all(class)
-```
-
-Understanding the data type of each variable is important to understand whether the R code we write will work as expected and to determine which commands will work for the data types in the data set. For example, the code `"1" + "2"` will create an error as the addition operator expects two numerical values, but the data type of `"1"` is `character`.
-
-
-<br>
-
-## Question 3
-
-_Which attraction had the most number of visitors in 2022?_
-
-This question can be addressed by ordering the data based on the `n_2022` variable. This can be performed using the `arrange()` command. Note however that by default the `arrange()` command orders the rows into _increasing_ numerical order, so that the first row corresponds to the attraction with the least number of visits. The command `desc()` sorts the data in **desc**ending order, so that now the first row corresponds to the most visited attraction. For example:
-
-For example:
-
-```{r Q2-OrderIncrease, eval = FALSE}
-visitors %>% arrange(desc(n_2022))
-```
-
-### Exercises
-
-c. What are the top 10 most visited attractions in 2021?
-
-
-<br>
-
-## Question 4
-
-_What is the admission charge for the `"National Museum of Scotland"`?_
-
-This question asks you to search through, or _filter_, the data to find the row that satisfies a particular condition. The `filter()` command can be used to extract all of the rows in the data set that satisfies a specific logical test, retaining all rows where the expression is `TRUE` and removing those where it is `FALSE`.
-
-There are 6 key operations when performing a logical test:
-
-| Operation | Code | Eg, `TRUE` | Eg, `FALSE` |
-|:---------:|:----:|:-------:|:-------:|
-| Equality ($=$) | `==` | `3 == 3` | `3.14 == pi` |
-| Not equal ($\neq$) | `!=` | `-1 != 1` | `sin(0) != 0` |
-| Less than ($<$) | `<` | `2 < 3` | `4 < 4` |
-| Less than or equal ($\leq$) | `<=` | `-1 <= 2` | `log(5) <= 1` |
-| Greater than ($>$) | `>` | `sqrt(2) > 1.41` | `cos(pi) > sin(3*pi/2)` |
-| Greater than or equal ($\geq$) | `>=` | `Inf >= 10^6` | `-5 >= -2` |
-
-The logical test that is needed to filter the data set is to assess whether the content of the `attraction` variable exactly matches the text `"National Museum of Scotland"`. Specifically:
-
-```{r Q3-filter, eval=FALSE}
-visitors %>% filter(attraction == "National Museum of Scotland")
-```
-
-### Exercises
-
-d. Which attraction had exactly 565,772 visitors in 2022?
-e. How many attraction had more than 1 million visitors in 2022?
-
-<br>
-
-## Question 5
-
-_How many `"O"`utside attractions are there in the `"Yorkshire and the Humber"` region that gives `"Members"` free admission, which had more than 100,000 visitors in 2022?_
-
-The previous question used the `filter()` command to extract the rows based on a single logical test, but here we need to apply 4 logical tests. The `filter()` command can still be applied by writing the R code for each test separated by a comma.
-
-We can stop there and view the result of the filtering to see which attractions meet the 4 conditions, but the question asks for 'How many', not 'Which'. Therefore, we can pipe (`%>%`) the result from the `filer()` command directly into the `count()` command:
-
-
-```{r Q4, eval=FALSE}
-visitors %>%
-  filter(
-    setting == "O",
-    region == "Yorkshire and the Humber",
-    admission == "Members",
-    n_2022 >= 100000
-    ) %>%
-  count()
-```
-
-**Coding Style:** Writing all of the code for this example on a single line will work but doing so can make your code very difficult to read. This is particularly important when there is an error and you are trying to de-bug your code. Make use of 'whitespace' (spaces, new lines and tabbing) to aid the readability of your code.
-
-
-### Exercises
-
-f. How many attractions had between 50,000 and 100,000 visitors in 2022?
-g. How many regions have more than 50 tourist attraction in the data set? (Hint: You will need to tabulate the data before filtering.)
-
-
-`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Now is a good time to save and commit any changes to your work, and to push them to your repository on GitHub.
-
-<br>
-
-
-
-
-
-# Summarising data
-
-In this section we will investigate how to answer the following questions: 
-
-6. What are the mean and median visitor numbers in 2022 across all attractions?
-7. Which setting (inside, outside or mixed) has the largest mean visitor numbers in 2022?
-8. What is the interquartile range (the width of the middle 50% of data set between the lower and upper quartiles) the for each of the four nations of the UK?
-
-Before continuing, have a think about how you would attempt to answer these two questions.
-
-<br>
-
-
-## Question 6
-
-_What are the mean and median visitor numbers in 2022 across all attractions?_
-
-R has many commands that can be used to compute a wide range of standard statistical values. These include the `mean()` command for computing the arithmetic mean or averaged value, and `median()` command for computing the median or mid-point in the data. 
-
-```{r Q5-all, eval = FALSE}
-visitors %>% 
-  summarise(
-    mean_2022 = mean(n_2022),
-    med_2022 = median(n_2022)
-  )
-```
-
-### Exercise
-
-h. Perform the same calculation for the 2021 admissions data.
-i. What does `NA` stand for and why are you getting this as your answer to the previous question.
-j. Look at the help pages for the `mean()` and `median()` commands to see what the input argument `na.rm` does. Edit your code from exercise h so that it computes the summary statistics where data is available.
-
-<br>
-
-
-## Question 7
-
-_Which setting (inside, outside or mixed) has the largest mean visitor numbers in 2022?_
-
-This question is a simple extension of the previous question where we are now interested in computing the mean statistic per `setting` rather than across all settings. To implement this change, we need to group the data _before_ calculating the summary statistics. This is achieved by using the `group_by` command as follows:
-
-
-```{r Q6-grp, eval = FALSE}
-visitors %>% 
-  group_by(setting) %>%
-  summarise(
-    mean_2022 = mean(n_2022),
-    med_2022 = median(n_2022)
-  )
-```
-
-From the output you can easily read which setting, whether `"I"`nside, `"O"`utside or `"M"`ixed, have the largest 
-
-If you have time, discuss in your group why the mean values across all settings are much larger than the median values.
-
-### Exercise
-
-k. Observe in question 6 that the mean statistics across all settings are much larger than the corresponding median statistics. Discuss in your group what this suggests about the data.
-
-<br>
-
-
-## Question 8
-
-_What is the interquartile range (the width of the middle 50% of data set between the lower and upper quartiles) the for each of the four nations of the UK?_
-
-This is a more complex question that requires some pre-processing of the data before doing any calculations.
-
-
-First, look at the `region` variable. There are entries for `"Northern Ireland"`, `"Scotland"` and `"Wales"`, but England is split into 9 different regions. The first stage is to transform the data set by creating a new variable called `nation` that groups all of 9 English regions. 
-
-A transformation of the data can be performed using the `mutate()` command. For this question we need to consider how best to transform the `region` variable to the new `nation` variable. The transformation can be described by the following if-else function:
-
-\[{nation} = \left\{ \begin{array}{ll}\text{Northern Ireland} & \text{if}~{region} = \text{Northern Ireland}, \text{else},\\\text{Scotland} & \text{if}~{region} = \text{Scotland},\text{else},\\\text{Wales} & \text{if}~{region} = \text{Wales},\text{else},\\\text{England} & \text{otherwise}.\\
-\end{array}\right.\]
-
-This function can be implemented using the `case_when()` function. The general structure of this command is as follows:
-
-```{r case_when_eg, eval=FALSE}
-case_when(
-  logical_test_1 ~ returned_value_1,
-  logical_test_2 ~ returned_value_2,
-  ...
-  logical_test_n ~ returned_value_n,
-  TRUE ~ return_value_default
-)
-```
-
-On entering this command, the first logical test is performed and if the answer is `TRUE` then the command returns the value after the `~` symbol. If the result of the first test is `FALSE` then the next logical test is evaluated. The `TRUE` statement at the end acts as the 'otherwise' scenario to capture all remaining cases that did not satisfy any of the earlier tests.
-
-The `case_when` command can be used to implement the transformation of the `region` variable to construct the new `nation` variable as follows:
-
-```{r q7-mutate, eval=FALSE}
-visitors_with_nations <- visitors %>%
-  mutate(
-    nation = case_when(
-      region == "Northern Ireland" ~ "Northern Ireland",
-      region == "Scotland" ~ "Scotland",
-      region == "Wales" ~ "Wales",
-      TRUE ~ "England"
+library(ggplot2)
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
+
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
     )
-  )
 ```
-
-Here we have assigned the result of the transformation to a new variable in memory called `visitors_with_nations` so that we can use the result without the need to continuously re-evaluate the `nation` variable as part of a workflow pipework.
-
-Finally, we can now summarise the data to compute the inter-quartile range for each nation using the `IQR()` command:
-
-```{r q7-stat, eval = FALSE}
-visitors_with_nations %>% 
-  group_by(nation) %>%
-  summarise(
-    IQR_2022 = IQR(n_2022)
-  )
-```
-
-### Exercise
-
-l. How many tourist attractions are there in each of the 4 nations? From this, discuss in your group how reliable you think the inter-quartile estimates are.
-
-`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Now is a good time to save and commit any changes to your work, and to push them to your repository on GitHub.
-
-# Challanging Exercises
-
-If you have time at the end of today's lab, have a go at answering the following more challenging exercises 
-
-m. Within each of the 4 nations, what is the proportion of tourist attractions that have free admission for all visitors?
-n. Calculate the percentage change in visitor admissions from 2021 to 2022. Of the tourist attractions in Scotland, sort into increasing numerical order the types of admission charges based on the mean percentage change in visitor numbers.
-
-
-
-
-<br>
-
-
-# Wrapping up
-
-That's the end of this lab! 
-
-`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files (that is, make sure every file has a tick next to it) so that your Git pane is cleared up afterwards.
-
-Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time.
-
-

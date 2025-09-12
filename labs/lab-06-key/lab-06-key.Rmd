@@ -1,275 +1,43 @@
 ---
-title: "Lab 06 - Functions and iterations"
+title: "Lab 06 - Under Constuction"
 author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
+```
 
-### Packages and Data
+This solutions key for the IDS lab is currently under construction. 👷🔨
 
-```{r load-packages, message=FALSE}
-library(tidyverse) 
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
+library(tidyverse)
 library(ggplot2)
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
+
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```
-
-```{r diamon_rename}
-diamonds <- ggplot2::diamonds %>% rename(
-    depth_pct = depth,
-    length_mm = x,
-    width_mm = y,
-    depth_mm = z,
-    table_pct = table
-  )
-```
-
-
-## Exercise 1
-
-```{r}
-ggplot(data = diamonds,
-       mapping = aes(x = width_mm,
-                     y = depth_mm)) +
-  geom_point()
-```
-
-There are some diamonds with a dimension lengths of 0mm and some with at least one dimension greater than 20mm. 
-These should be filtered out of the data set.
-
-```{r}
-diamonds <- diamonds %>% filter(
-  length_mm != 0, length_mm <= 20,
-  width_mm != 0, width_mm <= 20,
-  depth_mm != 0, depth_mm <= 20
-)
-```
-
-The remaining EDA is non exhaustive, you can find other analysis in this [RPubs article](https://rpubs.com/Davo2812/1102821#:~:text=The%20diamonds%20dataset%20is%20a,cut%2C%20clarity%2C%20and%20color.) by David Curtis.
-
-```{r}
-diamonds %>% count(cut)
-diamonds %>% count(clarity)
-```
-
-```{r}
-ggplot(diamonds) + geom_histogram(aes(x = carat))
-```
-
-```{r}
-ggplot(diamonds) + geom_point(aes(x = carat,y=price,color=cut),alpha = 0.4)
-```
-
-
-## Exercise 2
-
-```{r}
-diamonds <- diamonds %>%
-  mutate(table_mm = table_pct * width_mm / 100)
-
-# Overall table_mm arithmetic mean?
-
-diamonds %>% 
-  summarise(
-    avg_table = mean(table_mm, na.rm = TRUE)
-  )
-
-# table_mm arithmetic mean within each clarity category
-
-diamonds %>% 
-  group_by(clarity) %>%
-  summarise(
-    avg_table = mean(table_mm, na.rm = TRUE)
-  )
-```
-
-Diamonds with a better clarity category have, on average, a smaller table length. 
-
-```{r}
-diamonds %>% 
-  summarise(across(where(is.numeric),
-                   function(x) mean(x, na.rm = TRUE),
-                   .names = "avg_{.col}"))
-```
-
-
-## Exercise 3
-
-```{r}
-# Write gmean() function
-
-gmean <- function(x){
-  xbar_g <- exp(mean(log(x)))
-  return(xbar_g)
-}
-
-```
-
-## Exercise 4
-
-```{r, error = TRUE}
-
-test_data <- list(
-  test1 = c(2.1, 3.8, 4.2),
-  test2 = c(1, 10, 100, 1000),
-  test3 = c(0, 1, 4),
-  test4 = c(0.38,  0.94, -1.56),
-  test5 = c(TRUE, TRUE),
-  test6 = c("6", "7", "8")
-)
-
-
-# Create for loop to test gmean() on the above examples
-for(i in seq_along(test_data)){
-  print(gmean(test_data[[i]]))
-}
-
-```
-
-
-## Exercise 5
-
-```{r}
-# Copy gmean() from Ex3 and edit it to check the input
-
-gmean <- function(x){
-  
-  if(!is.numeric(x)){
-    warning("Vector 'x' is not numeric")
-    return(NaN)
-  }
-    
-  if(any(x <= 0)){
-    warning("Vector 'x' must have strictly positive numbers.")
-    return(NaN)
-  }
-  
-  xbar_g <- exp(mean(log(x)))
-  return(xbar_g)
-}
-
-
-
-# Copy your code from Ex 4 to test your new command
-
-
-for(i in seq_along(test_data)){
-  print(gmean(test_data[[i]]))
-}
-
-```
-
-## Exercise 6
-
-```{r}
-# replicate the for loop from Ex 4 using the map (or a similar) function
-map(test_data, gmean)
-map_dbl(test_data, gmean)
-```
-
-## Exercise 7
-
-```{r}
-# Overall table_mm arithmetic mean, median, and geometic mean?
-diamonds %>% 
-  summarise(
-    avg_table = mean(table_mm),
-    med_table = median(table_mm),
-    geom_table = gmean(table_mm)
-  )
-
-
-# Arithmetic mean, median, and geometric mean of table_mm within each clarity category
-diamonds %>% 
-  group_by(clarity) %>%
-  summarise(
-    avg_table = mean(table_mm),
-    med_table = median(table_mm),
-    geom_table = gmean(table_mm)
-  )
-
-```
-
-Diamonds with a better clarity have a smaller geometric mean. 
-Also, the geometric means are typically smaller than the arithmetic mean for this data.
-
-## Exercise 8 (optional)
-
-```{r}
-# Create gmean2() that computes the geometric mean 
-#   that uses the original definition
-
-gmean2 <- function(x){
-  
-  if(!is.numeric(x)){
-    warning("Vector 'x' is not numeric")
-    return(NaN)
-  }
-    
-  if(any(x <= 0)){
-    warning("Vector 'x' must have strictly positive numbers.")
-    return(NaN)
-  }
-  
-  xbar_g <- prod(x)^(1/length(x))
-  return(xbar_g)
-}
-
-gmean(test_data$test1)
-gmean2(test_data$test1)
-
-diamonds %>% 
-  summarise(
-    gmean_table = gmean(table_mm),
-    gmean2_table = gmean2(table_mm)
-  )
-
-```
-
-The command `gmean2()` when applied to `diamonds` does not work as it is multiplying `r nrow(diamonds)` numbers that are all greater 1. Consequently, the product is exceptionally big - bigger than what R can represent as a floating point number. Consequently, the product is then represented by `Inf`. By contrast, through transforming the definition of the geometric mean using the exponential & natural logarithm functions obtains a definition that is more stable for computers to compute.
-
-## Exercise 9 (optional)
-
-```{r}
-# Create a function that computes the harmonic mean
-
-hmean <- function(x){
-  
-  if(!is.numeric(x)){
-    warning("Vector 'x' is not numeric")
-    return(NaN)
-  }
-    
-  if(any(x <= 0)){
-    warning("Vector 'x' must have strictly positive numbers.")
-    return(NaN)
-  }
-  
-  xbar_h <- 1 / mean(1 / x)
-  return(xbar_h)
-}
-
-diamonds %>% 
-  summarise(
-    avg_table = hmean(table_mm)
-  )
-
-diamonds %>% 
-  group_by(clarity) %>%
-  summarise(
-    avg_table = hmean(table_mm)
-  )
-
-```
-
-## Exercise 10 (optional)
-
-
-\[
-\begin{align}
-\bar{x}_g &= \left(\prod_{i=1}^n x_i\right)^{1/n}\\
-& = \exp\left\{ \ln\left[\left(\prod_{i=1}^n x_i\right)^{1/n}\right]\right\} \quad\quad[\exp(\ln a) = a \text{ for }a>0]\\
-& = \exp\left\{ \frac{1}{n}\ln\left(\prod_{i=1}^n x_i\right)\right\}\quad\quad[\text{power rule: }\ln(a^b) = b \ln a]\\
-& = \exp\left\{ \frac{1}{n}\sum_{i=1}^n\ln x_i \right\}\quad\quad[\text{product rule: }\ln(ab) = \ln a + \ln b]\\
-\end{align}
-\]
-

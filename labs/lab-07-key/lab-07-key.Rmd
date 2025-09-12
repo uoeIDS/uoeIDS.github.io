@@ -1,313 +1,43 @@
 ---
-title: "Lab 07 - Modelling course evaluations"
+title: "Lab 07 - Under Constuction"
 author: "KEY"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-### Load packages 
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
+```
 
-```{r load-packages, message=FALSE}
+This solutions key for the IDS lab is currently under construction. 👷🔨
+
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
-library(tidymodels)
-library(patchwork)
-```
+library(ggplot2)
 
-### Read in data
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
 
-```{r read-data}
-evals<-read.csv("data/evals.csv", row.names=1)
-```
-
-# Exercise 1
-
-1.  Visualize the distribution of `score` in the dataframe `evals`.
-
-```{r viz-score}
-ggplot(data = evals, mapping = aes(x = score)) +
-  geom_histogram(binwidth = 0.2) + 
-  labs(
-    x = "Evaluation score", 
-    y = "Frequency", 
-    title = "Professor evaluation scores"
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
     )
 ```
-
-The distribution is negatively/left-skewed---this happens because most professors are getting scores near the upper end of the scale, but then there is a tail to the left of lower scores.  There appears to be a sharp peak around 4.4, but this may be an artefact of the data (evaluation scores, as we shall soon see, appear to be recorded in discrete steps of 0.1).
-
-2. Visualize and describe the relationship between `score` and `bty_avg` using `geom_point()` to represent the data. 
-
-```{r viz-score-bty}
-plot_geom_point  <- ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
-  geom_point() + 
-  labs(
-    x = "Beauty score", 
-    y = "Evaluation score", 
-    title = "Course evaluation by beauty scores"
-  )
-
-plot_geom_jitter <- ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
-  geom_jitter() + 
-  labs(
-    x = "Beauty score", 
-    y = "Evaluation score", 
-    title = "Course evaluation by beauty scores"
-  )
-
-# Note: this uses the patchwork package loaded above
-# learn more about patchwork at https://patchwork.data-imaginist.com/
-# it might be useful for your presentations!
-plot_geom_point + plot_geom_jitter
-```
-
-Jittering randomly shifts the data points slightly so that points are not overplotted. In the initial scatterplot observations (professors) that have the same score and bty_avg were overplotted, making it impossible to see where there is a higher/lower density of points.
-
-# Exercise 2: Simple Linear regression with a numerical predictor
-
-1. Fit a linear model called `score_bty_fit` to predict average professor evaluation `score` from average beauty rating (`bty_avg`).
-
-
-```{r fit-score_bty_fit}
-score_bty_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ bty_avg, data = evals)
-```
-
-```{r tidy-score_bty_fit}
-tidy(score_bty_fit)
-```
-
-```{r include = FALSE}
-bty_avg_estimate <- tidy(score_bty_fit) %>%  # summarize components of the model
-  filter(term == "bty_avg")  %>%             # filter for the "bty_avg" component
-  pull("estimate") %>%                       # pull its estimate
-  signif(., 3)                               # round to 3 significant figures
-
-intercept_estimate <- tidy(score_bty_fit) %>%  # summarize components of the model
-  filter(term == "(Intercept)")  %>%           # filter for the "(Intercept)" component
-  pull("estimate") %>%                         # pull its estimate
-  signif(., 3)                                 # round to 3 significant figures
-```
-
-The linear model is score-hat = `r intercept_estimate` + `r bty_avg_estimate` bty_avg.
-
-2. Plot the data again using `geom_jitter()`, and add the regression line.
-
-```{r viz-score_bty_fit}
-ggplot(data = evals, mapping = aes(x = bty_avg, y = score)) + 
-  geom_jitter() + 
-  geom_smooth(method = "lm", se = FALSE, formula = "y ~ x") +
-  labs(
-    x = "Beauty score", 
-    y = "Evaluation score", 
-    title = "Evaluation vs. beauty scores"
-    )
-```
-
-3. Interpret the slope of the linear model in context of the data.
-
-For each unit increase in the average beauty score, we expect the evaluation scores to be higher, on average, by `r bty_avg_estimate` points.
-
-4. Interpret the intercept of the linear model in context of the data. Comment on whether or not the intercept makes sense in this context.
-
-Professors who have a 0 beauty score on average are predicted to have an evaluation score of `r intercept_estimate`. The intercept doesn’t make sense in this context as it’s not possible for a professor to have a 0 beauty score on average (lowest possible score a student can assign a professor is 1).
-
-5. Determine the $R^2$ of the model and interpret it in the context of the data.
-
-```{r R2}
-# remove eval = FALSE from the code chunk options after filling in the blanks
-glance(score_bty_fit)$r.squared
-```
-
-```{r include=FALSE}
-score_bty_r <- glance(score_bty_fit) %>%  # get model summaries
-  pull("r.squared") %>%                 # pull out the r squared value
-  signif(., 2)*100                      # round to 2 significant figures and times by 100 to get a percent
-```
-
-The model has an R-squared value of `r score_bty_r`%. This means that average beauty scores explain `r score_bty_r`% of the variability in evaluation scores.
-
-6. Make a plot of residuals vs. predicted values for the model above.
-
-```{r viz-score_bty_fit-diagnostic}
-score_bty_aug <- augment(score_bty_fit$fit)
-
-ggplot(score_bty_aug, aes(x = .fitted, y = .resid)) +
-  geom_jitter() +
-  geom_hline(yintercept = 0, linetype = "dashed") + 
-  labs( 
-    x = "Predicted values",
-    y = "Residuals"
-  )
-```
-
-The model is probably reasonable, but could be better.  There's a slight "fan shape" in the residuals, or "heteroschedasticity" --- that is, there are differences in the variation of the residuals for different values of the predicted values, specifically the variation seems to be larger on left.  There are also more large negative residuals than large positive ones, which is probably due to the fact that values of the response variable were close to the rigid maximum limit of the scale.
-
-# Exercise 3: Simple Linear regression with a categorical predictor
-
-0. Look at the variable rank, and determine the frequency of each category level.
-
-```{r}
-evals %>% count(rank)
-```
-
-1. Fit a new linear model called `score_rank_fit` to predict average professor evaluation `score` based on `rank` of the professor.
-
-```{r fit-score_rank_fit}
-score_rank_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ rank, data = evals)
-
-score_rank_fit %>% tidy()
-```
-
-
-- **Intercept:** A lecturer whose rank is as teaching staff (which, if we look at the data dictionary in the help file, is the level not mentioned in the output, that is the *baseline* level) can be expected, on average, to have a score of 4.28.
-- **"Slope":** There are two of these:
-  - A tenure track lecturer is predicted by the model to have a score that is expected to be 0.130 *lower*, on average, that that of teaching staff.
-  - A tenured lecturer is predicted by the model to have a score that is expected to be 0.145 *lower*, on average, than that of teaching staff.
-
-2. Fit a new linear model called `score_gender_fit` to predict average professor evaluation `score` based on `gender` of the professor. 
-
-```{r fit-score_gender_fit}
-# fit model
-score_gender_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ gender, data = evals)
-# tidy model output
-tidy(score_gender_fit)
-```
-
-```{r score_gender_intercept}
-score_gender_intercept <- tidy(score_gender_fit) %>% 
-  filter(term == "(Intercept)") %>%
-  select(estimate) %>%
-  pull()
-```
-
-```{r score_gender_slope}
-score_gender_slope <- tidy(score_gender_fit) %>% 
-  filter(term == "gendermale") %>%
-  select(estimate) %>%
-  pull()
-```
-
-- **Intercept:** The model predicts female staff (the baseline of the model) to have on average a score of `r round(score_gender_intercept, 2)`.
-- **"Slope":** The model predicts male staff to have a score that is expected on average `r round(score_gender_slope, 2)` *higher* than that of female staff.
-
-# Exercise 4: Multiple linear regression
-
-1. Fit a multiple linear regression model, predicting average professor evaluation `score` based on average beauty rating (`bty_avg`) and `gender.`
-
-```{r fit-score_bty_gender_fit}
-# fit model
-score_bty_gender_fit <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(score ~ bty_avg + gender, data = evals)
-# tidy model output
-tidy(score_bty_gender_fit)
-```
-
-- **Intercept:** The model predicts that female staff with a beauty score of 0 (which is again not something that makes sense in context) would have a professor evaluation score of 3.75.
-- **Slopes:**
-  - The model predicts that, *keeping all else constant*, for every increase by one in the beauty score, the lecturer's evaluation score will *increase* by 0.0742.
-  - The model predicts that, for lecturers with *the same beauty score*, male lecturers will have a professor evaluation score that is 0.172 *higher* than that of female lecturers.
-
-```{r}
-ggplot(data = evals, mapping = aes(x = bty_avg, y = score, color = gender)) + 
-  geom_jitter() + 
-  labs(
-    x = "Beauty score", 
-    y = "Evaluation score", 
-    title = "Course evaluation by beauty scores"
-  )
-```
-
-2. What percent of the variability in `score` is explained by the model `score_bty_gender_fit`. 
-
-```{r glance-score_bty_gender_fit}
-# glance model output
-glance(score_bty_gender_fit)
-```
-
-```{r}
-# glance model output
-score_bty_gender_r <- glance(score_bty_gender_fit) %>%  # get model summaries
-  pull("r.squared") %>%                        # pull out the r squared value
-  signif(., 2)*100                             # round to 2 significant figures and times by 100 to get a percent
-```
-
-The model has an R-squared value of `r score_bty_gender_r`%. This means that a model with both average beauty scores and gender can explain `r score_bty_gender_r`% of the variability in evaluation scores.
-
-3. What is the equation of the line corresponding to just male professors?
-
-$$\text{score-hat} = 3.75 + 0.172 + 0.0742 \times \text{bty_avg} = 3.92 + 0.0743 \times \text{bty_avg}$$
-
-4. For two professors who received the same beauty rating, which gender tends to have the higher course evaluation score?
-
-Male professors tend to have higher course evaluation than female professors, assuming they have the same beauty score.
-
-5. How does the relationship between beauty and evaluation score vary between male and female professors?
-
-In this model, it doesn't, because we haven't fitted an interaction effects model---the model gives the same increase in evaluation for each increase in beauty score for both male and female professors.
-
-6. How do the adjusted $R^2$ values of `score_bty_fit` and `score_bty_gender_fit` compare? 
-
-```{r}
-glance(score_bty_fit)$adj.r.squared
-glance(score_bty_gender_fit)$adj.r.squared
-```
-
-The adjusted R-squared is higher for the fit when gender is included, suggesting gender is useful for explaining the variability in evaluation scores when we already have information on the beauty scores.
-
-7. Compare the slopes of `bty_avg` under the two models (`score_bty_fit` and `score_bty_gender_fit`).
-
-```{r}
-score_bty_fit %>%
-  tidy() %>%
-  filter(term == "bty_avg") %>%
-  pull("estimate")
-```
-
-```{r}
-score_bty_gender_fit %>%
-  tidy() %>%
-  filter(term == "bty_avg") %>%
-  pull("estimate")
-```
-
-The addition of gender has changed the slope estimate: it has increased it from around 0.067 to around 0.074.
-
-# Exercise 5: Interpretation of log-transformed response variables
-
-1. Using the two properties listed above, and starting from the hint provided below, prove why we can rewrite the interpretation of the slope using the *multiplicative factor of $exp(b_1)$* phrase.
-
-$$ log(\text{price for width (x+1)}) - log(\text{price for width x}) = 0.0192 $$
-
-Using the "Subtraction of logs" property we get:
-
-$$ log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right) = 0.0192 $$
-We exponentiate both sides:
-
-$$ e^{log\left(\frac{\text{price for width x+1}}{\text{price for width x}}\right)} = e^{0.0192} $$
-
-Using the definition of the natural logarithm we get:
-
-$$ \frac{\text{price for width x+1}}{\text{price for width x}} \approx 1.02 = exp(b_1) $$
-
-2. Using the fact that $exp(x)\approx 1+x$, and the definition of percentage change ($(b-a)/a = \%\text{-change}$), prove that we can rewrite the interpretation of the slope with the percentage change.
-
-The definition of percentage change is given by:
-$$
-\frac{\left( (\text{price for width x+1}) - (\text{price for width x}) \right)}{\text{price for width x}}
-$$
-
-which can be re-written as 
-$$
-\frac{\text{price for width x+1}}{\text{price for width x}} -1
-$$
-
-Then we can use the result from point 1, and the approximation that $exp(b_1) \approx 1+b_1$ and we have that:
-
-$$ \frac{\left( (\text{price for width x+1}) - (\text{price for width x}) \right)}{\text{price for width x}} = \frac{\text{price for width x+1}}{\text{price for width x}} -1 = exp(b_1)-1 \approx 1+b_1-1 = b_1 $$
-

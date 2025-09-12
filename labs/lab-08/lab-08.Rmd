@@ -1,228 +1,51 @@
 ---
-title: "Lab 08 - Predicting rain"
+title: "Lab 08 - Under Constuction"
 output: 
   tufte::tufte_html:
-    css: ../lab.css
     tufte_variant: "envisioned"
     highlight: pygments
 link-citations: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Photo by Philipp Silbernagl on Pexels"}
+knitr::include_graphics("img/pexels-philipp-silbernagl-962889.jpg")
+```
+
+
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(emo)
+#devtools::install_github("hadley/emo")
+```
+
+This worksheet for the IDS lab is currently under construction. 👷🔨
+
+Please return back to this page later in the course.
+
+
+## In the meantime...
+
+Have a look at the following data from the `datasauRus` package. Each data set has the same mean, variance and correlation values, but they all look different!
+
+
+
+```{r datasuRus, message = FALSE, fig.height=10}
+library(datasauRus)
 library(tidyverse)
-library(tidymodels)
+library(ggplot2)
 
-# https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package/
-weather <- read.csv("data/weatherAUS.csv", header = TRUE)
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 3)
+
+datasaurus_dozen %>% 
+    group_by(dataset) %>% 
+    summarize(
+      mean_x    = mean(x),
+      mean_y    = mean(y),
+      std_dev_x = sd(x),
+      std_dev_y = sd(y),
+      corr_x_y  = cor(x, y)
+    )
 ```
-
-::: {.home}
-This lab is all about logistic regression and using recipes and workflows, so make sure you are up to date with the week 9 material!
-:::
-
-# Learning Goals
-
-The objective of this workshop is to:
-
-- Learn the basics of logistic regression modeling with a data set.
-- Use modelling to make predictions.
-- Use recipes and workflows to make your modeling choices reproducible.
-
-# Set-up
-
-In this workshop you will be working individually. However, while working on your version control project, we suggest to discuss with your group members to hear different opinions and angles. Start by doing the usual set-up steps:
-
-* Create your own copy of today's template repository from [https://github.com/uoeIDS/lab-08-template](https://github.com/uoeIDS/lab-08-template).
-* Create a new version control project in RStudio that links to _your_ copy of today's template.
-* Open `lab-08.Rmd` and change the `author` at the top of the file to your name.
-* Verify that everything is set-up correctly: 🧶 _knit_ your document, ✅ _commit_ your changes and ⬆️ _push_ the commits to GitHub.
-
-# Packages & Data
-
-During the workshop we'll use the following packages:
-
--   `tidyverse`: for data wrangling and visualisation
--   `tidymodels`: for modelling
-
-## Data set: Rain in Australia
-
-Who does not want to know if tomorrow is going to rain? Well if you live in Scotland the prediction is probably easy. But for people living in Australia, it might be actually more interesting to know if you'll need to carry an umbrella (or a "brolly" as they like to say) or not.
-
-In this lab we will be using a [dataset](https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package) containing about 10 years of daily weather observations from many locations across Australia, with information relating to temperature, wind, humidity, cloud cover and pressure. The variable we want to predict is whether it will rain on the following day, `RainTomorrow`.
-
-To familiarise yourself with the data set, reading the data dictionary and reference [here](https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package) is suggested. 
-You should read the data into RStudio using the following code:
-
-```{r}
-weather <- read.csv("data/weatherAUS.csv", header = TRUE)
-```
-
-# Exercise 1: Exploratory Data Analysis
-
-We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and trasform them into factors.
-
-```{r mutate-char}
-variables_to_transform = weather %>% 
-  select(where(is.character),-Date) %>% names()
-weather <- weather %>% 
-  mutate_at(vars(all_of(variables_to_transform)),factor)
-```
-
-To simplify things, today we will not be using some categorical explanatory variables, because they have a very large number of categories and might make our model interpretation more complex. Specifically we will exclude `WindGustDir`, `WindDir9am` and `WindDir3pm`. 
-
-```{r remove-wind}
-weather <- weather %>%
-  select(-WindGustDir,-WindDir9am,-WindDir3pm)
-```
-
-Note that some of these variables have a large number of missing values:
-
-```{r find-prop-na}
-weather %>% 
-  select(where(~ any(is.na(.)))) %>% 
-  summarise(across(everything(), ~mean(is.na(.)))) %>%
-  pivot_longer(col = everything(), names_to = "Variable", values_to = "Prop_NA") %>%
-  arrange(desc(Prop_NA))
-```
-
-1. Are there any missing values in our variable of interest `RainTomorrow`? If so, we filter them out and save the new dataset as `weather_noNA`. 
-
-2. Which cities are the ones with more rain days? To do this, let's analyze the `RainToday` variable. 
-
-# Exercise 2: Logistic regression
-
-We will focus our analysis on the city of `Portland`.
-
-```{r eval=FALSE}
-weather_Portland <- weather_noNA %>%
-  filter(Location == "Portland")
-```
-
-1. Try to predict `RainTomorrow` by fitting a linear regression using the variable `RainToday` and print the output using `tidy()`.
-
-2. For each point in our dataset, what are the fitted probabilities that tomorrow it's going to rain? 
-
-- Plot them using an appropriate visualization. What is peculiar about them?
-
-> Hint: how many unique values do the predicted probabilities take? What do these value correspond to?
-
-- Are there any missing values? Why?
-
-# Exercise 3: Split the data and build workflows
-
-Let us set a seed and perform a split of our data.
-
-```{r seed}
-set.seed(111723)
-```
-
-1. Split the data into a training set (80% of your Portland data) and a testing set.
-
-2. Refit the simple logistic regression using `RainToday` as predictor on this training data, using `tidymodels` recipes and workflows.
-
-- Start by the recipe. First initialize the recipe, then remove observations with missing values using `step_naomit()` and finally use `step_dummy` to convert categorical to dummy variables.
-
-```{r recipe1, eval=FALSE}
-weather_rec1 <- recipe(
-  RainTomorrow ~ RainToday, 
-  data = weather_Portland
-  ) %>%
-  step_naomit(all_predictors()) %>%
-  step_dummy(all_nominal(), -all_outcomes())
-```
-
-- Build your workflow combining model and recipe
-
-```{r workflow1, eval = FALSE}
-weather_mod1 <- ___ %>% 
-  set_engine(___)
-weather_wflow1 <- workflow() %>% # initiate workflow
-  ___(___) %>%                   # add model
-  ___(___)                       # add recipe
-```
-
-- Now fit your model on the training data
-
-```{r fit1, eval = FALSE}
-weather_fit1 <- weather_wflow1 %>% 
-  fit(data = ___)
-tidy(weather_fit1)
-```
-
-3. Fit now a multiple logistic regression, i.e. using multiple explanatory variables, to predict 
-`RainTomorrow`. We will use as predictors the variables `MinTemp`, `MaxTemp`, `RainToday` and `Rainfall`. Similarly to question 2, use workflows to fit this model on our training data. 
-
-- Start by the recipe. This will be a simple recipe, because we have not done many pre-processing steps, but do remove missing values and transform categorical variables into dummy variables:
-
-```{r recipe2, eval=FALSE}
-weather_rec2 <- recipe(
-  RainTomorrow ~ ___+___+___+___, # include your formula
-  data = weather_Portland
-  ) %>%
-  step_naomit(___) %>%.          # exclude cases with missing values in all predictors
-  step_dummy(all_nominal(), ___) # exclude all outcomes
-```
-
-- Save the model, workflow and finally, let's fit to the training data.
-
-3. Now let's evaluate the predictive performance of these two models on our test set.
-
-- Create the ROC curve and get the AUC (area under the curve) value for your first simple logistic regression model.
-
-```{r eval=FALSE}
-weather_pred2 <- predict(___, test_data, type = "prob") %>%
-  bind_cols(test_data)
-weather_pred2 %>%
-  ___(                      # plot ROC curve
-    truth = RainTomorrow,
-    .pred_Yes,
-    event_level = "second"
-  ) %>%
-  autoplot()
-
-weather_pred2 %>%
-  ___(                  # get AUC value
-    truth = RainTomorrow,
-    .pred_Yes,
-    event_level = "second"
-  )
-```
-
-- Create now the ROC curve and get the AUC (area under the curve) value for your second model.
-
-- Which model seems to have a better performance?
-
-4. Now focus on the second model. Consider several thresholds for predicting `RainTomorrow` and look at the number of false positives and false negatives. For example:
-
-```{r eval = FALSE}
-cutoff_prob <- 0.5
-weather_pred2 %>%
-  mutate(
-    RainTomorrow      = if_else(RainTomorrow == "Yes", "It rains", "It does not rain"),
-    RainTomorrow_pred = if_else(.pred_Yes > cutoff_prob, "Predicted rain", "Predicted no rain")
-    ) %>%
-  na.omit() %>%
-  count(RainTomorrow_pred, RainTomorrow)
-```
-
-- What is the the false positive rate with `cutoff_prob = 0.3`? 
-
-- What about the false negative rate?
-
-# Exercise 4: Extend our model [OPTIONAL]
-
-We will now try to improve our fit by building a model using additional explanatory variables.
-
-1. Let us analyze the various variables in our dataset.
-
-- Is there any categorical variable which is very unbalanced? If so, remove it.
-
-- Is there any numerical variable that has a very small standard deviation for one of the two categories of `RainTomorrow`? If so, remove it.
-
-2. Let's do some feature engineering: let us transform the variable `Date`. We will use `Ludbridate` again: extract the month and year.
-
-3. Let's now combine everything into recipes and workflows. Then fit the model on the training data and use the test data for calculating the AUC and plotting the ROC curve.
-
-4. Is this model better than the one we fitted in Exercise 3?
-
