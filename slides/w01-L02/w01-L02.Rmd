@@ -364,7 +364,8 @@ In RStudio, create a new version control project:
 Use Rstudio terminal to do the following steps;
 
 Creating a new repository:
-1. Install homebrew https://brew.sh/ (copy and paste the link into the terminal)
+1. Install homebrew https://brew.sh/ (copy and paste the code in the link into the terminal)
+  - Check the last few printed lines: it will ask you to copy-paste in the terminal three lines of code that are part of the installation process.
 2. Then copy and paste this into the terminal: `brew install git`
 3. Then install the github credential manager by typing in the terminal: `brew install gh`
 4. Then type: `gh auth login`
