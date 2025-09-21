@@ -90,6 +90,14 @@ They can add the other members afterwards.
 If you have managed all that, **congratulations**!
 This setup will become easier each week and you only need to do it for each project/repository once.
 
+## Linking Github repo to RStudio
+
+We now need to create a project in RStudio that links to the repository you have just created on GitHub.
+
+- Open your repository page on Github; check it's your repository by making sure the username shown at the top-left of the page it's yours, not the course's one (`uoeIDS`). Click the green 'Code' button and copy the URL given under HTTPS (you can also check this is the correct repository because it should include your username, not the course's one).
+
+- Open RStudio. In the top-right panel, click on 'File' > 'New Project...' > 'Version Control' > 'Git'. Paste the URL you copied from GitHub into the 'Repository URL' box. Choose a location on your computer to save the project. Click 'Create Project'.
+
 ## First commit and push
 
 The next stage is to learn how to commit and push edits to your work from the R project to GitHub. 
@@ -116,7 +124,7 @@ You have now made your first version control commit and push to GitHub. If you n
 **Target:** Please ensure that you at least get to this point in today's workshop. 
 ```
 
-It is important to commit and push your work regularly. Throughout future workshops you will see the icons  `r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` as a reminder to go through the above commit/push steps.
+It is important to commit and push your work regularly. Throughout future workshops you will see the icons  `r emoji::emoji("white_check_mark")` `r emoji::emoji("arrow_up")` as a reminder to go through the above commit/push steps.
 
 
 
@@ -162,7 +170,7 @@ R contains a list of over 600 pre-defined colours. You can see see the full list
 
 That's the end of this lab! 
 
-`r emo::ji("white_check_mark")` `r emo::ji("arrow_up")` Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files (that is, make sure every file has a tick next to it) so that your Git pane is cleared up afterwards.
+`r emoji::emoji("white_check_mark")` `r emoji::emoji("arrow_up")` Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files (that is, make sure every file has a tick next to it) so that your Git pane is cleared up afterwards.
 
 Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time.
 
