@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.29/header-attrs.js"></script>
-    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.3.0/panelset.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -142,13 +142,13 @@ Is this version tidy?
 .panel-name[Code]
 
 
-``` r
+```r
 library(tidyverse)
 ```
 
 .pull-left[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height, mass)
 ```
@@ -156,7 +156,7 @@ starwars %&gt;%
 
 .pull-right[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -207,12 +207,12 @@ class: middle
 ]
 
 
-``` r
+```r
 &lt;function_name&gt;(&lt;dataset_name&gt;, ...)
 ```
 
 
-``` r
+```r
 help(select)
 ```
 ]
@@ -223,7 +223,7 @@ help(select)
 
 .pull-left[
 
-``` r
+```r
 select(starwars, name, height, mass)
 ```
 
@@ -247,7 +247,7 @@ select(starwars, name, height, mass)
 
 .pull-right[
 
-``` r
+```r
 select(starwars, -name)
 ```
 
@@ -281,7 +281,7 @@ select(starwars, -name)
 
 .pull-left[
 
-``` r
+```r
 select(starwars, ends_with("color"))
 ```
 
@@ -328,7 +328,7 @@ See the help page for more info on these functions.
 .pull-left[
 Ascending order:
 
-``` r
+```r
 arrange(starwars, mass)
 ```
 
@@ -350,7 +350,7 @@ arrange(starwars, mass)
 .pull-right[
 Descending order:
 
-``` r
+```r
 arrange(starwars, desc(mass))
 ```
 
@@ -376,7 +376,7 @@ arrange(starwars, desc(mass))
 
 .pull-left[
 
-``` r
+```r
 slice(starwars, 1:4)
 ```
 
@@ -399,7 +399,7 @@ slice(starwars, 1:4)
 
 .pull-right[
 
-``` r
+```r
 slice(starwars, c(2,4,6,8))
 ```
 
@@ -424,7 +424,7 @@ slice(starwars, c(2,4,6,8))
 ## `filter` for the droids
 
 
-``` r
+```r
 filter(starwars, species == "Droid")
 ```
 
@@ -470,7 +470,7 @@ filter(starwars, species == "Droid")
 | `!x`    | Logical NOT operator  | `!TRUE `       | `FALSE` |
 
 
-``` r
+```r
 filter(starwars, species == "Droid" &amp; height &lt; 100)
 ```
 
@@ -481,7 +481,7 @@ filter(starwars, species == "Droid" &amp; height &lt; 100)
 
 .pull-left[
 
-``` r
+```r
 mutate(starwars, 
        bmi = 10000 * mass / height^2,
        species_grp = 
@@ -527,7 +527,7 @@ mutate(starwars,
 
 .pull-left[
 
-``` r
+```r
 count(starwars, eye_color, sort = TRUE)
 ```
 
@@ -561,7 +561,7 @@ count(starwars, eye_color, sort = TRUE)
 .pull-left[
 ✅ Informative variable name
 
-``` r
+```r
 summarise(starwars, avg_ht = mean(height))
 ```
 
@@ -574,7 +574,7 @@ summarise(starwars, avg_ht = mean(height))
 
 
 
-``` r
+```r
 summarise(starwars, 
           min_ht = min(height),
           avg_ht = mean(height),
@@ -596,7 +596,7 @@ summarise(starwars,
 .pull-right[
 ❌ Bad/sloppy variable name
 
-``` r
+```r
 summarise(starwars, mean(height))
 ```
 
@@ -634,7 +634,7 @@ class: middle
 **Method 1**: Nesting
 
 
-``` r
+```r
 summarise( 
   filter( 
     starwars, 
@@ -652,7 +652,7 @@ summarise(
 **Method 2**: Assign to Memory
 
 
-``` r
+```r
 starwars_humans &lt;-  
   filter(starwars, 
          species == "Human")
@@ -692,7 +692,7 @@ The pipe operator is implemented in the package **magrittr**, though we don't ne
 .pull-right[
 
 
-``` r
+```r
 data %&gt;% 
   select(variable1, variable2) %&gt;%
   filter(variable1 &lt;= variable2)
@@ -720,7 +720,7 @@ data %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 *starwars
 ```
 
@@ -760,7 +760,7 @@ data %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
 * select(species, height)
 ```
@@ -798,7 +798,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
 * mutate(species_group = case_when(
@@ -841,7 +841,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -887,7 +887,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -926,7 +926,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -969,7 +969,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -1014,7 +1014,7 @@ starwars %&gt;%
 .pull-right[
 .small[
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -1053,14 +1053,16 @@ starwars %&gt;%
 - Be aware of how `%&gt;%` and `+` are used differently!
 
 - They can be combined for certain tasks! But we are not allowed to use them interchangeably. 
+
+- Ps. R 4.1.0 introduced a native pipe operator, `|&gt;`. The behaviour of the native pipe is by and large the same as that of the `%&gt;%` pipe provided by the magrittr package.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

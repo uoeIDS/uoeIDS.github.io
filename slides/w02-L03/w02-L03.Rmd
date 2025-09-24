@@ -774,3 +774,5 @@ starwars %>%
 - Be aware of how `%>%` and `+` are used differently!
 
 - They can be combined for certain tasks! But we are not allowed to use them interchangeably. 
+
+- Ps. R 4.1.0 introduced a native pipe operator, `|>`. The behaviour of the native pipe is by and large the same as that of the `%>%` pipe provided by the magrittr package.
