@@ -1,0 +1,238 @@
+name,code,population
+Burundi,BDI,11695.779
+Comoros,COM,783.646
+Djibouti,DJI,1065.644
+Eritrea,ERI,3473.983
+Ethiopia,ETH,112602.827
+Kenya,KEN,50442.689
+Madagascar,MDG,27187.137
+Malawi,MWI,18613.791
+Mauritius,MUS,1295.598
+Mayotte,MYT,288.628
+Mozambique,MOZ,29850.438
+Reunion,REU,945.321
+Rwanda,RWA,12682.725
+Seychelles,SYC,103.739
+Somalia,SOM,15689.74
+South Sudan,SSD,10349.891
+Uganda,UGA,42212.297
+United Republic of Tanzania,TZA,58973.192
+Zambia,ZMB,18106.035
+Zimbabwe,ZWE,15203.989
+Angola,AGO,31808.179
+Cameroon,CMR,25427.553
+Central African Republic,CAF,5146.623
+Chad,TCD,15874.547
+Congo,COG,5506.177
+Democratic Republic of the Congo,COD,88481.831
+Equatorial Guinea,GNQ,1527.688
+Gabon,GAB,2217.576
+Sao Tome and Principe,STP,212.976
+Algeria,DZA,42319.75
+Egypt,EGY,104698.623
+Libya,LBY,6526.148
+Morocco,MAR,36119.972
+Sudan,SDN,42636.118
+Tunisia,TUN,11992.376
+Western Sahara,ESH,538.507
+Botswana,BWA,2475.862
+Eswatini,SWZ,1165.004
+Lesotho,LSO,2211.799
+Namibia,NAM,2426.212
+South Africa,ZAF,57707.967
+Benin,BEN,12114.069
+Burkina Faso,BFA,20671.385
+Cabo Verde,CPV,574.128
+Cote d'Ivoire,CIV,25817.528
+Gambia,GMB,2476.718
+Ghana,GHA,31195.334
+Guinea,GIN,12713.491
+Guinea-Bissau,GNB,1947.61
+Liberia,LBR,4936.387
+Mali,MLI,20248.067
+Mauritania,MRT,4326.764
+Niger,NER,23005.096
+Nigeria,NGA,200828.388
+Saint Helena,SHN,5.457
+Senegal,SEN,15786.096
+Sierra Leone,SLE,7953.448
+Togo,TGO,8143.953
+Kazakhstan,KAZ,18647.459
+Kyrgyzstan,KGZ,6274.956
+Tajikistan,TJK,9231.189
+Turkmenistan,TKM,6112.474
+Uzbekistan,UZB,32710.433
+China,CHN,1419730.043
+"China, Hong Kong SAR",HKG,7490.336
+"China, Macao SAR",MAC,657.286
+"China, Taiwan Province of China",TWN,23754.579
+Dem. People's Republic of Korea,PRK,25697.648
+Japan,JPN,126040.583
+Mongolia,MNG,3198.396
+Republic of Korea,KOR,51749.531
+Afghanistan,AFG,37212.97
+Bangladesh,BGD,164605.451
+Bhutan,BTN,764.914
+India,IND,1376257.714
+Iran (Islamic Republic of),IRN,86138.242
+Maldives,MDV,498.126
+Nepal,NPL,28665.764
+Pakistan,PAK,221473.699
+Sri Lanka,LKA,21616.166
+Brunei Darussalam,BRN,436.204
+Cambodia,KHM,16119.212
+Indonesia,IDN,268339.908
+Lao People's Democratic Republic,LAO,7158.453
+Malaysia,MYS,32604.401
+Myanmar,MMR,52852.453
+Philippines,PHL,109473.986
+Singapore,SGP,5839.291
+Thailand,THA,71226.152
+Timor-Leste,TLS,1271.121
+Viet Nam,VNM,95349.838
+Armenia,ARM,2828.707
+Azerbaijan,AZE,10191.978
+Bahrain,BHR,1494.344
+Cyprus,CYP,1223.895
+Georgia,GEO,3772.438
+Iraq,IRQ,41084.09
+Israel,ISR,8530.245
+Jordan,JOR,10580.29
+Kuwait,KWT,4413.838
+Lebanon,LBN,5869.291
+Oman,OMN,4616.4
+Qatar,QAT,2785.84
+Saudi Arabia,SAU,35424.752
+State of Palestine,PSE,4857.564
+Syrian Arab Republic,SYR,19710.46
+TÅurkiye,TUR,83151.687
+United Arab Emirates,ARE,9175.764
+Yemen,YEM,31166.253
+Belarus,BLR,9686.898
+Bulgaria,BGR,7084.829
+Czechia,CZE,10535.831
+Hungary,HUN,9773.471
+Poland,POL,38509.236
+Republic of Moldova,MDA,3123.958
+Romania,ROU,19558.692
+Russian Federation,RUS,145722.91
+Slovakia,SVK,5450.296
+Ukraine,UKR,44331.496
+Denmark,DNK,5780.978
+Estonia,EST,1324.991
+Faroe Islands,FRO,51.314
+Finland,FIN,5517.858
+Guernsey,GGY,62.094
+Iceland,ISL,357.209
+Ireland,IRL,4866.964
+Isle of Man,IMN,83.868
+Jersey,JEY,106.417
+Latvia,LVA,1925.867
+Lithuania,LTU,2862.266
+Norway,NOR,5328.602
+Sweden,SWE,10214.429
+United Kingdom,GBR,66606.144
+Albania,ALB,2875.637
+Andorra,AND,75.666
+Bosnia and Herzegovina,BIH,3380.449
+Croatia,HRV,4144.864
+Gibraltar,GIB,32.668
+Greece,GRC,10604.702
+Holy See,VAT,0.531
+Italy,ITA,59815.966
+Kosovo (under UNSC res. 1244),XKX,1698.58
+Malta,MLT,497.674
+Montenegro,MNE,630.902
+North Macedonia,MKD,2114.328
+Portugal,PRT,10281.447
+San Marino,SMR,34.163
+Serbia,SRB,7418.048
+Slovenia,SVN,2109.551
+Spain,ESP,46932.79
+Austria,AUT,8858.773
+Belgium,BEL,11479.863
+France,FRA,64341.757
+Germany,DEU,83028.627
+Liechtenstein,LIE,38.335
+Luxembourg,LUX,613.867
+Monaco,MCO,37.035
+Netherlands,NLD,17324.246
+Switzerland,CHE,8544.746
+Anguilla,AIA,15.264
+Antigua and Barbuda,ATG,91.856
+Aruba,ABW,106.217
+Bahamas,BHS,403.335
+Barbados,BRB,279.932
+"Bonaire, Sint Eustatius and Saba",BES,25.278
+British Virgin Islands,VGB,30.46
+Cayman Islands,CYM,65.526
+Cuba,CUB,11324.157
+Curacao,CUW,197.609
+Dominica,DMA,71.092
+Dominican Republic,DOM,10824.418
+Grenada,GRD,122.288
+Guadeloupe,GLP,395.871
+Haiti,HTI,11086.368
+Jamaica,JAM,2813.073
+Martinique,MTQ,373.538
+Montserrat,MSR,4.454
+Puerto Rico,PRI,3305.555
+Saint Barthelemy,BLM,10.368
+Saint Kitts and Nevis,KNA,47.742
+Saint Lucia,LCA,178.245
+Saint Martin (French part),MAF,33.393
+Saint Vincent and the Grenadines,VCT,105.135
+Sint Maarten (Dutch part),SXM,42.633
+Trinidad and Tobago,TTO,1526.01
+Turks and Caicos Islands,TCA,42.306
+United States Virgin Islands,VIR,101.11
+Belize,BLZ,385.764
+Costa Rica,CRI,5063.704
+El Salvador,SLV,6279.512
+Guatemala,GTM,16981.503
+Honduras,HND,9875.868
+Mexico,MEX,124560.16
+Nicaragua,NIC,6618.143
+Panama,PAN,4199.523
+Argentina,ARG,44582.599
+Bolivia (Plurinational State of),BOL,11692.283
+Brazil,BRA,211000.821
+Chile,CHL,18872.283
+Colombia,COL,49757.785
+Ecuador,ECU,17200.318
+Falkland Islands (Malvinas),FLK,3.684
+French Guiana,GUF,280.335
+Guyana,GUY,805.664
+Paraguay,PRY,6487.014
+Peru,PER,32559.44
+Suriname,SUR,596.796
+Uruguay,URY,3428.546
+Venezuela (Bolivarian Republic of),VEN,29314.535
+Bermuda,BMU,63.696
+Canada,CAN,37286.937
+Greenland,GRL,55.927
+Saint Pierre and Miquelon,SPM,5.932
+United States of America,USA,333251.103
+Australia,AUS,25170.161
+New Zealand,NZL,4891.572
+Fiji,FJI,918.838
+New Caledonia,NCL,285.129
+Papua New Guinea,PNG,9436.153
+Solomon Islands,SLB,667.089
+Vanuatu,VUT,300.837
+Guam,GUM,168.672
+Kiribati,KIR,123.226
+Marshall Islands,MHL,45.376
+Micronesia (Fed. States of),FSM,111.168
+Nauru,NRU,12.047
+Northern Mariana Islands,MNP,50.086
+Palau,PLW,17.886
+American Samoa,ASM,47.887
+Cook Islands,COK,17.179
+French Polynesia,PYF,298.693
+Niue,NIU,1.899
+Samoa,WSM,210.752
+Tokelau,TKL,1.688
+Tonga,TON,105.028
+Tuvalu,TUV,10.914
+Wallis and Futuna Islands,WLF,11.761
