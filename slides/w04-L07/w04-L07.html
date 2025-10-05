@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Under Construction!!! (w04-L07)</title>
+    <title>Quantifying uncertainty</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -13,7 +17,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Under Construction!!! (w04-L07)
+# Quantifying uncertainty
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -22,26 +26,803 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br>
+### <br> 2025/2026
 ]
 
 ---
 
 
-# Under Construction!!! (w04-L07)
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="img/pexels-philipp-silbernagl-962889.jpg" alt="Photo by Philipp Silbernagl on Pexels" width="30%" /&gt;
-&lt;p class="caption"&gt;Photo by Philipp Silbernagl on Pexels&lt;/p&gt;
-&lt;/div&gt;
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+---
+## Topics
+
+- Why is quantification of uncertainty important?
+- Confidence intervals
+- Bootstrapping for confidence intervals
+- Bootstrapping with Tidymodels
+- Precision vs Accuracy
+
+---
+
+class: middle
+
+# Motivation
+
+---
+
+## Data: Rent in Edinburgh
+
+.question[
+Take a guess! How much did a typical 3 BR flat in Edinburgh rent for in 2020?
+]
+
+--
+
+Fifteen 3 BR flats in Edinburgh were randomly selected on rightmove.co.uk.
+
+``` r
+library(tidyverse)
+edi_3br &lt;- read_csv2("data/edi-3br.csv") # ; separated
+```
+
+.small[
+
+```
+## # A tibble: 15 × 4
+##   flat_id  rent title                       address              
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt;                
+## 1 flat_01   825 3 bedroom apartment to rent Burnhead Grove, Edin…
+## 2 flat_02  2400 3 bedroom flat to rent      Simpson Loan, Quarte…
+## 3 flat_03  1900 3 bedroom flat to rent      FETTES ROW, NEW TOWN…
+## 4 flat_04  1500 3 bedroom apartment to rent Eyre Crescent, Edinb…
+## 5 flat_05  3250 3 bedroom flat to rent      Walker Street, Edinb…
+## 6 flat_06  2145 3 bedroom flat to rent      George Street, City …
+## # ℹ 9 more rows
+```
+]
+
+---
+
+## Observed sample
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Observed sample
+
+Sample mean ≈ £1895.
+
+&lt;br&gt;
+
+&lt;img src="img/rent-bootsamp.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+.hand[
+.light-blue[
+Is the mean price of all 3 BR flats in Edinburgh exactly £1895??
+]
+]
+
+
+
+---
+
+class: middle
+
+# Inference
+
+---
+
+## Statistical inference 
+
+... is the process of using sample data to make conclusions about the underlying population the sample came from
+
+&lt;img src="img/photo-1571942676516-bcab84649e44.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Estimation
+
+So far we have done some estimation (mean, median, proportion, etc.), i.e.
+- used data from samples to calculate sample statistics
+- which can then be used as estimates for population parameters
+
+---
+
+.question[
+If you want to catch a fish, do you prefer a spear or a net?
+]
+
+&lt;br&gt;
+
+.pull-left[
+&lt;img src="img/spear.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="img/net.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.question[
+If you want to estimate a population parameter, do you prefer to report a range of values the parameter might be in, or a single value?
+]
+
+&lt;br&gt;
+
+--
+
+- If we report a point estimate, we probably won’t hit the exact population parameter
+- If we report a range of plausible values we have a good shot at capturing the parameter
+
+---
+
+.center[
+&lt;img src="img/gallup_nhs.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.footnote[
+.midi[
+Source: Gallup. [Britons' Satisfaction With Healthcare, Transportation Falters](https://news.gallup.com/poll/505682/britons-satisfaction-healthcare-transportation-falters.aspx), 23/11/23.
+]
+]
+
+---
+
+class: middle
+
+# Confidence intervals
+
+---
+
+## Confidence intervals
+
+A plausible range of values for the population parameter is a **confidence interval**.
+
+--
+- In order to construct a confidence interval we need to quantify the variability of our sample statistic
+
+--
+- For example, if we want to construct a confidence interval for a population mean, we need to come up with a plausible range of values around our observed sample mean
+
+--
+- This range will depend on how precise and how accurate our sample mean is as an estimate of the population mean
+
+--
+- Quantifying this requires a measurement of how much we would expect the sample population to vary from sample to sample
+
+---
+
+.question[
+Suppose we split the class in half down the middle of the classroom and ask each student their heights. Then, we calculate the mean height of students on each side of the classroom. Would you expect these two means to be exactly equal, close but not equal, or wildly different?
+]
+
+--
+
+&lt;br&gt;
+
+.question[
+Suppose you randomly sample 50 students and 5 of them are left handed. If you were to take another random sample of 50 students, how many would you expect to be left handed? Would you be surprised if only 3 of them were left handed? Would you be surprised if 40 of them were left handed?
+]
+
+---
+
+## Quantifying the variability of estimators
+
+We can quantify the variability of sample statistics using
+
+- simulation: via bootstrapping (now)
+
+or
+
+- theory: via Central Limit Theorem (future stat courses!)
+
+---
+
+class: middle
+
+# Bootstrapping
+
+---
+
+## Bootstrapping
+
+.pull-left-wide[
+- _"pulling oneself up by one’s bootstraps"_: accomplishing an impossible task without any outside help
+- **Impossible task:** estimating a population parameter using data from only the given sample
+- **Note:** Notion of saying something about a population parameter using only information from an observed sample is the crux of statistical inference
+]
+.pull-right-narrow[
+.huge[
+🥾
+]
+]
+
+---
+
+## Observed sample
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Observed sample
+
+&lt;img src="img/rent-bootsamp.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap population
+
+
+
+Generated assuming there are more flats like the ones in the observed sample...
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-12-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap population
+
+Generated assuming there are more flats like the ones in the observed sample... 
+
+Population mean = ??
+
+&lt;img src="img/rent-bootpop.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrapping scheme
+
+1. Take a bootstrap sample - a random sample taken **with replacement** from the original sample, of the same size as the original sample
+
+2. Calculate the bootstrap statistic - a statistic such as mean, median, proportion, etc. computed on the bootstrap samples
+
+3. Repeat steps (1) and (2) many times to create a bootstrap distribution - a distribution of bootstrap statistics
+
+4. Calculate the bounds of the XX% confidence interval as the middle XX% of the bootstrap distribution
+
+---
+
+
+
+
+## Bootstrap sample 1
+
+
+``` r
+edi_3br_boot_1 &lt;- edi_3br %&gt;%
+  slice_sample(n = 15, replace = TRUE)
+```
+
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 2
+
+
+
+``` r
+edi_3br_boot_2 &lt;- edi_3br %&gt;%
+  slice_sample(n = 15, replace = TRUE)
+```
+
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 3
+
+
+``` r
+edi_3br_boot_3 &lt;- edi_3br %&gt;%
+  slice_sample(n = 15, replace = TRUE)
+```
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-20-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap sample 4
+
+
+``` r
+edi_3br_boot_4 &lt;- edi_3br %&gt;%
+  slice_sample(n = 15, replace = TRUE)
+```
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-22-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap samples 1 - 4
+
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-23-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+
+.hand[
+.light-blue[
+we could keep going...
+]
+]
+
+---
+
+## Many many samples...
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-24-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Distribution of bootstrap means
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-25-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## 95% confidence interval
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-26-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpreting the estimate, with uncertainty
+
+&lt;br&gt;
+
+*We are 95% confident that the mean rent of all three bedroom flats is between £1603 and £2213.*
+
+---
+
+class: middle
+
+# Bootstrapping with tidymodels
+
+---
+
+## Generate bootstrap means
+
+
+``` r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+```
+
+---
+
+## Generate bootstrap means
+
+
+``` r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap")
+```
+
+---
+
+## Generate bootstrap means
+
+
+``` r
+edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent)
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap")
+  # calculate the mean of each bootstrap sample
+  calculate(stat = "mean")
+```
+
+---
+
+## Generate bootstrap means
+
+
+
+
+
+``` r
+# save resulting bootstrap distribution
+boot_df &lt;- edi_3br %&gt;%
+  # specify the variable of interest
+  specify(response = rent) %&gt;%
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") %&gt;%
+  # calculate the mean of each bootstrap sample
+  calculate(stat = "mean")
+```
+
+---
+
+## The bootstrap sample
+
+.question[
+How many observations are there in `boot_df`? What does each observation represent?
+]
+
+
+``` r
+boot_df
+```
+
+```
+## Response: rent (numeric)
+## # A tibble: 15,000 × 2
+##   replicate  stat
+##       &lt;int&gt; &lt;dbl&gt;
+## 1         1 1793.
+## 2         2 1938.
+## 3         3 2175 
+## 4         4 2159.
+## 5         5 2084 
+## 6         6 1761 
+## # ℹ 14,994 more rows
+```
+
+---
+
+## Visualize the bootstrap distribution
+
+
+``` r
+ggplot(data = boot_df, mapping = aes(x = stat)) +
+  geom_histogram(binwidth = 100) +
+  labs(title = "Bootstrap distribution of means")
+```
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-33-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Calculate the confidence interval
+
+A 95% confidence interval is bounded by the middle 95% of the bootstrap distribution.
+
+
+``` r
+boot_df %&gt;%
+  summarize(lower = quantile(stat, 0.025),
+            upper = quantile(stat, 0.975))
+```
+
+```
+## # A tibble: 1 × 2
+##   lower upper
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 1603. 2213.
+```
+
+---
+
+## Visualize the confidence interval
+
+
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-36-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpret the confidence interval
+
+.question[
+The 95% confidence interval for the mean rent of three bedroom flats in Edinburgh was calculated as (1603, 2213). Which of the following is the correct interpretation of this interval?
+
+**(a)** 95% of the time the mean rent of three bedroom flats in this sample is between £1603 and £2213.
+
+**(b)** 95% of all three bedroom flats in Edinburgh have rents between £1603 and £2213.
+
+**(c)** We are 95% confident that the mean rent of all three bedroom flats is between £1603 and £2213.
+
+**(d)** We are 95% confident that the mean rent of three bedroom flats in this sample is between £1603 and £2213.
+]
+
+---
+
+class: middle
+
+# Comparison of drug efficiency
+
+---
+
+## Data: Diabetes drug efficiency
+
+This data comes from a clinical trial, where 10-17 year olds patients with type 2 diabetes were randomly assigned to receive either a new drug (metformin with rosiglitazone) or the standard drug (metformin).
+The `outcome` measures whether there patient still needs insulin (`failure`) or met a basic positive outcome bar (`success`).
+
+
+
+
+
+``` r
+head(diabetes2, n = 3)
+```
+
+```
+## # A tibble: 3 × 2
+##   treatment outcome
+##   &lt;fct&gt;     &lt;fct&gt;  
+## 1 met       success
+## 2 rosi      failure
+## 3 rosi      success
+```
+
+
+
+.footnote[
+.small[
+The data actually includes an additional treatment (a lifestyle intervention), but we will ignore it for simplicity.
+The data come from the openintro package: [`diabetes2`](http://openintrostat.github.io/openintro/reference/diabetes2.html).
+]
+]
+
+---
+
+## Is one drug better than the other?
+
+
+``` r
+diabetes2 %&gt;%
+  mutate(outcome = ifelse(outcome == "success", 1, 0)) %&gt;%
+  group_by(treatment) %&gt;%
+  summarise(prop_success = mean(outcome))
+```
+
+```
+## # A tibble: 2 × 2
+##   treatment prop_success
+##   &lt;fct&gt;            &lt;dbl&gt;
+## 1 met              0.483
+## 2 rosi             0.614
+```
+
+.question[
+The new drug seems to be better, but is the difference just due to random change?
+]
+
+---
+
+## Is one drug better than the other?
+
+We can frame the same question by looking at the difference in proportions of success:
+
+
+```
+## [1] 0.1309753
+```
+
+.question[
+The difference is not zero, but is this due to random chance? What is the uncertainty around this estimate? 
+]
+
+--
+
+Let's calculate a confidence interval.
+
+---
+
+## Bootstrap for difference in proportions
+
+
+``` r
+diabetes2 %&gt;%
+  # specify the variable of interest as a "formula"
+  # specify which factor level corresponds to success
+  specify(formula = outcome ~ treatment, success = "success")  
+```
+
+---
+
+## Bootstrap for difference in proportions
+
+
+``` r
+diabetes2 %&gt;%
+  # specify the variable of interest as a "formula"
+  # specify which factor level corresponds to success
+  specify(formula = outcome ~ treatment, success = "success") %&gt;%   
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") 
+```
+
+---
+
+## Bootstrap for difference in proportions
+
+
+``` r
+diabetes2 %&gt;%
+  # specify the variable of interest as a "formula"
+  # specify which factor level corresponds to success
+  specify(formula = outcome ~ treatment, success = "success") %&gt;%   
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") %&gt;%
+  # calculate the difference in proportions of success
+  calculate(stat = "diff in props", order = c("rosi", "met"))  
+```
+
+---
+
+## Bootstrap for difference in proportions
+
+
+
+
+
+``` r
+# save resulting bootstrap distribution
+bootstrap_dist &lt;-
+  diabetes2 %&gt;%
+  # specify the variable of interest as a "formula"
+  # specify which factor level corresponds to success
+  specify(formula = outcome ~ treatment, success = "success") %&gt;%   
+  # generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") %&gt;%
+  # calculate the difference in proportions of success
+  calculate(stat = "diff in props", order = c("rosi", "met"))  
+```
+
+---
+
+## Bootstrap distribution of difference in proportions
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-46-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Bootstrap confidence interval
+
+
+``` r
+bootstrap_dist %&gt;%
+  summarize(lower = quantile(stat, 0.025),
+            upper = quantile(stat, 0.975))
+```
+
+```
+## # A tibble: 1 × 2
+##    lower upper
+##    &lt;dbl&gt; &lt;dbl&gt;
+## 1 0.0403 0.220
+```
+
+---
+
+## Bootstrap confidence interval
+
+
+
+The confidence interval for the difference in proportions is (0.04, 0.22).
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-49-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpretation
+
+We can say that we are 95% confident that the proportion of patients who respond positively to the new drug is between 0.04 and 0.22 higher than the proportion of patients who respond positively to the standard drug.
+
+--
+
+This also means that we are 95% confident that the difference in proportion is different from 0, i.e. that the two drugs are not equally effective.
+
+---
+
+class: middle
+
+# Accuracy vs. precision
+
+---
+
+## Confidence level
+
+**We are 95% confident that ...**
+
+- Suppose we took many samples from the original population and built a 95% confidence interval based on each sample.
+- Then about 95% of those intervals would contain the true population parameter.
+
+--
+
+&lt;img src="img/ci-1.gif" width="30%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+.small[
+Source: Minitab blog [Understanding Hypothesis Tests: Confidence Intervals and Confidence Levels](https://blog.minitab.com/en/adventures-in-statistics-2/understanding-hypothesis-tests-confidence-intervals-and-confidence-levels), 22 Nov 2023.
+]
+]
+
+---
+
+## Commonly used confidence levels
+
+.question[
+Which line (orange dash/dot, blue dash, green dot) represents which confidence level?
+]
+
+&lt;img src="w04-L07_files/figure-html/unnamed-chunk-51-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Precision vs. accuracy
+
+.question[
+If we want to be very certain that we capture the population parameter, should we use a wider or a narrower interval? What drawbacks are associated with using a wider interval?
+]
+
+--
+
+&lt;img src="img/garfield.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.question[
+How can we get best of both worlds -- high precision and high accuracy?
+]
+
+---
+
+## Changing confidence level
+
+.question[
+How would you modify the following code to calculate a 90% confidence interval?
+How would you modify it for a 99% confidence interval?
+]
+
+
+``` r
+edi_3br %&gt;%
+  specify(response = rent) %&gt;%
+  generate(reps = 15000, type = "bootstrap") %&gt;%
+  calculate(stat = "mean") %&gt;%
+  summarize(lower = quantile(stat, 0.025),
+            upper = quantile(stat, 0.975))
+```
+
+---
+
+## Recap
+
+- Sample statistic `\(\ne\)` population parameter, but if the sample is good, it can be a good estimate
+- We report the estimate with a confidence interval, and the width of this interval depends on the variability of sample statistics from different samples from the population
+- Since we can't continue sampling from the population, we bootstrap from the one sample we have to estimate sampling variability
+- We can do this for any sample statistic:
+  - For a mean: `calculate(stat = "mean")`
+  - Learn about calculating bootstrap intervals for other statistics in the quiz
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightLines": true,
-"highlightStyle": "solarized-light",
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightLines": true,
+  "highlightStyle": "solarized-light",
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
