@@ -19,7 +19,9 @@ output:
 library(tidyverse)
 # library(magick)
 library(dplyr)
-library(tidymodels)
+# library(tidymodels)
+library(infer)
+library(rsample)
 # library(ggtext)
 library(knitr)
 # library(kableExtra)
@@ -627,6 +629,7 @@ class: middle
 ## Generate bootstrap means
 
 ```{r eval=FALSE}
+library(infer)
 edi_3br %>%
   # specify the variable of interest
   specify(response = rent)
@@ -637,6 +640,7 @@ edi_3br %>%
 ## Generate bootstrap means
 
 ```{r eval=FALSE}
+library(infer)
 edi_3br %>%
   # specify the variable of interest
   specify(response = rent)
@@ -649,6 +653,7 @@ edi_3br %>%
 ## Generate bootstrap means
 
 ```{r eval=FALSE}
+library(infer)
 edi_3br %>%
   # specify the variable of interest
   specify(response = rent)
@@ -668,6 +673,7 @@ set.seed(834782)
 
 
 ```{r eval=FALSE}
+library(infer)
 # save resulting bootstrap distribution
 boot_df <- edi_3br %>%
   # specify the variable of interest
