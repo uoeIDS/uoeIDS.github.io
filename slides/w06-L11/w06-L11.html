@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Under Construction!!! (w06-L11)</title>
+    <title>Types of visualisations</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.3.0/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -13,7 +15,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Under Construction!!! (w06-L11)
+# Types of visualisations
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -22,26 +24,913 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br>
+### <br> 2025/2026
 ]
 
 ---
 
 
-# Under Construction!!! (w06-L11)
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="img/pexels-philipp-silbernagl-962889.jpg" alt="Photo by Philipp Silbernagl on Pexels" width="30%" /&gt;
-&lt;p class="caption"&gt;Photo by Philipp Silbernagl on Pexels&lt;/p&gt;
-&lt;/div&gt;
 
+
+class: middle
+
+# Understanding your data
+
+* There are many types of data visualisation, each designed with a particular purpose.
+* To determine which visualisation style is appropriate, consider:
+
+  1. What are the properties of variables?
+  2. How many variables to include in the data visualisation?
+  3. What aspect of the data do you want to explore, investigate and communicate?
+
+
+---
+
+## Types of variables
+
+- **Quantitative variables** are variables whose data are numerical values.
+  - **Discrete variables** describes count data, typically non-negative integer values. &lt;br /&gt;
+    &amp;emsp; Eg, Number of IDS students or number of election votes.
+  - **Continuous variables** are typically real-valued measurements, rounded to a specified number of decimal places or significant figures. &lt;br /&gt;
+    &amp;emsp; Eg, Penguin bill length, body mass and flipper length.
+
+
+- **Qualitative variable** are variables that are descriptive.
+  - **Categorical (factor) variables** usually identify one option from a small set of cases. &lt;br /&gt;
+    &amp;emsp; Eg, Penguin breeds (Adelie, Chinstrap or Gentoo).
+  - **Ordinal variables** are categorical variables that have a natural ordering. &lt;br /&gt;
+    &amp;emsp; Degree grades: First, upper-second, lower-second and third.
+
+
+---
+
+## Number of variables involved
+
+How many variables do you want to use in your data visualisation?
+
+- One variable (Univariate data analysis)
+  &lt;!-- - Investigating a single variable --&gt;
+  - What is the _location_, _spread_ and _shape_ of the data?
+  - Types of visualisations:**histogram**, **box plot**, **bar chart**, etc.
+- Two variables (Bivariate data analysis)
+  - Investigating the relationship between two variables
+  - Positive/negative correlation? Linear or non-linear relationship?
+  - Types of visualisations: **scatter plot**, **box plots**, **segmented bar plot**, etc.
+- Three or more variables (Multivariate data analysis)
+  - Investigating the relationship between many variables simultaneously.
+  - Does the structure of the relationship between two variables change depending on the value of a third?
+  - Use of **colour**, **style** and **faceting** - be creative!
+  - YouTube: Hans Rosling, The Joy of Stats, BBC - [<svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:red;overflow:visible;position:relative;"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>](https://www.youtube.com/watch?v=jbkSRLYSojo)
+
+---
+
+## ggplot2 package
+
+.pull-left-wide[ 
+- **ggplot2** is tidyverse's data visualization package 
+- All visualisations begin with the `ggplot()` command
+- The plot is then constructed by _adding_ (`+`) layers
+]
+.pull-right-narrow[
+&lt;img src="img/ggplot2-logo.png" width="50%" /&gt;
+] 
+
+
+``` r
+ggplot(data = [dataset],                                         # Data
+       mapping = aes(x = [x-variable], y = [y-variable])) +      # Aesthetics
+   geom_[*]() +                                                  # Geometries
+   [other options]                                               # ...
+```
+
+- Today we will examine many of the commonly used features.
+- More information can be found on the [ggplot2 cheat sheet](https://www.rstudio.com/resources/cheatsheets/)
+
+
+---
+
+## Motivating Data Set: Bats 🦇
+
+* Extracted from the [Atlantic Mammal Traits](https://esajournals.onlinelibrary.wiley.com/doi/10.1002/ecy.2106) survey on animal morphology.
+* Data contains information about 4334 Neotropical fruit bats (_Aribeus_) from South America between 2010-2017.
+
+
+``` r
+bat_data &lt;- read_csv("data/bats.csv")
+glimpse(bat_data)
+```
+
+```
+## Rows: 4,334
+## Columns: 6
+## $ species   &lt;chr&gt; "Artibeus cinereus", "Artibeus cinereus", "Artibeus cinereus…
+## $ body_mass &lt;dbl&gt; 12, 13, 11, 8, 13, 19, 12, 16, 11, 15, 18, 11, 11, 12, 14, 1…
+## $ forearm   &lt;dbl&gt; 41.0, 38.6, 39.1, 39.2, 39.0, 43.0, 40.0, 41.0, 41.0, 40.5, …
+## $ age       &lt;chr&gt; "adult", "adult", "adult", "adult", "adult", "adult", "juven…
+## $ sex       &lt;chr&gt; "male", "female", "male", "male", "male", "female", "male", …
+## $ year      &lt;dbl&gt; 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, …
+```
+
+---
+
+## Data Dictionary
+
+&lt;br&gt;
+
+&lt;br&gt;
+
+| Variable    | Description | Type |
+|:------------|:------------|:-----|
+| `species`   | Name of bat species | Categorical (5 cases) |
+| `body_mass` | Body mass (in grams)| Numerical, continuous |
+| `forearm`   | Forearm length (in mm) | Numerical, continuous |
+| `age`       | Adult or Juvenile | Categorical (2 cases) |
+| `sex`       | Female or Male | Categorical (2 cases) |
+| `year`      | Year of measurement | Numerical, discrete |
+
+
+---
+
+class: middle
+
+# Visualising numerical data
+
+---
+
+class: middle
+
+# Histogram - `geom_histogram()`
+
+---
+
+
+## Histogram
+
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram()
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-3-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+* Message specifies the use of default/assumed values
+
+---
+
+
+## Number of bins
+
+.panelset[
+
+
+
+.panel[.panel-name[Recommended]
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+* geom_histogram(bins = 30)
+```
+]
+]
+
+
+.panel[.panel-name[More bins]
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+* geom_histogram(bins = 80)
+```
+]
+
+]
+
+
+.panel[.panel-name[Fewer bins]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-6-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+* geom_histogram(bins = 10)
+```
+]
+]
+]
+
+---
+
+## Customizing options
+
+.panelset[
+
+.panel[.panel-name[Labels]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-7-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+* labs(
+*   x = "Body mass (in grams)",
+*   y = "Frequency",
+*   title = "Body mass of fruit bats",
+*   subtitle = "(2010-2017)"
+* )
+```
+]
+]
+
+
+
+.panel[.panel-name[Theme]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-8-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +   
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+  ) +
+* theme_bw()
+```
+
+* See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for more theme defaults.
+
+]
+]
+
+
+.panel[.panel-name[Colour]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-9-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(
+    bins = 30,
+*   fill = "darkcyan",
+*   colour = "darkblue"
+    ) +     
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+
+]
+]
+
+]
+
+---
+
+class: middle
+
+# Density plot - `geom_density()`
+
+---
+
+## Density plot
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-10-1.png" width="80%" /&gt;
+
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+* geom_density()
+```
+
+
+Construction:
+&lt;img src="w04-L08_files/figure-html/eg_den-1.png" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+
+
+
+
+---
+
+
+## Customizing options
+
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-11-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) + 
+  geom_density(
+    fill = "darkcyan"
+    ) +   
+  labs(
+    x = "Body mass (in grams)",
+    y = "Density",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+]
+
+---
+
+class: middle
+
+# Box plot - `geom_boxplot()`
+
+---
+
+## Box plot
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-12-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) + 
+* geom_boxplot( ) +
+  labs(
+    x = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+
+
+Construction:
+&lt;img src="w04-L08_files/figure-html/boxplot_description-1.png" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Customizing options
+
+.panelset[
+
+.panel[.panel-name[Orientation]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-13-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+*      mapping = aes(y = body_mass)) +
+  geom_boxplot( ) +   
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+]
+]
+
+
+
+.panel[.panel-name[Whisker Length]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-14-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(y = body_mass)) + 
+* geom_boxplot(coef = 1) + # default: 1.5
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)"
+    ) +
+  theme_bw()
+```
+
+
+]
+]
+
+
+.panel[.panel-name[More Styles]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-15-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(y = body_mass)) + 
+  geom_boxplot(coef = 1,
+*   fill = "darkcyan",
+*   colour = "darkblue",
+*   lwd = 1.5,          # line width scaling
+*   outlier.shape = 4,  # see below
+*   outlier.colour = "darkred") +
+  labs(
+    y = "Body mass (in grams)",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)" ) +
+  theme_bw()
+```
+&lt;img src="img/point_shapes.PNG" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+]
+]
+
+]
+
+---
+
+class: middle
+
+# Adding a categorical variable...
+
+---
+
+## ...via aesthetics
+
+.panelset[
+.panel[.panel-name[Histogram]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-17-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass,
+*        fill = species
+         )) +
+  geom_histogram(
+    bins = 30,
+*   position = "identity",
+*   alpha = 0.5  # opacity
+    ) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" ) 
+```
+]
+]
+
+.panel[.panel-name[Density]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-18-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass,
+*        fill = species
+         )) +
+  geom_density(
+*   alpha = 0.5
+    ) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Density",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" ) 
+```
+]
+]
+
+
+
+.panel[.panel-name[Box plot]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-19-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = body_mass, 
+*        y = species
+         )) +
+  geom_boxplot() +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Species",
+    title = "Body mass of fruit bats",
+    subtitle = "(2010-2017)" ) 
+```
+]
+]
+
+
+
+]
+
+---
+
+## ...via faceting
+
+
+.panelset[
+.panel[.panel-name[Wrap (same axes)]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-20-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" )  +
+* facet_wrap(~ species,
+*            ncol = 3)
+```
+]
+]
+
+.panel[.panel-name[Wrap (free axes)]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-21-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by species" )  +
+  facet_wrap(~ species, 
+             ncol = 3,
+*            scales = "free")
+```
+]
+]
+
+
+.panel[.panel-name[Grid]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-22-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(x = body_mass)) +
+  geom_histogram(bins = 30) +
+  labs(
+    x = "Body mass (in grams)",
+    y = "Frequency",
+    title = "Body mass of fruit bats,",
+    subtitle = "by age and sex" )  +
+* facet_grid(age ~ sex,
+*            scale = "free")
+```
+]
+]
+
+]
+
+
+---
+
+class: middle
+
+# Relationships numerical variables - `geom_point()` and `geom_bin_2d()`
+
+---
+
+## Scatterplot
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-23-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+*        x = forearm,
+*        y = body_mass
+         )) +
+* geom_point() +
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm &amp; Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+]
+
+---
+
+## Customise
+
+.panelset[
+
+.panel[.panel-name[Best fit line]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-24-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   
+         y = body_mass
+         )) +
+  geom_point() +  
+* geom_smooth(method = lm) +
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm &amp; Mass Relationship",
+    subtitle = "(2010-2017)" )  
+```
+]
+]
+
+
+.panel[.panel-name[Add variables via style]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-25-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   
+         y = body_mass,
+*        colour = species,
+*        shape = age
+         )) +
+  geom_point() +  
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm &amp; Mass Relationship,",
+    subtitle = "by species and age" )  
+```
+]
+]
+
+.panel[.panel-name[Zoom]
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-26-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes( 
+         x = forearm, y = body_mass, 
+         colour = species, shape = age)) +
+  geom_point() +  
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm &amp; Mass Relationship,",
+    subtitle = "by bat species and age" )  +
+* coord_cartesian(
+*   xlim = c(30, 50),
+*   ylim = c(0, 30))
+```
+]]
+
+]
+
+---
+
+## 2D histogram colour map
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-27-1.png" width="80%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(data = bat_data, 
+       mapping = aes( 
+         x = forearm, 
+         y = body_mass
+         )) +
+* geom_bin_2d() +
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm &amp; Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+]
+
+---
+
+class: middle
+
+# Bar plot - `geom_bar()`
+
+Visualizing qualitative/categorical data 
+
+---
+
+## Bar plot
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-28-1.png" width="80%" /&gt;
+
+]
+.pull-right[
+
+``` r
+ggplot(bat_data, aes(
+*   y = species  # y =&gt; Horizontal
+    )) +
+* geom_bar() +
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Bar plot of bat species",
+    subtitle = "(2010-2017)")
+```
+]
+---
+
+## Bar plot variations
+
+
+.panelset[
+.panel[.panel-name[Segmented]
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-29-1.png" width="80%" /&gt;
+]
+
+.pull-right[
+
+``` r
+ggplot(bat_data, aes(
+    y = species,  
+*   fill = age
+    )) +
+  geom_bar() +  
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Bar plot of bat species,",
+    subtitle = "segmented by age")
+```
+]]
+
+.panel[.panel-name[Proportions]
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-30-1.png" width="80%" /&gt;
+]
+
+.pull-right[
+
+``` r
+ggplot(bat_data, aes(
+    y = species,  
+    fill = age      
+    )) +
+* geom_bar(position = "fill") +
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Age proportion per bat species",
+    subtitle = "(2010-2017)")
+```
+]
+]
+
+
+.panel[.panel-name[Pie chart]
+
+.pull-left[
+&lt;img src="w04-L08_files/figure-html/unnamed-chunk-31-1.png" width="80%" /&gt;
+]
+
+.pull-right[
+
+``` r
+ggplot(bat_data, aes(
+*   x = "",
+*   fill = species
+    )) +
+* geom_bar(position = "fill") +
+* coord_polar("y", start = 0) +
+* theme_void() +
+  labs(
+    title = "Bat sepcies pie chart",
+    subtitle = "(2010-2017)")
+```
+]
+]
+
+]
+
+---
+
+
+&lt;!-- Add final discussion slide on 'there is no right image', emphasis on the communication message and the 4 respects --&gt;
+
+
+## Data visualisation gallery
+
+.pull-left[
+* `ggplot2` is used to create a wide variety of data visualisation styles.
+* It has many customisation tools to support your communication.
+* Use `ggplot2` manual pages (and online searches) to support your creation.
+
+
+* **But**, excessive customisation can be distracting.
+* Remember the 4 respects:
+  1. Respect the **people**
+  2. Respect the **data**
+  3. Respect the **mathematics**
+  4. Respect the **computers**
+
+]
+.pull-right[
+
+&lt;br&gt;
+
+&lt;img src="img/ggplot_plots_gallary.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightLines": true,
-"highlightStyle": "solarized-light",
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightLines": true,
+  "highlightStyle": "solarized-light",
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
