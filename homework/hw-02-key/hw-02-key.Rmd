@@ -1,5 +1,5 @@
 ---
-title: "hw-??-key"
+title: "hw-02-key"
 author: "Your Name (S000000)"
 date: "`r Sys.Date()`"
 output: html_document
@@ -10,8 +10,246 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-![Photo by Joshua Hoehne on Unsplash](img/joshua-hoehne-WPrTKRw8KRQ-unsplash.jpg)
+```{r}
+strava_runs <- read_csv("data/strava_runs.csv")
+```
+
+```{r}
+data_5k_10k <- strava_runs %>%
+  mutate(
+    event = case_when(
+      distance..m. > 4998 & distance..m. < 5015  ~ "5k",
+      distance..m. > 9998 & distance..m. < 10015 ~ "10k",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(event))
+```
 
 
-## Tut-tut! 
-You should not be looking for solutions to the homework assignment before the deadline has passed! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including dateline dates and the policy around late submission.
+## Exercise 1
+
+#### Question
+
+The code below produces a simple histogram of the average heart rate (in bpm) for male runners ("M"):
+
+```{r ex1}
+data_5k_10k %>% 
+  filter(gender == "M") %>%
+  filter(!is.na(average.heart.rate..bpm.)) %>%
+  ggplot(aes(x = average.heart.rate..bpm.)) + 
+  geom_histogram(bins = 20)
+```
+
+* Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the distribution of average heart rate among male runners? Calculate some simple summary statistics to support your comments.
+* Create a similar data visualisation for female runners. Describe the _shape_ of this histogram and discuss any similarities or differences between the male and female runners’ heart rate distributions.
+
+#### Answer
+
+###### 1(a)
+
+```{r ex1_summary}
+data_5k_10k %>%
+  filter(gender == "M") %>%
+  summarise(avg = mean(average.heart.rate..bpm., na.rm = TRUE),
+            med = median(average.heart.rate..bpm., na.rm = TRUE),
+            q25 = quantile(average.heart.rate..bpm., probs = 0.25, na.rm = TRUE),
+            q75 = quantile(average.heart.rate..bpm., probs = 0.75, na.rm = TRUE),
+            sd = sd(average.heart.rate..bpm., na.rm = TRUE),
+            min = min(average.heart.rate..bpm., na.rm = TRUE), 
+            max = max(average.heart.rate..bpm., na.rm = TRUE))
+```
+
+The histogram of average heart rate for male runners appears roughly _bell-shaped_ and approximately _symmetric_, with most runners having an average heart rate between about 137 and 160 bpm (which are the two _quartiles_ of the distribution), and a clear peak near 145 or 150 bpm. _Average_ and _median_ are approximately 148 bpm, further indicating symmetry. This shape suggests that the distribution of average heart rate among male runners follows an approximately normal distribution, with no strong skewness or outliers.
+
+To visually assess the approximate normal distribution, we could overlay a normal distribution curve on the histogram, but this is not required for this exercise.
+
+```{r}
+data_5k_10k %>% 
+  filter(gender == "M") %>%
+  filter(!is.na(average.heart.rate..bpm.)) %>%
+  ggplot(aes(x = average.heart.rate..bpm.)) + 
+  geom_histogram(aes(y = after_stat(density)),bins = 20)+
+  stat_function(fun = dnorm,
+                args = list(mean = 147.9, # using values estimated from summary
+                            sd = 17.2),   # using values estimated from summary
+                color = "red", linewidth = 1)
+```
+
+A smaller mode could be identified around 120 bpm, suggesting a small number of runners with lower average heart rates, but this is not a strong feature of the distribution.
+
+###### 1(b)
+
+```{r ex1_5Khist, warning = FALSE, out.width="80%"}
+data_5k_10k %>% 
+  filter(gender == "F") %>%
+  filter(!is.na(average.heart.rate..bpm.)) %>%
+  ggplot(aes(x = average.heart.rate..bpm.)) + 
+  geom_histogram(bins = 20)
+```
+
+The histogram of average heart rate among female runners shows a _bimodal_ distribution, with two noticeable _peaks_ — one around 145/150 bpm and another near 165 bpm. This suggests that there may be two subgroups of runs with different typical heart rate levels, possibly reflecting differences in fitness level, pacing, elevation, or race distance.
+
+The shape of the distribution is approximately _symmetric_, with _mean_ and _median_ near to 156 bpm. 
+The distribution extends roughly from 120 to 185 bpm, with one isolated low value around 120 bpm that may represent an outlier. The right tail appears slightly longer than the left, indicating a slight right skew, but the main feature is the presence of two modes rather than skewness alone.
+
+Compared to the distribution for male runners, the distribution is less spread out, with smaller _standard deviation_ and _range_ of data. Moreover, the average heart rate for female runners is 10bpm higher than the one for male runners. The main major difference however remains the shape of the distribution, with the male distribution being unimodal (bell-shaped) and the female distribution being bimodal (with two peaks).
+
+```{r ex1_summary_b}
+data_5k_10k %>%
+  filter(gender == "F") %>%
+  summarise(avg = mean(average.heart.rate..bpm., na.rm = TRUE),
+            med = median(average.heart.rate..bpm., na.rm = TRUE),
+            q25 = quantile(average.heart.rate..bpm., probs = 0.25, na.rm = TRUE),
+            q75 = quantile(average.heart.rate..bpm., probs = 0.75, na.rm = TRUE),
+            sd = sd(average.heart.rate..bpm., na.rm = TRUE),
+            min = min(average.heart.rate..bpm., na.rm = TRUE), 
+            max = max(average.heart.rate..bpm., na.rm = TRUE))
+```
+
+
+## Exercise 2
+
+#### Question
+
+Create a data visualisation based on the description.
+
+> Make a sequence of boxplots for the pace (in minutes per kilometer) achieved in 5K and 10K runs. The boxplots should be orientated vertically (i.e. side-by-side) based on the run's length (5K vs 10K). Furthermore, the data visualisation should consist of two panels for the two different genders the runners identify with, with shared axes. Finally, add appropriate text to the image in order to assist the reader in understanding the data visualisation.
+
+Provide a brief comment about the relationships seen in the data visualisation created by the above description.
+
+
+#### Answer
+
+The data visualisation was generated using the following code:
+
+```{r ex2, warning = FALSE, out.width="80%"}
+data_5k_10k %>% 
+  filter(!is.na(gender)) %>%
+  mutate(
+    pace_minkm = elapsed.time..s./60/(distance..m./1000),
+    gender = case_when(
+     gender == "M" ~ "Male runners",
+     gender == "F" ~ "Female runners"
+   ),
+   event = fct_relevel(event, "5k", "10k")
+  ) %>%
+  ggplot(aes(x = event, y = pace_minkm)) + 
+  geom_boxplot() + 
+  facet_wrap(~gender)+
+  labs(
+     x = "",
+     y = "Running pace (min/km)",
+     title = "Strava runners pace in 5K and 10K events"
+  )
+```
+
+Note that it is possible to obtain the same data visualisation via some variation in coding for the filtering, mutating and graphical layers. Where appropriate, credit will be awarded where the code is constructive towards the re-creation of the data visualisation.
+
+
+**Comment**: The pace for the 5K and 10K events are very similar for female runners, with similar median and spread of the data, even though the 5K events display more extreme outliers. For male runners, the median pace are also similar for 5K and 10K events, but the spread of the data for the 5K event is noticeably larger than that for the 10K event. 
+
+
+
+## Exercise 3
+
+#### Question
+
+Recreate the data visualisation.
+
+#### Answer
+
+First, we identify long-distance and short-distance runners. By merging (with `left_join`) we only include runs from athletes that are classified as either long-distance or short-distance runners.
+
+```{r}
+strava_runs <- strava_runs %>%
+  mutate(distance_km = distance..m./1000,
+         speed_ms = distance..m./elapsed.time..s.)
+
+runs_long_vs_short <- strava_runs %>%
+  group_by(athlete) %>%
+  summarise(
+    avg_dist = mean(distance_km, na.rm = TRUE)
+  ) %>%
+  mutate(
+    long_runner = case_when(
+      avg_dist > 13 ~ TRUE,
+      avg_dist < 7  ~ FALSE,
+      TRUE          ~ NA
+    )
+  ) %>%
+  filter(!is.na(long_runner)) %>%
+  select(athlete, long_runner) %>%
+  left_join(strava_runs, by = "athlete")
+```
+
+We now reproduce the image:
+
+```{r ex3, message = FALSE, out.width="80%"}
+runs_long_vs_short %>%
+  mutate(
+    runner = case_when(
+      long_runner == TRUE ~ "Long-distance runner",
+      long_runner == FALSE ~ "Short-distance runner")) %>%
+  ggplot(mapping = aes(x = distance_km, 
+                     y = speed_ms, 
+                     colour = runner))+
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE) + 
+   scale_colour_manual(values = c(
+     "Long-distance runner" = "orange",
+     "Short-distance runner" = "forestgreen")) + 
+   theme_minimal() + 
+   theme(legend.position = "bottom") +
+   labs(
+     x = "Run  distance (km)",
+     y = "Run average speed (m/s)",
+     title = "Speed vs Distance for Long- and Short-Distance Runners",
+     subtitle = "Grouped by runners' average distance: >13 km vs <7 km",
+     colour = ""
+   )
+```
+
+
+## Exercise 4
+
+#### Question
+
+Find two visualisations:
+
+* One that you think provides a _good_ representation of the data, and
+* One that you think provides a _bad_ representation of the data.
+
+For each case, give _two_ reasons why you consider the data visualisation you have found are good/bad. Your reasons should make reference to the '4 respects' of data visualisations.
+
+#### Answer
+
+This is an open question to search for a _good_ and _bad_ data visualisation. As such the reasons and justifications for why the data visualisation is good or bad is highly dependent on the specific of the chosen image. In either case, emphasis should be given in relation to the 4 respects of _people_, _mathematics_, _data_ and _computers_.
+
+Reasons why a data visualisation may be considered as being _good_ include:
+
+-   The use of an appropriate visualisation style (box-plot, histogram, scatter plot, etc.) for the variable types.
+-   Informative use of axis labels and title
+-   Good use of additional visualisation techniques (colour, point shape, faceting) to add extra variables that does not overload the image.
+-   The data visualisation is clean and the intended reader can immediately understand the structure of the data.
+-   Visualisation contains design elements that are inclusive (e.g. colour blindness)
+
+
+Reasons why a data visualisation may be considered as being _bad_ include:
+
+-   There is a geometric flaw in the presentation of the data (e.g., bar heights not consistent with the data)
+-   An overemphasis on making the visualisation 'pretty' at the sacrifice of the visualisation being informative
+-   An ambiguity in how to understand the visualisation (e.g. two point types in the legend with the same appearance that describe different scenarios)
+-   Overloading the visualisation to incorporate too many variables
+-   Poor demonstration of basic mathematics (e.g. percentages not adding to 100%)
+-   No title or axis label, or axis labels that are incomprehensible
+-   Axes containing no values or present values on an inconsistent scale (e.g. values of 10, 20, 75 and 80 appearing at equal distances along the axis)
+-   The visualisation has design elements that may inadvertently emphasise stereotypes. 
+
+
+
+
+
+
+
+
