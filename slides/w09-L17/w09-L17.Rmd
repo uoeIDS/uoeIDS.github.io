@@ -1,0 +1,659 @@
+---
+title: "Predicting categorical outcomes"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2025/2026"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    anchor_sections: FALSE
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+
+---
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+# library(emo)
+library(openintro)
+library(ggridges)
+library(patchwork)
+library(skimr)
+set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
+)
+
+xaringanExtra::use_panelset()
+```
+
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+## Topics
+
+- Modelling categorical outcomes
+- Brief introduction to GLMs
+- Logistic regression
+- Sensitivity and specificity
+- Using models for prediction
+
+---
+
+class: middle
+
+# Modelling categorical outcomes
+
+---
+
+## Spam filters
+
+.pull-left-narrow[
+- Data from 3921 emails and 21 variables on them
+- Outcome: whether the email is spam or not
+- Predictors: number of characters, whether the email had "Re:" in the subject, time at which email was sent, number of times the word "inherit" shows up in the email, etc.
+]
+.pull-right-wide[
+.small[
+```{r}
+library(openintro)
+glimpse(email)
+```
+]
+]
+
+---
+
+.question[
+Would you expect longer or shorter emails to be spam?
+]
+
+
+---
+
+.question[
+Would you expect longer or shorter emails to be spam?
+]
+
+.pull-left[
+```{r echo=FALSE, out.width="100%"}
+email %>%
+  ggplot(aes(x = num_char, y = spam, fill = spam, color = spam)) +
+  geom_density_ridges2(alpha = 0.5) +
+  labs(
+    x = "Number of characters (in thousands)", 
+    y = "Spam",
+    title = "Spam vs. number of characters"
+    ) +
+  guides(color = "none", fill = "none") +
+  scale_fill_manual(values = c("#E48957", "#CA235F")) +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F"))
+```
+]
+.pull-right[
+```{r echo=FALSE}
+email %>% 
+  group_by(spam) %>% 
+  summarise(mean_num_char = mean(num_char))
+```
+]
+
+---
+
+.question[
+Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
+]
+
+
+---
+
+.question[
+Would you expect emails that have subjects starting with "Re:", "RE:", "re:", or "rE:" to be spam or not?
+]
+
+
+```{r echo=FALSE}
+email %>%
+  ggplot(aes(x = re_subj, fill = spam)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = 'Whether “re:”, "RE:", etc. was in the email subject.', 
+    fill = "Spam", 
+    y = NULL,
+    title = 'Spam vs. "re:" in subject'
+    ) +
+  scale_fill_manual(values = c("#DEB4A0", "#CA235F"))
+```
+
+---
+
+## Modelling spam
+
+- Both number of characters and whether the message has "re:" in the subject might be related to whether the email is spam.  How do we come up with a model that will let us explore this relationship?
+
+--
+- For simplicity, we'll focus on the number of characters (`num_char`) as predictor, but the model we describe can be expanded to take multiple predictors as well.
+
+---
+
+## Modelling spam
+
+This isn't something we can reasonably fit a linear model to -- we need something different!
+
+```{r echo=FALSE, out.width="70%"}
+means <- email %>%
+  group_by(spam) %>%
+  summarise(mean_num_char = mean(num_char)) %>%
+  mutate(group = 1)
+
+ggplot(email, aes(x = num_char, y = spam, color = spam)) +
+  geom_jitter(alpha = 0.2) +
+  geom_line(data = means, aes(x = mean_num_char, y = spam, group = group), color = "black", linewidth = 1.5) +
+  labs(x = "Number of characters (in thousands)", y = "Spam") +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
+  guides(color = "none")
+```
+
+---
+
+## Framing the problem
+
+- We can treat each outcome (spam and not) as successes and failures arising from separate Bernoulli trials
+  - Bernoulli trial: a random experiment with exactly two possible outcomes, "success" and "failure", in which the probability of success is the same every time the experiment is conducted
+
+--
+- Each Bernoulli trial can have a separate probability of success
+
+$$ y_i ∼ Bern(p_i) $$
+
+--
+- We can then use the predictor variables to model that probability of success, $p_i$
+
+--
+- We can't just use a linear model for $p_i$ (since $p_i$ must be between 0 and 1) but we can transform the linear model to have the appropriate range
+
+---
+
+## Generalized linear models
+
+- This is a very general way of addressing many problems in regression and the resulting models are called **generalized linear models (GLMs)**
+
+--
+- Logistic regression is just one example
+
+---
+
+## Three characteristics of GLMs
+
+All GLMs have the following three characteristics:
+
+1. A probability distribution describing a generative model for the outcome variable
+
+--
+2. A linear model:
+$$\eta = \beta_0 + \beta_1 X_1 + \cdots + \beta_k X_k$$
+
+--
+3. A link function that relates the linear model to the parameter of the outcome distribution
+  
+---
+
+class: middle
+
+# Logistic regression
+
+---
+
+## Logistic regression
+
+- Logistic regression is a GLM used to model a binary categorical outcome using numerical and categorical predictors
+
+--
+- To finish specifying the Logistic model we just need to define a reasonable link function that connects $\eta_i$ to $p_i$: logit function
+
+--
+- **Logit function:** For $0\le p \le 1$
+
+$$logit(p) = \log\left(\frac{p}{1-p}\right)$$
+
+
+
+---
+
+## Logit function, visualised
+
+```{r echo=FALSE}
+d <- tibble(p = seq(0.001, 0.999, length.out = 1000)) %>%
+  mutate(logit_p = log(p/(1-p)))
+
+ggplot(d, aes(x = p, y = logit_p)) + 
+  geom_line() + 
+  xlim(0,1) + 
+  ylab("logit(p)") +
+  labs(title = "logit(p) vs. p")
+```
+
+---
+
+## Properties of the logit
+
+- The logit function takes a value between 0 and 1 and maps it to a value between $-\infty$ and $\infty$
+
+--
+- Inverse logit (logistic) function:
+$$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$
+
+--
+- The inverse logit function takes a value between $-\infty$ and $\infty$ and maps it to a value between 0 and 1
+
+--
+- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
+
+---
+
+## Logistic function, visualised
+
+```{r echo=FALSE}
+d <- tibble(x = seq(-10, 10, length.out = 1000)) %>%
+  mutate(logistic_x = 1/(1+exp(-x)))
+
+ggplot(d, aes(x = x, y = logistic_x)) + 
+  geom_line() + 
+  ylim(0,1) + 
+  ylab("logistic(x)") +
+  labs(title = "logistic(x) vs. x")
+```
+---
+
+## The logistic regression model
+
+- Based on the three GLM criteria we have
+  - $y_i \sim \text{Bern}(p_i)$
+  - $\eta_i = \beta_0+\beta_1 x_{1,i} + \cdots + \beta_n x_{n,i}$
+  - $\text{logit}(p_i) = \eta_i$
+
+--
+- From which we get
+
+$$p_i = \frac{\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}{1+\exp(\beta_0+\beta_1 x_{1,i} + \cdots + \beta_k x_{k,i})}$$
+---
+
+## Modeling spam
+
+In R we fit a GLM in the same way as a linear model except we
+
+- specify the model with `logistic_reg()`
+- use `"glm"` instead of `"lm"` as the engine 
+- define `family = "binomial"` for the link function to be used in the model
+
+--
+
+```{r}
+spam_fit <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ num_char, data = email, family = "binomial")
+
+tidy(spam_fit)
+```
+
+---
+
+## Spam model
+
+```{r}
+tidy(spam_fit)
+```
+
+--
+
+Model:
+$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times \text{num_char}$$
+
+---
+
+## P(spam) for an email with 2000 characters 
+
+$$\log\left(\frac{p}{1-p}\right) = -1.80-0.0621\times 2$$
+--
+$$\frac{p}{1-p} = \exp(-1.9242) = 0.15 \rightarrow p = 0.15 \times (1 - p)$$
+--
+$$p = 0.15 - 0.15p \rightarrow 1.15p = 0.15$$
+--
+$$p = 0.15 / 1.15 = 0.13$$
+
+---
+
+.question[
+What is the probability that an email with 15000 characters is spam? What about an email with 40000 characters?
+]
+
+--
+
+.pull-left[
+```{r spam-predict-viz, echo=FALSE, out.width = "100%", fig.asp=0.5}
+newdata <- tibble(
+  num_char = c(2, 15, 40),
+  color    = c("#A7D5E8", "#e9d968", "#8fada7"),
+  shape    = c(22, 24, 23)
+  )
+
+y_hat <- predict(spam_fit, newdata, type = "raw")
+p_hat <- exp(y_hat) / (1 + exp(y_hat))
+
+newdata <- newdata %>%
+  bind_cols(
+    y_hat = y_hat,
+    p_hat = p_hat
+  )
+
+spam_aug <- augment(spam_fit$fit) %>%
+  mutate(prob = exp(.fitted) / (1 + exp(.fitted)))
+
+ggplot(spam_aug, aes(x = num_char)) +
+  geom_point(aes(y = as.numeric(spam)-1, color = spam), alpha = 0.3) +
+  scale_color_manual(values = c("#DEB4A0", "#CA235F")) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  guides(color = "none") +
+  geom_line(aes(y = prob)) +
+  geom_point(data = newdata, aes(x = num_char, y = p_hat), 
+             fill = newdata$color, shape = newdata$shape, 
+             stroke = 1, size = 6) +
+  labs(
+    x = "Number of characters (in thousands)",
+    y = "Spam", 
+    title = "Spam vs. number of characters"
+  )
+```
+]
+.pull-right[
+- .light-blue[`r paste0(newdata$num_char[1], "K chars: P(spam) = ", round(newdata$p_hat[1], 2))`]
+- .yellow[`r paste0(newdata$num_char[2], "K chars, P(spam) = ", round(newdata$p_hat[2], 2))`]
+- .green[`r paste0(newdata$num_char[3], "K chars, P(spam) = ", round(newdata$p_hat[3], 2))`]
+]
+
+---
+
+.question[
+Would you prefer an email with 2000 characters to be labelled as spam or not? How about 40,000 characters?
+]
+
+```{r ref.label="spam-predict-viz", echo=FALSE, fig.asp=0.5}
+```
+
+---
+
+class: middle
+
+# Sensitivity and specificity
+
+---
+
+## False positive and negative
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+- False negative rate = P(Labelled not spam | Email spam) = FN / (TP + FN) 
+
+- False positive rate = P(Labelled spam | Email not spam) = FP / (FP + TN)
+
+---
+
+## Sensitivity and specificity
+
+|                         | Email is spam                 | Email is not spam             |
+|-------------------------|-------------------------------|-------------------------------|
+| Email labelled spam     | True positive                 | False positive (Type 1 error) |
+| Email labelled not spam | False negative (Type 2 error) | True negative                 |
+
+--
+
+- Sensitivity = P(Labelled spam | Email spam) = TP / (TP + FN)
+  - Sensitivity = 1 − False negative rate
+  
+- Specificity = P(Labelled not spam | Email not spam) = TN / (FP + TN) 
+  - Specificity = 1 − False positive rate
+
+---
+
+.question[
+If you were designing a spam filter, would you want sensitivity and specificity to be high or low? What are the trade-offs associated with each decision? 
+]
+
+
+---
+class: middle
+
+# Prediction and classification
+
+---
+
+## Goal: Building a spam filter
+
+- Data: Set of emails and we know if each email is spam/not and other features 
+- Use logistic regression to predict the probability that an incoming email is spam
+- Use model selection to pick the model with the best predictive performance
+
+--
+- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
+
+--
+- A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
+
+---
+
+## A multiple regression approach
+
+.panelset[
+.panel[.panel-name[Output]
+.small[
+```{r ref.label = "spam-mlr", echo = FALSE, warning = FALSE}
+```
+]
+]
+.panel[.panel-name[Code]
+```{r spam-mlr, results = "hide"}
+logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(spam ~ ., data = email, family = "binomial") %>%
+  tidy() %>%
+  print(n = 22)
+```
+]
+]
+
+---
+
+## Prediction
+
+- The mechanics of prediction is **easy**:
+  - Plug in values of predictors to the model equation
+  - Calculate the predicted value of the response variable, $\hat{y}$
+
+--
+- Getting it right is **hard**!
+  - There is no guarantee the model estimates you have are correct
+  - Or that your model will perform as well with new data as it did with your sample data
+
+---
+
+## Underfitting and overfitting
+
+```{r echo=FALSE, out.width="70%", warning = FALSE}
+lm_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(y4 ~ x2, data = association)
+
+loess_fit <- loess(y4 ~ x2, data = association)
+
+loess_overfit <- loess(y4 ~ x2, span = 0.05, data = association)
+
+association %>%
+  select(x2, y4) %>%
+  mutate(
+    Underfit = augment(lm_fit$fit) %>% select(.fitted) %>% pull(),
+    OK       = augment(loess_fit) %>% select(.fitted) %>% pull(),
+    Overfit  = augment(loess_overfit) %>% select(.fitted) %>% pull(),
+  ) %>%
+  pivot_longer(
+    cols      = Underfit:Overfit,
+    names_to  = "fit",
+    values_to = "y_hat"
+  ) %>%
+  mutate(fit = fct_relevel(fit, "Underfit", "OK", "Overfit")) %>%
+  ggplot(aes(x = x2)) +
+  geom_point(aes(y = y4), color = "darkgray") +
+  geom_line(aes(y = y_hat, group = fit, color = fit), linewidth = 1) +
+  labs(x = NULL, y = NULL, color = NULL) +
+  scale_color_viridis_d(option = "plasma", end = 0.7)
+```
+
+---
+
+## Spending our data
+
+- Several steps to create a useful model: parameter estimation, model selection, performance assessment, etc.
+
+- Doing all of this on the entire data we have available can lead to **overfitting**
+
+- Allocate specific subsets of data for different tasks, as opposed to allocating the largest possible amount to the model parameter estimation only (which is what we've done so far)
+
+---
+
+class: middle
+
+# Splitting data
+
+---
+
+## Splitting data
+
+- **Training set:**
+  - Sandbox for model building 
+  - Spend most of your time using the training set to develop the model
+  - Majority of the data (usually 80%)
+  
+- **Testing set:**
+  - Held in reserve to determine efficacy of one or two chosen models
+  - Critical to look at it once, otherwise it becomes part of the modeling process
+  - Remainder of the data (usually 20%)
+  
+---
+
+## Performing the split
+
+```{r}
+# Fix random numbers by setting the seed 
+# Enables analysis to be reproducible when random numbers are used 
+set.seed(1114)
+
+# Put 80% of the data into the training set 
+email_split <- initial_split(email, prop = 0.80)
+
+# Create data frames for the two sets:
+train_data <- training(email_split)
+test_data  <- testing(email_split)
+```
+
+---
+
+## Peek at the split
+
+.small[
+.pull-left[
+```{r}
+glimpse(train_data)
+```
+]
+.pull-right[
+```{r}
+glimpse(test_data)
+```
+]
+]
+
+---
+
+## Recap
+
+- How to model categorical outcomes
+- Introduction to GLMs
+- Logistic regression
+- Sensitivity and specificity
+- Splitting the data in train and test set.
