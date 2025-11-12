@@ -1,6 +1,6 @@
 ---
-title: "HW ?? - Yet to be released"
-subtitle: "Due: dd text_month, hh:mm UK time"
+title: "HW 03 - Modelling"
+subtitle: "Due: 21 November, 16:00 UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -12,14 +12,310 @@ link-citations: yes
 ```{r setup, include=FALSE}
 library(tidyverse)
 
-knitr::opts_chunk$set(
-  eval = FALSE,
-  out.width = "100%"
+knitr::opts_chunk$set(out.width = "100%", eval = TRUE)
+```
+
+```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Freepik"}
+knitr::include_graphics("img/close-up-signing-package-delivery.jpg")
+```
+
+
+In this assignment we are reviewing modelling and inference from weeks 8 and 9 of the course. 
+
+## Prerequisites
+
+This assignment assumes that you have worked through all materials up to and including:
+
+-   [Week 8](https://uoe-ids.netlify.app/week08/) on linear regression
+-   [Week 9](https://uoe-ids.netlify.app/week09/) on logistic regression
+
+You may need to use some of your data wrangling skills from earlier in the course.
+
+------------------------------------
+
+# Getting started
+
+## Accessing the homework template
+
+1.  From your profile in GitHub, go to **Repositories** (along the top) and click on the green **New** button.
+
+2.  Click on the text **Import a repository**.
+
+3.  Type the following URL: `https://github.com/uoeIDS/hw-03-template`
+
+4. Add a name for your repository, for example, `hw-03`.
+
+5. **IMPORTANT**: Set the privacy of your repository to **Private**. If you make your repository public then anyone can see and copy your work. Failure to set your repository private risks incurring an academic misconduct case.
+
+6. Click on the green **Begin import** button
+
+Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework.
+
+1.  In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side.
+
+2.  Next, click on the green **Add people** people button under **Manage access**
+
+3.  Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**.
+
+## Creating a version control R project
+
+1. Open RStudio, click on **File** at the very top and then select **New Project...**.
+
+2. In the new project wizard, select **Version Control** and then **Git**.
+
+3. Go to GitHub and open the repository that you have just created. Click the green **Code** button and copy the HTTPS URL.
+
+4. Return to RStudio and paste the **Repository URL** in the first text box. The project directory name will automatically be filled, it is recommended that you do not change this name.
+
+5. Click on the **Browse...** button to find a location in your file system where you want to save your project.
+
+6. Click on the **Create Project** button
+
+------------------------------------
+
+## Packages
+
+In this assignment we will mainly use the following packages:
+
+-   **tidyverse**: a collection of packages for doing data analysis in a "tidy" way
+-   **tidymodels**:  a collection of packages for modelling in a "tidy" way.
+
+If you haven't used these packages before you will need to install them.
+
+```{r message=FALSE}
+library(tidyverse)
+library(tidymodels)
+```
+
+If you haven't used these packages before you will need to install them.
+
+------------------------------------
+
+# Data Set - General Social Survey
+
+The General Social Survey (GSS) gathers data on contemporary American society in order to monitor and explain trends and constants in attitudes, behaviors, and attributes.
+Hundreds of trends have been tracked since 1972. In addition, since the GSS adopted questions from earlier surveys, trends can be followed for up to 70 years.
+
+The GSS contains a standard core of demographic, behavioral, and attitudinal questions, plus topics of special interest.
+Among the topics covered are civil liberties, crime and violence, intergroup tolerance, morality, national spending priorities, psychological well-being, social mobility, and stress and traumatic events.
+
+In this assignment we analyze data from the 2016 GSS, using it to estimate values of population parameters of interest about US adults.[^1]
+
+The data have been downloaded for you and added to the data folder in the template repo (`"gss16.csv"`). 
+The first thing you will need to do is to load the dataset into RStudio. 
+
+```{r read_data}
+gss16 <- read.csv("data/gss16.csv")
+```
+
+For your information, the data is identical to the data set available from the `dsbox` package. You do not need to install/load this package, but you may want to review the [manual page](https://rdrr.io/github/rstudio-education/dsbox/man/gss16.html) for `gss16` to read the data dictionary.
+
+
+## Data preparation before modelling
+
+The `gss16` data set needs to be prepared prior to modelling. This is not an assessed component to your assignment, but it is an important part of the data science process. Carefully copy the following code into the beginning of your `.Rmd` file and ensure that you understand how the data has been prepared.
+
+```{marginfigure}
+It's important that you don't recode the NAs, just the remaining levels.
+```
+
+### Cleaning and selecting columns 
+
+Create a new data frame called `gss16_advfront` that includes the variables `advfront`, `emailhr` (Number of hours spent on email weekly), `educ` (education level), `polviews` (political views) and `wrkstat` (working status). Remove any row that contains any `NA`s using the `drop_na()` command
+
+```{r}
+gss16_advfront <- gss16 %>%
+  select(advfront, emailhr, educ, polviews, wrkstat) %>%
+  drop_na()
+```
+
+### Re-levelling `advfront`
+
+The `advfront` variable contains responses to the question "Even if it brings no immediate benefits, scientific research that advances the frontiers of knowledge is necessary and should be supported by the federal government." The possible answers are on the 5-point Likert scale: `"Strongly agree"`, `"Agree"`, `"Dont know"`, `"Disagree"` and `"Strongly disagree"`. For the purpose of this assignment, the `advfront` variable needs to be transformed such that it has two levels: 
+
+* `"Agree"` - combining the options `"Strongly agree"` and `"Agree"`.
+* `"Not agree"` - combining the options `"Dont know"`, `"Disagree"` and `"Strongly disagree"`.
+
+The following code does that this re-levelling:
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    advfront = case_when(
+      advfront == "Strongly agree" ~ "Agree",
+      advfront == "Agree" ~ "Agree",
+      TRUE ~ "Not agree"
+    ),
+    advfront = fct_relevel(advfront, "Not agree", "Agree")
   )
 ```
 
-```{r unsplash, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Image by Pierre Bamin from Unsplash"}
-knitr::include_graphics("img/pierre-bamin-18T72jBinvI-unsplash.jpg")
+
+### Re-levelling `polviews`
+
+
+```{marginfigure}
+You can do this in various ways. One option is to use the `str_detect()` function to detect the existence of words like liberal or conservative. Note that these sometimes show up with lowercase first letters and sometimes with upper case first letters. To detect either in the `str_detect()` function, you can use "[Ll]iberal" and "[Cc]onservative". But feel free to solve the problem however you like, this is just one option!
 ```
 
-You are very early at looking for the homework assignment. The worksheet is not yet released! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including release dates.
+The `polviews` variable contains information about the participant's political position within 7 categories ranging from `"Extremely liberal"` to `"Extrmly conservative"`. Here we wish to simplify the range of options to 3 categories - `"Conservative"` , `"Moderate"`, and `"Liberal"`. This is achieved via the following code:
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    polviews = case_when(
+      str_detect(polviews, "[Cc]onservative") ~ "Conservative",
+      str_detect(polviews, "[Ll]iberal") ~ "Liberal",
+      TRUE ~ polviews
+    ),
+    polviews = fct_relevel(polviews, "Conservative", "Moderate", "Liberal")
+  )
+```
+
+Please see [chapter 14 of R for Data Science](https://r4ds.had.co.nz/strings.html) for more on string processing commands.
+
+You now have the cleaned and pre-processe data to use for modelling, you can continue with the `gss16_advfront` for the following questions. 
+
+------------------------------------------------------------------
+
+## Exercise 1: Create a linear regression model
+
+Consider the numerical values `educ` and `emailhr` from your new data set `gss16_advfront`.
+
+a) Fit a linear regression model to predict `emailhr` based on the `educ`. From your output, state the formula for the line-of-best fit and give an interpretation of the `emailhr` estimate. (2 pts)
+
+```{marginfigure}
+Use the function `glance()` to see all details on your model fit. 
+```
+
+b) Using appropriate model fit statistics, comment on the overall model performance. Create a suitable data visualization to evaluate if the linear model assumptions are satistied, and comment on the suitability of the model. (3 pts)
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise  1 knit the document, commit your changes with a commit message that says "Completed Exercise 1", and push.*
+
+------------------------------------------------------------------
+
+## Exercise 2: Create a workflow to fit a model to the training data
+
+In this part, we're going to build a model to predict whether someone agrees or doesn't agree with the following statement:
+
+> Even if it brings no immediate benefits, scientific research that advances the frontiers of knowledge is necessary and should be supported by the federal government.
+
+The responses to the question on the GSS about this statement are in the `advfront` variable, in the `gss16_advfront` data that you obtained. For now, we will use the explanatory variable `educ` to predict `advfront`.
+
+First, use the following code to split the dataset into a training dataset (`gss16_train`) and a testing dataset (`gss16_test`). This code splits the data into 75\% training and 25\% testing.
+
+```{r split-data, eval=FALSE}
+set.seed(1234)
+gss16_split <- initial_split(gss16_advfront)
+gss16_train <- training(gss16_split)
+gss16_test  <- testing(gss16_split)
+```
+
+
+```{marginfigure}
+We'll create one more recipe and workflow later, that's why we're naming these `_1`.
+```
+
+a) Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_mod_1`). Name this workflow `gss16_wflow_1`. (2 pts)
+    
+The recipe (named `gss16_rec_1`) should contain an appropriate formula for predicting `advfront` from `educ`.
+
+The model (named `gss16_mod_1`) should specify a model that is appropriate for the data as well as the computational engine.
+
+b) Explain why you have chosen the model that you have selected. (1 pt)
+
+c) Apply the workflow you defined earlier to the training dataset and named the model as `gss16_fit_1`. Display the resulting tibble containing the fitted model parameters. (2 pts)
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise2 knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
+
+------------------------------------------------------------------
+
+## Exercise 3: Performance of a logistic regression with single predictor
+
+
+a) Use the fitted models to predict the test data, plot the ROC curve for the predictions. (3 pts)
+
+```{marginfigure}
+Using a cutoff of 0.83 means that the model predicts $\hat{y}_i$ to be "Agree" (or `TRUE`, or 1) when $\hat{p}_i \geq 0.83$ and $\hat{y}_i$ equal to "Not agree" when $\hat{p}_i$ is less than 0.83.
+```
+
+b) Produce a table with the number of true positives, true negatives, false positives and false negatives on the *test data* when using a cutoff of 0.83 for the predictions.
+Then calculate the specificity and the sensitivity of the model (using the same cutoff). (2 pts)
+
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
+
+----------------------------------------------------------------
+
+## Exercise 4: Logistic regression modelling and interpretation
+
+We are now going to model `advfront` using the explanatory variables `polviews`, `wrkstat`, `emailhr`, and `educ`.
+
+a) Build a new workflow for the training data that consists of a recipe (`gss16_rec_2`) and a model (`gss16_mod_2`). Name this workflow `gss16_wflow_2`. You can simply **copy, paste and edit** the code from earlier. (1 pts)
+    
+Now the new recipe (named `gss16_rec_2`) should contain an appropriate formula for predicting `advfront` from `polviews`, `wrkstat`, `emailhr`, and `educ`, and should use:
+  
+```{marginfigure}
+You can de-select things using the minus sign, just as you can when using `select`, and in this case it's fine to combine positive and negative selections.
+```
+
+  - `step_dummy()` to create dummy variables for `all_nominal()` variables that are predictors, i.e. not "outcomes". You can select outcomes using `all_outcomes()`
+
+The model (named `gss16_mod_2`) should specify a model that is appropriate for the data as well as the computational engine.
+  
+```{marginfigure}
+Mainly, this exercise is an extension to the earlier model by adding `polviews`, `emailhr` and `wrkstat` as extra explanatory variables.
+```
+
+b) Apply the new workflow to the training dataset and create a new model fit named as `gss16_fit_2`. Then use the fitted model to predict the test data, plot the ROC curve for the predictions, and calculate the area under the ROC curves. (2 pts)
+
+c) Comment on which model performs better 
+
+  * the model only including `educ`, as model 1 (`gss16_fit_1`) 
+  * the model including `polviews`, `wrkstat`, `emailhr`, and `educ` with `gss16_split` as model 2 (`gss16_fit_2`)
+  
+Explain your reasoning. (2 pts)
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4 knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
+
+
+------------------------------------------------------------------
+
+[^1]: Smith, Tom W, Peter Marsden, Michael Hout, and Jibum Kim.
+    General Social Surveys, 1972-2016 [machine-readable data file] /Principal Investigator, Tom W. Smith; Co-Principal Investigator, Peter V. Marsden; Co-Principal Investigator, Michael Hout; Sponsored by National Science Foundation.
+    -NORC ed.- Chicago: NORC at the University of Chicago [producer and distributor].
+    Data accessed from the GSS Data Explorer website at gssdataexplorer.norc.org.
+    
+----------------------------------------------------------
+
+# Submission
+
+⬆️ Once you have answered all of the exercises, please make sure that you have knitted your document and committed all the changes to GitHub.
+
+To submit your homework:
+
+1.    Login to LEARN-ULTRA and navigate to the Introduction to Data Science course.
+
+2.    In the **Assessment** folder, select **Gradescope**.
+
+3.    Click on the **Dashboard** in the left-hand panel and select **Homework Assignment 3 (hw-03)**.
+
+4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
+Once done, press **Save Answer** and then **Submit & View Submissions**.
+
+**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**.
+
+If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
+
+------------------------------------------------------------------------------
+## How the homework graded
+
+The homework is grades out of a 25 where:
+
+*   Each exercise is marked out of 5, and
+
+*   Up to five additional marks are awarded based on the clarity of your writing, coding skills, reproducibility and overall presentation. 
+
+## Getting help
+
+If you have any questions about the assignment, please post them on [Piazza!](https://piazza.com/ed.ac.uk/fall2023/math0807720234ss1sem1/info)
