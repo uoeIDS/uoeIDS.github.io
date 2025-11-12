@@ -49,13 +49,15 @@ You may need to use some of your data wrangling skills from earlier in the cours
 
 6. Click on the green **Begin import** button
 
-Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework.
+NOTE: for this homework, you do <u>not</u> need to add the course GitHub account as a collaborator. Only in case of technical problems with your submission, we might reach out to ask that you add the course GitHub account as a collaborator to your homework repository. You do <u>not</u> have to do this as a default (invites sent before the submission deadline will not be monitored).
 
-1.  In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side.
+<!-- Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework. -->
 
-2.  Next, click on the green **Add people** people button under **Manage access**
+<!-- 1.  In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side. -->
 
-3.  Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**.
+<!-- 2.  Next, click on the green **Add people** people button under **Manage access** -->
+
+<!-- 3.  Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**. -->
 
 ## Creating a version control R project
 
@@ -298,7 +300,7 @@ To submit your homework:
 
 2.    In the **Assessment** folder, select **Gradescope**.
 
-3.    Click on the **Dashboard** in the left-hand panel and select **Homework Assignment 3 (hw-03)**.
+3.    Click on the **Dashboard** in the left-hand panel and select **Homework C (hw-03)**.
 
 4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
 Once done, press **Save Answer** and then **Submit & View Submissions**.
