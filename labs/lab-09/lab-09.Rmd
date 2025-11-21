@@ -68,7 +68,7 @@ To do so, please include a text like the one provided below in your `README.md` 
 
 - Reproduciblility/Replicability: Does the code appear to be able to be run by others (e.g. no specific paths like "/cloud/project"), will they get the same results (e.g. seed set?).
 
-**Team peer evaluation (10 points)**
+**Team peer evaluation**
 
 - You will need to complete an evaluation of the input of your teammates. This is to check that everyone contributed equally. This will be used to calculate an individual mark for each team member, so that it reflects their contribution to the project.
 
