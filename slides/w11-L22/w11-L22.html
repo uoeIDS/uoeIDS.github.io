@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Under Construction!!! (w11-L22)</title>
+    <title>Recap and Looking Beyond IDS</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -13,7 +17,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Under Construction!!! (w11-L22)
+# Recap and Looking Beyond IDS
 ]
 .subtitle[
 ## <br><br> Introduction to Data Science
@@ -22,26 +26,366 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br>
+### <br> 2025/2026
 ]
 
 ---
 
 
-# Under Construction!!! (w11-L22)
+
+
+
+
+layout: true
+  
+&lt;div class="my-footer"&gt;
+&lt;span&gt;
+University of Edinburgh
+&lt;/span&gt;
+&lt;/div&gt; 
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ## Reminders --&gt;
+
+&lt;!--   * **9.00-10.30** --&gt;
+&lt;!--       - Venue1: JCMB 4325c (Groups: 18, 2,20,21,22,23)	 --&gt;
+&lt;!--       - Venue2: JCMB 5326 (Groups: 42,43,45,47,48).  --&gt;
+&lt;!--   * **10.30-12.00**  --&gt;
+&lt;!--       - Venue1: JCMB 4325c (Groups: 13, 14, 16, 24, 25, 55)	 --&gt;
+&lt;!--       - Venue2: JCMB 5326 (Groups: 27, 7, 9, 52, 26). --&gt;
+&lt;!--   * **12.00-13.30**  --&gt;
+&lt;!--       - Venue1: JCMB 4325c (Groups: 1,5,6,8,56)	 --&gt;
+&lt;!--       - Venue2: JCMB 5326 (Groups: 12,15,19,28,57) --&gt;
+&lt;!--       - Venue3: JCMB 4325b (Groups: 29,30,41,44,49). --&gt;
+&lt;!--   * **13.30-15.00**  --&gt;
+&lt;!--       - Venue1: JCMB 1206c (Groups: 10, 11, 17, 3, 53, 54)	 --&gt;
+&lt;!--       - Venue2: JCMB 5326 (Groups: 31, 32, 33, 34, 35, 36)	 --&gt;
+&lt;!--       - Venue3: JCMB 4325b (Groups: 37, 38, 39, 4, 40, 46, 51). --&gt;
+
+---
+
+## Reminders
+
+- Check your html file knits and loads properly
+
+--
+
+- HDMI port on laptop, if you need converter let us know
+
+--
+
+- Don't forget your peer evaluation form
+
+--
+
+- Don't forget to add the course GitHub page to your project
+
+&lt;!-- -- --&gt;
+
+&lt;!-- - Try to complete each requirement step by step and do submission on time to avoid extra stress! --&gt;
+
+&lt;!-- --- --&gt;
+&lt;!-- ## Topics for today --&gt;
+
+&lt;!-- - Recap - what did people find difficult? --&gt;
+
+&lt;!-- - Where can you go for more information? --&gt;
+
+&lt;!-- - Next steps in R --&gt;
+
+&lt;!-- - What else for Data Science? --&gt;
+
+
+---
+
+## Report Structure
+
+- **Introduction** – What is your data? What is the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?
+  
+--
+  
+- **Methods** – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.
+
+--
+  
+- **Results** – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistics. A brief explanation of what the results mean in the given context of your data.
+
+--
+  
+- **Discussion** –  What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings? If you had more time, what would you have done?
+  
+---
+  
+## Write-up tips
+  
+  - Be clear. Minimise jargon, make sure explanations are clear. Get someone else in your team to read and edit your text. 
+
+- Use a consistent font, size, and heading style. This enhances readability and gives your report a professional look.
+
+- Use a consistent citation style throughout your report. This adds credibility and allows readers to verify your sources.
+
+- Do a good job on the basics rather than trying to do everything. Remember you only have 1,500 words. 
+
+- No penalty will be applied if the report has up to 10% extra words (no penalty if word count &lt; 1650)
+
+---
+
+## About Submission
+  
+- Submission done on Gradescope for report and slides: `final-project`. 
+
+- Submit both  the `.html` file for your report and the `.html` file for your presentation slides.
+- Only **one person per team** needs to complete this.
+- This person needs to add their group members to the submission using the drop down list.
+
+--
+  
+- Peer evaluation is via `WebPA` (in Learn &gt; Assessment &gt; WebPA). 
+
+- **Everyone** needs to complete this.
+- If you do not complete this peer feedback for all members of your team, you will receive a penalty of 20% off your mark.
+
+---
+  
+## Logistics
+  
+- Make sure you include a link to your GitHub repo within the report, and add the course GitHub account to the repo. 
+
+--
+- In your report `.Rmd` file, change the `author:` field to include both: **your names** &amp; **your group number**
+  
+
+``` md
+author: by TeamGoT (group number 8): Jon Snow, Arya Stark, Daenerys Targaryen, Tyrion Lannister
+```
+
+--
+  - In the `README.md` file in your project repository, please add a section with the name, student ID and Github username of each team member, such as 
+
+
+``` md
+## Team members
+
+- Jon Snow (s1234567), johnsnow123
+- Arya Stark (s1122334), thefaceless
+- Daenerys Targaryen (s4433221), dragon_queen
+- Tyrion Lannister (s1111111), t.lannister
+```
+
+---
+
+## What have you learnt?
+
+| Week | Topic                                     |
+|------|-------------------------------------------|
+| 1    | Welcome and Toolkit                       |
+| 2    | Importing and recoding data               |
+| 3    | Wrangling and tidying data                |
+| 4    | Visualising data                          |
+| 5    | Communicating effectively                 |
+| 6    | Ethics                                    |
+| 7    | Programming and Functions                 |
+| 8    | Predictive Modelling                      |
+| 9    | Classification and model building         |
+| 10   | Validation and uncertainty quantification |
+| 11   | Looking beyond IDS                        |
+
+&lt;!-- --- ---&gt;
+
+&lt;!-- class:middle  ---&gt;
+
+&lt;!-- ## IDS overall reflection ---&gt;
+
+&lt;!-- (hopefully) Positive impacts ---&gt;
+
+&lt;!--   - You worked on generally the basics of data science pipeline in R language ---&gt;
+&lt;!--   - Getting familiar with main steps of data analysis in general ---&gt;
+&lt;!--   - IDS can be a good starting point for your personal further interest in Data Science ---&gt;
+
+&lt;!-- (Can be) Limited  ---&gt;
+
+&lt;!--   - Not so much space for statistical terms and methods (definitely will learn more later)  ---&gt;
+&lt;!--   - Maybe some re-ordering of the weekly topics can be discussed ---&gt;
+&lt;!--   - Further details on modeling part is a must (you will learn later) ---&gt;
+
+&lt;!-- What do you want to add ? ---&gt;
+&lt;!-- - Please fill out end-of-semester feedback!  ---&gt;
+
+---
+
+class:middle
+
+## Looking Beyond IDS
+
+---
+
+## Books - I
+
+
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="img/pexels-philipp-silbernagl-962889.jpg" alt="Photo by Philipp Silbernagl on Pexels" width="30%" /&gt;
-&lt;p class="caption"&gt;Photo by Philipp Silbernagl on Pexels&lt;/p&gt;
+&lt;img src="img/IMS.png" alt="  " width="25%" /&gt;&lt;img src="img/R4DS.jpeg" alt="  " width="25%" /&gt;&lt;img src="img/AdvancedR.png" alt="  " width="25%" /&gt;
+&lt;p class="caption"&gt;  &lt;/p&gt;
 &lt;/div&gt;
 
+---
+
+## Books - II
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="img/StatLiteracy.jpeg" alt="  " width="25%" /&gt;&lt;img src="img/ArtofStats.jpg" alt="  " width="25%" /&gt;&lt;img src="img/StatswithoutTears.jpg" alt="  " width="25%" /&gt;
+&lt;p class="caption"&gt;  &lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+
+## Courses 
+
+- [Statistics (year 2)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath08051.htm)
+  * Estimators, including MLEs
+  * Hypothesis Testing 
+  * Linear Regression with theory
+--
+
+- [Statistical methodology (year 3)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10095.htm)
+  * maximum likelihood estimation
+  * likelihood ratio tests
+  * Bayes theorem and posterior distribution
+--
+
+- [Statistical computing (year 3)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10093.htm)
+  * optimising functions in R
+  * programming statistical techniques and interpreting the results (including bootstrap algorithms)
+
+---
+
+## Courses 
+
+- [Machine Learning in Python (year 4)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath11205.htm)
+  * Supervised and Unsupervised learning methods
+  * Coding with Python, two different projects.
+--
+
+- [Statistical Case Studies (year 4)](http://www.drps.ed.ac.uk/23-24/dpt/cxmath10102.htm)
+  * Two real-world statistical projects that are meant to simulate consultancy-style work in a business/research environment
+--
+
+- [Mathematics Project (year 4)](http://www.drps.ed.ac.uk/24-25/dpt/cxmath10063.htm)
+
+
+
+---
+class:middle
+
+## R capabilities: Special case
+
+---
+
+## Shiny Apps
+
+.pull-left[
+- Shiny is an R package that makes it easy to build interactive web apps straight from R
+- You can host standalone apps on a webpage or embed them in R Markdown documents or build dashboards
+- You can also extend your Shiny apps with CSS themes, htmlwidgets, and JavaScript actions
+- Learn more at [shiny.rstudio.com](https://shiny.rstudio.com/)
+]
+.pull-right[
+&lt;img src="img/shiny.png" width="60%" style="display: block; margin: auto auto auto 0;" /&gt;
+]
+
+---
+
+## High level view
+
+- Every Shiny app has a webpage that the user visits, and behind this webpage there is a computer that serves this webpage by running R
+
+- When running your app locally, the computer serving your app is your computer
+
+- When your app is deployed, the computer serving your app is a web server
+
+- If you want to try making your own, try working through the reading [here](https://mastering-shiny.org/basic-app.html)
+
+---
+
+## Some others
+
+- Dynamic reporting with Rmd files with different programming language
+
+- Widely considered the best tool for making beautiful graphs and visualizations. 
+
+- Possible to find advanced statistics packages for high-level modeling.
+
+--
+
+**Key message**: If you learn a programming language to some extent, you can learn other tools intuitively  even if there are some differences on syntax. The battle of R vs Python is already over!
+
+&lt;img src="img/RPyhton.png" width="20%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+
+## Research in Data Science
+
+---
+## Turing Institute
+
+
+&lt;img src="img/Turing.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+
+## Beyond your courses
+
+---
+## Royal Statistical Society
+
+They offer free membership to all students in full-time education with an interest in statistics and data science.
+
+The membership is called e-student so find out [benefits from here](https://rss.org.uk/membership/join-now/e-student/)
+
+
+&lt;img src="img/RSSlogo.jpeg" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Digital Skills Programme (UoE)
+
+They offer various different training courses to develop your digital skills
+
+- Introduction to Data Science
+
+- Basic Data Visualizations
+
+- Data and AI Ethics
+
+- Introduction to R or Python
+
+You can find more details from [digital skills programme for students](https://information-services.ed.ac.uk/help-consultancy/is-skills/classroom-based-courses-and-webinars)
+
+
+---
+
+## Good luck!
+
+for your project presentations and career after IDS...
+
+Please take some time to complete the end-of-semester feedback survey.
+
+You can access it [here](https://forms.office.com/e/x7FJ57A0sZ)
+
+&lt;img src="img/QRCodeIDSfeedback.png" width="30%" style="display: block; margin: auto;" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightLines": true,
-"highlightStyle": "solarized-light",
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightLines": false,
+  "highlightStyle": "solarized-light",
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -120,24 +464,7 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
       links[i].target = '_blank';
     }
   }
-})();
-// adds .remark-code-has-line-highlighted class to <pre> parent elements
-// of code chunks containing highlighted lines with class .remark-code-line-highlighted
-(function(d) {
-  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
-  const preParents = [];
-  const findPreParent = function(line, p = 0) {
-    if (p > 1) return null; // traverse up no further than grandparent
-    const el = line.parentElement;
-    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
-  };
-
-  for (let line of hlines) {
-    let pre = findPreParent(line);
-    if (pre && !preParents.includes(pre)) preParents.push(pre);
-  }
-  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
-})(document);</script>
+})();</script>
 
 <script>
 slideshow._releaseMath = function(el) {

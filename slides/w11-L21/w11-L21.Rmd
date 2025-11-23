@@ -1,0 +1,230 @@
+---
+title: "Projects Q&A"
+subtitle: "<br><br> Introduction to Data Science"
+author: "University of Edinburgh"
+date: "<br> 2025/2026"
+output:
+  xaringan::moon_reader:
+    css: ["./xaringan-themer.css", "./slides.css"]
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+---
+
+```{r packages, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magick)
+library(dplyr)
+library(tidymodels)
+library(ggtext)
+library(knitr)
+library(kableExtra)
+library(xaringanExtra)
+library(Tmisc)
+library(emoji)
+library(openintro)
+library(ggridges)
+library(patchwork)
+library(skimr)
+library(webshot)
+set.seed(1234)
+options(
+  warnPartialMatchArgs = FALSE,
+  warnPartialMatchAttr = FALSE, 
+  warnPartialMatchDollar = FALSE,
+  width = 100
+)
+
+xaringanExtra::use_panelset()
+
+elmhurst_boot <- bootstraps(elmhurst, times = 1000)
+
+```
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE,
+  dplyr.print_min = 6, 
+  dplyr.print_max = 6,
+  tibble.width = 65,
+  width = 65
+  )
+# figure height, width, dpi
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.width = 8, 
+                      fig.asp = 0.618,
+                      out.width = "60%",
+                      fig.align = "center",
+                      dpi = 300,
+                      message = FALSE)
+# ggplot2
+ggplot2::theme_set(ggplot2::theme_gray(base_size = 16))
+# set seed
+set.seed(1234)
+# fontawesome
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+# output number of lines
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+
+```
+
+layout: true
+  
+<div class="my-footer">
+<span>
+University of Edinburgh
+</span>
+</div> 
+
+---
+
+## Reminders
+
+- The project presentations on Friday Nov 28th will be in different rooms from the usual workshop rooms:
+
+  * **9:00-10:30** in Elm Lecture Theatre (Nucleus)
+  * **10:30-12:00** in Elm Lecture Theatre (Nucleus)
+  * **13:00-14:30** in JCMB 1501 and Elm Lecture Theatre (Nucleus) [parallel sessions] 
+  * **14:30-16:00** in Elm Lecture Theatre (Nucleus)
+
+- A timetable will soon be posted on Learn (Assessment > Timetable presentations) with order of presentations. 
+
+--
+
+- Lecture on Wednesday "Recap and Looking Beyond IDS" + extra tips on report structure and submission + some extra time for Q&A.
+
+- Q&A session on Wednesday and Piazza for last minute questions.
+
+---
+
+## General Presentation tips
+
+- **Engaging Opening**: Start with an interesting fact, question, or story coming from your analysis to grab the audience’s attention and set the tone for your presentation.
+
+- **Clear and Logical Flow**: Structure your presentation logically. Start with a brief introduction, follow with the main content, and conclude with a summary.
+
+- **Use Visual Aids**: Enhance your presentation with slides, charts, and visuals when they are necessary. Make sure they are clear, simple, and support what you’re saying. Use plots / tables rather than lots of text. 
+  * You want to avoid people reading the slides rather than listening to you.
+
+- **Prepare for Questions**: Anticipate questions and prepare answers. This shows depth of knowledge and preparation.
+
+---
+
+## Extra Presentation tips
+
+- Each presentation will last 7 minutes + some Q&A. There is a penalty for going overtime.
+  - Keep in mind: usually 1 minute per slide, so aim for about 7 slides, no more than 10.
+  - Practice with your team!
+  - Points for teamwork: make sure that everyone participates in the presentation.
+
+--
+
+- Focus on the key points, don't include too much text on slides or irrelevant plots. Get your key findings across. 
+
+- Do not include code (set `echo=FALSE` in code chunks) unless absolutely necessary. Show outputs/plots instead. But when presenting a model, make sure the model formula is clear.
+
+- If you have investigated multiple sub-questions, it's probably better to select not more than 2 of them. You will have the opportunity to describe all that you have done on the report.
+
+---
+
+## Practical aspects
+
+- Check the timetable (posted soon) with order of presentations within your slot:
+
+  * **9:00-10:30** in Elm Lecture Theatre (Nucleus)
+  * **10:30-12:00** in Elm Lecture Theatre (Nucleus)
+  * **13:00-14:30** in JCMB 1501 and Elm Lecture Theatre (Nucleus) [parallel sessions] 
+  * **14:30-16:00** in Elm Lecture Theatre (Nucleus)
+
+- If you are in the **13:00-14:30** workshop, check which room you are assigned to.
+
+- Please make sure to arrive in the room at the beginning of your slot and wait until the end of your slot. To avoid disturbing the presentation, we want to minimize people entering and leaving the room during the presentations.
+
+---
+
+## Practical aspects
+
+- You will connect your laptop with a HDMI cable (at least one laptop in your team with HDMI port). 
+
+- Check that you can load your slides correctly beforehand! 
+
+- If none of you have an HTMI port, you should email your slides to Cecilia and Ozan (both html and the folder(s) associated to it, compressed in a zip file); you should email the slides:
+  - before 8:30 on the day of your presentation if you are in the morning session
+  - before 12:30 on the day of your presentation if you are in the afternoon session
+
+
+---
+## Data Science life cycle
+
+```{r echo=FALSE, out.width="90%", fig.align="left"}
+knitr::include_graphics("img/data-science-cycle/data-science-cycle.001.png")
+```
+
+---
+
+## Problems
+
+Hopefully you didn't have any, but...
+
+--
+
+- Ideally everyone should have contributed equally. The peer-contribution form will be used to adjust the report marks when this is not the case.
+
+--
+
+- If you had problems of unequal contribution (or you have had any other difficulties), please say so in the peer evaluation form.
+  - When completing the peer evaluation, if you are suggesting that an individual had "No contribution" or "Very poor" contribution, then you must provide a justifiable explanation. We will also check GitHub commits if the peer evaluation forms suggest an issue. 
+
+
+--
+
+- Everyone has different backgrounds, so you should try and work together and include everyone in the project. 
+
+---
+## Delivarables
+
+- Presentation 
+  - on Friday, 28th November, during your regular workshop slot
+  - slides submission - due on Monday, 1st December, at 10:00
+
+- Report - due on Monday, 1st December, at 10:00
+
+- Peer evaluation - due on Monday, 1st December, at 10:00
+  - There is a 20% penalty on your overall mark if you don't complete the peer evaluation form.
+
+
+--
+
+- If you are unable to attend the presentation due to serious sickness or other reasons covered by the Exceptional Circumstances policy, your team will present without you and your mark will be discounted when the Board of Examiners meets. In this case, please speak with your student advisor.
+
+---
+class:middle
+
+#Questions?
