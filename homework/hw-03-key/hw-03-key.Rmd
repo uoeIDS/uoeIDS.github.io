@@ -1,17 +1,329 @@
 ---
-title: "hw-??-key"
-author: "Your Name (S000000)"
-date: "`r Sys.Date()`"
+title: "HW 03 - Modelling"
+subtitle: "Due: 24 November, 16:00 UK time"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(tidymodels)
+
+knitr::opts_chunk$set(out.width = "100%", eval = TRUE)
 ```
 
-![Photo by Joshua Hoehne on Unsplash](img/joshua-hoehne-WPrTKRw8KRQ-unsplash.jpg)
+## Data Load and preparation
+
+```{r read_data}
+gss16<-read.csv("data/gss16.csv")
+```
+
+Selecting columns and removing missing observations:
+
+```{r}
+gss16_advfront <- gss16 %>%
+  select(advfront, emailhr, educ, polviews, wrkstat) %>%
+  drop_na()
+```
+
+Re-level the `advfront` variable such that it has two levels:
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    advfront = case_when(
+      advfront == "Strongly agree" ~ "Agree",
+      advfront == "Agree" ~ "Agree",
+      TRUE ~ "Not agree"
+    ),
+    advfront = fct_relevel(advfront, "Not agree", "Agree")
+  )
+```
 
 
-## Tut-tut! 
-You should not be looking for solutions to the homework assignment before the deadline has passed! Please visit the [IDS website](https://uoe-ids.netlify.app/assessments/homework/) for more information about the homework assignments, including dateline dates and the policy around late submission.
+Combine the levels of the `polviews` variable (political views) such that levels that it has three levels: `"Conservative"` , `"Moderate"`, and `"Liberal"`
+
+```{r}
+gss16_advfront <- gss16_advfront %>%
+  mutate(
+    polviews = case_when(
+      str_detect(polviews, "[Cc]onservative") ~ "Conservative",
+      str_detect(polviews, "[Ll]iberal") ~ "Liberal",
+      TRUE ~ polviews
+    ),
+    polviews = fct_relevel(polviews, "Conservative", "Moderate", "Liberal")
+  )
+```
+
+Here are the first few rows of the cleaned and prepared data:
+
+```{r}
+gss16_advfront %>% head(n = 10)
+```
+
+## Exercise 1: Create a linear regression model
+
+#### Exercise 1 (a)
+
+```{r}
+linear_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(emailhr ~ educ, data = gss16_advfront) 
+
+linear_fit %>% tidy()
+```
+
+```{r echo = FALSE}
+coefs <- linear_fit %>% tidy() %>% pull(estimate)
+```
+
+
+Formula of the fitted model (roughly): 
+$\widehat{emailhr} =$ `r round(coefs[1],2)` + `r round(coefs[2],2)` $\times \textrm{educ}$.
+
+The coefficient for `emailhr` explains that people with an additional year in education are *expected* to spend **on average** `r round(coefs[2],2)` hours more on email per week.
+
+#### Exercise 1 (b)
+
+```{r}
+glance(linear_fit)
+```
+
+```{r echo=FALSE}
+R2 <- glance(linear_fit) %>% pull(r.squared)
+```
+
+
+When the simple linear regression is considered for the `emailhr` variable, the model results in poor/moderate performance. 
+In fact, the model R-squared value is very close to the zero (`r round(R2,3)`), and this shows that these variables are not able to explain a large variation in the response variable -- only `r round(100*R2,1)`% of the variation in `emailhr` is explained by the model.
+
+
+To examine if the linear model assumptions are satisfied we need to create a diagnostic plot, or 
+"residual by fitted" plot.
+
+```{r}
+em_ed_ft_fit_aug <- augment(linear_fit$fit)
+ggplot(em_ed_ft_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Predicted values", y = "Residuals")
+```
+
+By examining the residual by fitted plot, we see that the residuals do not satisty the assumption of the linear model, as they display a "fan shape", i.e. the variance of the residuals appears to be larger for larger predicted values. 
+
+**Note: creating the following scatterplot does not allow us to assess if the model assumptions are satisfied**, and should not receive points. 
+
+```{r}
+ggplot(data = gss16_advfront, mapping = aes(x = educ, y = emailhr)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE, formula = "y ~ x") +
+  labs(
+    x = "Number of years in education.", 
+    y = "Number of hours spent on email weekly.", 
+    title = "Education vs. Hours for email"
+    )
+```
+
+Nevertheless from this scatterplot we can deduce that something is off (the increasing variance of the residual around the fitted line). 
+
+It is possible to make the correct statement that there is a fan-shape pattern in the residuals from examining this plot, so points for the "fan-shape comment" should be awarded in this case.
+
+## Exercise 2: Create a workflow to fit a model
+
+```{r}
+set.seed(1234)
+gss16_split <- initial_split(gss16_advfront)
+gss16_train <- training(gss16_split)
+gss16_test  <- testing(gss16_split)
+```
+
+#### Exercise 2 (a)
+
+Recipe
+
+```{r}
+gss16_rec_1 <- recipe(advfront ~ educ, data = gss16_train) 
+# -- these are valid steps, that could be added with %>% --
+# -- (but not necessarily required by the question)      --
+# step_dummy(all_nominal(), -all_outcomes())
+# step_zv(all_predictors()) 
+```
+
+Model
+
+```{r}
+gss16_mod_1 <- logistic_reg() %>%
+  set_engine("glm")
+```
+
+Workflow
+
+```{r}
+gss16_wflow_1 <- workflow() %>%
+  add_model(gss16_mod_1) %>%
+  add_recipe(gss16_rec_1)
+```
+
+#### Exercise 2 (b)
+
+A logistic regression is the appropriate model to use here because the response variable is binary (agree vs not agree).
+
+#### Exercise 2 (c)
+
+```{r}
+gss16_fit_1 <- gss16_wflow_1 %>%
+  fit(gss16_train)
+tidy(gss16_fit_1)
+```
+
+The fitted model results in a coefficient of 0.15 for education, suggesting that the probability for agreeing with the statement increases on average for a participant with a larger number of years in education.
+
+*Note the interpretation of the coefficient was not requested by the exercise.*
+
+## Exercise 3: Logistic regression with single predictor
+
+#### Exercise 3 (a)
+
+```{r}
+# Model 1
+gss16_test_pred_1 <- predict(gss16_fit_1, new_data = gss16_test, type = "prob") %>%
+  bind_cols(gss16_test %>% select(advfront))
+
+gss16_test_pred_1 %>%
+  roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
+  autoplot()
+
+gss16_test_pred_1 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+```
+
+```{r echo=FALSE}
+AUC1 <- gss16_test_pred_1 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second") %>%
+  pull(.estimate)
+```
+
+
+This model has a AUC (areal under the curve) of `r round(AUC1,2)`. 
+*Note, calculating the AUC was not required as part of this exercise, but it will be useful for the last question.*
+
+**If option `event_level = 'second'` is not specified, the ROC curve plot is the "reverse" ROC curve**:
+```{r}
+gss16_test_pred_1 %>%
+  roc_curve(truth = advfront, .pred_Agree) %>%
+  autoplot() + ggtitle("Reverse (wrong) ROC plot")
+```
+
+
+
+#### Exercise 3 (b)
+
+```{r}
+threshold <- 0.83
+
+table_pred <- gss16_test_pred_1 %>% 
+  mutate(
+    advfront_pred = if_else(.pred_Agree >= threshold, "Predicted to agree", "Predicted to disagree"),
+    advfront = if_else(advfront == "Agree", "Agree", "Disagree")
+  ) %>%
+  count(advfront_pred, advfront) %>%
+  pivot_wider(names_from = advfront, values_from = n)
+table_pred
+```
+
+```{r echo = FALSE}
+TP = table_pred[1,2]
+FP = table_pred[1,3]
+FN = table_pred[2,2]
+TN = table_pred[2,3]
+```
+
+This means that 
+
+- TP = `r TP`; FP = `r FP`
+- FN = `r FN`, TN = `r TN`
+
+Sensitivity is the probability of "predicting to agree" for a participant who agrees, and it's computed as TP / (TP + FN), so `r round(TP / (TP + FN),2)`.
+
+Specificity is the probability of "predicting to disagree" for a participant who disagree, and it's computed as TN / (FP + TN), so `r round(TN / (FP + TN),2)`.
+
+Alternatively, there are `sensitivity` and `specificity` functions in the `caret` package. 
+Other functions `sens` and `spec` are available from other packages. This is not the
+recommended solution, but it's accepted.
+
+```{r message = FALSE, warning = FALSE}
+gss16_test_labels_085 <- gss16_test_pred_1 %>% 
+  mutate(
+    advfront_pred = factor(if_else(.pred_Agree >= threshold, "Agree", "Disagree")),
+    advfront = factor(if_else(advfront == "Agree", "Agree", "Disagree"))
+  )
+
+library(caret)
+
+sensitivity(data = gss16_test_labels_085$advfront_pred,
+            reference = gss16_test_labels_085$advfront)
+
+specificity(data = gss16_test_labels_085$advfront_pred,
+            reference = gss16_test_labels_085$advfront)
+```
+
+
+## Exercise 4: Logistic regression modelling and interpretation
+
+#### Exercise 4 (a)
+
+Model workflow steps:
+
+```{r}
+gss16_rec_2 <- recipe(advfront ~ educ + wrkstat + polviews + emailhr,
+                      data = gss16_train) %>%
+  step_dummy(all_nominal(), -all_outcomes())
+  # step_dummy(all_nominal_predictors()) # this also works
+  # step_zv(all_predictors()) # also valid step
+
+gss16_mod_2 <- logistic_reg() %>%
+  set_engine("glm")
+
+gss16_wflow_2 <- workflow() %>%
+  add_model(gss16_mod_2) %>%
+  add_recipe(gss16_rec_2)
+```
+
+Again, a logistic regression is used because the outcome is binary. 
+
+#### Exercise 4 (b)
+
+Fitting the model to the training data: 
+
+```{r}
+gss16_fit_2 <- gss16_wflow_2 %>%
+  fit(gss16_train)
+tidy(gss16_fit_2)
+```
+
+Predicting the new model on the test data:
+
+```{r}
+gss16_test_pred_2 <- predict(gss16_fit_2, 
+                             new_data = gss16_test, type = "prob") %>%
+  bind_cols(gss16_test %>% select(advfront))
+
+gss16_test_pred_2 %>%
+  roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
+  autoplot()
+
+gss16_test_pred_2 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+
+AUC2 <- gss16_test_pred_2 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second") %>%
+  pull(.estimate)
+```
+
+The area under the ROC curve for the second model (`r AUC2`) is moderately less than the first model (`r AUC1`). 
+
+#### Exercise 4 (c)
+
+Model 1 has better AUC (area under ROC curve) than model 2, although whether this performance is a substantive improvement is arguable. Never-the-less, as model 1 has fewer variables, which is generally preferred due to reduced model complexity (Occam's razor), run time, and better generalizability, so this model should be favoured.
+
