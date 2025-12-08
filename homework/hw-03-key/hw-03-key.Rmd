@@ -325,5 +325,5 @@ The area under the ROC curve for the second model (`r AUC2`) is moderately less 
 
 #### Exercise 4 (c)
 
-Model 1 has better AUC (area under ROC curve) than model 2, although whether this performance is a substantive improvement is arguable. Never-the-less, as model 1 has fewer variables, which is generally preferred due to reduced model complexity (Occam's razor), run time, and better generalizability, so this model should be favoured.
+Model 1 has better AUC (area under ROC curve) than model 2. Moreover, model 1 has fewer variables, which is generally preferred due to reduced model complexity (Occam's razor), run time, and better generalizability, so even if they have comparable preformance, this model should be favoured.
 
