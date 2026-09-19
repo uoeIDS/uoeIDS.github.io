@@ -2,7 +2,7 @@
 title: "Course Toolkit"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026 "
+date: "<br> 2026/2027 "
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -38,7 +38,7 @@ $$\\[3ex]$$
 
 - R Markdown
 
-- GitHub
+- Git/GitHub
 ]
 .pull-right-wide[
 
@@ -64,6 +64,29 @@ knitr::include_graphics("img/rmarkdownlogo.png")
 
 .center[`r fontawesome::fa(name = "fab fa-github", height = "10ex")`]
 
+]
+
+---
+
+## R and RStudio
+
+.pull-left[
+```{r echo=FALSE, out.width="25%"}
+knitr::include_graphics("img/r-logo.png")
+```
+
+- R is an open-source statistical **programming language**
+- R is also an environment for statistical computing and graphics
+- It's easily extensible with *packages*
+]
+
+.pull-right[
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("img/rstudio-logo.png")
+```
+
+- RStudio is a convenient interface for R called an **IDE** (integrated development environment), e.g. *"I write R code in the RStudio IDE"*
+- RStudio is not a requirement for programming with R, but it's very commonly used by R programmers and data scientists
 ]
 
 ---
@@ -165,7 +188,21 @@ g
 - Use the coding [syntax guidelines](https://style.tidyverse.org/syntax.html)
 ]
 
+---
 
+## R packages
+
+- **Packages** are the fundamental units of reproducible R code. They include reusable R functions, the documentation that describes how to use them, and get some help when we need<sup>1</sup>. 
+
+- In recent shared information, there are 25098 available R packages available on **CRAN** (the Comprehensive R Archive Network)<sup>2</sup>
+
+- We're going to work with a small (but important) subset of these!
+
+.footnote[
+<sup>1</sup> Wickham and Bryan, [R Packages](https://r-pkgs.org/).
+
+<sup>2</sup> [CRAN contributed packages](https://cran.r-project.org/web/packages/).
+]
 
 ---
 
@@ -290,15 +327,32 @@ $$ y = 2x + 1 $$
 
 class: middle
 
-# GitHub for version control
-
-```{r echo=FALSE, out.width="30%", fig.align="center"}
-knitr::include_graphics("img/Githublogo.png")
-```
+# Git and GitHub for version control
 
 ---
 
-## GitHub
+## Git and GitHub
+
+.pull-left[
+```{r echo=FALSE, out.width="25%"}
+knitr::include_graphics("img/git-logo.png")
+```
+- Git is a version control system -- like “Track Changes” features from Microsoft Word, on steroids
+- It's not the only version control system, but it's a very popular one
+]
+.pull-right[
+```{r echo=FALSE, out.width="25%"}
+knitr::include_graphics("img/Githublogo.png")
+```
+- GitHub is the home for your Git-based projects on the internet -- like DropBox but much, much better
+
+- We will use GitHub as a platform for sharing course materials (main course management!) and collaboration on your projects. 
+]
+
+
+---
+
+## GitHub details
 
 .pull-left[
 What is GitHub is used for?
@@ -318,9 +372,27 @@ What does GitHub do?
 - Control and track changes with **Staging** and **Committing**
 - **Branch** and **Merge** to allow for work on different pars and versions of a project
 - **Pull** the latest version of the project to a local copy
-- **Pull** local updates to the main project
+- **Push** local updates to the main project
 
 [Git and GitHub with Rstudio](https://rstudio.github.io/cheatsheets/git-github.pdf)
+
+---
+
+## Versioning
+
+```{r echo=FALSE, fig.align = "center", out.width = "70%"}
+knitr::include_graphics("img/lego-steps.png")
+```
+
+---
+
+## Versioning 
+
+### with human readable messages
+
+```{r echo=FALSE, fig.align = "center", out.width = "60%"}
+knitr::include_graphics("img/lego-steps-commit-messages.png")
+```
 
 ---
 
@@ -392,6 +464,32 @@ Under the _Git_ tab (top-right panel), click 'Commit' button
 knitr::include_graphics("img/RStudio_git_commit2.png")
 ```
 
+---
+
+class: middle
+
+# Reproducible data analysis
+
+---
+
+## Reproducibility checklist
+
+.question[
+What does it mean for a data analysis to be "reproducible"?
+]
+
+--
+
+Near-term goals:
+
+- Are the tables and figures reproducible from the code and data?
+- Does the code actually do what you think it does?
+- In addition to what was done, is it clear *why* it was done? 
+
+Long-term goals:
+
+- Can the code be used for other data?
+- Can you extend the code to do other things?
 
 
 
