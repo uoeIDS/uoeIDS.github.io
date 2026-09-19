@@ -2,7 +2,7 @@
 title: "Welcome to IDS!"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -10,7 +10,7 @@ output:
     nature:
       ratio: "16:9"
       highlightLines: true
-      highlightStyle: solarized-light
+      highlightStyle: solarized-dark
       countIncrementalSlides: false
 ---
 
@@ -21,12 +21,6 @@ library(emoji)
 #devtools::install_github("hadley/emo", force = TRUE)
 ```
 
-class: middle
-
-# This lecture is being recorded
-
-
----
 
 class: middle
 
@@ -36,11 +30,11 @@ class: middle
 
 ## Staff
 
-- Dr Cecilia Balocchi (_she/her_) [JCMB 4607]
 - Dr Ozan Evkaya (_he/him_) [JCMB 2257]
+- Dr Cecilia Balocchi (_she/her_) [JCMB 4607]
 
-```{r, echo=FALSE,out.width="15%", out.height="20%",fig.cap="Cecilia / Ozan",fig.show='hold',fig.align='center'}
-knitr::include_graphics(c("img/people/cecilia.jpg", "img/people/Ozan.jpg"))
+```{r, echo=FALSE,out.width="15%", out.height="20%",fig.cap="Ozan / Cecilia",fig.show='hold',fig.align='center'}
+knitr::include_graphics(c("img/people/Ozan.jpg", "img/people/cecilia.jpg"))
 ```
 
 - Support staff
@@ -88,6 +82,9 @@ A - R.
 
 **Q: Why not language X?**
 A: We can discuss that over tea/coffee `r emoji::emoji("hot_beverage")`.
+
+**Q: What if I missed the lecture for some reason?**
+A: Lectures will be recorded and shared `r emoji::emoji("sweat_smile")`.
 ]
 
 ---
@@ -119,6 +116,14 @@ knitr::include_graphics("img/rstudio.png")
 class: middle
 
 # Data science life cycle
+
+---
+
+```{r echo=FALSE, out.width="50%", fig.align="center"}
+knitr::include_graphics("img/ppdac.png")
+```
+Image Credit: [PPDA - The Statistical Method, MacKay and Oldford (2000)](https://www.statsref.com/HTML/statistics__statistical_analys.html)
+
 
 ---
 
@@ -194,22 +199,14 @@ knitr::include_graphics("img/data-science-cycle/data-science-cycle.008.png")
 
 ---
 
-```{r echo=FALSE, out.width="85%", fig.align="left"}
-knitr::include_graphics("img/unvotes/unvotes.gif")
-```
-
----
-
-
-
 class: middle
 
 # Let's dive in!
 
 ---
 
-```{r echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/unvotes/unvotes-01.jpeg")
+```{r echo=FALSE, out.width="85%", fig.align="left"}
+knitr::include_graphics("img/unvotes/unvotes.gif")
 ```
 
 ---
@@ -315,6 +312,18 @@ knitr::include_graphics("img/unvotes/unvotes-15.png")
 
 ---
 
+.center[
+.large[
+[fringe-finder-project](https://izr94x-yijia-yang.shinyapps.io/fringe-finder/)
+]
+]
+
+```{r echo=FALSE, out.width="65%"}
+knitr::include_graphics("img/fringe_price_box.png")
+```
+
+---
+
 class: middle
 
 # Course details
@@ -323,7 +332,7 @@ class: middle
 
 ## Learning outcomes
 .pull-left-wide[
-On completion of this course, the student will be able to:
+<!-- On completion of this course, the student will be able to: -->
 
 1. Employ all stages of a modern **data science pipeline**, including import, tidy, transform, visualize, model, and communicate.
 
@@ -331,7 +340,10 @@ On completion of this course, the student will be able to:
 
 3. **Interpret** results correctly, effectively, and in context without relying on statistical jargon
 
-4. Use the statistical computing language `R` to perform **fully reproducible** data analyses.]
+4. Use the statistical computing language `R` to perform **fully reproducible** data analyses.
+
+5. Use the **basics of Git and GitHub** for the purpose of code **collaboration** and **reproducibility**.
+]
 
 ---
 
@@ -372,18 +384,19 @@ On completion of this course, the student will be able to:
 
 - **Mondays:**
   - Release of week's material.
-  - Lecture at 13:10-14:00, Alder Lecture Theatre - Nucleus.
+  - Lecture at 13:10-14:00, 1.15 - Larch Lecture Theatre - Nucleus.
 - **Tuesdays:**
   - Quiz deadline from the previous week.
 - **Wednesday:**
-  - Lecture at 11:10-12:00, Alder Lecture Theatre - Nucleus.
-  - Student Q&A session at 12:10-13:00, JCMB 1501.
+  - Lecture at 11:10-12:00, 1.15 - Larch Lecture Theatre - Nucleus.
+  - Student Q&A session at 12:10-13:00, JCMB 6201.
   - New quiz released (starting week 2).
 - **Thursday:**
   - Release of workshop material.
 - **Fridays:**
-  - Labs, 9:00 - 16:00 over 4 time slots: in JCMB 5205 (morning slots) or Murchison House G.09 (afternoon slots).
+  - Labs, 9:00 - 16:00 over 4 time slots: in G.09 - Teaching Studio - Murchison House
   - Check your timetable to attend the one you have been assigned to and bring your laptops!
+  - If you have issues on workshop hours like clash or something else, let us know asap!
 
 
 ---
@@ -434,7 +447,7 @@ On completion of this course, the student will be able to:
 
 ## Toolkit
 
-- We will be using RStudio for programming and GitHub for teamwork and version control.
+- We will be using RStudio for programming and Git/GitHub for teamwork and version control.
   - More details in the next lecture.
 
 - You will need to spend some time downloading and installing the tools needed for the course.
@@ -454,11 +467,11 @@ On completion of this course, the student will be able to:
 <!--   - Week 3: Monday, 30th, 10:00 AM - 12:00 PM in Room JCMB 5205 -->
 
 
-- **Student hour (Q&A session)** on Wednesday - Ozan and I will provide additional support.
+- **Student hour (Q&A session)** on Wednesday - I will provide additional support.
 
 - **labs** - you will be able to get help from the tutors in the labs.
 
-- **Piazza** - post here for help from us or your peers
+- **EdStem** - post here for help from us or your peers
 
 - Note: we can only guarantee IT support for Windows laptops.
 
@@ -494,7 +507,7 @@ knitr::include_graphics("img/website2.png")
   - announcements
   - homework, quiz and project submissions
   - course marks
-  - links to join Piazza and course website
+  - links to join EdStem and course website
 
 ```{r echo=FALSE, out.width="50%", fig.align="center"}
 knitr::include_graphics("img/LearnUltra.png")
@@ -502,10 +515,10 @@ knitr::include_graphics("img/LearnUltra.png")
 
 ---
 
-## Course operation resources - Piazza
+## Course operation resources - EdStem
 
-- For all course content related questions
-- Ask **and** answer
+- For all course content related questions, a new system replacing Piazza
+- Not only ask **but** also answer
 - Before posting, check questions that have already been asked
 - Can also be used for team based discussion
 - Do not post answers to quizzes or homeworks
@@ -528,10 +541,10 @@ Can anyone help explain why I am getting this error?
 - **Deadline**: Following Tuesday at 12:00noon.
 - 10 Weekly quiz in total. Grade based on best 9 out of 10 quizzes!
 - Work on them individually
-- 5-7 multiple choice questions, some requiring a bit of coding, some conceptual and visual based exercises.
+- 5-7 multiple choice questions, some requiring a bit of coding, some conceptual and visual based exercises, some experimental and reflective style ones.
 - **Tip:** Read the instructions carefully and don't leave it until the last minute!
 - Submission:
-  - `Assessment` > `Quizzes` via Learn-Ultra platform
+  - `Assessment` > `Weekly Quizzes` via Learn-Ultra platform
   - Enter your answers in a suitable format
 
 ---
@@ -539,12 +552,12 @@ Can anyone help explain why I am getting this error?
 ## Assessment
 
 **In-class test** (10%)
-- **When**: During lecture, Wednesday 8 October, 11:10-12:00 (week 4).
-- **Where**: Alder Lecture Theatre - Nucleus.
-- **Duration**: 20–30 minutes (details TBC), followed by lecture
+- **When**: During lecture, Wednesday 14 October, 11:10-12:00 (week 4).
+- **Where**: 1.15 - Larch Lecture Theatre - Nucleus and Lecture Theatre B - JCMB.
+- **Duration**: 20–30 minutes (details TBC), followed by lecture or not!
 - Complete on Learn, using your laptops.
-- Closed book; no notes or internet access (invigilated).
-- Attendance will be taken, bring your student ID.
+- Closed book and invigilated; no notes or internet access.
+- Attendance will be taken, please bring your student ID.
 
 
 ---
@@ -552,9 +565,9 @@ Can anyone help explain why I am getting this error?
 ## Assessment
 
 **Homework assignments** (20%)
-- **Release**: Before Fridays, weeks 6, 9.
-- **Deadline**: Fridays at 16:00, weeks 7 & 10.
-- Work on them individually.
+- **Release**: Before Fridays, weeks 5, 8.
+- **Deadline**: Fridays at 16:00, weeks 6 & 9.
+- Work on them individually, based on HW template.
 - All two submissions count.
 - Submit via Gradescope.
 - **IMPORTANT:** Your GitHub repository _MUST_ be made private for individual homework assignments. Failure to make your repository private means that others can see your work and thereby risks incurring an academic misconduct case.
@@ -568,8 +581,8 @@ Can anyone help explain why I am getting this error?
 - TL;DR: Find a dataset and do something with it! You will see some data suggestions later in the semester.
 - Work in teams, ideally using pair programming techniques.
 - How are you graded:
-  - A 5 minute team presentation.
-  - A write-up of your investigation, 1,500 word count.
+  - A team presentation.
+  - A write-up of your investigation, with a certain word count.
 - You must complete the project and participate in the presentation.
 - More details will be provided later in the course.
 
@@ -603,24 +616,44 @@ Remember:
 - you need to acknowledge the use of generative AI where it is (permitted to be) used; 
   - `r emoji::emoji("exclamation")` presenting AI outputs as your own original work is considered as academic misconduct.
 
-Please read the [University guidance on GenAI](https://information-services.ed.ac.uk/computing/comms-and-collab/elm/guidance-for-working-with-generative-ai).
+Please read the [University guidance on GenAI](https://information-services.ed.ac.uk/computing/comms-and-collab/elm/guidance-for-working-with-generative-ai) and our assessment oriented instructions. 
+
+---
+
+## Premises and Promises
+
+What we need to be aware of;
+
+- We know that GenAI is not going anywhere, but developing foundations of DS and some statistical thinking is our main goal here.  
+- DS as a field is already under a big impact of GenAI
+- [Cognitive offloading](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5082524): over-use of generative AI can negatively affect your learning
+- **attempt first** is the key for developing a good habit on responsible use.
+
+what you will get;
+
+- **Honest and transparent communication about use of GenAI**
+- Specific instructions about exploring some tasks with GenAI, I call it as **GenAI playground items** to support your learning
 
 ---
 
 ## Use of Generative-AI in this course
 
-Academic integrity is an underlying principle of research and academic practice. All submitted work is expected to be your own.
+Academic integrity is an underlying principle. All submitted work is expected to be your own.
 
-**In-class test**, **Homework** and **quizzes**:
-- AI tools (e.g., chatGPT, ELM) should **not be used** for this assessment. Using AI without authorisation might constitute academic misconduct
-- Please ensure that you do not input direct exercise questions into the AI prompts.
+**In-class test**:
+- AI tools (e.g., ELM, chatGPT) should **not be used** for this assessment. Using AI without authorisation might constitute academic misconduct
+- Please ensure that you do not input direct exercise questions into the AI prompts. Do not copy and paste the outputs generally, for your own learning.
+
+**Homework** and **quizzes**:
+- AI tools (e.g., ELM, chatGPT) may be used for specific components of this assessment for learning purposes and the development of AI literacy. Using AI without authorisation might constitute academic misconduct, unless it is suggested otherwise.
+- Please make sure that you do not input direct exercise questions into the AI prompts, unless it is suggested otherwise.
 
 ---
 
 ## Use of Generative-AI in this course
 
 **Final Project**:
-- AI tools (e.g., chatGPT, ELM) should **not be used to generate content** for this assessment. However, you are allowed to use these tools to identify ideas, help organize your thoughts, and plan your assessment. 
+- AI tools (e.g., ELM, chatGPT) should **not be used to generate content** for this assessment. However, you are allowed to use these tools to identify ideas, help organize your thoughts, and plan your assessment. 
 - You may also use it to improve the clarity of your writing, but you should not use it in the final wording of your work. In particular, you should not copy-paste entire sentences produced by genAI. 
 - For example, you may use genAI tools for learning purposes, to enhance your understanding and develop your skills independently, similar to how you would use search engines to research information, or as a virtual tutor. 
 - Relying on GenAI tools for coding or simply copy-pasting their output will limit your ability to learn and develop your coding skills. If you used a GenAI tool to get help with a coding task, make sure you type out the solution (after having fully understood what it does) instead of copy-pasting the output.
@@ -631,25 +664,37 @@ Academic integrity is an underlying principle of research and academic practice.
 ## Use of Generative-AI in this course
 
 **Final Project** (continued):
-- **If you use AI software, you must acknowledge its use in your submission.** [Here you can find examples of acknowledgements](https://www.ncl.ac.uk/academic-skills-kit/good-academic-practice/artificial-intelligence/acknowledging/) (no need to list the prompts and outputs used).
-- Examples: 
-  - "I used ChatGPT (v5) to help me brainstorm ideas for the project."
+- **If you use AI software, you must acknowledge its use in your submission.** [Here you can find examples of acknowledgements, important caveats](https://information-services.ed.ac.uk/computing/comms-and-collab/elm/generative-ai-guidance-for-students/using-generative) (no need to list the prompts and outputs used, unless it is suggested speficially).
+- Some Examples: 
+  - "I used GPT 5 via ELM to check grammar and spelling throughout my assignment."
   - "I used ChatGPT to correct the grammar and help me improve the clarity of my writing (no copy-pasting of entire sentences)."
-  - "I used ChatGPT to help me debug my code."
+
 
 ---
 
 ## Getting help
 
-- **Piazza** for course content, logistics, etc. discussion on the course discussion forum
+- **EdStem** for course content, logistics, etc. discussion on the course discussion forum
 
-- **Student hour (Q&A session)** after Wednesday lecture at 12.10-13.00, JCMB 5326. Optional, drop-in if you have any questions.
+- **Student hour (Q&A session)** after Wednesday lecture at 12.10-13.00, JCMB 6201. Optional, drop-in if you have any questions.
 
-- **MathsBase** for drop-in support from a tutor
+- **MathsBase** for drop-in support from a tutor, good to check their timetable. 
 
-- ~~Email~~ **Piazza private messages**: for questions _only_ about personal matters (e.g. illness, concessions).
+- ~~Email~~ **EdStem private messages**: for questions _only_ about personal matters (e.g. illness, concessions).
 
-- Most importantly, ask questions!
+- Most importantly, ask questions! No need to be shy, we are here to help, not to judge your questions. 
 
 ---
+
+.center[
+.large[
+Are you with me for that journey ?
+]
+]
+
+```{r echo=FALSE, out.width="50%",fig.align='center'}
+knitr::include_graphics("img/error_meme.jpeg")
+```
+
+
 
