@@ -2,7 +2,7 @@
 title: "Tidy Data and Data Wrangling"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -45,13 +45,45 @@ knit_hooks$set(output = function(x, options) {
 
 ```
 
+## Framework to apply
+
+I want to introduce and use from time to time in lectures 
+
+**Think, Pair, Share (TPS) + _Ask_: a collaborative learning strategy**
+
+- **Think:** Thinking about the given question individually (1 min at most)
+- **Pair:** You can discuss what you thought to person next t you, feel free to do it your neighbors in the same seating row (group size as 2-3 at least), to refine your thinking and get peer support (30 sec)
+- **Share:** Share your logic within your group verbally (1-2 min).
+- **Ask:** Do your follow up questioning, based on what you discussed in the group to the whole class, either me or you can answer or maybe we need to investigate further (1 min)
+
+.small[
+- Think-Pair-Share (**TPS**) is a scaffolding technique devised by Frank Lyman in the early 1980s. 
+- **TPSA** is my recent personal approach :)
+]
+
+---
+
+## 
+
+.question[
+What makes this data not tidy? - **TPAS** moment
+]
+
+```{r hyperwar-airplanes-on-hand, echo=FALSE, out.width="90%", fig.align = "center", caption = "WW2 Army Air Force combat aircraft", out.width = "70%"}
+knitr::include_graphics("img/hyperwar-airplanes-on-hand.png")
+```
+
+.footnote[
+Source: [Army Air Forces Statistical Digest, WW II](https://www.ibiblio.org/hyperwar/AAF/StatDigest/aafsd-3.html)
+]
+
+---
 
 ## Tidy data
 
->Happy families are all alike; every unhappy family is unhappy in its own way. 
+>"Tidy datasets are easy to manipulate, model and visualise, and have a specific structure: each variable is a column, each observation is a row, and each type of observational unit is a table." 
 >
->Leo Tolstoy
-
+>Hadley Wickham
 
 .pull-left[
 **Characteristics of tidy data:**
@@ -69,22 +101,6 @@ knit_hooks$set(output = function(x, options) {
 - Cell comments or superfluous information.
 - Empty or total/subtotal rows.
 - ... 
-]
-
----
-
-## 
-
-.question[
-What makes this data not tidy?
-]
-
-```{r hyperwar-airplanes-on-hand, echo=FALSE, out.width="90%", fig.align = "center", caption = "WW2 Army Air Force combat aircraft", out.width = "70%"}
-knitr::include_graphics("img/hyperwar-airplanes-on-hand.png")
-```
-
-.footnote[
-Source: [Army Air Forces Statistical Digest, WW II](https://www.ibiblio.org/hyperwar/AAF/StatDigest/aafsd-3.html)
 ]
 
 ---
@@ -196,6 +212,87 @@ starwars %>%
 
 ---
 
+class: middle
+
+# Functions
+
+---
+
+## Why functions?
+
+- Automate common tasks in a more powerful and general way than copy-and-pasting:
+  - Give your function an evocative name that makes your code easier to understand
+  - As requirements change, only need to update code in one place, instead of many
+  - Eliminate chance of making incidental mistakes when you copy and paste (i.e. updating a variable name in one place, but not in another)
+
+--
+
+- Down the line: Improve your reach as a data scientist by writing functions (and packages!) that others use
+
+---
+
+## What goes in / what comes out?
+
+.pull-left-wide[
+- They take input(s) defined in the function definition
+
+```{r eval=FALSE}
+# General structure of the format
+function([inputs separated by commas]){
+  # what to do with those inputs
+}
+```
+
+- By default they return the last value computed in the function
+
+```{r eval=FALSE}
+#Give a reasonable name for it to use repeatedly later
+make_smoothie <- function(fruit, milk, ice){
+  # blend everything together...
+  
+  # hand back the smoothie
+  smoothie
+}
+```
+
+
+```{r eval=FALSE}
+make_smoothie(fruit = "banana", milk = "oat", ice = TRUE)
+#> 🥤 banana oat smoothie
+```
+
+- Same function, different inputs → different output.
+- You can define more outputs to be returned in a list as well as nice print methods (but we won't go there for now...)
+
+R functions: 
+- `mean()` works the same way: numbers go in, R adds them up and divides, and one number comes out
+
+]
+
+---
+
+## Naming functions
+
+- Names should be short but clearly evoke what the function does
+- Names should be verbs, not nouns
+
+--
+- Multi-word names should be separated by underscores (`snake_case` as opposed to `camelCase`)
+
+--
+- A family of functions should be named similarly (`scrape_page()`, `scrape_speech()` OR `str_remove()`, `str_replace()` etc.)
+
+--
+- Avoid overwriting existing (especially widely used) functions
+
+```{r eval=FALSE}
+# JUST DON'T
+mean <- function(x){ 
+  x * 3 
+  }
+```
+
+---
 
 
 class: middle
@@ -322,12 +419,13 @@ slice(starwars, c(2,4,6,8))
 filter(starwars, species == "Droid")
 ```
 
-
 <br>
 
-"These aren't the droids you're looking for!"<img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'><img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'>
+<!-- "These aren't the droids you're looking for!"<img style='vertical-align:middle;height:36px;' src='img/C3PO.webp'><img style='vertical-align:middle;height:36px;' src='img/R2D2.webp'> -->
 
-
+```{r starwars_filter2, eval=FALSE}
+filter(starwars, species == "Droid" & height < 100)
+```
 
 ---
 
@@ -348,10 +446,6 @@ filter(starwars, species == "Droid")
 | `x & y` | Logical AND operator  | `TRUE & FALSE` | `FALSE` |
 | `x `<span, style="color:#a7a798;">&nbsp;&nbsp;&#124;&nbsp;&nbsp;</span>` y` | Logical OR operator   | `TRUE `<span, style="color:#a7a798;">&nbsp;&nbsp;&#124;&nbsp;&nbsp;</span>` FALSE` | `TRUE`  |
 | `!x`    | Logical NOT operator  | `!TRUE `       | `FALSE` |
-
-```{r starwars_filter2, eval=FALSE}
-filter(starwars, species == "Droid" & height < 100)
-```
 
 
 ---
@@ -459,6 +553,7 @@ class: middle
 
 .huge[.pink[want]] .hand[to slice it, and dice it, and juice it, and process it]
 
+More functions to explore: [Check out cheatsheets](https://uoe-ids.netlify.app/resources/#cheatsheets)
 
 ---
 
@@ -502,12 +597,14 @@ summarise(starwars_humans,
 Which method (if either) produces `tidy` code that is easy to read? Can we do any better?
 ]
 
+.small[**TPSA** moment]
 
 ---
 
 class: middle
 
 # Pipes
+
 
 ---
 
@@ -762,6 +859,21 @@ starwars %>%
 
 ---
 
+## Pipes: `%>%` (magrittr) vs `|>` (base R)
+
+- Both do the same core job: `x %>% f(y)` and `x |> f(y)` are both the same as `f(x, y)`.
+
+| | `%>%` | <code>&#124;></code> |
+|---|---|---|
+| Needs a package? | Yes (magrittr / tidyverse) | No (R ≥ 4.1.0) |
+| Brackets optional? | `x %>% head` works | Must write <code>x &#124;> head()</code> |
+| Speed | Slightly slower | Slightly faster |
+
+- **When to use which?** For everyday tidyverse wrangling, either works. Pick one and be consistent!
+- RStudio shortcut: `Ctrl/Cmd + Shift + M`. 
+- Choose which pipe it inserts under _Tools > Global Options > Code > Use native pipe operator_.
+
+---
 
 ## A note on piping and layering
 
@@ -775,7 +887,4 @@ starwars %>%
 
 - They can be combined for certain tasks! But we are not allowed to use them interchangeably. 
 
-- Ps. R 4.1.0 introduced a native pipe operator, `|>`. The behaviour of the native pipe is by and large the same as that of the `%>%` pipe provided by the magrittr package.
-
-
-
+<!-- - Ps. R 4.1.0 introduced a native pipe operator, `|>`. The behaviour of the native pipe is by and large the same as that of the `%>%` pipe provided by the magrittr package -->
