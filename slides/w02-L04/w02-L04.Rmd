@@ -2,7 +2,7 @@
 title: "Data Types and Classes"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -47,7 +47,7 @@ cat_lovers %>%
   summarise(mean_cats = mean(number_of_cats))
 ```
 
-.question[Why won't this work?]
+.question[Why won't this work? - **TPSA** moment]
 
 ]
 
@@ -132,7 +132,34 @@ class: middle
 
 ---
 
-## Four key data types in R
+## In Statistics, generally
+
+.pull-left[
+```{r variable-types, fig.align='center', echo = FALSE, message=FALSE, warning=FALSE}
+
+library(DiagrammeR)
+mermaid("
+graph TD
+  A(Variables) --> B(Categorical)
+  A --> C(Numeric)
+  B --> D(Nominal)
+  B --> E(Ordinal)
+  C --> F(Discrete)
+  C --> G(Continuous)
+")
+```
+]
+
+.pull-right[
+- _Nominal_ (categorical, no natural order): `species`, e.g. "Human", "Droid", "Wookiee". Also `eye_color` and `homeworld`.
+- _Ordinal_ (categorical with an order): starwars has **no truly ordinal column**, so you can make one from height, e.g. "short" < "medium" < "tall".
+- _Discrete_ (numeric, countable): the number of films each character appears in, counted from the `films` list column.
+- _Continuous_ (numeric, measured): `mass (kg)`. `height` also works.
+]
+
+---
+
+## Four key data (storage) types in R
 
 .pull-left[
 **logical** - boolean values `TRUE` and `FALSE`
@@ -179,6 +206,13 @@ c(c("hi", "hello"), c("bye", "jello"))
 ```
 
 ---
+
+class: middle
+
+# What if there is a mismatch between types? - **TPAS** moment
+
+---
+
 
 ## Explicit coercion between types
 
@@ -392,7 +426,7 @@ det(M2)
 
 .small[
 .question[
-Can you find a use for this in ILA? `r emoji::emoji("wink")`
+We can do LA in R! `r emoji::emoji("wink")`
 ]
 ]
 ]
@@ -471,16 +505,57 @@ df
 ```
 
 .pull-left[
+.small[
 ```{r}
+# typeof determines the (R internal) type or storage mode of any object
 typeof(df)
-```
-]
-.pull-right[
-```{r}
+# class returns the class attribute of any R object we defined
 class(df)
 ```
 ]
+]
 
+.pull-right[
+.small[
+```{r}
+df <- tibble(x = c(1, 2), 
+                 y = c("me","you"), 
+                 z = c(TRUE, FALSE))
+
+class(df)
+```
+]
+]
+
+---
+
+## Data frames via tidyverse
+
+.small[
+- A **tibble** is the tidyverse's modern version of a `data.frame`. It stores data the same way but behaves more predictably.
+- Create one with `tibble()`, or convert an existing data frame with `as_tibble()`. Functions like `read_csv()` return tibbles automatically.
+]
+
+| | `data.frame` (base R) | `tibble` (tidyverse) |
+|---|---|---|
+| Printing | Prints _all_ rows | Prints first 10 rows and column types |
+| Subsetting | `df[, 1]` Returns a vector | `df[, 1]` Always returns a tibble |
+| `df$col` partial names | `df$x` finds `variable x` | works similarly |
+
+**When to use which?** 
+
+- For tidyverse workflows (`select()`, `filter()`, `ggplot()`), use tibbles. 
+- Some older packages expect a `data.frame`. If so, convert with `as.data.frame()`.
+
+---
+
+## Visual Summary
+
+```{r echo=FALSE, out.width="50%", fig.align='center', fig.cap="Image Credit: https://rpubs.com/sheikh/vector"}
+knitr::include_graphics("img/data-class-types.jpeg")
+```
+
+Do you recall how you can create each from previous slides?
 
 ---
 
@@ -534,34 +609,6 @@ cat_lovers %>%
 
 ---
 
-## Working with factors
-
-.pull-left[
-.small[
-```{r out.width="75%", echo=FALSE}
-ggplot(cat_lovers, 
-       mapping = aes(x = handedness)) +
-  geom_bar()
-```
-]
-]
-
-.pull-right[
-.small[
-```{r out.width="70%", echo=FALSE}
-cat_lovers %>%
-  mutate(handedness = fct_infreq(handedness)) %>% #<<
-  ggplot(mapping = aes(x = handedness)) +
-  geom_bar()
-```
-]
-]
-
-Do you recall how these plots can be created from lab-00?
-
-
----
-
 ## Dates
 
 We can think of dates like an integer (the number of days since the origin, 1 Jan 1970) presented as a character in the form `YYYY-MM-DD`.
@@ -583,21 +630,6 @@ as.integer(y)
 as.integer(y) / 365 # roughly 50 yrs
 ```
 ]
-
----
-
-class: middle
-
-.hand[.light-blue[
-we're just going to scratch the surface of working with dates in R here...
-]]
-
-YouTube: Tom Scott, The problem with time and timezones, Computerphile - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=-5wpm-gesOY)
-
-
-```{r out.width="10%", fig.align='center', echo = FALSE}
-knitr::include_graphics("img/pinch-point-hazard-label.png")
-```
 
 ---
 
@@ -626,6 +658,20 @@ dmy("11/10/2022")
 ```
 ]
 
+---
+
+class: middle
+
+.hand[.light-blue[
+we're just going to scratch the surface of working with dates in R here...
+]]
+
+YouTube: Tom Scott, The problem with time and timezones, Computerphile - [`r fontawesome::fa("youtube", fill="red")`](https://www.youtube.com/watch?v=-5wpm-gesOY)
+
+
+```{r out.width="10%", fig.align='center', echo = FALSE}
+knitr::include_graphics("img/pinch-point-hazard-label.png")
+```
 
 <!--
 
