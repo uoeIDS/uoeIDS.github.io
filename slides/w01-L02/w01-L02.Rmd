@@ -239,7 +239,7 @@ knitr::include_graphics("img/tidyverse_logo.png")
 
 - Downloading and installing `tidyverse` package, on the console:
 ```{r eval=FALSE}
-install.package("tidyverse")
+install.packages("tidyverse")
 ```
 
 
