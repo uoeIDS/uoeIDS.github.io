@@ -5,6 +5,15 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+    <script src="libs/d3-3.3.8/d3.min.js"></script>
+    <script src="libs/dagre-0.4.0/dagre-d3.min.js"></script>
+    <link href="libs/mermaid-0.3.0/dist/mermaid.css" rel="stylesheet" />
+    <script src="libs/mermaid-0.3.0/dist/mermaid.slim.min.js"></script>
+    <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+    <script src="libs/chromatography-0.1/chromatography.js"></script>
+    <script src="libs/DiagrammeR-binding-1.0.12/DiagrammeR.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -22,7 +31,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -43,7 +52,7 @@ A survey asked respondents their name and number of cats. The instructions said 
 
 .pull-left[
 
-``` r
+```r
 cat_lovers &lt;- read_csv("data/cat-lovers.csv")
 ```
 
@@ -68,7 +77,7 @@ cat_lovers &lt;- read_csv("data/cat-lovers.csv")
 
 .pull-right[
 
-``` r
+```r
 cat_lovers %&gt;%
   summarise(mean_cats = mean(number_of_cats))
 ```
@@ -88,7 +97,7 @@ cat_lovers %&gt;%
 ## 1        NA
 ```
 
-.question[Why won't this work?]
+.question[Why won't this work? - **TPSA** moment]
 
 ]
 
@@ -98,7 +107,7 @@ cat_lovers %&gt;%
 
 .pull-left-narrow[
 
-``` r
+```r
 help(mean)
 ```
 ]
@@ -108,7 +117,7 @@ help(mean)
 ]
 
 
-``` r
+```r
 cat_lovers %&gt;%
   summarise(mean_cats = mean(number_of_cats, na.rm = TRUE))
 ```
@@ -137,7 +146,7 @@ What is the type of the `number_of_cats` variable?
 ]
 
 
-``` r
+```r
 glimpse(cat_lovers)
 ```
 
@@ -150,7 +159,7 @@ glimpse(cat_lovers)
 ```
 
 
-``` r
+```r
 cat_lovers %&gt;% slice( c(48, 54) )
 ```
 
@@ -172,7 +181,7 @@ Need to _mutate_ the `number_of_cats` variable:
 -   to coarse the characters to numbers.
 
 
-``` r
+```r
 cat_lovers %&gt;%
   mutate(
     number_of_cats = case_when(
@@ -213,13 +222,29 @@ class: middle
 
 ---
 
-## Four key data types in R
+## In Statistics, generally
+
+.pull-left[
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-730ea5d145880ef44968" style="width:504px;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-730ea5d145880ef44968">{"x":{"diagram":"\ngraph TD\n  A(Variables) --> B(Categorical)\n  A --> C(Numeric)\n  B --> D(Nominal)\n  B --> E(Ordinal)\n  C --> F(Discrete)\n  C --> G(Continuous)\n"},"evals":[],"jsHooks":[]}</script>
+]
+
+.pull-right[
+- _Nominal_ (categorical, no natural order): `species`, e.g. "Human", "Droid", "Wookiee". Also `eye_color` and `homeworld`.
+- _Ordinal_ (categorical with an order): starwars has **no truly ordinal column**, so you can make one from height, e.g. "short" &lt; "medium" &lt; "tall".
+- _Discrete_ (numeric, countable): the number of films each character appears in, counted from the `films` list column.
+- _Continuous_ (numeric, measured): `mass (kg)`. `height` also works.
+]
+
+---
+
+## Four key data (storage) types in R
 
 .pull-left[
 **logical** - boolean values `TRUE` and `FALSE`
 
 
-``` r
+```r
 typeof(TRUE)
 ```
 
@@ -231,7 +256,7 @@ typeof(TRUE)
 **double** - floating point numerical values (default numerical type)
 
 
-``` r
+```r
 typeof(1.335)
 ```
 
@@ -239,7 +264,7 @@ typeof(1.335)
 ## [1] "double"
 ```
 
-``` r
+```r
 typeof(7)
 ```
 
@@ -252,7 +277,7 @@ typeof(7)
 **character** - character strings
 
 
-``` r
+```r
 typeof("hello")
 ```
 
@@ -264,7 +289,7 @@ typeof("hello")
 **integer** - integer numerical values (indicated with an `L`)
 
 
-``` r
+```r
 typeof(7L)
 ```
 
@@ -272,7 +297,7 @@ typeof(7L)
 ## [1] "integer"
 ```
 
-``` r
+```r
 typeof(1:3)
 ```
 
@@ -288,7 +313,7 @@ typeof(1:3)
 Vectors can be constructed using the `c()` function.
 
 
-``` r
+```r
 c(1, 2, 3)
 ```
 
@@ -296,7 +321,7 @@ c(1, 2, 3)
 ## [1] 1 2 3
 ```
 
-``` r
+```r
 c("Hello", "World!")
 ```
 
@@ -304,7 +329,7 @@ c("Hello", "World!")
 ## [1] "Hello"  "World!"
 ```
 
-``` r
+```r
 c(c("hi", "hello"), c("bye", "jello"))
 ```
 
@@ -314,6 +339,13 @@ c(c("hi", "hello"), c("bye", "jello"))
 
 ---
 
+class: middle
+
+# What if there is a mismatch between types? - **TPAS** moment
+
+---
+
+
 ## Explicit coercion between types
 
 `as.character()`, `as.numeric()`, `as.integer()` and `as.logical()`
@@ -321,7 +353,7 @@ c(c("hi", "hello"), c("bye", "jello"))
 .pull-left[
 .small[
 
-``` r
+```r
 x &lt;- 1:3
 x
 ```
@@ -330,7 +362,7 @@ x
 ## [1] 1 2 3
 ```
 
-``` r
+```r
 typeof(x)
 ```
 
@@ -341,7 +373,7 @@ typeof(x)
 &lt;br&gt;
 
 
-``` r
+```r
 y &lt;- as.character(x)
 y
 ```
@@ -350,7 +382,7 @@ y
 ## [1] "1" "2" "3"
 ```
 
-``` r
+```r
 typeof(y)
 ```
 
@@ -365,7 +397,7 @@ typeof(y)
 .pull-right[
 .small[
 
-``` r
+```r
 z &lt;- c(TRUE, FALSE)
 z
 ```
@@ -374,7 +406,7 @@ z
 ## [1]  TRUE FALSE
 ```
 
-``` r
+```r
 typeof(z)
 ```
 
@@ -385,7 +417,7 @@ typeof(z)
 &lt;br&gt;
 
 
-``` r
+```r
 w &lt;- as.numeric(z)
 w
 ```
@@ -394,7 +426,7 @@ w
 ## [1] 1 0
 ```
 
-``` r
+```r
 typeof(w)
 ```
 
@@ -413,7 +445,7 @@ R will happily convert between various types without complaint when different ty
 .pull-left[
 .small[
 
-``` r
+```r
 x &lt;- c(1, "Hello")
 x
 ```
@@ -422,7 +454,7 @@ x
 ## [1] "1"     "Hello"
 ```
 
-``` r
+```r
 typeof(x)
 ```
 
@@ -431,7 +463,7 @@ typeof(x)
 ```
 
 
-``` r
+```r
 y &lt;- c(FALSE, 3L)
 y
 ```
@@ -440,7 +472,7 @@ y
 ## [1] 0 3
 ```
 
-``` r
+```r
 typeof(y)
 ```
 
@@ -453,7 +485,7 @@ typeof(y)
 .pull-right[
 .small[
 
-``` r
+```r
 z &lt;- c(1.2, 3L)
 z
 ```
@@ -462,7 +494,7 @@ z
 ## [1] 1.2 3.0
 ```
 
-``` r
+```r
 typeof(z)
 ```
 
@@ -471,7 +503,7 @@ typeof(z)
 ```
 
 
-``` r
+```r
 w &lt;- c(2L, "two")
 w
 ```
@@ -480,7 +512,7 @@ w
 ## [1] "2"   "two"
 ```
 
-``` r
+```r
 typeof(w)
 ```
 
@@ -507,7 +539,7 @@ class: middle
 - `NaN`: Not a number
 .small[
 
-``` r
+```r
 0/0
 ```
 
@@ -518,7 +550,7 @@ class: middle
 - `Inf`: Positive infinity
 .small[
 
-``` r
+```r
 pi/0
 ```
 
@@ -529,7 +561,7 @@ pi/0
 - `-Inf`: Negative infinity
 .small[
 
-``` r
+```r
 log(0)
 ```
 
@@ -545,7 +577,7 @@ log(0)
 - `NA`: Not available, represents missing values in the data structure
 .small[
 
-``` r
+```r
 x &lt;- c(1, 2, 3, 4, NA)
 mean(x)
 ```
@@ -554,7 +586,7 @@ mean(x)
 ## [1] NA
 ```
 
-``` r
+```r
 mean(x, na.rm = TRUE)
 ```
 
@@ -562,7 +594,7 @@ mean(x, na.rm = TRUE)
 ## [1] 2.5
 ```
 
-``` r
+```r
 summary(x)
 ```
 
@@ -571,7 +603,7 @@ summary(x)
 ##    1.00    1.75    2.50    2.50    3.25    4.00       1
 ```
 
-``` r
+```r
 typeof(NA)
 ```
 
@@ -591,7 +623,7 @@ typeof(NA)
 What is happening in the following examples?
 .pull-left[
 
-``` r
+```r
 # TRUE or NA
 TRUE | NA
 ```
@@ -600,7 +632,7 @@ TRUE | NA
 ## [1] TRUE
 ```
 
-``` r
+```r
 # TRUE and NA
 TRUE &amp; NA
 ```
@@ -609,7 +641,7 @@ TRUE &amp; NA
 ## [1] NA
 ```
 
-``` r
+```r
 # FALSE or NA
 FALSE | NA
 ```
@@ -620,7 +652,7 @@ FALSE | NA
 ]
 .pull-right[
 
-``` r
+```r
 # FALSE and NA
 FALSE &amp; NA
 ```
@@ -670,7 +702,7 @@ Matrices are rectangular arrays of numbers, having two dimensions.
 
 .pull-left[
 
-``` r
+```r
 M1 &lt;- matrix(c(1, 4, 3, 6, 2, 3), 
              nrow = 2, ncol = 3)
 M1
@@ -682,7 +714,7 @@ M1
 ## [2,]    4    6    3
 ```
 
-``` r
+```r
 M2 &lt;- matrix(c(6, 2, 5, 1), 
              nrow = 2, ncol = 2)
 M2
@@ -696,7 +728,7 @@ M2
 ]
 .pull-right[
 
-``` r
+```r
 M2 %*% M1   #Matrix multiplication
 ```
 
@@ -706,7 +738,7 @@ M2 %*% M1   #Matrix multiplication
 ## [2,]    6   12    7
 ```
 
-``` r
+```r
 det(M2)
 ```
 
@@ -718,7 +750,7 @@ det(M2)
 
 .small[
 .question[
-Can you find a use for this in ILA? 😉
+We can do LA in R! 😉
 ]
 ]
 ]
@@ -732,7 +764,7 @@ Arrays can be considered as collection of matrices having three dimensions. Arra
 
 .pull-left[
 
-``` r
+```r
 M1 &lt;- matrix(c(1, 4, 3, 6, 2, 3), 
              nrow = 2, ncol = 3)
 M1
@@ -744,7 +776,7 @@ M1
 ## [2,]    4    6    3
 ```
 
-``` r
+```r
 M2 &lt;- matrix(c(6, 2, 5, 1, 4, 3), 
              nrow = 2, ncol = 3)
 M2
@@ -759,7 +791,7 @@ M2
 
 .pull-right[
 
-``` r
+```r
 # Take these matrices as input to the array.
 array_matrix &lt;- array(c(M1, M2), 
                       dim = c(2, 3, 2))
@@ -795,7 +827,7 @@ You can even have lists of lists!
 
 .pull-left[
 
-``` r
+```r
 l &lt;- list(
   item1 = 1:4,
   item2 = c("hi", "hello", "jello"),
@@ -808,7 +840,7 @@ l &lt;- list(
 ]
 .pull-right[
 
-``` r
+```r
 l$item2
 ```
 
@@ -816,7 +848,7 @@ l$item2
 ## [1] "hi"    "hello" "jello"
 ```
 
-``` r
+```r
 l$item4$item4_1
 ```
 
@@ -835,7 +867,7 @@ l$item4$item4_1
 Data frames are special types of lists that contain vectors of any data type but all of equal length.
 
 
-``` r
+```r
 df &lt;- data.frame(x = c(1, 2), 
                  y = c("me","you"), 
                  z = c(TRUE, FALSE))
@@ -849,18 +881,19 @@ df
 ```
 
 .pull-left[
+.small[
 
-``` r
+```r
+# typeof determines the (R internal) type or storage mode of any object
 typeof(df)
 ```
 
 ```
 ## [1] "list"
 ```
-]
-.pull-right[
 
-``` r
+```r
+# class returns the class attribute of any R object we defined
 class(df)
 ```
 
@@ -868,7 +901,55 @@ class(df)
 ## [1] "data.frame"
 ```
 ]
+]
 
+.pull-right[
+.small[
+
+```r
+df &lt;- tibble(x = c(1, 2), 
+                 y = c("me","you"), 
+                 z = c(TRUE, FALSE))
+
+class(df)
+```
+
+```
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+]
+]
+
+---
+
+## Data frames via tidyverse
+
+.small[
+- A **tibble** is the tidyverse's modern version of a `data.frame`. It stores data the same way but behaves more predictably.
+- Create one with `tibble()`, or convert an existing data frame with `as_tibble()`. Functions like `read_csv()` return tibbles automatically.
+]
+
+| | `data.frame` (base R) | `tibble` (tidyverse) |
+|---|---|---|
+| Printing | Prints _all_ rows | Prints first 10 rows and column types |
+| Subsetting | `df[, 1]` Returns a vector | `df[, 1]` Always returns a tibble |
+| `df$col` partial names | `df$x` finds `variable x` | works similarly |
+
+**When to use which?** 
+
+- For tidyverse workflows (`select()`, `filter()`, `ggplot()`), use tibbles. 
+- Some older packages expect a `data.frame`. If so, convert with `as.data.frame()`.
+
+---
+
+## Visual Summary
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="img/data-class-types.jpeg" alt="Image Credit: https://rpubs.com/sheikh/vector" width="50%" /&gt;
+&lt;p class="caption"&gt;Image Credit: https://rpubs.com/sheikh/vector&lt;/p&gt;
+&lt;/div&gt;
+
+Do you recall how you can create each from previous slides?
 
 ---
 
@@ -879,7 +960,7 @@ R uses **factors** to handle categorical variables.
 Factors like character (level labels) and an integer (level numbers) glued together.
 
 
-``` r
+```r
 x &lt;- factor(c("BS", "MS", "PhD", "MS"))
 x
 ```
@@ -891,7 +972,7 @@ x
 
 .pull-left[
 
-``` r
+```r
 typeof(x)
 ```
 
@@ -899,7 +980,7 @@ typeof(x)
 ## [1] "integer"
 ```
 
-``` r
+```r
 class(x)
 ```
 
@@ -909,7 +990,7 @@ class(x)
 ]
 .pull-right[
 
-``` r
+```r
 glimpse(x)
 ```
 
@@ -917,7 +998,7 @@ glimpse(x)
 ##  Factor w/ 3 levels "BS","MS","PhD": 1 2 3 2
 ```
 
-``` r
+```r
 as.integer(x)
 ```
 
@@ -941,7 +1022,7 @@ as.integer(x)
 &lt;img src="img/forcats-part-of-tidyverse.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 
-``` r
+```r
 cat_lovers %&gt;%
   group_by(handedness) %&gt;%
   tally()
@@ -960,31 +1041,12 @@ cat_lovers %&gt;%
 
 ---
 
-## Working with factors
-
-.pull-left[
-.small[
-&lt;img src="w02-L04_files/figure-html/unnamed-chunk-43-1.png" width="75%" /&gt;
-]
-]
-
-.pull-right[
-.small[
-&lt;img src="w02-L04_files/figure-html/unnamed-chunk-44-1.png" width="70%" /&gt;
-]
-]
-
-Do you recall how these plots can be created from lab-00?
-
-
----
-
 ## Dates
 
 We can think of dates like an integer (the number of days since the origin, 1 Jan 1970) presented as a character in the form `YYYY-MM-DD`.
 
 
-``` r
+```r
 y &lt;- as.Date("2020-01-01")
 y
 ```
@@ -995,7 +1057,7 @@ y
 
 .pull-left[
 
-``` r
+```r
 typeof(y)
 ```
 
@@ -1003,7 +1065,7 @@ typeof(y)
 ## [1] "double"
 ```
 
-``` r
+```r
 class(y)
 ```
 
@@ -1013,7 +1075,7 @@ class(y)
 ]
 .pull-right[
 
-``` r
+```r
 as.integer(y)
 ```
 
@@ -1021,12 +1083,57 @@ as.integer(y)
 ## [1] 18262
 ```
 
-``` r
+```r
 as.integer(y) / 365 # roughly 50 yrs
 ```
 
 ```
 ## [1] 50.03288
+```
+]
+
+---
+
+## Make a date
+
+.pull-left[
+- **lubridate** is the tidyverse-friendly package that makes dealing with dates a little easier
+- It's _not_ one of the core tidyverse packages!
+- Functions to read different date orders: `ymd()`, `dmy()`, `mdy()`
+- Recognises numerical and text months.
+
+&lt;img src="img/lubridate-not-part-of-tidyverse.png" width="30%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+```r
+#install.packages("lubridate")
+library(lubridate)
+```
+
+
+```r
+ymd("2022 October 11")
+```
+
+```
+## [1] "2022-10-11"
+```
+
+```r
+mdy("10oct2022")
+```
+
+```
+## [1] "2022-10-20"
+```
+
+```r
+dmy("11/10/2022")
+```
+
+```
+## [1] "2022-10-11"
 ```
 ]
 
@@ -1043,52 +1150,6 @@ YouTube: Tom Scott, The problem with time and timezones, Computerphile - [<svg a
 
 &lt;img src="img/pinch-point-hazard-label.png" width="10%" style="display: block; margin: auto;" /&gt;
 
----
-
-## Make a date
-
-.pull-left[
-- **lubridate** is the tidyverse-friendly package that makes dealing with dates a little easier
-- It's _not_ one of the core tidyverse packages!
-- Functions to read different date orders: `ymd()`, `dmy()`, `mdy()`
-- Recognises numerical and text months.
-
-&lt;img src="img/lubridate-not-part-of-tidyverse.png" width="30%" style="display: block; margin: auto;" /&gt;
-]
-.pull-right[
-
-``` r
-#install.packages("lubridate")
-library(lubridate)
-```
-
-
-``` r
-ymd("2022 October 11")
-```
-
-```
-## [1] "2022-10-11"
-```
-
-``` r
-mdy("10oct2022")
-```
-
-```
-## [1] "2022-10-20"
-```
-
-``` r
-dmy("11/10/2022")
-```
-
-```
-## [1] "2022-10-11"
-```
-]
-
-
 &lt;!--
 
 ## Visualising poll-tracker data
@@ -1098,7 +1159,7 @@ Data from YouGov's voting intention tracer ([source](https://yougov.co.uk/topics
 .pull-left[
 How do you go from this...
 
-``` r
+```r
 poll &lt;- read_csv("data/voting_intension.csv")
 glimpse(poll)
 ```
@@ -1142,7 +1203,7 @@ glimpse(poll)
 .pull-right[
 .small[
 
-``` r
+```r
 library(tidyverse)
 library(lubridate)
 
@@ -1175,17 +1236,17 @@ poll %&gt;%
 &lt;!--
 ## The final result! 
 
-&lt;img src="w02-L04_files/figure-html/unnamed-chunk-55-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="w02-L04_files/figure-html/unnamed-chunk-54-1.png" style="display: block; margin: auto;" /&gt;
 
 --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
