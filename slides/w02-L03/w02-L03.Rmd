@@ -66,7 +66,7 @@ I want to introduce and use from time to time in lectures
 ## 
 
 .question[
-What makes this data not tidy? - **TPAS** moment
+What makes this data not tidy? - **TPSA** moment
 ]
 
 ```{r hyperwar-airplanes-on-hand, echo=FALSE, out.width="90%", fig.align = "center", caption = "WW2 Army Air Force combat aircraft", out.width = "70%"}
@@ -190,8 +190,8 @@ starwars %>%
 
 .pull-right[
 ```{r eval = FALSE}
-starwars %>%
-  select(species, height) %>%
+starwars %>% 
+  select(species, height) %>% 
   mutate(species_group = case_when(
     species == "Droid" ~ "Droid",
     species == "Human" ~ "Human",
@@ -822,6 +822,8 @@ starwars %>%
 ]
 ]
 
+Do you see what each line does here ?
+
 ---
 
 
@@ -842,16 +844,21 @@ starwars %>%
 .pull-right[
 .small[
 ```{r pipe_narrative8, R.options = list(width = 60)}
-starwars %>%
-  select(species, height) %>%
+# Main data set to work out
+starwars %>% 
+  # Selecting two specific columns
+  select(species, height) %>% 
+  # Creating new variable called species_group based on species column
   mutate(species_group = case_when(
     species == "Droid" ~ "Droid",
     species == "Human" ~ "Human",
     TRUE ~ "Other")) %>%
+  # grouping data into new variable we defined
   group_by(species_group) %>%
+  # calculate summary stats; size and average height for each of the group
   summarise(
     count = n(),
-    avg_height = mean(height, na.rm = TRUE)  #<<
+    avg_height = mean(height, na.rm = TRUE)
   )
 ```
 ]
