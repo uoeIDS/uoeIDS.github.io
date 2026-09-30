@@ -23,10 +23,12 @@ The travel and tourism is an important sector to the UK that employees over [300
 -   Experience with doing some data wrangling.
 -   Compute some summary statistics.
 -   To interpret output.
--   Get more practice using with Git and GitHub.
+-   Side benefit: Get more practice using with Git and GitHub.
 
 
 Before we get stated, please ensure that you have RStudio installed, a GitHub account and are able to push and pull correctly. If not, please follow the set-up instructions [here](https://uoe-ids.netlify.app/troubleshoot/). Ask a tutor for help if you have any problems.
+
+*If you just recently enrolled the course, please go through with lab-00 material to warm up first and catch teh week 2 slides, before diving into lab-01 materials!*
 
 # Getting started
 
@@ -51,20 +53,20 @@ Open RStudio and create a new version control project using the GitHub repositor
 - Select *Version Control* and then *Git*. Type/paste the URL of the repository you have just created. 
 - Browse an appropriate location for the project and then click on *Create Project*.
 
-Open the R Markdown document `lab-01.Rmd` and change the author to your name. *Knit* the document and make sure that it complies correctly without any errors.
+- Open the R Markdown document `lab-01.Rmd` and change the author to your name. 
+- *Knit* the document and make sure that it complies correctly without any errors.
 
 `r emoji::emoji("white_check_mark")` `r emoji::emoji("arrow_up")` Commit and push your changes to GitHub with an appropriate commit message. As a reminder of the steps:
 
 - Go to the `Git` tab (top right panel) and click on *Commit*.
-- In the new window, click the tick box next to each file that you want to stage and add an informative *Commit message* (eg, changed author text).
+- In the new window, click the tick box next to each file that you want to *stage* and add an informative *Commit message* (eg, changed author text).
 - Click the *Commit* button.
 - Click on the *Push* button to send your changes to GitHub.
 
 `r emoji::emoji("exclamation")` Make sure you are familiar with the above steps as you will need to do this for you homework and future labs. Furthermore, remember do good version control practices by periodically keeping your repository on GitHub up-to-date by staging and committing any substantial changes, and then push them to GitHub.
 
 
-
-## Packages
+## Related Packages
 
 In today's lab we will using the **tidyverse** package and its dependencies. At the top of your template you will find the following code that will load this library whenever you *knit* your document.
 
@@ -80,11 +82,11 @@ If you do not have this library installed, then your document may fail to knit. 
 -   Click on the `Install` button.
 -   You may be asked to select a *CRAN mirror*. It does not matter which server you use, but it is recommended to choose one that is close to your location geographically. 
 
-Alternatively, you can install the `tidyverse` package by running the command `install.packages("tidyverse")` once on the console (bottom left panel). **Do not** write this command in your Rmd file, otherwise as RStudio will attempt to re-install the package each you knit your document!
+Alternatively, you can install the `tidyverse` package by running the command `install.packages("tidyverse")` once on the console (bottom left panel). 
+
+`r emoji::emoji("exclamation")` **Do not** write this command in your Rmd file, otherwise as RStudio will attempt to re-install the package each you knit your document!
 
 RStudio will then download and install the `tidyverse` package and any other dependent packages. Read the messages that are printed to the console and check that there are no installation errors.
-
-
 
 
 ## Data
@@ -97,6 +99,7 @@ visitors <- read_csv("data/UK-visitor-numbers.csv")
 ```
 
 Use the `head()` command as demonstrated below to view the first 10 rows of the data set.
+
 ```{r head-data, message=FALSE, eval=FALSE}
 visitors %>% head(n = 10)
 ```
@@ -159,20 +162,28 @@ Let's take a look at each of the above questions in turn and see how we might an
 
 <br>
 
-## Question 1
+## **Question 1**
 
 _How many tourist attractions are there in the data set?_
 
 Each row in the data set corresponds to a different visitor attraction, so to answer this question we need to do is to count how many rows there are. The simplest solution is to run the command `nrow(visitors)` that calculates the number of rows there are in the `visitors` data set (similarly `ncol(visitors)` calculates the number of columns, i.e., the number of variables). 
 
 Alternatively, we can use the `count()` command using the `%>%` pipework as follows:
+
 ```{r Q1-count, eval = FALSE}
 visitors %>% count()
 ```
 
 The `count()` command can also be used for creating **frequency tables** by putting the name of a specific variable into the command. For example, the following creates a frequency table for the different `admission` types:
+
 ```{r Q1-table, eval = FALSE}
 visitors %>% count(admission)
+```
+
+`r emoji::emoji("exclamation")` Note that, the default pipe operator is `|>` in Rstudio from base package nowadays, but both should work in the same way. So, the following should be also working;
+
+```{r, eval = FALSE}
+visitors |> count()
 ```
 
 ### Exercises
@@ -183,7 +194,7 @@ b. Create a frequency table by `admission` and `setting`.
 <br>
 
 
-## Question 2
+## **Question 2**
 
 _What are the variable data types?_
 
@@ -206,7 +217,7 @@ Understanding the data type of each variable is important to understand whether 
 
 <br>
 
-## Question 3
+## **Question 3**
 
 _Which attraction had the most number of visitors in 2022?_
 
@@ -225,7 +236,7 @@ c. What are the top 10 most visited attractions in 2021?
 
 <br>
 
-## Question 4
+## **Question 4**
 
 _What is the admission charge for the `"National Museum of Scotland"`?_
 
@@ -255,11 +266,11 @@ e. How many attraction had more than 1 million visitors in 2022?
 
 <br>
 
-## Question 5
+## **Question 5**
 
 _How many `"O"`utside attractions are there in the `"Yorkshire and the Humber"` region that gives `"Members"` free admission, which had more than 100,000 visitors in 2022?_
 
-The previous question used the `filter()` command to extract the rows based on a single logical test, but here we need to apply 4 logical tests. The `filter()` command can still be applied by writing the R code for each test separated by a comma.
+The previous question used the `filter()` command to extract the rows based on a single logical test, but here we need to apply 4 logical tests. The `filter()` command can still be applied by writing the R code for each test separated by a comma (or you can use and $&$ operator as well).
 
 We can stop there and view the result of the filtering to see which attractions meet the 4 conditions, but the question asks for 'How many', not 'Which'. Therefore, we can pipe (`%>%`) the result from the `filer()` command directly into the `count()` command:
 
@@ -289,27 +300,39 @@ g. How many regions have more than 50 tourist attraction in the data set? (Hint:
 <br>
 
 
-
-
-
 # Summarising data
 
 In this section we will investigate how to answer the following questions: 
 
-6. What are the mean and median visitor numbers in 2022 across all attractions?
-7. Which setting (inside, outside or mixed) has the largest mean visitor numbers in 2022?
-8. What is the interquartile range (the width of the middle 50% of data set between the lower and upper quartiles) the for each of the four nations of the UK?
+6. What are the *mean* and *median* visitor numbers in 2022 across all attractions?
+7. Which setting (inside, outside or mixed) has the *largest mean* visitor numbers in 2022?
+8. What are the *max* and *min* visitor numbers in 2021 across all attractions?
+9. What is the *interquartile range (IQR)* (the width of the middle 50% of data set between the lower and upper quartiles or difference between third and first quartile) the for each of the four nations of the UK?
 
-Before continuing, have a think about how you would attempt to answer these two questions.
+Before continuing, have a think about how you would attempt to answer these questions. Check the following definitions as well
+
+- *Mean (`mean()`)*: The average value, calculated by adding all values and dividing by the number of observations.
+- *Median (`median()`)*: The middle value when all observations are arranged in order from smallest to largest.
+- *Minimum (`min()`)*: The smallest value in your dataset. This shows the lower boundary of your data.
+- *Maximum (`max()`)*: The largest value in your dataset. This shows the upper boundary of your data.
+
+- *First quartile ($Q_1$)*: 25% of the data falls below this value, and 75% falls above it
+- *Third quartile ($Q_3$)*: 75% of the data falls below this value, and 25% falls above it
+- *Interquartile range (IQR) (`IQR()`)*: The difference between $Q_3$ and $Q_1$, 
+$IQR = Q_3 - Q_1$. Alternatively, you can calculate $Q_3$ and $Q_1$ via `quantile()` function and do the arithmetic
 
 <br>
 
 
-## Question 6
+## **Question 6**
 
 _What are the mean and median visitor numbers in 2022 across all attractions?_
 
-R has many commands that can be used to compute a wide range of standard statistical values. These include the `mean()` command for computing the arithmetic mean or averaged value, and `median()` command for computing the median or mid-point in the data. 
+R has many commands that can be used to compute a wide range of standard statistical values. These include 
+- the `mean()` command for computing the arithmetic mean or averaged value, and 
+- the `median()` command for computing the median or mid-point in the data. 
+
+It is worth checking their documentation via `help()` function if you are not sure about what they do!
 
 ```{r Q5-all, eval = FALSE}
 visitors %>% 
@@ -328,14 +351,14 @@ j. Look at the help pages for the `mean()` and `median()` commands to see what t
 <br>
 
 
-## Question 7
+## **Question 7**
 
 _Which setting (inside, outside or mixed) has the largest mean visitor numbers in 2022?_
 
 This question is a simple extension of the previous question where we are now interested in computing the mean statistic per `setting` rather than across all settings. To implement this change, we need to group the data _before_ calculating the summary statistics. This is achieved by using the `group_by` command as follows:
 
 
-```{r Q6-grp, eval = FALSE}
+```{r Q7-grp, eval = FALSE}
 visitors %>% 
   group_by(setting) %>%
   summarise(
@@ -354,8 +377,14 @@ k. Observe in question 6 that the mean statistics across all settings are much l
 
 <br>
 
+## **Question 8**
 
-## Question 8
+_What are the *max* and *min* visitor numbers in 2021 across all attractions?_
+
+l. Consider the code syntax in Question 6, you can easily adapt to the case of max and min calculations indeed. Did you see how to do it ? 
+
+
+## **Question 9**
 
 _What is the interquartile range (the width of the middle 50% of data set between the lower and upper quartiles) the for each of the four nations of the UK?_
 
@@ -411,18 +440,16 @@ visitors_with_nations %>%
 
 ### Exercise
 
-l. How many tourist attractions are there in each of the 4 nations? From this, discuss in your group how reliable you think the inter-quartile estimates are.
+m. How many tourist attractions are there in each of the 4 nations? From this, discuss in your group how reliable you think the inter-quartile estimates are.
 
 `r emoji::emoji("white_check_mark")` `r emoji::emoji("arrow_up")` Now is a good time to save and commit any changes to your work, and to push them to your repository on GitHub.
 
-# Challanging Exercises
+# **Challenging Exercises**
 
 If you have time at the end of today's lab, have a go at answering the following more challenging exercises 
 
-m. Within each of the 4 nations, what is the proportion of tourist attractions that have free admission for all visitors?
-n. Calculate the percentage change in visitor admissions from 2021 to 2022. Of the tourist attractions in Scotland, sort into increasing numerical order the types of admission charges based on the mean percentage change in visitor numbers.
-
-
+n. Within each of the 4 nations, what is the proportion of tourist attractions that have free admission for all visitors?
+o. Calculate the percentage change in visitor admissions from 2021 to 2022. Of the tourist attractions in Scotland, sort into increasing numerical order the types of admission charges based on the mean percentage change in visitor numbers.
 
 
 <br>
@@ -434,6 +461,6 @@ That's the end of this lab!
 
 `r emoji::emoji("white_check_mark")` `r emoji::emoji("arrow_up")` Remember to commit and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files (that is, make sure every file has a tick next to it) so that your Git pane is cleared up afterwards.
 
-Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time.
+Don't worry if you did not reach the end of the worksheet today, but please try to go through any remaining exercises in your own time. These exercises will be beneficial to develop your coding skills for the rest of the semester. 
 
 
