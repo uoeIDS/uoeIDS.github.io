@@ -2,7 +2,7 @@
 title: "Joining and Organising Data Sets"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -169,6 +169,8 @@ professions %>%
   left_join(works, by = "name")
 ```
 
+- How do we get there do you think ? - **TPSA**
+
 ---
 
 ## Inputs, reminder
@@ -217,7 +219,7 @@ all combination of multiple matches in the case of multiple matches
  
 ---
 
-## Setup
+## Toy Data Example
 
 Let's keep things simple. For the next few slides...
 
@@ -359,7 +361,7 @@ dates %>%
 ```
 
 .question[
-For `full_join()` and `inner_join()`, does the order of `x` and `y` matter?
+For `full_join()` and `inner_join()`, does the order of `x` and `y` matter? - **TPSA**
 ]
 
 
@@ -678,10 +680,15 @@ include_graphics("img/tidyr-part-of-tidyverse.png")
 .pull-right[
 The goal of tidyr is to help you tidy your data via
 
-- pivoting for going between wide and long data
+- **pivoting for going between wide and long data**
 - splitting and combining character columns
 - nesting and unnesting columns
 - clarifying how `NA`s should be treated
+
+```{r pivot-friends, echo=FALSE, out.width="40%"}
+include_graphics("img/pivot-friends.gif")
+```
+
 ]
 
 
@@ -689,10 +696,18 @@ The goal of tidyr is to help you tidy your data via
 
 ## Pivoting data
 
-.center[
-```{r echo=FALSE, out.width="45%", out.extra ='style="background-color: #FDF6E3"'}
+.pull-left[
+```{r echo=FALSE, out.width="85%", out.extra ='style="background-color: #FDF6E3"'}
 include_graphics("img/tidyr-longer-wider.gif")
 ```
+]
+
+.pull-right[
+
+- Data sets can’t be labeled as wide or long but *they can be made wider or longer* for a certain analysis that requires a certain format
+- When pivoting longer, variable names that turn into values are characters by default.
+- If you need them to be in another format, you need to explicitly make that transformation, which you can do so within the `pivot_longer()` function.
+
 ]
 
 ---
@@ -749,7 +764,8 @@ purchases
 
 ## Why pivot?
 
-Most likely, because the next step of your analysis needs it
+- Most likely, because the next step of your analysis needs it
+- If all of the data you need is in your data frame, but the columns you need don’t exist, there is a good chance it’s time to pivot!
 
 .pull-left[
 ```{r}

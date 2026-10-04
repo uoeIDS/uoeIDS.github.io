@@ -22,7 +22,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -36,7 +36,7 @@ class: center, middle, inverse, title-slide
 
 class: middle
 
-# Reading and writing rectangular data
+# How to read and write rectangular data?
 
 ---
 
@@ -90,7 +90,7 @@ class: middle
 
 .pull-left[
 
-``` r
+```r
 library(readxl)
 tube &lt;- read_excel(
   path = "data/tube-stations.xlsx")
@@ -110,7 +110,7 @@ glimpse(tube)
 
 .pull-right[
 
-``` r
+```r
 tube &lt;- read_excel(
   path = "data/tube-stations.xlsx", 
   skip = 2)
@@ -135,7 +135,7 @@ glimpse(tube)
 Most read functions have a corresponding write function.
 
 
-``` r
+```r
 write_csv(tube, file = "data/tube-station-comma.csv")
 write_csv2(tube, file = "data/tube-station-semicolon.txt")
 write_tsv(tube, file = "data/tube-station-tab.txt")
@@ -144,7 +144,7 @@ write_tsv(tube, file = "data/tube-station-tab.txt")
 Note, a file write is a quiet function (it does return anything to R!)
 
 
-``` r
+```r
 glimpse( read_tsv("data/tube-station-tab.txt") )
 ```
 
@@ -163,14 +163,14 @@ glimpse( read_tsv("data/tube-station-tab.txt") )
 
 class: middle
 
-# Variable names
+# Why variable names matters ?
 
 ---
 
 ## Data with bad names
 
 
-``` r
+```r
 edibnb_badnames &lt;- read_csv("data/edibnb-badnames.csv")
 names(edibnb_badnames)
 ```
@@ -186,13 +186,13 @@ names(edibnb_badnames)
 ... but R doesn't allow spaces in variable names
 
 
-``` r
+```r
 ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
   geom_point()
 ```
 
 ```
-## Error in parse(text = input): &lt;text&gt;:1:40: unexpected symbol
+## Error: &lt;text&gt;:1:40: unexpected symbol
 ## 1: ggplot(edibnb_badnames, aes(x = Number of
 ##                                            ^
 ```
@@ -203,9 +203,11 @@ ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
 ## Option 1 - Manual edit
 
 -   Edit the column names in the raw data file to `snake_name` style
--   OK, provided that you are only ever working with one file
--   Method is not _reproducible_ if developing a data flow where your data file may be updated
--   Can this be done in the code?
+-   This is OK, provided that you are only ever working with one file
+-   **Cons:** Method is not _reproducible_ if developing a data flow where your data file may be updated
+
+
+*Can this be done in the R code for reproducibility?* - **TPSA**
 
 
 ---
@@ -213,7 +215,7 @@ ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
 ## Option 2 - Define column names
 
 
-``` r
+```r
 edibnb_col_names &lt;- read_csv("data/edibnb-badnames.csv", skip = 1,
                              col_names = c("id", "price", "neighbourhood", "accommodates", 
                                            "bathroom", "bedroom", "bed", 
@@ -231,7 +233,7 @@ edibnb_col_names &lt;- read_csv("data/edibnb-badnames.csv", skip = 1,
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-``` r
+```r
 names(edibnb_col_names)
 ```
 
@@ -247,11 +249,11 @@ names(edibnb_col_names)
 ## Option 3 - `clean_names` to snake_case
 
 
-``` r
+```r
 library(janitor)       #may need to run: install.packages("janitor")
 ```
 
-``` r
+```r
 edibnb_clean_names &lt;- read_csv("data/edibnb-badnames.csv") %&gt;%
   clean_names()
 ```
@@ -267,7 +269,7 @@ edibnb_clean_names &lt;- read_csv("data/edibnb-badnames.csv") %&gt;%
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-``` r
+```r
 names(edibnb_clean_names)
 ```
 
@@ -293,7 +295,7 @@ class: middle
 ]
 .pull-right[
 
-``` r
+```r
 read_csv("data/df-na.csv")
 ```
 
@@ -329,7 +331,7 @@ read_csv("data/df-na.csv")
 ## Option 1. Explicit NAs
 
 
-``` r
+```r
 read_csv("data/df-na.csv", 
          na = c("", "NA", ".", "9999", "Not applicable"))
 ```
@@ -360,7 +362,7 @@ read_csv("data/df-na.csv",
 ## Option 2. Specify column types
 
 
-``` r
+```r
 read_csv("data/df-na.csv", col_types = list(col_double(), 
                                             col_character(), 
                                             col_character()))
@@ -418,7 +420,7 @@ class:middle
 
 
 
-``` r
+```r
 *fav_food &lt;- read_excel("data/favourite-food.xlsx")
 fav_food
 ```
@@ -442,7 +444,7 @@ fav_food
 
 
 
-``` r
+```r
 fav_food &lt;- read_excel("data/favourite-food.xlsx") %&gt;%
 * clean_names()
 fav_food 
@@ -461,13 +463,13 @@ fav_food
 
 ---
 
-## Handling NAs
+## Handling NAs - while reading the file
 
 &lt;img src="img/fav-food/fav-food-nas.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 
-``` r
+```r
 fav_food &lt;- read_excel("data/favourite-food.xlsx",
 *                      na = c("N/A", "99999")) %&gt;%
   clean_names()
@@ -485,13 +487,16 @@ fav_food
 ## 5          5 Chidiegwu Dunkel Pizza              Breakfast and lunch five  High
 ```
 
+You can also deal with NAs after reading data for sure! - How to do this ?
+- Maybe you can look at `na_if()` from **dplyr** `\(\in\)` **tidyverse**
+
 ---
 
 ## Make `age` numeric
 
 .pull-left-wide[
 
-``` r
+```r
 fav_food &lt;- fav_food %&gt;%
 * mutate(
 *   age = if_else(age == "five", "5", age),
@@ -522,7 +527,7 @@ glimpse(fav_food)
 
 .pull-left-wide[
 
-``` r
+```r
 fav_food %&gt;%
   count(ses)
 ```
@@ -543,7 +548,7 @@ fav_food %&gt;%
 
 
 .question[
-Does the order of the `ses` categories make sense?
+Does the order of the `ses` categories make sense? - **TPSA**
 ]
 
 
@@ -553,7 +558,7 @@ Does the order of the `ses` categories make sense?
 
 .pull-left-wide[
 
-``` r
+```r
 fav_food &lt;- fav_food %&gt;%
 * mutate(ses = fct_relevel(ses, "Low", "Middle", "High"))
 
@@ -569,6 +574,9 @@ fav_food %&gt;%
 ## 2 Middle     2
 ## 3 High       2
 ```
+
+[Check fct_relevel()](https://forcats.tidyverse.org/reference/fct_relevel.html)
+
 ]
 
 ---
@@ -576,7 +584,7 @@ fav_food %&gt;%
 ## Putting it altogether
 
 
-``` r
+```r
 fav_food &lt;- read_excel("data/favourite-food.xlsx", na = c("N/A", "99999")) %&gt;%
   clean_names() %&gt;%
   mutate(
@@ -605,14 +613,14 @@ fav_food
 ## Out and back in
 
 
-``` r
+```r
 write_csv(fav_food, file = "data/fav-food-clean.csv")
 
 fav_food_clean &lt;- read_csv("data/fav-food-clean.csv")
 ```
 
 
-``` r
+```r
 fav_food_clean %&gt;%
   count(ses)
 ```
@@ -634,11 +642,11 @@ What happened to the order of `ses` categories?
 
 ## `read_rds()` and `write_rds()`
 
-- CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.
+- **CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.**
 - An alternative is RDS files ('R data single'), you can read and write them with `read_rds()` and `write_rds()`, respectively.
 
 
-``` r
+```r
 write_rds(fav_food, file = "data/fav-food-clean.rds")
 fav_food_clean &lt;- read_rds("data/fav-food-clean.rds")
 fav_food_clean %&gt;%
@@ -678,6 +686,27 @@ class: middle
 
 ⬇️ You may need to install specialised R packages to read data from a specific format
 
+---
+
+class: middle
+
+# Naming Files
+
+---
+
+## Rule of thumbs to remember
+
+- Be Descriptive and Concise
+  * avoid using vague naming such as *untitled.Rmd* or *oe-vers333.R*
+  * include dates when relevant, via ISO 8601 format (YYYY-MM-DD) for easy sorting - such as *project_draft_2026-10-10.Rmd*
+- Use Consistent Naming Conventions
+  * Common conventions include: words_separated_by_underscores (**snake_case**) and words-separated-by-hyphens (**kebap-case**), used for for *object names* and *file and folder names* in R, respectively. 
+- Avoid Special Characters and Spaces
+  * Avoid using spaces, slashes (/), colons (:), asterisks (*), question marks (?), or quotes
+- Use Enumeration and/or Letters
+  * you can get extra help from these for easy sorting, such as *project_draft_01_2026-10-10.Rmd* includes additional version number of draft
+- Creating **README.md** files
+  * For more complex settings, it is a good practice to write README file as the first file users read. **You will explore this in your project preparation**
 
 ---
 
@@ -698,7 +727,7 @@ class: middle
 
 
 
-``` r
+```r
 tube &lt;- read_csv("data/tube-stations.csv")
 ```
 
@@ -725,7 +754,7 @@ Well, this doesn't seem to have worked!  Let's look at the dataset…
 ## Tube stations data
 
 
-``` r
+```r
 tube
 ```
 
@@ -827,7 +856,7 @@ Our dates are of the form `01-JAN-1900`, so we need to type `%d-%b-%Y` into the 
 
 
 
-``` r
+```r
 #library(readr)
 tube_stations &lt;- read_delim("data/tube-stations.csv", 
     delim = ";", escape_double = FALSE, col_types = cols(Zone = col_integer(), 
@@ -843,7 +872,7 @@ tube_stations &lt;- read_delim("data/tube-stations.csv",
 ```
 It gives us the `readr` library, but if we've already imported the tidyverse we don't need to include that line, and can delete it.
 
-The warning message here is fine---it's telling us that "`not in a zone`" is not an integer, which we already know!
+
 ---
 
 ## Importing from a CSV using the GUI
@@ -852,7 +881,7 @@ Let's prove it worked!
 
 
 
-``` r
+```r
 tube_stations %&gt;%
   summarise(mean_date = mean(Opened), med_zone = median(Zone, na.rm = T))
 ```
@@ -921,21 +950,22 @@ background-size: contain
 - Again, let's copy this out using the clipboard icon…
 
 
-``` r
+```r
 library(readxl)
 tube_stations_excel &lt;- read_excel("data/tube-stations.xlsx", 
     range = "A3:E11", col_types = c("text", 
         "text", "numeric", "text", "numeric"))
 ```
+
 - I've suppressed the warnings (`warning = F` in the code chunk label) because it gives lots, for every time it changes the data type in a cell
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

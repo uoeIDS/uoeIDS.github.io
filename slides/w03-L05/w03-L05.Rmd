@@ -2,7 +2,7 @@
 title: "Importing/Exporting Data"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -38,7 +38,7 @@ read_excel("data/tube-stations.xlsx")
 
 class: middle
 
-# Reading and writing rectangular data
+# How to read and write rectangular data?
 
 ---
 
@@ -143,7 +143,7 @@ glimpse( read_tsv("data/tube-station-tab.txt") )
 
 class: middle
 
-# Variable names
+# Why variable names matters ?
 
 ---
 
@@ -168,9 +168,11 @@ ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
 ## Option 1 - Manual edit
 
 -   Edit the column names in the raw data file to `snake_name` style
--   OK, provided that you are only ever working with one file
--   Method is not _reproducible_ if developing a data flow where your data file may be updated
--   Can this be done in the code?
+-   This is OK, provided that you are only ever working with one file
+-   **Cons:** Method is not _reproducible_ if developing a data flow where your data file may be updated
+
+
+*Can this be done in the R code for reproducibility?* - **TPSA**
 
 
 ---
@@ -324,7 +326,7 @@ fav_food
 
 ---
 
-## Handling NAs
+## Handling NAs - while reading the file
 
 ```{r echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("img/fav-food/fav-food-nas.png")
@@ -337,6 +339,9 @@ fav_food <- read_excel("data/favourite-food.xlsx",
   clean_names()
 fav_food 
 ```
+
+You can also deal with NAs after reading data for sure! - How to do this ?
+- Maybe you can look at `na_if()` from **dplyr** $\in$ **tidyverse**
 
 ---
 
@@ -378,7 +383,7 @@ knitr::include_graphics("img/fav-food/fav-food-ses.png")
 
 
 .question[
-Does the order of the `ses` categories make sense?
+Does the order of the `ses` categories make sense? - **TPSA**
 ]
 
 
@@ -394,6 +399,9 @@ fav_food <- fav_food %>%
 fav_food %>%
   count(ses)
 ```
+
+[Check fct_relevel()](https://forcats.tidyverse.org/reference/fct_relevel.html)
+
 ]
 
 ---
@@ -436,7 +444,7 @@ What happened to the order of `ses` categories?
 
 ## `read_rds()` and `write_rds()`
 
-- CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.
+- **CSVs can be unreliable for saving interim results if there is specific variable type information you want to hold on to.**
 - An alternative is RDS files ('R data single'), you can read and write them with `read_rds()` and `write_rds()`, respectively.
 
 ```{r message = FALSE}
@@ -470,6 +478,27 @@ class: middle
 
 `r emoji::emoji("down_arrow")` You may need to install specialised R packages to read data from a specific format
 
+---
+
+class: middle
+
+# Naming Files
+
+---
+
+## Rule of thumbs to remember
+
+- Be Descriptive and Concise
+  * avoid using vague naming such as *untitled.Rmd* or *oe-vers333.R*
+  * include dates when relevant, via ISO 8601 format (YYYY-MM-DD) for easy sorting - such as *project_draft_2026-10-10.Rmd*
+- Use Consistent Naming Conventions
+  * Common conventions include: words_separated_by_underscores (**snake_case**) and words-separated-by-hyphens (**kebap-case**), used for for *object names* and *file and folder names* in R, respectively. 
+- Avoid Special Characters and Spaces
+  * Avoid using spaces, slashes (/), colons (:), asterisks (*), question marks (?), or quotes
+- Use Enumeration and/or Letters
+  * you can get extra help from these for easy sorting, such as *project_draft_01_2026-10-10.Rmd* includes additional version number of draft
+- Creating **README.md** files
+  * For more complex settings, it is a good practice to write README file as the first file users read. **You will explore this in your project preparation**
 
 ---
 
@@ -595,7 +624,7 @@ tube_stations <- read_delim("data/tube-stations.csv",
 ```
 It gives us the `readr` library, but if we've already imported the tidyverse we don't need to include that line, and can delete it.
 
-The warning message here is fine---it's telling us that "`not in a zone`" is not an integer, which we already know!
+
 ---
 
 ## Importing from a CSV using the GUI
@@ -670,4 +699,5 @@ tube_stations_excel <- read_excel("data/tube-stations.xlsx",
     range = "A3:E11", col_types = c("text", 
         "text", "numeric", "text", "numeric"))
 ```
+
 - I've suppressed the warnings (`warning = F` in the code chunk label) because it gives lots, for every time it changes the data type in a cell

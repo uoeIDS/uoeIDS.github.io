@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.29/header-attrs.js"></script>
-    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.3.0/panelset.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -63,7 +63,7 @@ The **grammar** of data wrangling
 .pull-right[
 **Pipe** the steps together
 
-``` r
+```r
 starwars %&gt;%
   select(species, height) %&gt;%
   mutate(species_group = case_when(
@@ -139,7 +139,7 @@ Project directory structure
 
 
 
-``` r
+```r
 professions &lt;- read_csv("data/scientists/professions.csv")
 dates &lt;- read_csv("data/scientists/dates.csv")
 works &lt;- read_csv("data/scientists/works.csv")
@@ -157,7 +157,7 @@ works &lt;- read_csv("data/scientists/works.csv")
 
 .panel[.panel-name[professions]
 
-``` r
+```r
 professions
 ```
 
@@ -180,7 +180,7 @@ professions
 
 .panel[.panel-name[dates]
 
-``` r
+```r
 dates
 ```
 
@@ -201,7 +201,7 @@ dates
 
 .panel[.panel-name[works]
 
-``` r
+```r
 works
 ```
 
@@ -244,13 +244,15 @@ works
 ## 10 Jennifer Doudna    Biochemist                       1964         NA one of t…
 ```
 
+- How do we get there do you think ? - **TPSA**
+
 ---
 
 ## Inputs, reminder
 
 .pull-left[
 
-``` r
+```r
 names(professions)
 ```
 
@@ -258,7 +260,7 @@ names(professions)
 ## [1] "name"       "profession"
 ```
 
-``` r
+```r
 names(dates)
 ```
 
@@ -266,7 +268,7 @@ names(dates)
 ## [1] "name"       "birth_year" "death_year"
 ```
 
-``` r
+```r
 names(works)
 ```
 
@@ -276,7 +278,7 @@ names(works)
 ]
 .pull-right[
 
-``` r
+```r
 nrow(professions)
 ```
 
@@ -284,7 +286,7 @@ nrow(professions)
 ## [1] 10
 ```
 
-``` r
+```r
 nrow(dates)
 ```
 
@@ -292,7 +294,7 @@ nrow(dates)
 ## [1] 8
 ```
 
-``` r
+```r
 nrow(works)
 ```
 
@@ -316,7 +318,7 @@ class: middle
 ## Joining data frames
 
 
-``` r
+```r
 something_join(x, y)
 ```
 
@@ -331,14 +333,14 @@ all combination of multiple matches in the case of multiple matches
  
 ---
 
-## Setup
+## Toy Data Example
 
 Let's keep things simple. For the next few slides...
 
 .pull-left[
 
 
-``` r
+```r
 x
 ```
 
@@ -354,7 +356,7 @@ x
 .pull-right[
 
 
-``` r
+```r
 y
 ```
 
@@ -377,7 +379,7 @@ y
 ]
 .pull-right[
 
-``` r
+```r
 left_join(x, y, by = "id")
 ```
 
@@ -391,7 +393,7 @@ left_join(x, y, by = "id")
 ```
 
 
-``` r
+```r
 x %&gt;% left_join(y, by = "id")
 ```
 
@@ -410,7 +412,7 @@ x %&gt;% left_join(y, by = "id")
 ## `left_join()`
 
 
-``` r
+```r
 professions %&gt;%
 * left_join(dates, by = "name")
 ```
@@ -441,7 +443,7 @@ professions %&gt;%
 ]
 .pull-right[
 
-``` r
+```r
 right_join(x, y, by = "id")
 ```
 
@@ -455,7 +457,7 @@ right_join(x, y, by = "id")
 ```
 
 
-``` r
+```r
 x %&gt;% right_join(y, by = "id")
 ```
 
@@ -476,7 +478,7 @@ x %&gt;% right_join(y, by = "id")
 
 
 
-``` r
+```r
 professions %&gt;%
 * right_join(dates, by = "name")
 ```
@@ -509,7 +511,7 @@ Would `left_join(x, y, by="id")` and `right_join(y, x, by = "id")` produce the s
 ]
 .pull-right[
 
-``` r
+```r
 full_join(x, y, by = "id")  
 ```
 
@@ -531,7 +533,7 @@ full_join(x, y, by = "id")
 ## `full_join()`
 
 
-``` r
+```r
 dates %&gt;%
 * full_join(works, by = "name")
 ```
@@ -561,7 +563,7 @@ dates %&gt;%
 ]
 .pull-right[
 
-``` r
+```r
 inner_join(x, y, by = "id")
 ```
 
@@ -579,7 +581,7 @@ inner_join(x, y, by = "id")
 ## `inner_join()`
 
 
-``` r
+```r
 dates %&gt;%
 * inner_join(works, by = "name")
 ```
@@ -598,7 +600,7 @@ dates %&gt;%
 ```
 
 .question[
-For `full_join()` and `inner_join()`, does the order of `x` and `y` matter?
+For `full_join()` and `inner_join()`, does the order of `x` and `y` matter? - **TPSA**
 ]
 
 
@@ -611,7 +613,7 @@ For `full_join()` and `inner_join()`, does the order of `x` and `y` matter?
 ]
 .pull-right[
 
-``` r
+```r
 semi_join(x, y, by = "id")
 ```
 
@@ -629,7 +631,7 @@ semi_join(x, y, by = "id")
 ## `semi_join()`
 
 
-``` r
+```r
 dates %&gt;%
 * semi_join(works, by = "name")
 ```
@@ -656,7 +658,7 @@ dates %&gt;%
 ]
 .pull-right[
 
-``` r
+```r
 anti_join(x, y, by = "id")
 ```
 
@@ -673,7 +675,7 @@ anti_join(x, y, by = "id")
 ## `anti_join()`
 
 
-``` r
+```r
 dates %&gt;%
 * anti_join(works, by = "name")
 ```
@@ -690,7 +692,7 @@ dates %&gt;%
 ## Putting it altogether
 
 
-``` r
+```r
 professions %&gt;%
   left_join(dates, by = "name") %&gt;%
   left_join(works, by = "name")
@@ -749,7 +751,7 @@ Directory structure:
 .pull-right-wide[
 Importing the data:
 
-``` r
+```r
 enrolment &lt;- read_csv("data/students/enrolment.csv")
 survey &lt;- read_csv("data/students/survey.csv")
 ```
@@ -762,7 +764,7 @@ survey &lt;- read_csv("data/students/survey.csv")
 
 .pull-left[
 
-``` r
+```r
 enrolment
 ```
 
@@ -777,7 +779,7 @@ enrolment
 ]
 .pull-right[
 
-``` r
+```r
 survey
 ```
 
@@ -802,7 +804,7 @@ survey
 
 .panel[.panel-name[In class]
 
-``` r
+```r
 enrolment %&gt;% 
 * left_join(survey, by = "id")
 ```
@@ -819,7 +821,7 @@ enrolment %&gt;%
 
 .panel[.panel-name[Survey missing]
 
-``` r
+```r
 enrolment %&gt;% 
 * anti_join(survey, by = "id")
 ```
@@ -834,7 +836,7 @@ enrolment %&gt;%
 
 .panel[.panel-name[Dropped]
 
-``` r
+```r
 survey %&gt;% 
 * anti_join(enrolment, by = "id")
 ```
@@ -888,7 +890,7 @@ Directory structure:
 .pull-right-wide[
 Importing the data:
 
-``` r
+```r
 purchases &lt;- read_csv("data/sales/purchases.csv")
 prices &lt;- read_csv("data/sales/prices.csv")
 customers &lt;- read_csv("data/sales/customers.csv")  #(for later)
@@ -902,7 +904,7 @@ customers &lt;- read_csv("data/sales/customers.csv")  #(for later)
 
 .pull-left[
 
-``` r
+```r
 purchases
 ```
 
@@ -919,7 +921,7 @@ purchases
 ]
 .pull-right[
 
-``` r
+```r
 prices
 ```
 
@@ -946,7 +948,7 @@ prices
 .panel[.panel-name[Total revenue]
 .pull-left[
 
-``` r
+```r
 purchases %&gt;% 
 * left_join(prices, by = "item")
 ```
@@ -964,7 +966,7 @@ purchases %&gt;%
 ]
 .pull-right[
 
-``` r
+```r
 purchases %&gt;% 
   left_join(prices, by = "item") %&gt;%
 * summarise(total_revenue = sum(price))
@@ -983,7 +985,7 @@ purchases %&gt;%
 
 .pull-left[
 
-``` r
+```r
 purchases %&gt;% 
   left_join(prices, by = "item")
 ```
@@ -1001,7 +1003,7 @@ purchases %&gt;%
 ]
 .pull-right[
 
-``` r
+```r
 purchases %&gt;% 
   left_join(prices, by = "item") %&gt;%
 * group_by(customer_id) %&gt;%
@@ -1085,10 +1087,13 @@ One row per item sold (.green[long format])
 .pull-right[
 The goal of tidyr is to help you tidy your data via
 
-- pivoting for going between wide and long data
+- **pivoting for going between wide and long data**
 - splitting and combining character columns
 - nesting and unnesting columns
 - clarifying how `NA`s should be treated
+
+&lt;img src="img/pivot-friends.gif" width="40%" /&gt;
+
 ]
 
 
@@ -1096,8 +1101,16 @@ The goal of tidyr is to help you tidy your data via
 
 ## Pivoting data
 
-.center[
-&lt;img src="img/tidyr-longer-wider.gif" width="45%" style="background-color: #FDF6E3" /&gt;
+.pull-left[
+&lt;img src="img/tidyr-longer-wider.gif" width="85%" style="background-color: #FDF6E3" /&gt;
+]
+
+.pull-right[
+
+- Data sets can’t be labeled as wide or long but *they can be made wider or longer* for a certain analysis that requires a certain format
+- When pivoting longer, variable names that turn into values are characters by default.
+- If you need them to be in another format, you need to explicitly make that transformation, which you can do so within the `pivot_longer()` function.
+
 ]
 
 ---
@@ -1106,7 +1119,7 @@ The goal of tidyr is to help you tidy your data via
 
 .pull-left[
 
-``` r
+```r
 pivot_longer(
   data, 
   cols, 
@@ -1123,7 +1136,7 @@ pivot_longer(
 ]
 .pull-right[
 
-``` r
+```r
 pivot_wider(
   data, 
   names_from = "name", 
@@ -1142,7 +1155,7 @@ pivot_wider(
 ## Customers `\(\rightarrow\)` purchases
 
 
-``` r
+```r
 purchases &lt;- customers %&gt;%
 * pivot_longer(
 *   cols = item_1:item_3,  # variables item_1 to item_3
@@ -1169,11 +1182,12 @@ purchases
 
 ## Why pivot?
 
-Most likely, because the next step of your analysis needs it
+- Most likely, because the next step of your analysis needs it
+- If all of the data you need is in your data frame, but the columns you need don’t exist, there is a good chance it’s time to pivot!
 
 .pull-left[
 
-``` r
+```r
 prices
 ```
 
@@ -1190,7 +1204,7 @@ prices
 ]
 .pull-right[
 
-``` r
+```r
 purchases %&gt;%
 * left_join(prices, by = "item")
 ```
@@ -1214,7 +1228,7 @@ purchases %&gt;%
 
 
 
-``` r
+```r
 purchases %&gt;%
 * pivot_wider(
 *   names_from = item_no,
@@ -1233,10 +1247,10 @@ purchases %&gt;%
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
