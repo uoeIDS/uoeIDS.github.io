@@ -16,16 +16,17 @@ knitr::include_graphics("img/garbage-g54775ac54_1920.jpg")
 ```
 
 Plastic pollution is a major and growing problem, negatively affecting oceans and wildlife health.
+
 [Our World in Data](https://ourworldindata.org/plastic-pollution) has a lot of great data at various levels including globally, per country, and over time.
 For this lab we focus on data from 2019.
 
-Additionally, National Geographic ran a data visualization communication contest on plastic waste as seen [here](https://www.nationalgeographic.org/funding-opportunities/innovation-challenges/plastic/dataviz/). The winners, [Perpetual Plastic](https://perpetual-plastic.net/), created a physical data visualisation sculpture on Bali's beaches out of washed up flip-flops and other plastic debris.
+Additionally, National Geographic ran a data visualization communication contest on plastic waste. The winners, [Perpetual Plastic](https://perpetual-plastic.net/), created a physical data visualisation sculpture on Bali's beaches out of washed up flip-flops and other plastic debris.
 
 # Learning goals
 
 -   Load data from different file types.
 -   Join multiple data frames.
--   More practice of data wrangling and summarising
+-   More practice of data wrangling and summarising based on joined data
 -   Working collaboratively via GitHub.
 
 Before we get started, please ensure that you have RStudio installed, a GitHub account and are able to push and pull correctly. 
@@ -57,7 +58,7 @@ If your group consists of fewer than 4 people, then take turns in doing the task
 Today you will be working in a team of _no more than 4 people_. 
 It is important that you take it in turns to work on each activity one person at a time. 
 
-You will also get started with *pair programming* techniques. What is pair programming? From [Codeacademy.com](https://www.codecademy.com/resources/blog/what-is-pair-programming/),
+You will also get started with *pair programming* techniques. What is pair programming? From [UoE pair programming people](https://pairprogramming.ed.ac.uk/what-is-pair-programming/),
 
 > In pair programming, one person is the "driver," and the other is the "navigator." The driver is the person at the keyboard who’s actively writing code. The navigator observes, checks code for accuracy, and keeps an eye on the bigger picture.
 >
@@ -67,7 +68,7 @@ You will also get started with *pair programming* techniques. What is pair progr
 If your group has an odd number of people, one pair can be replaced by a group of three people and you can alternate 🚘 driver the 🧭 navigator roles.
 ```
 
-We will be using the 🚘 emoji to describe the "driver", and the 🧭 emojy to describe the "navigator."
+We will be using the 🚘 emoji to describe the "driver", and the 🧭 emoji to describe the "navigator."
 In your group, form pairs with each person sitting next to their partner. 
 Each member of the pair will alternate between the 🚘 driver role and the 🧭 navigator role.
 
@@ -83,20 +84,18 @@ If it's your turn to be the navigator 🧭, then guide your partner member in do
 Remember: for anyone who is not the driver 🚘, *do not* make any changes to your work and *do not* make any pushes to or pulls from GitHub -- Keep your hand off the keyboard! 
 
 
-## Register your team on Wooclap
+<!-- ## Register your team on Wooclap -->
 
-This week we will start to finalize the teams which will later work on the group projects.
-To collect the initial information on teams and team members, it is important that one of you fills out this wooclap form:
+<!-- This week we will start to finalize the teams which will later work on the group projects. -->
+<!-- To collect the initial information on teams and team members, it is important that one of you fills out this wooclap form: -->
 
-- Go to the main page of  [Wooclap](https://www.wooclap.com/)
+<!-- - Go to the main page of  [Wooclap](https://www.wooclap.com/) -->
 
-- Use the event code to enter: **ITXYYQ**
+<!-- - Use the event code to enter: **ITXYYQ** -->
 
-- Follow the instruction and given example to write your team name and team members (name and student ID). 
+<!-- - Follow the instruction and given example to write your team name and team members (name and student ID).  -->
 
-- Submit your answer in the Wooclap. 
-
-
+<!-- - Submit your answer in the Wooclap.  -->
 
 ---------------
 
@@ -244,6 +243,10 @@ The data for this lab is contained with 4 different files, each saved as differe
 **Note**: The two data sources use different text for `name`, like “Turkey” or “Turkiye”, so joining of data should be based on the ISO3 Alpha-code.
 
 Also, given that all dataset have a `name` variable, I suggest using a `select()` prior to joining the data sets in order to remove all but one of the `name` columns. Otherwise, the resulting joined data will have variables `name.x` and `name.y` but not `name` which may be confusing.
+
+> **Reminder.** If you are unsure which join to use, see the
+
+See the [animated guide to dplyr joins](https://uoeids.github.io/labs/lab-02/dplyr-joins.html){target="_blank"}
 
 -----------------------------------------------------
 
@@ -394,7 +397,7 @@ The variable names in `plastic_data_all` are quite long, let's do something abou
 
 * Use the `rename()` command to replace the existing variable names with something that is more concise. For example, we can contract `population` to `pop` using the following code:
 
-```{r rename, eval = TRUE, echo = FALSE, warning=FALSE}
+```{r rename, eval = FALSE, echo = TRUE, warning=FALSE}
 plastic_data_all <- plastic_data_all %>%
   rename(pop = population)
 ```
@@ -436,4 +439,4 @@ At the end of the workshop, you want to ensure that only you can make further ch
 
 <br>
 
-That's all for today. In next week's lab we will continue to work collaboratively, but we will look at how to resolve merger conflicts.
+That's all for today. In next week's lab we will continue to work collaboratively, but we will look at how to resolve merger conflicts in detail later.
