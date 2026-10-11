@@ -2,7 +2,7 @@
 title: "Quantifying uncertainty"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -113,16 +113,17 @@ University of Edinburgh
 ## Topics
 
 - Why is quantification of uncertainty important?
-- Confidence intervals
+  - Confidence intervals
+
 - Bootstrapping for confidence intervals
-- Bootstrapping with Tidymodels
-- Precision vs Accuracy
+  - Bootstrapping with Tidymodels
+
 
 ---
 
 class: middle
 
-# Motivation
+# Motivational Example
 
 ---
 
@@ -150,23 +151,22 @@ edi_3br
 
 ## Observed sample
 
-```{r message=FALSE, echo=FALSE, out.width="70%"}
+.pull-left[
+```{r message=FALSE, echo=FALSE, out.width="100%"}
 ggplot(data = edi_3br, mapping = aes(x = rent)) +
   geom_histogram(binwidth = 200,fill = "springgreen4") +
   labs(title = "Rent of 3 BR flats in Edinburgh")
 ```
 
----
-
-## Observed sample
-
 Sample mean ≈ £`r edi_3br %>% summarise(med_rent = mean(rent)) %>% pull() %>% round()`.
 
-<br>
+]
 
+.pull-right[
 ```{r echo=FALSE, out.width="90%"}
 knitr::include_graphics("img/rent-bootsamp.png")
 ```
+]
 
 ---
 
@@ -174,10 +174,9 @@ class: middle
 
 .hand[
 .light-blue[
-Is the mean price of all 3 BR flats in Edinburgh exactly £`r edi_3br %>% summarise(med_rent = mean(rent)) %>% pull() %>% round()`??
+Is the mean price of all 3 BR flats in Edinburgh exactly £`r edi_3br %>% summarise(med_rent = mean(rent)) %>% pull() %>% round()`?? - **TPSA**
 ]
 ]
-
 
 
 ---
@@ -192,19 +191,24 @@ class: middle
 
 ... is the process of using sample data to make conclusions about the underlying population the sample came from
 
-```{r echo=FALSE, out.width="60%"}
-knitr::include_graphics("img/photo-1571942676516-bcab84649e44.png")
+```{r echo=FALSE, out.width="40%"}
+knitr::include_graphics("img/population_vs_sample.png")
 ```
 
----
-
-## Estimation
-
+**Estimation:**
 So far we have done some estimation (mean, median, proportion, etc.), i.e.
 - used data from samples to calculate sample statistics
 - which can then be used as estimates for population parameters
 
 ---
+
+<!-- ## Estimation -->
+
+<!-- So far we have done some estimation (mean, median, proportion, etc.), i.e. -->
+<!-- - used data from samples to calculate sample statistics -->
+<!-- - which can then be used as estimates for population parameters -->
+
+<!-- --- -->
 
 .question[
 If you want to catch a fish, do you prefer a spear or a net?
@@ -233,22 +237,10 @@ If you want to estimate a population parameter, do you prefer to report a range 
 
 --
 
-- If we report a point estimate, we probably won’t hit the exact population parameter
-- If we report a range of plausible values we have a good shot at capturing the parameter
+## Point Estimate and beyond
 
----
-
-.center[
-```{r echo=FALSE, out.width="80%"}
-knitr::include_graphics("img/gallup_nhs.jpeg")
-```
-]
-
-.footnote[
-.midi[
-Source: Gallup. [Britons' Satisfaction With Healthcare, Transportation Falters](https://news.gallup.com/poll/505682/britons-satisfaction-healthcare-transportation-falters.aspx), 23/11/23.
-]
-]
+- If we report a *point estimate*, we probably won’t hit the exact population parameter
+- If we report a *range of plausible values* we have a good shot at capturing the parameter
 
 ---
 
@@ -276,6 +268,27 @@ A plausible range of values for the population parameter is a **confidence inter
 
 ---
 
+## Confidence level
+
+**We are 95% confident that ...**
+
+- Suppose we took many samples from the original population and built a 95% confidence interval based on each sample.
+- Then about 95% of those intervals would contain the true population parameter.
+
+--
+
+```{r echo=FALSE, out.width="30%"}
+knitr::include_graphics("img/ci-1.gif")
+```
+
+.footnote[
+.small[
+Image Source: Minitab blog [Understanding Hypothesis Tests: Confidence Intervals and Confidence Levels](https://blog.minitab.com/en/adventures-in-statistics-2/understanding-hypothesis-tests-confidence-intervals-and-confidence-levels), 22 Nov 2023.
+]
+]
+
+---
+
 .question[
 Suppose we split the class in half down the middle of the classroom and ask each student their heights. Then, we calculate the mean height of students on each side of the classroom. Would you expect these two means to be exactly equal, close but not equal, or wildly different?
 ]
@@ -294,11 +307,11 @@ Suppose you randomly sample 50 students and 5 of them are left handed. If you we
 
 We can quantify the variability of sample statistics using
 
-- simulation: via bootstrapping (now)
+- simulation: via *bootstrapping* (in IDS)
 
 or
 
-- theory: via Central Limit Theorem (future stat courses!)
+- theory: via *Central Limit Theorem* (future stat courses!)
 
 ---
 
@@ -313,7 +326,7 @@ class: middle
 .pull-left-wide[
 - _"pulling oneself up by one’s bootstraps"_: accomplishing an impossible task without any outside help
 - **Impossible task:** estimating a population parameter using data from only the given sample
-- **Note:** Notion of saying something about a population parameter using only information from an observed sample is the crux of statistical inference
+- **Note:** *Notion of saying something about a population parameter using only information from an observed sample is the crux of statistical inference*
 ]
 .pull-right-narrow[
 .huge[
@@ -325,21 +338,23 @@ class: middle
 
 ## Observed sample
 
-```{r echo=FALSE}
+.pull-left[
+```{r echo=FALSE, out.width="100%"}
 ggplot(data = edi_3br, mapping = aes(x = rent)) +
   geom_histogram(binwidth = 200,fill = "springgreen4", alpha = 0.5) +
   labs(title = "Rent of 3 BR flats in Edinburgh") +
   geom_vline(xintercept = edi_3br %>% summarise(med_rent = mean(rent)) %>% pull(), color = "springgreen4", lty = 2, linewidth = 1) 
 ```
+]
 
-
----
-
-## Observed sample
-
-```{r echo=FALSE, out.width="90%"}
+.pull-right[
+```{r echo=FALSE, out.width="80%"}
 knitr::include_graphics("img/rent-bootsamp.png")
 ```
+
+What if we apply resampling via bootstrap?
+
+]
 
 ---
 
@@ -393,6 +408,16 @@ knitr::include_graphics("img/rent-bootpop.png")
 3. Repeat steps (1) and (2) many times to create a bootstrap distribution - a distribution of bootstrap statistics
 
 4. Calculate the bounds of the XX% confidence interval as the middle XX% of the bootstrap distribution
+
+---
+
+## Bootstrap Procedure
+
+You can imagine it visually as;
+
+```{r echo=FALSE, out.width="45%"}
+knitr::include_graphics("img/BootstrapFig.png")
+```
 
 ---
 
@@ -521,6 +546,8 @@ we could keep going...
 
 ## Many many samples...
 
+This process is repeated a large number of times (typically 1,000 or 10,000 times or maybe more)
+
 ```{r echo=FALSE}
 set.seed(834782)
 boot_df <- edi_3br %>%
@@ -558,7 +585,8 @@ boot_df %>%
   ggplot(aes(stat)) +
   geom_histogram(aes(y = after_stat(density)), binwidth = 20, alpha = 1, fill = "gray") +
   xlim(range(edi_3br$rent)) +
-  labs(title = "Distribution of bootstrap means")
+  labs(title = "Distribution of bootstrap means", 
+       x = "Bootstrap mean")
 ```
 
 ---
@@ -618,15 +646,17 @@ boot_df %>%
 
 *We are 95% confident that the mean rent of all three bedroom flats is between £1603 and £2213.*
 
+*The lower and upper bound of the constructed confidence interval is 1603 and 2213, respectively*
+
 ---
 
 class: middle
 
-# Bootstrapping with tidymodels
+# How to do Bootstrapping with tidymodels
 
 ---
 
-## Generate bootstrap means
+## Specify the variable of interest
 
 ```{r eval=FALSE}
 library(infer)
@@ -637,30 +667,15 @@ edi_3br %>%
 
 ---
 
-## Generate bootstrap means
+## Generate bootstrap samples
 
 ```{r eval=FALSE}
 library(infer)
 edi_3br %>%
   # specify the variable of interest
-  specify(response = rent)
+  specify(response = rent) %>% 
   # generate 15000 bootstrap samples
   generate(reps = 15000, type = "bootstrap")
-```
-
----
-
-## Generate bootstrap means
-
-```{r eval=FALSE}
-library(infer)
-edi_3br %>%
-  # specify the variable of interest
-  specify(response = rent)
-  # generate 15000 bootstrap samples
-  generate(reps = 15000, type = "bootstrap")
-  # calculate the mean of each bootstrap sample
-  calculate(stat = "mean")
 ```
 
 ---
@@ -689,8 +704,10 @@ boot_df <- edi_3br %>%
 ## The bootstrap sample
 
 .question[
-How many observations are there in `boot_df`? What does each observation represent?
+How many observations are there in `boot_df`? What does each observation represent? 
 ]
+
+**TPSA**
 
 ```{r}
 boot_df
@@ -713,10 +730,16 @@ ggplot(data = boot_df, mapping = aes(x = stat)) +
 A 95% confidence interval is bounded by the middle 95% of the bootstrap distribution.
 
 ```{r}
-boot_df %>%
+bood_df_bound <- boot_df %>%
   summarize(lower = quantile(stat, 0.025),
             upper = quantile(stat, 0.975))
 ```
+
+Interpretation: We are **95% confident** that **the mean rent of all three bedroom flats** is between **£`r round(bood_df_bound[1], 0)` and £`r round(bood_df_bound[2], 0)`.**
+
+*What about other commonly used confidence levels, such as 90% or 99%?*
+ - Commonly used ones are 90%, 95% and 99%
+ - A larger percentage confidence interval will give a wider range for the same data
 
 ---
 
@@ -731,28 +754,41 @@ upper_bound <- boot_df %>% summarize(upper_bound = quantile(stat, 0.975)) %>% pu
 ```{r echo=FALSE, out.width="70%"}
 ggplot(data = boot_df, mapping = aes(x = stat)) +
   geom_histogram(binwidth = 100) +
-  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", linewidth = 2) +
+  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", lty = 2, linewidth = 2) +
   labs(title = "Bootstrap distribution of means",
        subtitle = "and 95% confidence interval")
 ```
 
 ---
 
-## Interpret the confidence interval
+## Commonly used confidence levels
 
 .question[
-The 95% confidence interval for the mean rent of three bedroom flats in Edinburgh was calculated as (`r lower_bound`, `r upper_bound`). Which of the following is the correct interpretation of this interval?
-
-**(a)** 95% of the time the mean rent of three bedroom flats in this sample is between £`r lower_bound` and £`r upper_bound`.
-
-**(b)** 95% of all three bedroom flats in Edinburgh have rents between £`r lower_bound` and £`r upper_bound`.
-
-**(c)** We are 95% confident that the mean rent of all three bedroom flats is between £`r lower_bound` and £`r upper_bound`.
-
-**(d)** We are 95% confident that the mean rent of three bedroom flats in this sample is between £`r lower_bound` and £`r upper_bound`.
+Which line (orange dash/dot, blue dash, green dot) represents which confidence level?
 ]
 
+```{r echo=FALSE}
+l90 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.05)) %>% round(2) %>% pull()
+u90 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.95)) %>% round(2) %>% pull()
+
+l95 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.025)) %>% round(2) %>% pull()
+u95 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.975)) %>% round(2) %>% pull()
+
+l99 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.005)) %>% round(2) %>% pull()
+u99 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.995)) %>% round(2) %>% pull()
+
+ggplot(data = boot_df, mapping = aes(x = stat)) +
+  geom_histogram(binwidth = 100) +
+  geom_vline(xintercept = c(l95, u95), color = "#A7D5E8", lty = 2, linewidth = 2) +
+  geom_vline(xintercept = c(l90, u90), color = "chartreuse4", lty = 3, linewidth = 2) +
+  geom_vline(xintercept = c(l99, u99), color = "orange", lty = 6, linewidth = 2) +
+  labs(title = "Bootstrap distribution of means",
+       subtitle = "and various confidence intervals")
+```
+
 ---
+
+
 
 class: middle
 
@@ -782,7 +818,7 @@ head(diabetes2, n = 3)
 .footnote[
 .small[
 The data actually includes an additional treatment (a lifestyle intervention), but we will ignore it for simplicity.
-The data come from the openintro package: [`diabetes2`](http://openintrostat.github.io/openintro/reference/diabetes2.html).
+The data come from the **openintro** package: [`diabetes2`](http://openintrostat.github.io/openintro/reference/diabetes2.html).
 ]
 ]
 
@@ -927,110 +963,8 @@ ggplot(data = bootstrap_dist, mapping = aes(x = stat)) +
 
 ## Interpretation
 
-We can say that we are 95% confident that the proportion of patients who respond positively to the new drug is between `r lower_bound` and `r upper_bound` higher than the proportion of patients who respond positively to the standard drug.
+We can say that we are **95% confident** that the proportion of patients who respond positively to the new drug is between `r lower_bound` and `r upper_bound` higher than the proportion of patients who respond positively to the standard drug.
 
 --
 
 This also means that we are 95% confident that the difference in proportion is different from 0, i.e. that the two drugs are not equally effective.
-
----
-
-class: middle
-
-# Accuracy vs. precision
-
----
-
-## Confidence level
-
-**We are 95% confident that ...**
-
-- Suppose we took many samples from the original population and built a 95% confidence interval based on each sample.
-- Then about 95% of those intervals would contain the true population parameter.
-
---
-
-```{r echo=FALSE, out.width="30%"}
-knitr::include_graphics("img/ci-1.gif")
-```
-
-.footnote[
-.small[
-Source: Minitab blog [Understanding Hypothesis Tests: Confidence Intervals and Confidence Levels](https://blog.minitab.com/en/adventures-in-statistics-2/understanding-hypothesis-tests-confidence-intervals-and-confidence-levels), 22 Nov 2023.
-]
-]
-
----
-
-## Commonly used confidence levels
-
-.question[
-Which line (orange dash/dot, blue dash, green dot) represents which confidence level?
-]
-
-```{r echo=FALSE}
-l90 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.05)) %>% round(2) %>% pull()
-u90 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.95)) %>% round(2) %>% pull()
-
-l99 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.005)) %>% round(2) %>% pull()
-u99 <- boot_df %>% summarize(lower_bound = quantile(stat, 0.995)) %>% round(2) %>% pull()
-
-ggplot(data = boot_df, mapping = aes(x = stat)) +
-  geom_histogram(binwidth = 100) +
-  geom_vline(xintercept = c(lower_bound, upper_bound), color = "#A7D5E8", lty = 2, linewidth = 2) +
-  geom_vline(xintercept = c(l90, u90), color = "chartreuse4", lty = 3, linewidth = 2) +
-  geom_vline(xintercept = c(l99, u99), color = "orange", lty = 6, linewidth = 2) +
-  labs(title = "Bootstrap distribution of means",
-       subtitle = "and various confidence intervals")
-```
-
----
-
-## Precision vs. accuracy
-
-.question[
-If we want to be very certain that we capture the population parameter, should we use a wider or a narrower interval? What drawbacks are associated with using a wider interval?
-]
-
---
-
-```{r echo=FALSE, out.width="60%"}
-knitr::include_graphics("img/garfield.png")
-```
-
---
-
-.question[
-How can we get best of both worlds -- high precision and high accuracy?
-]
-
----
-
-## Changing confidence level
-
-.question[
-How would you modify the following code to calculate a 90% confidence interval?
-How would you modify it for a 99% confidence interval?
-]
-
-```{r eval=FALSE}
-edi_3br %>%
-  specify(response = rent) %>%
-  generate(reps = 15000, type = "bootstrap") %>%
-  calculate(stat = "mean") %>%
-  summarize(lower = quantile(stat, 0.025),
-            upper = quantile(stat, 0.975))
-```
-
----
-
-## Recap
-
-- Sample statistic $\ne$ population parameter, but if the sample is good, it can be a good estimate
-- We report the estimate with a confidence interval, and the width of this interval depends on the variability of sample statistics from different samples from the population
-- Since we can't continue sampling from the population, we bootstrap from the one sample we have to estimate sampling variability
-- We can do this for any sample statistic:
-  - For a mean: `calculate(stat = "mean")`
-  - Learn about calculating bootstrap intervals for other statistics in the quiz
-
-
