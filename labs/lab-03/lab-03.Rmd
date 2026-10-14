@@ -1,5 +1,5 @@
 ---
-title: "Lab 03 – Critical Use of GenAI for Data Science"
+title: "Lab 03 – Critical-Responsible Use of GenAI for Data Science"
 output: 
   tufte::tufte_html:
     tufte_variant: "envisioned"
@@ -18,21 +18,34 @@ knitr::include_graphics("img/winston-tjia-3ByHpte8S7U-unsplash.jpg")
 **Learning goals:**
 
 -   Use GenAI tools critically and reflection.
+-   Working collaboratively via GitHub and learn how to resolve merge conflicts.
 -   More practice of data wrangling and summarising.
 -   Bootstrap confidence intervals.
--   Working collaboratively via GitHub and learn how to resolve merge conflicts.
 
 In this lab you will use **Generative AI tools (e.g. ELM, ChatGPT)** to help you **learn data science**, with a focus on understanding, not copying answers. We will also be using **bootstrap** to create confidence intervals.
 
-**Policy reminder:**  
-- GenAI tools are not allowed for submitting assessed work, but can be used for concept exploration, drafting, and learning outside assessment.  
-- If you use GenAI, always acknowledge it in your work.
+## Register your team on Wooclap
 
-You will analyze a subset of the `r emoji::emoji("airplane")` `flights` dataset (from the package `nycflights13`), combine wrangling/joining and bootstrap tasks with reflection on GenAI's strengths and limitations, and practice critical prompting.
+This week we will start to finalize the teams which will later work on the group projects.
+To collect the necessary information on teams and team members, it is important that one of you fills out this wooclap form:
+
+- Go to the main page of [Wooclap](https://www.wooclap.com/)
+
+- Use the event code to enter: **JTQBAOC**
+
+- Follow the instruction and given example to write your team name and team members (name and student ID).
+
+- Submit your answer in the Wooclap.
+
+Before joining a team, make sure that you are on the correct workshop timeslot, scheduled on your calendar. If there is a mismatch discuss with us first before accepting any team member role!
+
+**Policy reminder:**  
+Please see the explanation about the use of ELM for responsible use of GenAI in IDS
+See the [IDS GenAI guidance](https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html) for use of GenAI
 
 -----------------------------------------------------------------------
 
-`r emoji::emoji("busts")``r emoji::emoji("busts")` For this workshop, keep working with your team! 
+For this workshop, keep working with your team! 
 You will keep working collaboratively from the same repository in GitHub. 
 You are encouraged to use pair programming, and to connect one of your laptops to the table's screen, so everyone can see and discuss the code.
 
@@ -255,6 +268,8 @@ Finally, everybody ⬇️ _pull_ the latest changes from the shared repository. 
 
 # 1. Data Structure Summary & Initial Exploration
 
+You will analyze a subset of the `r emoji::emoji("airplane")` `flights` dataset (from the package `nycflights13`), combine wrangling/joining and bootstrap tasks with reflection on GenAI's strengths and limitations, and practice critical prompting.
+
 ## 1.1. Subset the data
 
 Today we will be working with the `r emoji::emoji("airplane")` `flights` dataset (from the package `nycflights13`).
@@ -281,14 +296,18 @@ Explore the columns in `jan_feb_flights`.
 
 **Prompt GenAI as a tutor:**  
 First, discuss with your team how to approach these questions and make an attempt. 
-After trying on your own, ask genAI to act as a tutor for you, and think about which instructions to give them in the prompt, so that they don't just provide answers, but explain the concepts. For example, you might ask:
+
+After trying on your own, ask genAI to get some help and discuss, after following the instructions given for IDS-GenAI guidance, so that they don't just provide answers, but explain the concepts. 
+
+For example, you might ask:
 "How do I check the types of columns and spot missing values in a dataframe in R? Please explain the concepts, not just code."  
 
 - In the code, include both your first attempt, and anything that was suggested by genAI (if you used it).
 
 ## 1.3. Reflection
 
-Did the GenAI explanation (if used) help you? What was clear or unclear? Did it make any errors or skip anything important? Did you fact-check? Did you need to provide follow-up prompts or clarifications, or was the first response sufficient?
+Did the GenAI explanation (if used) help you? Which language model you explored? 
+What was clear or unclear? Did it make any errors or skip anything important? Did you fact-check? Did you need to provide follow-up prompts or clarifications, or was the first response sufficient?
 
 ---
 
@@ -301,7 +320,7 @@ Did the GenAI explanation (if used) help you? What was clear or unclear? Did it 
 - Create a new variable, `gust_present`, which is TRUE if wind_gust is not missing, FALSE otherwise.
 - Is there a relationship between gust_present and dep_delay? Compute mean and sd for dep_delay for different values of gust_present.
 
-**Prompt GenAI as a tutor:**
+**Prompt for GenAI as an example:**
 Ask GenAI to act as a navigator in pair-programming. For example, you might write:
 "Act as a navigator in pair programming. I want to join two datasets in R using dplyr, but I'm not sure which join function I should use." or "..here is what I would try, but is it correct?" or "..help me think through the steps to join and summarise these datasets."
 
@@ -331,9 +350,9 @@ jfk_flights <- jan_feb_flights %>%
 - Compute 95% confidence interval using the quantiles of the bootstrap samples
 - Provide an interpretation for the confidence interval
 
-Attempt this question with your teammates, and if you get stuck, ask GenAI for help as suggested above (make sure to use the `infer` package).
+Attempt this question with your teammates, and if you get stuck, ask IDS-sidekick for help as suggested above (make sure to use the `infer` package).
 
-## 3.2 Using base R
+## 3.2 Boostrap using base R
 
 The following code achieves the same using base R and a for loop. 
 Try to guess with your team what each line does.
@@ -378,8 +397,9 @@ Did it match the information provided by the tutor?
 - For each carrier, compute number of flights, mean & median arrival delay.
 - Is there anything notable about the worst airline?
 
-**Prompt GenAI as a tutor:**   
-Attempt this question on your own, and then ask GenAI for help if you get stuck. Or, if you are able to complete the exercise, ask for feedback or alternative (potentially better) ways to approach it. 
+**Prompt GenAI as an example:**   
+Attempt this question on your own, and then ask GenAI for help if you get stuck. Or, if you are able to complete the exercise, ask for feedback or alternative (potentially better) ways to approach it.
+
 "I used this code to join the flights and airlines data in R using dplyr. How could I improve it? Are there other ways of doing the same task? Explain the concepts, not just code."
 
 After your conversation, add any alternative attempts.
@@ -392,20 +412,27 @@ What did GenAI help with? Was anything inaccurate, missing, or did you spot any 
 
 # 5. GenAI Use Reflection
 
-- Discuss with your teammates, what are the risks of using GenAI for coding? 
-- More specifically, what are the risks of copying code verbatim?
+- Discuss with your teammates, what are the risks of using GenAI for coding? Did you use any LLM directly or you get help from IDS-sidekick ?
+- What are the risks of copying code verbatim without attempting?
 - Discuss the differences for someone who is just learning to code (like you) versus someone who is already proficient.
-- What are your thoughts on using GenAI as a *thinking partner* or *pair-programming navigator*, rather than a code-generator?
 - What are your thoughts on attempting a task on your own first, and then asking GenAI for help or feedback?
+- What are your thoughts on using GenAI as a *thinking partner* or *pair-programming navigator*, rather than a code-generator? Do you think IDS-sidekick is a good design based on your exploration so far? 
 - What is one insight or tip each of you learned today about using GenAI productively or spotting misleading AI-generated code?
+
+Go to Learn and share your experience with us from that workshop, this information will be very useful for further iteration of IDS and use of GenAI within that module. 
+Under Course information -> [Week4 WS GenAI Reflections](https://www.learn.ed.ac.uk/ultra/courses/_136348_1/assessment/survey/_13043810_1?gradeitemView=details)
 
 ---
 
 # 6. GenAI Acknowledgment
 
-If you used AI for this lab, provide a statement like (make sure to specify which GenAI tool you used):  
+If you used ELM via IDS-sidekick prompt, provide a statement like this, whenever it is required
 
-> I used ELM/ChatGPT/Copilot to discuss wrangling and explain Base R code, and to clarify syntax. I did not copy any code directly, and verified any advice through my own R coding and interpretation.
+> I used ELM with IDS-sidekick prompt to discuss wrangling and explain Base R code, and to clarify syntax. I did not copy any code directly, and verified any advice through my own R coding and interpretation.
+
+If you used any other AI for this lab rather than ELM or IDS-sidekick, provide a statement like (make sure to specify which GenAI tool you used):  
+
+> I used ChatGPT/Copilot/Claude to discuss wrangling and explain Base R code, and to clarify syntax. I did not copy any code directly, and verified any advice through my own R coding and interpretation.
 
 ---
 
