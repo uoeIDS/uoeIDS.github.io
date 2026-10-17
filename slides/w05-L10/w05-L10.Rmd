@@ -2,7 +2,7 @@
 title: "Visualising data"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -62,7 +62,7 @@ Then the cleaned data is **summarised** for investigation and communication via.
 
 class: middle
 
-# Exploratory data analysis
+# Exploratory Data Analysis (EDA)
 
 ---
 
@@ -326,6 +326,51 @@ ggplot(data, mapping = aes(x = x, y = y, col = set)) +
 
 ---
 
+## Anscombe's quartet
+
+```{r quartet-for-show, eval = FALSE, echo = FALSE}
+library(Tmisc)
+quartet
+```
+
+.pull-left[
+```{r quartet-view1, echo = FALSE}
+quartet[1:22,]
+```
+] 
+.pull-right[
+```{r quartet-view2, echo = FALSE}
+quartet[23:44,]
+```
+]
+
+---
+
+## Summarising Anscombe's quartet
+
+```{r quartet-summary}
+quartet %>%
+  group_by(set) %>%
+  summarise(
+    mean_x = mean(x), 
+    mean_y = mean(y),
+    sd_x = sd(x),
+    sd_y = sd(y),
+    r = cor(x, y)
+  )
+```
+
+---
+
+## Visualizing Anscombe's quartet
+
+```{r quartet-plot, echo = FALSE, out.width = "80%", fig.asp = 0.5}
+ggplot(quartet, aes(x = x, y = y)) +
+  geom_point() +
+  facet_wrap(~ set, ncol = 4)
+```
+
+---
 
 class: middle
 
@@ -346,72 +391,10 @@ class: middle
   
 - Visualising the data can help identify unusual shapes and structures that are not intuitive and difficult to examine numerically.
 
-
-
----
-
-## Example: RANDU
-
-- Pseudo-random number generators are algorithms that generate a sequence of numbers that satisfy important statistical properties of randomness.
-
-- **Randu** was a popular algorithm for generating random numbers in 1960s & 1970s.
-
-- Numbers are generated via the recursion:
-$$V_{j+1} = (65539~ V_j) \mod 2^{31}$$
-- Typically, these numbers are scaled to the $[0, 1]$ interval: $X_j = V_j / 2^{31}$.
-
-- **Question**: What are the desired properties you want from (uniform) random numbers?
-
+Broadly speaking: 
+**Data Representation** is the form in which data is stored and communicated, might differ in various ways (visualization, sonification, physicalization).
 
 ---
-
-## Example: RANDU plots
-
-```{r randu_setup, echo = FALSE}
-cur <- 1
-vals <- NULL
-two_31 <- 2^31
-n <- 1000
-while(length(vals) < 3*n){
-  cur <- (65539*cur) %% two_31
-  vals <- c(vals, cur/two_31)
-}
-RANDU <- tibble(x = vals[seq(1, 3*n, by=3)], y = vals[seq(2, 3*n, by=3)], z = vals[seq(3, 3*n, by=3)])
-
-```
-
-
-.pull-left[
-```{r randu_hist, echo = FALSE}
-
-ggplot(RANDU, mapping = aes(x=x)) +
-  geom_histogram(breaks = (0:10)/10, colour = "blue4", fill="blue") +
-  labs(x = "RANDU Values", y = "Frequency", title = "Histogram of RANDU values.")
-```
-]
-.pull-right[
-```{r randu_scatter, echo = FALSE}
-ggplot(RANDU, mapping = aes(x = x, y = y)) +
-  geom_point() + 
-  labs(x = "Previous Value", y = "Next Value", title = "Scatter plot of consecutive RANDU points.")
-```
-]
-
----
-
-## Example: RANDU
-
-* But, if we create a 3D scatter plot with three consecutive RANDU values and rotate ...
-
-
-```{r echo=FALSE, out.width="40%", fig.align='center'}
-knitr::include_graphics("img/3dRANDUAnimation_loop.gif")
-```
-
-* Use visualisations to **explore** the data. You may need more than one perspective.
-
----
-
 
 ## Example: Facebook visits
 
@@ -438,6 +421,21 @@ ggplot(student_survey, aes(x = fb_visits_per_day)) +
 
 - You may need to iterate between visualisation and data transform.
 
+---
+
+## Historical Examples
+
+.pull_left[
+```{r, echo=FALSE, out.width = "40%", fig.align='center'}
+knitr::include_graphics("img/HistoricEx2_playfair.png")
+```
+]
+
+.pull_right[
+```{r, echo=FALSE, out.width = "40%", fig.align='center'}
+knitr::include_graphics("img/Historic_Nightingale.png")
+```
+]
 
 ---
 
@@ -510,9 +508,10 @@ ggplot(data = [dataset],                                         # Data
    other options                                                 # ...
 ```
 
-
 - Many types of geometries:
   - `geom_points()`, `geom_histogram()`, `geom_line()`, `geom_boxplot()`, etc.
+  
+- Commonly used other aesthetics that can be mapped to a specific variable in the data are; `colour`, `shape`, `size`, `alpha` (transparency)
 
 - [ggplot2 cheat sheet](https://www.rstudio.com/resources/cheatsheets/)
 
@@ -561,7 +560,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - 1st layer
 
 .midi[
 > **Start with the `penguins` data frame,**
@@ -586,7 +585,7 @@ ggplot(data = penguins) #<<
 
 ---
 
-## Coding narative
+## Coding narative - 2nd layer
 
 .midi[
 > Start with the `penguins` data frame,
@@ -612,7 +611,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - 2nd layer
 
 .midi[
 > Start with the `penguins` data frame,
@@ -640,7 +639,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - 3rd layer
 
 .midi[
 > Start with the `penguins` data frame,
@@ -668,7 +667,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - adding another aesthetic
 
 .midi[
 > Start with the `penguins` data frame,
@@ -697,7 +696,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - a new layer for title
 
 .midi[
 > Start with the `penguins` data frame,
@@ -728,7 +727,7 @@ ggplot(data = penguins,
 ---
 
 
-## Coding narative
+## Coding narative - adding x and y axis labels
 
 
 .midi[
@@ -761,7 +760,7 @@ ggplot(data = penguins,
 
 ---
 
-## Coding narative
+## Coding narative - renaming colour legend
 
 
 .midi[
@@ -795,6 +794,8 @@ ggplot(data = penguins,
 
 ---
 
+## Overall story
+
 
 .panelset[
 .panel[.panel-name[Plot]
@@ -818,9 +819,109 @@ ggplot(data = penguins,
 ]
 ]
 
-
 ---
 
+## Aesthetics options
+
+.panelset[
+.panel[.panel-name[colour]
+.pull-left[
+```{r penguins-color, fig.show = "hide", warning = FALSE}
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species)) + #<<
+  geom_point() +
+  labs(title = "Penguin bill depth & length",
+       x = "Bill depth (mm)",
+       y = "Bill length (mm)",
+       colour = "Species")
+```
+]
+.pull-right[
+```{r ref.label = "penguins-color", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```
+]
+]
+
+.panel[.panel-name[shape]
+.pull-left[
+```{r penguins-shape, fig.show = "hide", warning = FALSE}
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+                     shape = sex)) + #<<
+  geom_point() +
+  labs(title = "Penguin bill depth & length",
+       x = "Bill depth (mm)",
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex")
+```
+]
+.pull-right[
+```{r ref.label = "penguins-shape", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```
+]
+]
+
+
+
+.panel[.panel-name[size]
+.pull-left[
+```{r penguins-size, fig.show = "hide", warning = FALSE}
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+                     shape = sex,
+                     size = body_mass_g)) + #<<
+  geom_point() +
+  labs(title = "Penguin bill depth & length",
+       x = "Bill depth (mm)",
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex",
+       size = "Body mass (g)")
+```
+]
+.pull-right[
+```{r ref.label = "penguins-size", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```
+]
+]
+
+
+.panel[.panel-name[alpha (transparency)]
+.pull-left[
+```{r penguins-alpha, fig.show = "hide", warning = FALSE}
+ggplot(data = penguins,
+       mapping = aes(x = bill_depth_mm,
+                     y = bill_length_mm,
+                     colour = species,
+                     shape = sex,
+                     size = body_mass_g,
+                     alpha = flipper_length_mm)) + #<<
+  geom_point() +
+  labs(title = "Penguin bill depth & length",
+       x = "Bill depth (mm)",
+       y = "Bill length (mm)",
+       colour = "Species", shape = "Sex",
+       size = "Body mass (g)",
+       alpha = "Flipper length (mm)")
+```
+]
+.pull-right[
+```{r ref.label = "penguins-alpha", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8}
+```
+]
+
+- Is this plot easy to understand?! Don't over-burden plots, keep them simple.
+
+]
+
+]
+
+---
 
 # And iterate ...
 
@@ -842,262 +943,63 @@ ggplot(data = penguins,
 
 **However**, more is not necessarily good - Remember the 4 respects.
 
+---
+
+## Another Example: RANDU
+
+- Pseudo-random number generators are algorithms that generate a sequence of numbers that satisfy important statistical properties of randomness.
+
+- **Randu** was a popular algorithm for generating random numbers in 1960s & 1970s.
+
+- Numbers are generated via the recursion:
+$$V_{j+1} = (65539~ V_j) \mod 2^{31}$$
+- Typically, these numbers are scaled to the $[0, 1]$ interval: $X_j = V_j / 2^{31}$.
+
+- **Question**: What are the desired properties you want from (uniform) random numbers?
+
+---
+
+## Example: RANDU plots
+
+```{r randu_setup, echo = FALSE}
+cur <- 1
+vals <- NULL
+two_31 <- 2^31
+n <- 1000
+while(length(vals) < 3*n){
+  cur <- (65539*cur) %% two_31
+  vals <- c(vals, cur/two_31)
+}
+RANDU <- tibble(x = vals[seq(1, 3*n, by=3)], y = vals[seq(2, 3*n, by=3)], z = vals[seq(3, 3*n, by=3)])
+
+```
 
 
-<!-- --- -->
+.pull-left[
+```{r randu_hist, echo = FALSE}
 
-<!-- ## Aesthetics options -->
+ggplot(RANDU, mapping = aes(x=x)) +
+  geom_histogram(breaks = (0:10)/10, colour = "blue4", fill="blue") +
+  labs(x = "RANDU Values", y = "Frequency", title = "Histogram of RANDU values.")
+```
+]
+.pull-right[
+```{r randu_scatter, echo = FALSE}
+ggplot(RANDU, mapping = aes(x = x, y = y)) +
+  geom_point() + 
+  labs(x = "Previous Value", y = "Next Value", title = "Scatter plot of consecutive RANDU points.")
+```
+]
 
-<!-- .panelset[ -->
-<!-- .panel[.panel-name[colour] -->
-<!-- .pull-left[ -->
-<!-- ```{r penguins-color, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species)) + #<< -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species") -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-color", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
+---
 
-<!-- .panel[.panel-name[shape] -->
-<!-- .pull-left[ -->
-<!-- ```{r penguins-shape, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species, -->
-<!--                      shape = sex)) + #<< -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species", shape = "Sex") -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-shape", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
+## Example: RANDU
+
+* But, if we create a 3D scatter plot with three consecutive RANDU values and rotate ...
 
 
+```{r echo=FALSE, out.width="40%", fig.align='center'}
+knitr::include_graphics("img/3dRANDUAnimation_loop.gif")
+```
 
-<!-- .panel[.panel-name[size] -->
-<!-- .pull-left[ -->
-<!-- ```{r penguins-size, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species, -->
-<!--                      shape = sex, -->
-<!--                      size = body_mass_g)) + #<< -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species", shape = "Sex", -->
-<!--        size = "Body mass (g)") -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-size", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
-
-
-<!-- .panel[.panel-name[alpha (transparency)] -->
-<!-- .pull-left[ -->
-<!-- ```{r penguins-alpha, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species, -->
-<!--                      shape = sex, -->
-<!--                      size = body_mass_g, -->
-<!--                      alpha = flipper_length_mm)) + #<< -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species", shape = "Sex", -->
-<!--        size = "Body mass (g)", -->
-<!--        alpha = "Flipper length (mm)") -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-alpha", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-
-<!-- - Is this plot easy to understand?! Don't over-burden plots, keep them simple. -->
-
-<!-- ] -->
-
-<!-- ] -->
-
-<!-- --- -->
-
-<!-- ## Fix graphical options -->
-
-<!-- - Graphical options can be used within the `geom_[*]()` function to be applied across all cases. -->
-
-<!-- .pull-left[ -->
-<!-- ```{r penguins-setting, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm)) + -->
-<!--   geom_point(colour = "blue",   #<< -->
-<!--              size = 2,          #<< -->
-<!--              shape = "square",  #<< -->
-<!--              alpha = 0.5) +     #<< -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)") -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-setting", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-
-<!-- --- -->
-
-<!-- ## Co-ordinate limits -->
-
-
-<!-- .pull-left[ -->
-<!-- ```{r penguins-lims, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species)) + -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species") + -->
-<!--   coord_cartesian(xlim = c(10, 25),  #<< -->
-<!--                   ylim = c(30, 60))  #<< -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-lims", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-
-
-<!-- --- -->
-
-<!-- ## Faceting -->
-
-<!-- - Smaller plots that display different subsets of the data -->
-<!-- - Useful for exploring conditional relationships and large data -->
-
-<!-- .panelset[ -->
-<!-- .panel[.panel-name[grid] -->
-<!-- .pull-left[ -->
-
-<!-- - 2D grid by stated variables -->
-
-<!-- ```{r penguins-grid, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm)) + -->
-<!--   geom_point() + -->
-<!--   facet_grid(species ~ sex) #<< -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-grid", echo = FALSE, warning = FALSE, out.width = "90%", fig.width = 8, fig.asp = 0.7} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
-
-<!-- .panel[.panel-name[wrap v1] -->
-<!-- .pull-left[ -->
-<!-- - 1D ribbon -->
-
-<!-- ```{r penguins-wrap1, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm)) + -->
-<!--   geom_point() + -->
-<!--   facet_wrap(~ species) #<< -->
-<!-- ``` -->
-
-
-<!-- - equivalent to: -->
-<!--   - `facet_grid(. ~ species)` -->
-
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-wrap1", echo = FALSE, warning = FALSE, out.width = "90%", fig.width = 8, fig.asp = 0.7} -->
-<!-- ``` -->
-<!-- ] -->
-
-
-<!-- ] -->
-
-
-
-<!-- .panel[.panel-name[wrap v2] -->
-<!-- .pull-left[ -->
-
-<!-- - wrapped 1D ribbon according to the specifed number of rows/columns -->
-
-<!-- ```{r penguins-wrap2, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm)) + -->
-<!--   geom_point() + -->
-<!--   facet_wrap(~ species, ncol = 2) #<< -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-wrap2", echo = FALSE, warning = FALSE, out.width = "90%", fig.width = 8, fig.asp = 0.7} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
-
-
-<!-- ] -->
-
-
-<!-- --- -->
-
-<!-- ## Accessibility -->
-
-<!-- - Colours are very useful tool in visualising data, but some people are colour blind. -->
-<!-- - `viridis` is one of the colour blind friendly palettes in `ggplot2`. -->
-
-<!-- .pull-left[ -->
-<!-- ```{r penguins-blind, fig.show = "hide", warning = FALSE} -->
-<!-- ggplot(data = penguins, -->
-<!--        mapping = aes(x = bill_depth_mm, -->
-<!--                      y = bill_length_mm, -->
-<!--                      colour = species)) + -->
-<!--   geom_point() + -->
-<!--   labs(title = "Penguin bill depth & length", -->
-<!--        x = "Bill depth (mm)", -->
-<!--        y = "Bill length (mm)", -->
-<!--        colour = "Species") + -->
-<!--   scale_colour_viridis_d() #<< -->
-<!-- ``` -->
-<!-- ] -->
-<!-- .pull-right[ -->
-<!-- ```{r ref.label = "penguins-blind", echo = FALSE, warning = FALSE, out.width = "80%", fig.width = 8} -->
-<!-- ``` -->
-<!-- ] -->
-
-
+* Use visualisations to **explore** the data. You may need more than one perspective.
