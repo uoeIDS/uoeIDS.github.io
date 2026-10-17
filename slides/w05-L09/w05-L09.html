@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
     <script src="libs/header-attrs-2.29/header-attrs.js"></script>
-    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.3.0/panelset.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -39,7 +39,8 @@ class: center, middle, inverse, title-slide
 
 class: middle
 
-# What's in a data analysis?
+# What's in a data analysis? 
+# Which main steps do we need in DS workflow ?
 
 ---
 
@@ -52,20 +53,33 @@ class: middle
 5.    Communicating the results
 
 .footnote[
-Roger D. Peng and Elizabeth Matsui. "The Art of Data Science." A Guide for Anyone Who Works with Data. Skybrude Consulting, LLC (2015).
+Roger D. Peng and Elizabeth Matsui. ["The Art of Data Science." A Guide for Anyone Who Works with Data. Skybrude Consulting, LLC (2015)](https://cdn.bookey.app/files/pdf/book/en/the-art-of-data-science.pdf).
 ]
 
 ---
 
-## Stating and refining the question
-
-Six types of questions
+## Stating and refining the question (Six types)
 
 1. **Descriptive:** summarize a characteristic of a set of data
+
+--
+
 2. **Exploratory:** analyse to see if there are patterns, trends, or relationships between variables (hypothesis generating)
+
+--
+
 3. **Inferential:** analyse patterns, trends, or relationships in representative data from a population
+
+--
+
 4. **Predictive:** make predictions for individuals or groups of individuals
+
+--
+
 5. **Causal:** whether changing one factor will change another factor, on average, in a population
+
+--
+
 6. **Mechanistic:** explore "how" as opposed to whether
 
 .footnote[
@@ -74,7 +88,7 @@ Jeffery T. Leek and Roger D. Peng. "What is the question?." Science 347.6228 (20
 
 ---
 
-## Eg: COVID-19 and Vitamin D
+## Example: COVID-19 and Vitamin D
 
 1. **Descriptive:** frequency of hospitalisations due to COVID-19 in a set of data collected from a group of individuals
 
@@ -113,6 +127,8 @@ Jeffery T. Leek and Roger D. Peng. "What is the question?." Science 347.6228 (20
 Suppose I want to estimate the average number of children in households in Edinburgh. I conduct a survey at an elementary school in Edinburgh and ask students at this elementary school how many children, including themselves, live in their house. Then, I take the average of the responses. 
 ]
 
+**TPSA**
+
 ---
 
 ## Is my data biased?
@@ -131,19 +147,19 @@ Suppose I want to estimate the average number of children in households in Edinb
 
 ---
 
-## Exploratory data analysis
+## Exploratory Data Analysis (EDA)
 
 Checklist:
 
-- Formulate your question
-- Read in your data
+- Formulate your question - ask your research question to the data
+- Read in your data 
 - Check the dimensions
 - Look at the data: 
   -   The top few rows
   -   The bottom few rows
   -   Some random rows in the middle
 - Validate with at least one external data source
-- Make a plot
+- Make a plot, visualization to understand more
 - _Try the easy solution first_
 
 ---
@@ -161,18 +177,21 @@ Checklist:
 
 ---
 
-## Final advice
+## General advice
 
 When doing the data analysis:
 
--   Find some data, any data! 
--   *Look* at the data! 
--   Do some *simple* exploratory data analysis (data visualisations/summary statistics)
--   Formulate your investigation question/hypothesis
--   Iterate, iterate and iterate
--   **Let the data speak for itself!**
+-   Find some data, *Look* at the data! (Really digesting what it has!)
+-   Do some *simple* exploratory data analysis (data visualisations/summary statistics) that are supporting your investigation
+-   Formulate your investigation question/hypothesis (crucial step)
+-   Iterate, iterate and iterate (until a reasonable termination point)
 
---
+&gt; **Let the data speak for itself!** (R. A. Fisher)
+&gt; **Data can’t speak for itself; it’s up to you to give it a voice. Try to speak truthfully** (Ronald Coase)
+
+---
+
+## How to communicate?
 
 When communicating with your audience:
 
@@ -196,11 +215,17 @@ class: middle
 **Observational**  
 - Collect data in a way that does not interfere with how the data arise ("observe")
 - Establish associations/correlations
+
+Eg. [Critical raw material concentrations in the Antarctic Peninsula from specific stations, looking at their behavior](https://www.sciencedirect.com/science/article/pii/S0025326X26012336)
+
 ]
 .pull-right[
 **Experimental**  
 - Randomly assign subjects to treatments
 - Establish causal connections
+
+Eg. [a large-scale field experiment in a high school, not using AI, using AI directly or using AI as tutor based on specific experimental design](https://www.pnas.org/doi/10.1073/pnas.2422633122)
+
 ]
 
 ---
@@ -248,13 +273,21 @@ Source: [Study: Cereal Keeps Girls Slim](https://www.cbsnews.com/news/study-cere
 
 &lt;img src="img/dependency_nodes.png" width="100%" height="50%" style="display: block; margin: auto;" /&gt;
 
-
+This will relate to linear modeling later on!
 ---
 
 ## Correlation != Causation
 
-&lt;img src="img/cartoon_penguins.gif" width="45%" style="display: block; margin: auto;" /&gt;
+.pull-left[
+&lt;img src="img/cartoon_penguins.gif" width="65%" style="display: block; margin: auto;" /&gt;
+]
 
+.pull-right[
+&lt;img src="img/corr-causation.svg" width="95%" style="display: block; margin: auto;" /&gt;
+
+Image source: [correlation is not causation](https://www.tylervigen.com/spurious-correlations)
+
+]
 
 
 ---
@@ -344,6 +377,8 @@ their view:
 
 ## Probability 101
 
+Notation: `\(P(.)\)` is probability of any event in frequentest approach. 
+
 - What is the probability that a respondent says "The climate is changing and human activity is mainly responsible"?
   -   Unconditional probability, `\(P(A)\)`
 
@@ -356,7 +391,7 @@ their view:
 
 ---
 
-## Simple calcualtions
+## Simple calculations
 
 .question[
 Based on the response proportions for all respondents and within each country, does there appear to be a relationship between country and beliefs about climate change?
@@ -364,7 +399,7 @@ Based on the response proportions for all respondents and within each country, d
 
 .pull-left[
 
-``` r
+```r
 all &lt;- 1340 / 2966
 all
 ```
@@ -375,7 +410,7 @@ all
 ]
 .pull-right[
 
-``` r
+```r
 gb &lt;- 833 / 1633
 gb
 ```
@@ -384,7 +419,7 @@ gb
 ## [1] 0.5101041
 ```
 
-``` r
+```r
 us &lt;- 507 / 1333
 us
 ```
@@ -483,7 +518,7 @@ What can you say about the overall gender distribution? Hint: Calculate the foll
 
 .pull-left[
 
-``` r
+```r
 ucbadmit %&gt;%
   count(gender, admit)
 ```
@@ -497,11 +532,14 @@ ucbadmit %&gt;%
 ## 3 Male   Rejected  1493
 ## 4 Male   Admitted  1198
 ```
+
+Note: `\(P(A | B) = P(A \text{and} B) / P(B)\)` for any event B given A is the definition of conditional probability.
+
 ]
 
 .pull-right[
 
-``` r
+```r
 ucbadmit %&gt;%
   count(gender, admit) %&gt;%
   group_by(gender) %&gt;%
@@ -529,12 +567,12 @@ ucbadmit %&gt;%
 ## Overall gender distribution
 
 .pull-left[
-&lt;img src="w05-L09_files/figure-html/unnamed-chunk-10-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w05-L09_files/figure-html/unnamed-chunk-11-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
 
-``` r
+```r
 ggplot(ucbadmit, aes(y = gender, 
                      fill = admit)) +
   geom_bar(position = "fill") + 
@@ -543,6 +581,8 @@ ggplot(ucbadmit, aes(y = gender,
        y = NULL,
        fill = "Admission")
 ```
+
+we will explore ggplot soon!
 
 ]
 
@@ -556,7 +596,7 @@ What can you say about the gender distribution by department ?
 .panelset[
 .panel[.panel-name[Long]
 
-``` r
+```r
 ucbadmit %&gt;%
   count(dept, gender, admit)
 ```
@@ -581,7 +621,7 @@ ucbadmit %&gt;%
 
 .panel[.panel-name[Wide]
 
-``` r
+```r
 ucbadmit %&gt;%
   count(dept, gender, admit) %&gt;%
   pivot_wider(names_from = dept, values_from = n)
@@ -600,7 +640,7 @@ ucbadmit %&gt;%
 
 .panel[.panel-name[Proportions]
 
-``` r
+```r
 ucbadmit %&gt;%
   count(dept, gender, admit) %&gt;%
   group_by(dept, gender) %&gt;%
@@ -631,12 +671,12 @@ ucbadmit %&gt;%
 .panelset[
 
 .panel[.panel-name[Plot]
-&lt;img src="w05-L09_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w05-L09_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 .panel[.panel-name[Code]
 
-``` r
+```r
 ggplot(ucbadmit, aes(y = gender, fill = admit)) +
   geom_bar(position = "fill") +
   facet_wrap(. ~ dept, nrow = 1) +
@@ -676,9 +716,13 @@ class: middle
 
 ## Simpson's paradox
 
+&gt; Simpson’s paradox is a phenomenon encountered in the field of probability and statistics in which a trend appears in different groups of data but disappears or reverses when we aggregate the data and treat it as a unique group. 
+
 - Not considering an important variable when studying a relationship can result in **Simpson's paradox**
 - Simpson's paradox illustrates the effect that omission of an explanatory variable can have on the measure of association between another explanatory variable and a response variable
 - The inclusion of a third variable in the analysis can change the apparent relationship between the other two variables
+
+**This will be useful for linear modeling later again!**
 
 ---
 
@@ -688,7 +732,7 @@ class: middle
 
 
 
-``` r
+```r
 df
 ```
 
@@ -709,7 +753,7 @@ df
 ]
 
 .pull-right[
-&lt;img src="w05-L09_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
+&lt;img src="w05-L09_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -718,7 +762,7 @@ df
 
 .pull-left[
 
-``` r
+```r
 df %&gt;% 
   summarise(cor_x_y = cor(x, y))
 ```
@@ -731,7 +775,7 @@ df %&gt;%
 ```
 
 
-``` r
+```r
 df %&gt;% 
 * group_by(z) %&gt;%
   summarise(cor_x_y = cor(x, y))
@@ -747,7 +791,7 @@ df %&gt;%
 ]
 
 .pull-right[
-&lt;img src="w05-L09_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+&lt;img src="w05-L09_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
 ]
 
 
@@ -765,10 +809,10 @@ df %&gt;%
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
