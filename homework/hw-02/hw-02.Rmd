@@ -1,6 +1,6 @@
 ---
 title: "HW 02 - Data Visualisation"
-subtitle: "Due: 31 October, 16:00 noon UK time"
+subtitle: "Due: 30 October, 16:00 noon UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -33,7 +33,7 @@ This assignment assumes that you have worked through all materials up to and inc
 -   [Week 5](https://uoe-ids.netlify.app/week05/) on effectively communicating data science results, and
 -   [Week 6](https://uoe-ids.netlify.app/week06/) on creating data visualisations.
 
-You may need to use some of your data wrangling skills from earlier in the course.
+You may need to use some of your data wrangling skills from earlier weeks in the course.
 
 
 ----
@@ -55,13 +55,15 @@ You may need to use some of your data wrangling skills from earlier in the cours
 
 6. Click on the green **Begin import** button
 
-Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework.
+Note that, for the extra checking if we need to do, we may contact you to check your repositories for issues with upload as such. For that check, we may send another set of instructions during the marking period. 
 
-1.    In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side.
+<!-- Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework. -->
 
-2.    Next, click on the green **Add people** people button under **Manage access**
+<!-- 1.    In the repository you have just created, go to **Settings** (along the top) and select **Collaborators** along the side. -->
 
-3.    Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**.
+<!-- 2.    Next, click on the green **Add people** people button under **Manage access** -->
+
+<!-- 3.    Type `uoeIDS` into the search box and select the `Introduction to Data Science` account. Finally, click on the green button that says **Add uoeIDS to this repository**. -->
 
 ## Creating a version control R project
 
@@ -187,17 +189,17 @@ data_5k_10k <- strava_runs %>%
 
 ## Exercise 1
 
-The code below produces a simple histogram of the average heart rate (in bpm) for male runners ("M"):
+The incomplete code snippet below should produce a simple histogram of the average heart rate (in bpm) for male runners ("M"):
 
 ```{r ex1, eval = FALSE}
 data_5k_10k %>% 
-  filter(gender == "M") %>%
+  filter(______) %>%
   filter(!is.na(average.heart.rate..bpm.)) %>%
-  ggplot(aes(x = average.heart.rate..bpm.)) + 
+  ggplot(aes(x = __________)) + 
   geom_histogram(bins = 20)
 ```
 
-a. Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the distribution of average heart rate among male runners? Calculate some simple summary statistics to support your comments. (**3 pts**)
+a. Complete the missing details on the code and produce the histogram. Describe the overall _shape_ of the histogram. What does this suggest about the _structure_ of the distribution of average heart rate among male runners? Calculate some simple summary statistics (ie. mean, median, any other suitable one) to support your comments. (**3 pts**)
 
 b. Create a similar data visualisation for female runners. Describe the _shape_ of this histogram and discuss any similarities or differences between the male and female runners’ heart rate distributions. (**2 pts**)
 
@@ -207,13 +209,13 @@ b. Create a similar data visualisation for female runners. Describe the _shape_ 
 
 ## Exercise 2
 
-a. Create a data visualisation based on the following description. (**4 pts**)
+a. Create a data visualisation based on the following description. (**3 pts**)
 
 > Make a sequence of boxplots for the pace (in minutes per km) achieved in 5K and 10K runs. The boxplots should be orientated vertically (i.e. side-by-side) based on the run's length (5K vs 10K). Furthermore, the data visualisation should consist of two panels for the two different genders the runners identify with, with shared axes. Finally, add appropriate text to the image in order to assist the reader in understanding the data visualisation.
 
 Note: Use good coding practices to format your code so that it is easily readable. For example, add spaces, newlines and indentation in appropriate places.
 
-b. Provide a brief comment about the relationships seen in the data visualisation created by the above description. (**1 pt**)
+b. Provide a brief comment about the relationships seen in the data visualisation created by the above description. (**2 pt**)
 
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2, knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
@@ -225,20 +227,23 @@ b. Provide a brief comment about the relationships seen in the data visualisatio
 
 In this exercise, we are interested in how different types of runners perform depending on their typical running distances. For this, we consider all runners who recorded activities with Strava. We classify runners into two groups based on their average run distance:
 
-- Long-distance runners: those whose average run distance is greater than 13 km
-- Short-distance runners: those whose average run distance is less than 7 km
+- *Long-distance runners*: those whose average run distance is greater than 13 km
+- *Short-distance runners*: those whose average run distance is less than 7 km
 
 We hypothesize that long-distance runners may pace themselves differently, or have varying speed and distance profiles, compared to those who generally run shorter distances.
 
-To explore this, we create the following scatter plot of average speed (in m/s) against distance (in km) for all runs made by athletes in these two groups.
-This visualization demonstrates that runners who are, on average, short-distance runners tend to have lower speeds compared to long-distance runners. As short-distance runners increase their run distance, their speed decreases more sharply, whereas long-distance runners tend to maintain a more constant speed across a wider range of distances.
+To explore this, we create the following **scatter plot** of average speed (in m/s) against distance (in km) for all runs made by athletes in these two groups.
+
+<!-- This visualization demonstrates that runners who are, on average, short-distance runners tend to have lower speeds compared to long-distance runners. As short-distance runners increase their run distance, their speed decreases more sharply, whereas long-distance runners tend to maintain a more constant speed across a wider range of distances. -->
 
 
 ```{r ex3, echo = FALSE, eval = TRUE, fig.align = "left"}
 knitr::include_graphics("img/speed_vs_distance.png")
 ```
 
-* Recreate the above data visualisation. (**5 pts**)
+a. Recreate the above data visualisation by using suitable ggplot workflow. (**3 pts**)
+
+b. Provide a brief interpretation of the given hypothesize based on the generated data visualization. (**2 pts**)
 
 #### Supplementary information for this exercise
 
@@ -257,33 +262,40 @@ The `ggplot2` [cheat sheet](https://rstudio.github.io/cheatsheets/html/data-visu
 
 ## Exercise 4
 
-Find two visualisations:
+Now the goal is to compare male and female runners based on average values after removing all missing values in the gender variable. 
 
-* One that you think provides a _good_ representation of the data, and
-* One that you think provides a _bad_ representation of the data.
+a. For each gender, calculate the mean distance (in km), and the mean elapsed time (in minutes). Create two side-by-side bar charts: one showing the mean distance and one showing the mean elapsed time for each gender. The bars should filled with different colors based on the gender information. (**3 pts**)
 
-For each case, give _two_ reasons why you consider the data visualisation you have found are good/bad. Your reasons should make reference to the '4 respects' of data visualisations. (**4 pts**)
+b. Provide a brief comment about what you have seen in the mean distance and elapsed time for each gender. (**2 pts**)
 
-The images you select should not be any of the data visualisations that you have seen in the lectures/workshops. You should also ensure that you provide an appropriate citation for your images. (**1pt**)
+#### Supplementary information for this exercise
+
+You need to calculate **mean values** first then use that new data frame for the visualization part. 
+
+`pivot_longer()` can be useful before the visualization stage. 
+
+Try to include scales = "free_y" in your code snippet for scaling purposes (since two different units we have)
+
+Facetting idea can work smoothly for the side-by-side chart, or you can get help from another R package called as [`patchwork`](https://cran.r-project.org/web/packages/patchwork/vignettes/patchwork.html)
 
 
-### Instructions on adding your image to the R Markdown document.
+<!-- ### Instructions on adding your image to the R Markdown document. -->
 
-To add your visualisation to the homework template:
+<!-- To add your visualisation to the homework template: -->
 
-1.    Take a photo of the visualisation or save a copy of the image from the internet. Preferred file types for images are `.png` and `.jpeg`.
+<!-- 1.    Take a photo of the visualisation or save a copy of the image from the internet. Preferred file types for images are `.png` and `.jpeg`. -->
 
-2.    Copy and paste your image to the `img/` folder of your homework template.
+<!-- 2.    Copy and paste your image to the `img/` folder of your homework template. -->
 
-3.    In the corresponding R chunk for this exercise, edit the path within the `include_graphics()` command to the file name of your image.
+<!-- 3.    In the corresponding R chunk for this exercise, edit the path within the `include_graphics()` command to the file name of your image. -->
 
-Citations for where you downloaded your image should be in the following form:
+<!-- Citations for where you downloaded your image should be in the following form: -->
 
-&lt;Author/Organisation>, "&lt;Title of website>" [Online]. Available at: &lt;URL> (Accessed: &lt;day month year>)
+<!-- &lt;Author/Organisation>, "&lt;Title of website>" [Online]. Available at: &lt;URL> (Accessed: &lt;day month year>) -->
 
-For example, the reference for the RStudio logo would be:
+<!-- For example, the reference for the RStudio logo would be: -->
 
-RStudio, "RStudio Logo Usage Guidelines" [Online]. Available at: https://www.rstudio.com/about/logos/ (Accessed: 19 September 2022)
+<!-- RStudio, "RStudio Logo Usage Guidelines" [Online]. Available at: https://www.rstudio.com/about/logos/ (Accessed: 19 September 2022) -->
 
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4, knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
@@ -307,7 +319,7 @@ To submit your homework:
 4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
 Once done, press **Save Answer** and then **Submit & View Submissions**.
 
-**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**.
+**IMPORTANT**: You must _only_ upload the knitted **html** document! **Submitting the wrong file type risks receiving zero marks**. Make sure that your final html output is showing all the content written in your .Rmd file
 
 If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
 
@@ -323,4 +335,4 @@ The homework is grades out of a 25 where:
 
 ## Getting help
 
-If you have any questions about the assignment, please post them on [Piazza!](https://piazza.com/ed.ac.uk/fall2023/math0807720234ss1sem1/info)
+If you have any questions about the assignment, please post them on [EdStem](https://edstem.org/eu/courses/3522/discussion)
