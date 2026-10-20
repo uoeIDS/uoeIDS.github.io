@@ -1,0 +1,430 @@
+---
+title: "In class test - Solution Key"
+author: "KEY"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load-packages, message = FALSE, warning = FALSE}
+# Loading necessary data R packages
+library(tidyverse)
+library(lubridate)
+```
+
+
+## Question 1
+
+Correct answer is arrange(). 
+
+The arrange() function from tidyverse is used to sort a dataset. The base R equivalent is order(). One example is given below
+
+```{r}
+# Example:
+data <- tibble(name = c("Alice", "Bob", "Charlie"), value = c(3, 1, 2))
+data %>% arrange(value)
+# Returns rows sorted by value in ascending order
+
+```
+
+order() does something similar but not from tidyverse, it is a base R function and needs a different syntax indeed!
+
+```{r}
+data[order(data$value),]
+```
+
+---
+
+## Question 2
+
+Assume that the dataset visitors_with_nations (from our workshop) has been imported into your environment. What is wrong with the following code? Select one.
+
+```{r, eval=FALSE, echo=TRUE}
+filter(visitors_with_nations, n_2021 > 100000, "England")
+```
+
+Problem here is that we have a missing condition variable. In general, the filter() function requires logical conditions. The string "England" evaluates to TRUE in a logical context, but this is not the intended comparison. The correct syntax uses == for equality comparison. The correct format given as below
+
+```{r, eval=FALSE}
+filter(visitors_with_nations, n_2021 > 100000, nation == "England")
+```
+
+---
+
+## Question 3
+
+Assume that the dataset visitors_with_nations contains several columns, including `n_2021` and `n_2022`, and others.
+
+What will the following code return? Select one.
+
+```{r}
+visitors <- read_csv("data/UK-visitor-numbers.csv")
+
+visitors_with_nations <- visitors %>%
+  mutate(
+    nation = case_when(
+      region == "Northern Ireland" ~ "Northern Ireland",
+      region == "Scotland" ~ "Scotland",
+      region == "Wales" ~ "Wales",
+      TRUE ~ "England"
+    )
+  )
+```
+
+
+```{r}
+visitors_with_nations %>% select(-n_2021, -n_2022)
+```
+
+With this minus sign in front of the variables, the code removes n_2021 and n_2022 from the dataset.
+
+---
+
+## Question 4
+
+Suppose you run the following code in your R session:
+
+```{r, eval=TRUE}
+visitors_with_nations <- visitors_with_nations %>%
+  mutate(growth = n_2022 - n_2021)
+```
+
+followed by a second incomplete snippet of code:
+
+```{r, eval=FALSE}
+#visitors_with_nations %>%
+#  ___________(nation) %>%
+#  summarise(avg_growth = mean(growth, na.rm = TRUE))
+```
+
+To get the average growth for each nation, which function goes in the blank? (Select one)
+
+To calculate statistics by groups (fore each nation), you need to use group_by() before summarise(). The correct form should be 
+
+```{r, eval=TRUE}
+visitors_with_nations %>%
+  group_by(nation) %>%
+  summarise(avg_growth = mean(growth, na.rm = TRUE))
+```
+
+In this question the first code snippet should be given like this but not affecting the overall selection from the multiple choices. Please note that this difference. 
+
+---
+
+## Question 5 
+
+Suppose visitors_with_nations contains the following columns, among the others: attraction, admission, nation.
+
+Which of the following gives an error message? Select one.
+
+--- 
+
+summarise() collapses the dataset to one row per group (or one row total without grouping), losing the admission column. Therefore, filtering on admission after summarise() causes an error.
+
+```{r, eval=TRUE}
+# Working examples:
+visitors_with_nations %>%
+  filter(admission == "Free") %>%
+  summarise(n = n())
+
+visitors_with_nations %>%
+  group_by(nation) %>%
+  filter(admission == "Free") %>%
+  summarise(n = n())
+
+visitors_with_nations %>%
+  group_by(nation) %>%
+  summarise(n = n())
+```
+
+But the we got the failure in that format 
+
+```{r, eval=FALSE, echo=TRUE}
+visitors_with_nations %>%
+  summarise(n = n()) %>%
+  filter(admission == "Free")  
+# Error: object 'admission' not found
+```
+
+---
+
+## Question 6
+
+The following code calculates, for each nation, the percentage of tourist attractions that offer free admission to all visitors:
+
+```{r, eval=TRUE}
+visitors_with_nations %>%
+ group_by(nation) %>%
+ count(admission) %>%
+ mutate(pct = 100 * n / sum(n)) %>%
+ filter(admission == "Free")
+```
+
+
+Consider this alternative code:
+
+```{r, eval=TRUE}
+visitors_with_nations %>%
+  group_by(admission, nation) %>%
+  summarise(n = n()) %>%
+  mutate(pct = 100 * n / sum(n)) %>%
+  filter(admission == "Free")
+```
+
+
+Does this alternative code produce the same output as the reference code? If not, why? Select one.
+
+Correct answer is "No, because the percentage is computed within each admission group (across nations), not within each nation."
+
+The reference code groups by nation before counting, so the percentage is calculated within each nation. The alternative groups by admission first, so the percentage is calculated across nations for each admission type.
+
+---
+
+## Question 7
+
+You have this data set when you run this in R (explored in Quiz 2 as well)
+
+```{r}
+library(tidyverse)
+us_rent_income
+```
+
+The us_rent_income dataset contains such columns:
+
+- NAME: the name of the state (character)
+- variable: variable name as income or rent (character)
+- additional columns with information such as estimate, and moe
+
+What happens if you run
+
+```{r, eval=FALSE}
+us_rent_income %>%
+  summarise(avg_variable = mean(variable, na.rm = TRUE))
+```
+
+Select one.
+
+Correct answer is "The code prints a warning: "argument is not numeric or logical: returning NA"
+
+The variable column contains character values ("income" or "rent"), not numeric values. The mean() function cannot compute the mean of character strings.
+
+```{r, eval=FALSE}
+us_rent_income %>%
+  summarise(avg_variable = mean(variable, na.rm = TRUE))
+# Produces 
+
+```
+---
+
+## Question 8
+
+Which of the following expressions will select only the rows in us_rent_income where the variable is income and the estimate value is more than 20000? Select all that apply.
+
+The correct answers are 
+
+```{r, eval=FALSE}
+us_rent_income %>%
+ filter(variable == "income" & estimate > 20000)
+
+# And 
+
+us_rent_income %>%
+ filter(estimate > 20000) %>%
+ filter(variable == "income")
+```
+
+- Both correctly filter for rows where variable is "income" AND estimate is greater than 20000. 
+
+- Option 
+
+```{r, eval=FALSE}
+us_rent_income %>%
+  filter(variable == "income" | estimate > 20000)
+```
+
+uses OR (|) which would include rows where either condition is true. 
+
+- Option
+
+```{r, eval=FALSE}
+us_rent_income %>%
+  filter(estimate > 20000) %>%
+  select(variable == "income")
+```
+
+incorrectly tries to use select() with a logical condition.
+
+---
+
+## Question 9 
+
+In which of the following objects is the first element a number (double)? Select all that apply.
+
+Correct answers are; 
+
+```{r}
+list(1, "b", TRUE)
+typeof(list(1, "b", TRUE)[[1]])
+# and 
+```
+
+```{r}
+c(1, 2, 5)
+typeof(c(1,2,5)[1])
+```
+
+- In R, list() preserves types, so the first element remains numeric. c() also keeps the first element's type when all elements can be coerced to that type.
+
+```{r}
+# Counterexamples:
+c(1, "a", TRUE)[1]  # Returns 1 (but the vector becomes character because of "a" item)
+list("1", 3.5, TRUE)[[1]]  # Returns "1" as character
+```
+
+---
+
+## Question 10
+
+Match each expression to its result (each answer matches to exactly one expression).
+
+Correct matches are; 
+
+```{r}
+FALSE & TRUE
+```
+```{r}
+TRUE & NA
+```
+
+---
+
+## Question 11
+
+You have the following two tibbles:
+
+```{r}
+vis <- tibble(
+ attraction = c("Castle", "Museum", "Park", "Zoo"),
+ n_2022 = c(150000, 125000, 70000, 90000)
+)
+ 
+info <- tibble(
+ attraction = c("Castle", "Museum", "Park", "Aquarium"),
+ admission = c("Charged", "Free", "Free", "Charged")
+)
+```
+
+
+You join them using
+
+```{r}
+vis %>% inner_join(info, by = "attraction")
+```
+
+Which ones of the following code snippets produce the same output? Select all that apply.
+
+
+Correct options are; 
+
+```{r}
+vis %>% full_join(info, by = "attraction") %>%
+  drop_na()
+```
+
+```{r}
+vis %>% left_join(info, by = "attraction") %>%
+  drop_na()
+```
+
+The others are returning different format outputs
+
+```{r}
+vis %>% full_join(info, by = "attraction")
+```
+
+```{r}
+vis %>% semi_join(info, by = "attraction")
+```
+
+---
+
+## Question 12
+
+For this given data,
+
+```{r}
+vis <- tibble(attraction = c("Castle", "Museum", "Park", "Zoo"), 
+              n_2021 = c(130000, 110000, 75000, 80000), 
+              n_2022 = c(150000, 125000, 70000, 90000) )
+```
+
+
+You use the following code snippet to transform the data:
+
+```{r}
+vis %>% 
+  pivot_longer( cols = c(n_2021, n_2022), 
+                names_to = "year", 
+                values_to = "visitors" )
+```
+
+Correct answer are "The output has 3 columns: attraction, year and visitors" and 
+"Each attraction appears twice in the output"
+
+The "year" column will be of type numeric. is not correct since the year column type is character, also it does not include solely 2021 and 2022 by the nature of data. It contains $n_2021$ and $n_2022$ here
+
+---
+
+## Question 13
+
+This is the subset of billboard data from tidyverse if we look at it briefly as below
+
+
+```{r}
+library(tidyverse)
+df_bilboard <- billboard %>% select(artist, track, date.entered, wk1, wk2, wk3)
+df_bilboard
+```
+
+Which of the following describes the output given by this code snippet? Select one.
+
+```{r}
+df_bilboard %>% 
+  drop_na(wk1) %>% 
+  drop_na(wk2) %>% 
+  mutate(change = wk1 - wk2) %>% 
+  filter(change > 10)
+```
+
+The correct answer is 
+
+"A data frame containing only the songs that moved down the chart by more than 10 places between week 1 and week 2" 
+
+
+The code:
+
+- Drops rows with missing values in wk1
+- Drops rows with missing values in wk2
+- Calculates the change (wk1 - wk2)
+- Filters for songs that moved down more than 10 places (change > 10 means wk1 > wk2 by more than 10)
+
+By definition, the difference can be positive or negative but we are only interested in positive values that are greater than 10. Since the difference is w1 vs w2, when it is positive means, there is a drop from week 1 to week 2.
+
+---
+
+## Question 14
+
+You want to calculate the mean chart position in week 2 for each artist, but the following code does not produce the desired output. Why? Select one.
+
+```{r}
+df_bilboard %>% 
+  summarise(mean_wk2 = mean(wk2, na.rm = TRUE))
+```
+
+Correct answer is "Because group_by(artist) is missing"  
+
+The summarise() function without group_by() calculates a single summary statistic for the entire dataset. To calculate statistics by each artist, you need to group_by(artist) first.
