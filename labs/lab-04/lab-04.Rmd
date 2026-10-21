@@ -1,0 +1,152 @@
+---
+title: "Lab 04 - Project kick-off and data viz exercises"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(tidyverse)
+library(cowsay)
+```
+
+
+```{r, echo=FALSE}
+say("This week you will start exploring the project details to start working as a group", "cow")
+```
+
+You, as part of a __team__, will be responsible for the completion of an open ended final project for this course, the goal of which is to tackle an “interesting” real life problem using the tools and techniques covered in this class. 
+
+
+# REQUIRED: Project details 
+
+In this week's workshop you will begin on your group projects. This will be the first exploration stage for the project start. It is crucial to finalize the your groups during this week's workshop. You will find all the information you will need about the group projects is available in 
+
+[Project instruction](https://uoe-ids.netlify.app/assessments/project/)
+
+## GitHub repository
+
+One member of your team should be responsible for managing the repository of your group project. This team member should clone the <a id="project_template_repo">project template repository</a> from the course GitHub account and add each of the team members as collaborators. Instructions on how to clone a repository, add collaborators and to create a new version control R project can be found in the lab worksheets.
+
+The project template repository can be found [HERE](https://github.com/uoeIDS/project_template) 
+
+## Explore your data set
+
+```{r, echo=FALSE}
+say("As a starting point, you can look at your data to apply the tools that we learned so far. ", "ghost")
+```
+
+
+## OPTIONAL: Some initial data viz exercises
+
+Below are some initial data viz exercises as an additional material for this week. That is why it says Optional, there will be other exercises next week workshop in week 6, with a regular lab materials, as before.  
+
+If you can not look at these exercises here, it is not a problem but feel free to explore and solve in your spare time 
+
+### Data viz for starwars
+
+Let us start with some basics of data viz on the starwars data set.
+
+```{r}
+library(tidyverse)
+starwars_df <- starwars
+```
+
+To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples 
+
+[From Data to Viz](https://www.data-to-viz.com/)
+
+```{r, echo=FALSE}
+say("Whenever you do not where to start, this can be useful material as well!", "bigcat")
+```
+
+
+## Exercise 1. 
+
+Glimpse at the starwars data frame.
+
+```{r}
+# your code here
+```
+
+
+## Exercise 2.
+
+Modify the following plot to change the color of all points to `"pink"`.
+
+Initial code given as; 
+
+```{r}
+ggplot(starwars_df, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "blue")
+```
+
+## Exercise 3
+
+Add labels for title, x and y axes, and size of points. Uncomment to see the effect.
+
+```{r}
+ggplot(starwars, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "#30509C") +
+  labs(
+    #title = "___",
+    #x = "___", 
+    #y = "___",
+    #___
+    )
+```
+
+
+## Êxercise 4
+
+Pick a single numerical variable and make a histogram of it. Select a reasonable binwidth for it.
+
+```{r}
+# your code here
+```
+
+
+## Exercise 5
+
+Pick a numerical variable and a categorical variable and make a visualization (you pick the type!) to visualization the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+
+```{r}
+# your code here
+```
+
+
+## Exercise 6
+
+Pick a single categorical variable from the data set and make a bar plot of its distribution.
+
+```{r}
+# your code here
+```
+
+
+## Exercise 7
+
+Pick two categorical variables and make a visualization to visualize the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+
+```{r}
+# your code here
+```
+
+
+
+## Exercise 8
+
+Pick two numerical variables and two categorical variables and make a visualization that incorporates all of them and provide an interpretation with your answer.
+
+```{r}
+# your code here
+```
+
+
+
+
+
