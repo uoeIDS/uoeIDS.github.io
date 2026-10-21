@@ -11,7 +11,7 @@
 
 <meta name="author" content="KEY" />
 
-<meta name="date" content="2026-10-20" />
+<meta name="date" content="2026-10-21" />
 
 <title>In class test - Solution Key</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">In class test - Solution Key</h1>
 <h4 class="author">KEY</h4>
-<h4 class="date">2026-10-20</h4>
+<h4 class="date">2026-10-21</h4>
 
 </div>
 
@@ -360,8 +360,12 @@ display: none;
 <pre class="r"><code># Loading necessary data R packages
 library(tidyverse)
 library(lubridate)</code></pre>
-<div id="question-1" class="section level2">
-<h2>Question 1</h2>
+<p>Note that for the select all that apply style questions, there was a
+percentage correction on incorrect answers for some cases. There might
+be some changes on your mark compared to what is announced on 21st of
+October.</p>
+<div id="question-1-1-mark" class="section level2">
+<h2>Question 1 (1 mark)</h2>
 <p>Correct answer is arrange().</p>
 <p>The arrange() function from tidyverse is used to sort a dataset. The
 base R equivalent is order(). One example is given below</p>
@@ -386,8 +390,8 @@ function and needs a different syntax indeed!</p>
 ## 3 Alice       3</code></pre>
 <hr />
 </div>
-<div id="question-2" class="section level2">
-<h2>Question 2</h2>
+<div id="question-2-1-mark" class="section level2">
+<h2>Question 2 (1 mark)</h2>
 <p>Assume that the dataset visitors_with_nations (from our workshop) has
 been imported into your environment. What is wrong with the following
 code? Select one.</p>
@@ -400,8 +404,8 @@ The correct format given as below</p>
 <pre class="r"><code>filter(visitors_with_nations, n_2021 &gt; 100000, nation == &quot;England&quot;)</code></pre>
 <hr />
 </div>
-<div id="question-3" class="section level2">
-<h2>Question 3</h2>
+<div id="question-3-1-mark" class="section level2">
+<h2>Question 3 (1 mark)</h2>
 <p>Assume that the dataset visitors_with_nations contains several
 columns, including <code>n_2021</code> and <code>n_2022</code>, and
 others.</p>
@@ -443,8 +447,8 @@ others.</p>
 n_2021 and n_2022 from the dataset.</p>
 <hr />
 </div>
-<div id="question-4" class="section level2">
-<h2>Question 4</h2>
+<div id="question-4-1-mark" class="section level2">
+<h2>Question 4 (1 mark)</h2>
 <p>Suppose you run the following code in your R session:</p>
 <pre class="r"><code>visitors_with_nations &lt;- visitors_with_nations %&gt;%
   mutate(growth = n_2022 - n_2021)</code></pre>
@@ -471,8 +475,8 @@ not affecting the overall selection from the multiple choices. Please
 note that this difference.</p>
 <hr />
 </div>
-<div id="question-5" class="section level2">
-<h2>Question 5</h2>
+<div id="question-5-2-marks" class="section level2">
+<h2>Question 5 (2 marks)</h2>
 <p>Suppose visitors_with_nations contains the following columns, among
 the others: attraction, admission, nation.</p>
 <p>Which of the following gives an error message? Select one.</p>
@@ -515,8 +519,8 @@ visitors_with_nations %&gt;%
 # Error: object &#39;admission&#39; not found</code></pre>
 <hr />
 </div>
-<div id="question-6" class="section level2">
-<h2>Question 6</h2>
+<div id="question-6-3-marks" class="section level2">
+<h2>Question 6 (3 marks)</h2>
 <p>The following code calculates, for each nation, the percentage of
 tourist attractions that offer free admission to all visitors:</p>
 <pre class="r"><code>visitors_with_nations %&gt;%
@@ -556,8 +560,8 @@ admission first, so the percentage is calculated across nations for each
 admission type.</p>
 <hr />
 </div>
-<div id="question-7" class="section level2">
-<h2>Question 7</h2>
+<div id="question-7-1-mark" class="section level2">
+<h2>Question 7 (1 mark)</h2>
 <p>You have this data set when you run this in R (explored in Quiz 2 as
 well)</p>
 <pre class="r"><code>library(tidyverse)
@@ -596,8 +600,8 @@ character strings.</p>
 # Produces </code></pre>
 <hr />
 </div>
-<div id="question-8" class="section level2">
-<h2>Question 8</h2>
+<div id="question-8-2-marks---allow-partial-and-negative-credit" class="section level2">
+<h2>Question 8 (2 marks - Allow partial and negative credit)</h2>
 <p>Which of the following expressions will select only the rows in
 us_rent_income where the variable is income and the estimate value is
 more than 20000? Select all that apply.</p>
@@ -628,8 +632,8 @@ true.</p>
 <p>incorrectly tries to use select() with a logical condition.</p>
 <hr />
 </div>
-<div id="question-9" class="section level2">
-<h2>Question 9</h2>
+<div id="question-9-2-marks---allow-partial-and-negative-credit" class="section level2">
+<h2>Question 9 (2 marks - Allow partial and negative credit)</h2>
 <p>In which of the following objects is the first element a number
 (double)? Select all that apply.</p>
 <p>Correct answers are;</p>
@@ -661,8 +665,8 @@ c(1, &quot;a&quot;, TRUE)[1]  # Returns 1 (but the vector becomes character beca
 <pre><code>## [1] &quot;1&quot;</code></pre>
 <hr />
 </div>
-<div id="question-10" class="section level2">
-<h2>Question 10</h2>
+<div id="question-10-2-marks" class="section level2">
+<h2>Question 10 (2 marks)</h2>
 <p>Match each expression to its result (each answer matches to exactly
 one expression).</p>
 <p>Correct matches are;</p>
@@ -672,8 +676,8 @@ one expression).</p>
 <pre><code>## [1] NA</code></pre>
 <hr />
 </div>
-<div id="question-11" class="section level2">
-<h2>Question 11</h2>
+<div id="question-11-2-marks---allow-partial-and-negative-credit" class="section level2">
+<h2>Question 11 (2 marks - Allow partial and negative credit)</h2>
 <p>You have the following two tibbles:</p>
 <pre class="r"><code>vis &lt;- tibble(
  attraction = c(&quot;Castle&quot;, &quot;Museum&quot;, &quot;Park&quot;, &quot;Zoo&quot;),
@@ -730,8 +734,8 @@ Select all that apply.</p>
 ## 3 Park        70000</code></pre>
 <hr />
 </div>
-<div id="question-12" class="section level2">
-<h2>Question 12</h2>
+<div id="question-12-4-marks---allow-partial-and-negative-credit" class="section level2">
+<h2>Question 12 (4 marks - Allow partial and negative credit)</h2>
 <p>For this given data,</p>
 <pre class="r"><code>vis &lt;- tibble(attraction = c(&quot;Castle&quot;, &quot;Museum&quot;, &quot;Park&quot;, &quot;Zoo&quot;), 
               n_2021 = c(130000, 110000, 75000, 80000), 
@@ -759,8 +763,8 @@ year column type is character, also it does not include solely 2021 and
 2022 by the nature of data. It contains <span class="math inline">\(n_2021\)</span> and <span class="math inline">\(n_2022\)</span> here</p>
 <hr />
 </div>
-<div id="question-13" class="section level2">
-<h2>Question 13</h2>
+<div id="question-13-2-marks" class="section level2">
+<h2>Question 13 (2 marks)</h2>
 <p>This is the subset of billboard data from tidyverse if we look at it
 briefly as below</p>
 <pre class="r"><code>library(tidyverse)
@@ -802,24 +806,24 @@ snippet? Select one.</p>
 ## 10 BBMak               Back Here           2000-04-29      99    86    60     13
 ## # ℹ 98 more rows</code></pre>
 <p>The correct answer is</p>
-<p>“A data frame containing only the songs that moved down the chart by
+<p>“A data frame containing only the songs that moved up the chart by
 more than 10 places between week 1 and week 2”</p>
 <p>The code:</p>
 <ul>
 <li>Drops rows with missing values in wk1</li>
 <li>Drops rows with missing values in wk2</li>
 <li>Calculates the change (wk1 - wk2)</li>
-<li>Filters for songs that moved down more than 10 places (change &gt;
-10 means wk1 &gt; wk2 by more than 10)</li>
+<li>Filters for songs that moved up more than 10 places (change &gt; 10
+means wk1 &gt; wk2 by more than 10) Since having smaller values in wk2
+means that, on the list, that song moved up. There is an opposite
+behavior.</li>
 </ul>
 <p>By definition, the difference can be positive or negative but we are
-only interested in positive values that are greater than 10. Since the
-difference is w1 vs w2, when it is positive means, there is a drop from
-week 1 to week 2.</p>
+only interested in positive values that are greater than 10.</p>
 <hr />
 </div>
-<div id="question-14" class="section level2">
-<h2>Question 14</h2>
+<div id="question-14-1-mark" class="section level2">
+<h2>Question 14 (1 mark)</h2>
 <p>You want to calculate the mean chart position in week 2 for each
 artist, but the following code does not produce the desired output. Why?
 Select one.</p>

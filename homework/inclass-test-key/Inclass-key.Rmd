@@ -16,8 +16,9 @@ library(tidyverse)
 library(lubridate)
 ```
 
+Note that for the select all that apply style questions, there was a percentage correction on incorrect answers for some cases. There might be some changes on your mark compared to what is announced on 21st of October. 
 
-## Question 1
+## Question 1 (1 mark)
 
 Correct answer is arrange(). 
 
@@ -39,7 +40,7 @@ data[order(data$value),]
 
 ---
 
-## Question 2
+## Question 2 (1 mark)
 
 Assume that the dataset visitors_with_nations (from our workshop) has been imported into your environment. What is wrong with the following code? Select one.
 
@@ -55,7 +56,7 @@ filter(visitors_with_nations, n_2021 > 100000, nation == "England")
 
 ---
 
-## Question 3
+## Question 3 (1 mark)
 
 Assume that the dataset visitors_with_nations contains several columns, including `n_2021` and `n_2022`, and others.
 
@@ -84,7 +85,7 @@ With this minus sign in front of the variables, the code removes n_2021 and n_20
 
 ---
 
-## Question 4
+## Question 4 (1 mark)
 
 Suppose you run the following code in your R session:
 
@@ -115,7 +116,7 @@ In this question the first code snippet should be given like this but not affect
 
 ---
 
-## Question 5 
+## Question 5 (2 marks)
 
 Suppose visitors_with_nations contains the following columns, among the others: attraction, admission, nation.
 
@@ -152,7 +153,7 @@ visitors_with_nations %>%
 
 ---
 
-## Question 6
+## Question 6 (3 marks)
 
 The following code calculates, for each nation, the percentage of tourist attractions that offer free admission to all visitors:
 
@@ -184,7 +185,7 @@ The reference code groups by nation before counting, so the percentage is calcul
 
 ---
 
-## Question 7
+## Question 7 (1 mark)
 
 You have this data set when you run this in R (explored in Quiz 2 as well)
 
@@ -220,7 +221,7 @@ us_rent_income %>%
 ```
 ---
 
-## Question 8
+## Question 8 (2 marks - Allow partial and negative credit)
 
 Which of the following expressions will select only the rows in us_rent_income where the variable is income and the estimate value is more than 20000? Select all that apply.
 
@@ -260,7 +261,7 @@ incorrectly tries to use select() with a logical condition.
 
 ---
 
-## Question 9 
+## Question 9 (2 marks - Allow partial and negative credit)
 
 In which of the following objects is the first element a number (double)? Select all that apply.
 
@@ -287,7 +288,7 @@ list("1", 3.5, TRUE)[[1]]  # Returns "1" as character
 
 ---
 
-## Question 10
+## Question 10 (2 marks)
 
 Match each expression to its result (each answer matches to exactly one expression).
 
@@ -302,7 +303,7 @@ TRUE & NA
 
 ---
 
-## Question 11
+## Question 11 (2 marks - Allow partial and negative credit)
 
 You have the following two tibbles:
 
@@ -352,7 +353,7 @@ vis %>% semi_join(info, by = "attraction")
 
 ---
 
-## Question 12
+## Question 12 (4 marks - Allow partial and negative credit)
 
 For this given data,
 
@@ -379,7 +380,7 @@ The "year" column will be of type numeric. is not correct since the year column 
 
 ---
 
-## Question 13
+## Question 13 (2 marks)
 
 This is the subset of billboard data from tidyverse if we look at it briefly as below
 
@@ -402,7 +403,7 @@ df_bilboard %>%
 
 The correct answer is 
 
-"A data frame containing only the songs that moved down the chart by more than 10 places between week 1 and week 2" 
+"A data frame containing only the songs that moved up the chart by more than 10 places between week 1 and week 2" 
 
 
 The code:
@@ -410,13 +411,13 @@ The code:
 - Drops rows with missing values in wk1
 - Drops rows with missing values in wk2
 - Calculates the change (wk1 - wk2)
-- Filters for songs that moved down more than 10 places (change > 10 means wk1 > wk2 by more than 10)
+- Filters for songs that moved up more than 10 places (change > 10 means wk1 > wk2 by more than 10) Since having smaller values in wk2 means that, on the list, that song moved up. There is an opposite behavior. 
 
-By definition, the difference can be positive or negative but we are only interested in positive values that are greater than 10. Since the difference is w1 vs w2, when it is positive means, there is a drop from week 1 to week 2.
+By definition, the difference can be positive or negative but we are only interested in positive values that are greater than 10.
 
 ---
 
-## Question 14
+## Question 14 (1 mark)
 
 You want to calculate the mean chart position in week 2 for each artist, but the following code does not produce the desired output. Why? Select one.
 
