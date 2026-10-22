@@ -208,20 +208,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </div>
 <div id="optional-some-initial-data-viz-exercises" class="section level2">
 <h2>OPTIONAL: Some initial data viz exercises</h2>
-<p>Below are some initial data viz exercises as an additional material for this week. That is why it says Optional, there will be other exercises next week workshop in week 6, with a regular lab materials, as before.</p>
-<p>If you can not look at these exercises here, it is not a problem but feel free to explore and solve in your spare time</p>
-<div id="data-viz-for-starwars" class="section level3">
-<h3>Data viz for starwars</h3>
+<p>Below are some initial data viz exercises as an additional material for this week. That is why it says <strong>Optional</strong>, there will be usual lab material in the next week’s workshop in week 6, as before. The focus will be data visualization again, and these optional examples are wroth exploring for extra preparation.</p>
+<p>If you can not look at these exercises here, it is not a problem but feel free to explore and solve in your spare time.</p>
+<p>If you are doing the data viz in R with ggplot2 for the first time, and could not attend the lecture this week, please see weekly slides and also look at the one of the suggested reading material in week 5, as supplementary material:</p>
+<p><a href="https://r4ds.had.co.nz/data-visualisation.html">R4DS: Chp 3 - Data visualisation</a></p>
+<div id="data-viz-with-starwars" class="section level3">
+<h3>Data viz with starwars</h3>
 <p>Let us start with some basics of data viz on the starwars data set.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>starwars_df <span class="ot">&lt;-</span> starwars</span></code></pre></div>
-<p>To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples</p>
+<p>To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples. I will attach this material for our weekly readings as well;</p>
 <p><a href="https://www.data-to-viz.com/">From Data to Viz</a></p>
 <pre><code>## 
-##  ________________________________________________________ 
-## / Whenever you do not where to start, this can be useful \
-## \ material as well!                                      /
-##  -------------------------------------------------------- 
+##  _______________________________________________________ 
+## / Whenever you do not know where to start for the below \
+## | exercises, this can be useful additional interactive  |
+## \ material to check!                                    /
+##  ------------------------------------------------------- 
 ##              \
 ##               \
 ## 
@@ -239,6 +242,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 ##                   ; &#39;   : :`-:     _.`* ;
 ##                .*&#39; /  .*&#39; ; .*`- +&#39;  `*&#39;
 ##      [bug]     `*-*   `*-*  `*-*&#39;</code></pre>
+<p>Besides, in your group, discuss possible data viz possibilities together and if you would like to do brainstorming with GenAI, please use the IDS allowed suggested way that I shared last week via ELM + IDS-sidekick prompt. IF you need a recall how to do this, <a href="https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html">see the guidance from here</a>.</p>
 </div>
 </div>
 <div id="exercise-1." class="section level2">
@@ -248,8 +252,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </div>
 <div id="exercise-2." class="section level2">
 <h2>Exercise 2.</h2>
-<p>Modify the following plot to change the color of all points to <code>&quot;pink&quot;</code>.</p>
-<p>Initial code given as;</p>
+<p>Let us star with some small changes.</p>
+<p>Modify the following plot to change the color of all points to <code>&quot;pink&quot;</code>.
+Initial code given as;</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(starwars_df, </span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> height, <span class="at">y =</span> mass, <span class="at">color =</span> gender, <span class="at">size =</span> birth_year)) <span class="sc">+</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
@@ -259,7 +264,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </div>
 <div id="exercise-3" class="section level2">
 <h2>Exercise 3</h2>
-<p>Add labels for title, x and y axes, and size of points. Uncomment to see the effect.</p>
+<p>Now for the given visualization,
+Add labels for title, x and y axes, and size of points. Uncomment what you added before running the code, to see its effect. How about creating the visualization without the labs() layer, what is the difference there ?</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggplot</span>(starwars, </span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> height, <span class="at">y =</span> mass, <span class="at">color =</span> gender, <span class="at">size =</span> birth_year)) <span class="sc">+</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#30509C&quot;</span>) <span class="sc">+</span></span>
@@ -275,28 +281,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </div>
 <div id="êxercise-4" class="section level2">
 <h2>Êxercise 4</h2>
-<p>Pick a single numerical variable and make a histogram of it. Select a reasonable binwidth for it.</p>
+<p>By looking at the starwars data, npw it is time to pick a single numerical variable and make a histogram of it via ggplot2.</p>
+<p>After creating the histogram via <code>geom_histogram()</code>, what if you make a change on the binwidth for it. (Hint:check the help page for the related examples in R via <code>help(geom_histogram)</code>)</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># your code here</span></span></code></pre></div>
 </div>
 <div id="exercise-5" class="section level2">
 <h2>Exercise 5</h2>
-<p>Pick a numerical variable and a categorical variable and make a visualization (you pick the type!) to visualization the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.</p>
+<p>Now, pick a numerical variable and a categorical variable from starwars data set and make a visualization (you can pick the type! via suitable geom_xx() style function) for the relationship between these two variables. Along with your code and output, provide an interpretation of the visualization.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># your code here</span></span></code></pre></div>
 </div>
 <div id="exercise-6" class="section level2">
 <h2>Exercise 6</h2>
-<p>Pick a single categorical variable from the data set and make a bar plot of its distribution.</p>
+<p>What about picking a single categorical variable from the data set and make a bar plot of its distribution. (Hint: now you can consider the <code>geom_bar()</code> with a suitably selected variable). What happen if you apply this logic to a numerical variable?</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># your code here</span></span></code></pre></div>
 </div>
 <div id="exercise-7" class="section level2">
 <h2>Exercise 7</h2>
-<p>Pick two categorical variables and make a visualization to visualize the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.</p>
+<p>Now time to pick two categorical variables and make a visualization to visualize the relationship between the two variables. Which typpe of visualization can be useful do you think and why ? Check the previously suggested <a href="https://www.data-to-viz.com/">From Data to Viz</a> if you do not where to start.</p>
+<p>Along with your code and output, provide an interpretation of the visualization.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># your code here</span></span></code></pre></div>
 </div>
 <div id="exercise-8" class="section level2">
 <h2>Exercise 8</h2>
-<p>Pick two numerical variables and two categorical variables and make a visualization that incorporates all of them and provide an interpretation with your answer.</p>
+<p>How about picking two numerical variables and two categorical variables and make a visualization that incorporates all of them. Are you able to create multiple plots using additional aesthetics ?</p>
+<p>You can consider height, mass, gender and species if you like to start with
+After creating your visualization, provide a brief interpretation for that outcome.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># your code here</span></span></code></pre></div>
+</div>
+<div id="if-you-come-to-that-point" class="section level2">
+<h2>If you come to that point</h2>
+<p>Now it is worth exploring your project data set with your new data viz skills as well. As you recall, understanding your project data includes some EDA that we discussed and creating various data visualizations from your project data will be useful for your research question formulation and also good set of practices.</p>
+<p>We will see more examples next week to sharpen your data viz skills. Please share your follow up questions via EdStem, outside of the main contact hours, if you need help for your coding journey.</p>
 </div>
 </div>
 

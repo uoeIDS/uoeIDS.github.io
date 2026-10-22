@@ -38,14 +38,17 @@ The project template repository can be found [HERE](https://github.com/uoeIDS/pr
 say("As a starting point, you can look at your data to apply the tools that we learned so far. ", "ghost")
 ```
 
-
 ## OPTIONAL: Some initial data viz exercises
 
-Below are some initial data viz exercises as an additional material for this week. That is why it says Optional, there will be other exercises next week workshop in week 6, with a regular lab materials, as before.  
+Below are some initial data viz exercises as an additional material for this week. That is why it says **Optional**, there will be usual lab material in the next week's workshop in week 6, as before. The focus will be data visualization again, and these optional examples are wroth exploring for extra preparation.   
 
-If you can not look at these exercises here, it is not a problem but feel free to explore and solve in your spare time 
+If you can not look at these exercises here, it is not a problem but feel free to explore and solve in your spare time. 
 
-### Data viz for starwars
+If you are doing the data viz in R with ggplot2 for the first time, and could not attend the lecture this week, please see weekly slides and also look at the one of the suggested reading material in week 5, as supplementary material:  
+
+[R4DS: Chp 3 - Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
+
+### Data viz with starwars
 
 Let us start with some basics of data viz on the starwars data set.
 
@@ -54,14 +57,15 @@ library(tidyverse)
 starwars_df <- starwars
 ```
 
-To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples 
+To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples. I will attach this material for our weekly readings as well; 
 
 [From Data to Viz](https://www.data-to-viz.com/)
 
 ```{r, echo=FALSE}
-say("Whenever you do not where to start, this can be useful material as well!", "bigcat")
+say("Whenever you do not know where to start for the below exercises, this can be useful additional interactive material to check!", "bigcat")
 ```
 
+Besides, in your group, discuss possible data viz possibilities together and if you would like to do brainstorming with GenAI, please use the IDS allowed suggested way that I shared last week via ELM + IDS-sidekick prompt. IF you need a recall how to do this, [see the guidance from here](https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html). 
 
 ## Exercise 1. 
 
@@ -74,8 +78,9 @@ Glimpse at the starwars data frame.
 
 ## Exercise 2.
 
-Modify the following plot to change the color of all points to `"pink"`.
+Let us star with some small changes. 
 
+Modify the following plot to change the color of all points to `"pink"`.
 Initial code given as; 
 
 ```{r}
@@ -86,7 +91,8 @@ ggplot(starwars_df,
 
 ## Exercise 3
 
-Add labels for title, x and y axes, and size of points. Uncomment to see the effect.
+Now for the given visualization, 
+Add labels for title, x and y axes, and size of points. Uncomment what you added before running the code, to see its effect. How  about creating the visualization without the labs() layer, what is the difference there ? 
 
 ```{r}
 ggplot(starwars, 
@@ -103,7 +109,9 @@ ggplot(starwars,
 
 ## Êxercise 4
 
-Pick a single numerical variable and make a histogram of it. Select a reasonable binwidth for it.
+By looking at the starwars data, npw it is time to pick a single numerical variable and make a histogram of it via ggplot2. 
+
+After creating the histogram via `geom_histogram()`, what if you make a change on the binwidth for it. (Hint:check the help page for the related examples in R via `help(geom_histogram)`)
 
 ```{r}
 # your code here
@@ -112,7 +120,7 @@ Pick a single numerical variable and make a histogram of it. Select a reasonable
 
 ## Exercise 5
 
-Pick a numerical variable and a categorical variable and make a visualization (you pick the type!) to visualization the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+Now, pick a numerical variable and a categorical variable from starwars data set and make a visualization (you can pick the type! via suitable geom_xx() style function) for the relationship between these two variables. Along with your code and output, provide an interpretation of the visualization.
 
 ```{r}
 # your code here
@@ -121,7 +129,7 @@ Pick a numerical variable and a categorical variable and make a visualization (y
 
 ## Exercise 6
 
-Pick a single categorical variable from the data set and make a bar plot of its distribution.
+What about picking a single categorical variable from the data set and make a bar plot of its distribution. (Hint: now you can consider the `geom_bar()` with a suitably selected variable). What happen if you apply this logic to a numerical variable? 
 
 ```{r}
 # your code here
@@ -130,7 +138,9 @@ Pick a single categorical variable from the data set and make a bar plot of its 
 
 ## Exercise 7
 
-Pick two categorical variables and make a visualization to visualize the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+Now time to pick two categorical variables and make a visualization to visualize the relationship between the two variables. Which typpe of visualization can be useful do you think and why ? Check the previously suggested [From Data to Viz](https://www.data-to-viz.com/) if you do not where to start. 
+
+Along with your code and output, provide an interpretation of the visualization.
 
 ```{r}
 # your code here
@@ -140,13 +150,20 @@ Pick two categorical variables and make a visualization to visualize the relatio
 
 ## Exercise 8
 
-Pick two numerical variables and two categorical variables and make a visualization that incorporates all of them and provide an interpretation with your answer.
+How about picking two numerical variables and two categorical variables and make a visualization that incorporates all of them. Are you able to create multiple plots using additional aesthetics ? 
+
+You can consider height, mass, gender and species if you like to start with
+After creating your visualization, provide a brief interpretation for that outcome. 
 
 ```{r}
 # your code here
 ```
 
+## If you come to that point 
 
+Now it is worth exploring your project data set with your new data viz skills as well. As you recall, understanding your project data includes some EDA that we discussed and creating various data visualizations from your project data will be useful for your research question formulation and also good set of practices. 
+
+We will see more examples next week to sharpen your data viz skills. Please share your follow up questions via EdStem, outside of the main contact hours, if you need help for your coding journey. 
 
 
 
