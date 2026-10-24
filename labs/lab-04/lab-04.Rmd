@@ -109,7 +109,7 @@ ggplot(starwars,
 
 ## Êxercise 4
 
-By looking at the starwars data, npw it is time to pick a single numerical variable and make a histogram of it via ggplot2. 
+By looking at the starwars data, now it is time to pick a single numerical variable and make a histogram of it via ggplot2. 
 
 After creating the histogram via `geom_histogram()`, what if you make a change on the binwidth for it. (Hint:check the help page for the related examples in R via `help(geom_histogram)`)
 
@@ -138,7 +138,7 @@ What about picking a single categorical variable from the data set and make a ba
 
 ## Exercise 7
 
-Now time to pick two categorical variables and make a visualization to visualize the relationship between the two variables. Which typpe of visualization can be useful do you think and why ? Check the previously suggested [From Data to Viz](https://www.data-to-viz.com/) if you do not where to start. 
+Now time to pick two categorical variables and make a visualization to visualize the relationship between the two variables. Which type of visualization can be useful do you think and why ? Check the previously suggested [From Data to Viz](https://www.data-to-viz.com/) if you do not where to start. 
 
 Along with your code and output, provide an interpretation of the visualization.
 

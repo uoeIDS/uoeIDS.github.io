@@ -1,0 +1,300 @@
+---
+title: "Lab 04 - Project kick-off and data viz exercises"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r load-packages, message = FALSE, warning=FALSE, echo = FALSE}
+library(tidyverse)
+library(cowsay)
+```
+
+
+### Data viz for starwars
+
+Let us start with some basics of data viz on the starwars data set.
+
+```{r}
+library(tidyverse)
+starwars_df <- starwars
+```
+
+To decide, how to create any data viz, this supplementary material can be very useful to explore different types with explanations, and R code examples 
+
+[From Data to Viz](https://www.data-to-viz.com/)
+
+```{r, echo=FALSE}
+say("Whenever you do not where to start, this can be useful material as well!", "bigcat")
+```
+
+---
+
+## Exercise 1. 
+
+Glimpse at the starwars data frame.
+
+```{r}
+glimpse(starwars)
+```
+
+Check out the type of variables and their information for further data viz practices here. It will be useful for the upcoming data viz questions.
+
+---
+
+## Exercise 2.
+
+Modify the following plot to change the color of all points to `"pink"`.
+
+Initial code given as; 
+
+```{r}
+ggplot(starwars_df, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "blue")
+```
+
+Starting with a small change on the input argument of specific layer here. we need to adjust only the color argument, `color = "blue"` within the `geom_point()` The below makes that change from blue to pink simply 
+
+```{r}
+ggplot(starwars_df, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "pink")
+```
+
+This is one specific fixed coloring, note that the purpose of the color aesthetic in the ggplot function is different. For instance, 
+
+```{r}
+ggplot(starwars_df, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point()
+```
+resulted in a similar scatterplot but the points are colored based on different gender types, explained in the legend information in the right hand side, but still it requires some update since I have some NAs in the gender legend. Let us consider the following workflow; 
+
+```{r}
+starwars_df %>% 
+  drop_na(gender) %>% 
+ggplot(aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point()
+```
+This removes NA in gender, before creating the visualization so there is no NA info in the gender legend area now
+
+Follow up: What if you used the `color = "pink"` in the aes() function ? Run this new version of the code and check the results. Is it working correctly or not ?
+
+---
+
+## Exercise 3
+
+Add labels for title, x and y axes, and size of points. Uncomment to see the effect.
+
+```{r}
+ggplot(starwars, 
+       aes(x = height, y = mass, color = gender, size = birth_year)) +
+  geom_point(color = "#30509C") + # What is that color code ? 
+  labs(
+    title = "Height and mass relationship across different birth_year", # adding a title for the scatterplot
+    x = "Height (cm)", # changing the x-axis naming
+    y = "Weight (kg)", # changing the y-axis naming with unit
+    size = "Year born (BBY)" # change of size legend based on data itself
+    #___  You can add other details here, such as subtitle or caption 
+    )
+```
+
+
+Check the `help(starwars)` to see the details of units for each component. 
+See the differences between this plot vs earlier version and examine the impact of `labs()` function on the output
+
+---
+
+## Êxercise 4
+
+Pick a single numerical variable and make a histogram of it. Select a reasonable binwidth for it.
+
+```{r}
+# Default histogram (ggplot2 picks a binwidth automatically)
+ggplot(starwars, aes(x = height)) +
+  geom_histogram() +
+  labs(title = "Distribution of Height (default binwidth)",
+       x = "Height (cm)", y = "Count")
+```
+
+You can play with the value of bins via `binwidth` or  `bins` input parameter inside of the `geom_histogram()` function. Below is the example of different `binwidth`.
+
+```{r}
+# Larger binwidth - fewer bars
+ggplot(starwars, aes(x = height)) +
+  geom_histogram(binwidth = 50) +
+  labs(title = "Distribution of Height (binwidth = 50)",
+       x = "Height (cm)", y = "Count")
+```
+
+```{r}
+# Smaller binwidth - more bars
+ggplot(starwars, aes(x = height)) +
+  geom_histogram(binwidth = 5) +
+  labs(title = "Distribution of Height (binwidth = 5)",
+       x = "Height (cm)", y = "Count")
+```
+
+It is a very common type of graphic and most tools select a bin size value by default. With a small binwidth (e.g. 5), the histogram shows more bars and reveals finer detail (and some noise/gaps) in the data. With a large binwidth (e.g. 50), the bars are fewer and wider, which smooths the distribution but can hide interesting local structure. Choosing an appropriate binwidth is a balance between showing enough detail and avoiding overfitting to noise.
+
+Also [check its impact from here](https://www.data-to-viz.com/caveat/bin_size.html) for a different data set.
+
+Follow up: Explore the `bins = 50` and `bins = 5` instead of `binwidth` and examine its impact on the final outcome. 
+
+---
+
+## Exercise 5
+
+Pick a numerical variable and a categorical variable and make a visualization (you pick the type!) to visualization the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+
+```{r}
+# Let us pick height (numerical) and gender (categorical) and visualize their relationship using boxplots.
+
+ggplot(starwars %>% filter(!is.na(gender), !is.na(height)),
+       aes(x = gender, y = height, fill = gender)) +
+  geom_boxplot() +
+  labs(title = "Height Distribution by Gender",
+       x = "Gender", y = "Height (cm)")
+
+```
+
+Do you see the purpose of `fill = gender` input in aes() function ? Remove it and run the same code again. 
+
+**Boxplot (known as also whisker plot) definition:** A boxplot gives a nice summary of one or several numeric variables or sometimes one numerical variable across different categories. 
+
+- The line that divides the box into 2 parts represents the median of the data. 
+- The end of the box shows the upper and lower quartiles. 
+- The extreme lines show the highest and lowest value excluding outliers.
+
+Here it shows that characters identified as "masculine" tend to have a higher median height compared to "feminine" characters, with somewhat similar spread. There are a few outliers (very tall or very short characters) visible.
+
+See [other examples from here with some details](https://r-graph-gallery.com/boxplot).
+
+Follow up: Adapt this idea for other numerical variables across categorical ones, or how about the below example, what is the difference do you think ?
+
+```{r}
+ggplot(starwars %>% filter(!is.na(gender), !is.na(height)),
+       aes(y = height)) +
+  geom_boxplot() +
+  labs(title = "Height Distribution", y = "Height (cm)")
+
+```
+
+---
+
+## Exercise 6
+
+Pick a single categorical variable from the data set and make a bar plot of its distribution.
+
+```{r}
+# Let us use gender as our categorical variable and create a bar plot of its distribution.
+ggplot(starwars %>% filter(!is.na(gender)), aes(x = gender)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Gender",
+       x = "Gender", y = "Count")
+
+
+```
+
+Definition: A **barplot** shows the value of entities using bar of various length. The size of the bar represents its numeric value. It is crucial to remember that
+
+**Do not confound it with a histogram.** See [other barplot examples from here](https://r-graph-gallery.com/barplot)
+
+what if we apply, let's see what happens if we use `geom_bar()` to a numerical variable, such as height:
+
+```{r}
+ggplot(starwars %>% filter(!is.na(height)), aes(x = height)) +
+  geom_bar() +
+  labs(title = "geom_bar() applied to a numerical variable (height)",
+       x = "Height (cm)", y = "Count")
+
+```
+
+**Note that, when `geom_bar()` is applied to a categorical variable, it correctly counts and displays the number of observations in each category, producing clean, interpretable bars.** 
+
+However, when applied to a numerical variable like height, `geom_bar()` treats each unique numeric value as its own separate category rather than grouping nearby values together. This results in many thin, sparse bars that are hard to interpret and don't convey the overall shape of the distribution. 
+
+**For numerical variables, geom_histogram() is the appropriate choice instead.**
+
+Follow up: How about you apply the same for other categories such as `hair_color` ? 
+
+---
+
+## Exercise 7
+
+Pick two categorical variables and make a visualization to visualize the relationship between the two variables. Along with your code and output, provide an interpretation of the visualization.
+
+```{r}
+# let us pick homeworld and gender as our two categorical variables, to create a stacked bar chart.
+
+ggplot(starwars_df, aes(x = is.na(homeworld), fill = is.na(gender))) +
+  geom_bar(position = "fill") +
+  labs(title = "Proportion of Gender within homeworld",
+       x = "Homeworld", y = "Proportion", fill = "Gender")
+
+
+```
+
+How do you explain this ?
+
+Follow up: What if you remove the input argument `position = "fill"` ? Explore the new result and investigate why that happened. 
+
+See another interesting example for a different species vs gender but we need to look at some top species to avoid the messy data visualization result 
+
+```{r}
+# Keep only the most frequent species to avoid overcrowding
+top_species <- starwars %>%
+  filter(!is.na(species)) %>%
+  count(species, sort = TRUE) %>%
+  slice_head(n = 5) %>%
+  pull(species)
+
+# Filtering based on the top_species we defined and keeping complete gender cases (removing NA cases)
+starwars_sub <- starwars %>%
+  filter(species %in% top_species, !is.na(gender))
+
+# creating the barchart for this new data set 
+ggplot(starwars_sub, aes(x = species, fill = gender)) +
+  geom_bar(position = "fill") +
+  labs(title = "Proportion of Gender within Top 5 Species",
+       x = "Species", y = "Proportion", fill = "Gender")
+
+```
+
+Note that, a stacked/filled bar chart is useful since it lets us compare the relative proportions of a second categorical variable (gender) within each level of the first (species), which works well when one variable has more informative groupings than the other. The chart shows that for most of the top species (e.g., Human), there is a mix of masculine and feminine characters, with masculine characters being more common overall.
+
+---
+
+## Exercise 8
+
+Pick two numerical variables and two categorical variables and make a visualization that incorporates all of them and provide an interpretation with your answer.
+
+- We can think about the height and mass (numerical) along with gender and species (categorical) into a single visualization. 
+
+One option can be a scatter plot with color mapped to species, shape (or facet) mapped to gender, creating multiple small-multiple plots via `facet_wrap()`.
+
+```{r}
+# the workflow seems like using the top_species info again 
+starwars_sub2 <- starwars %>%
+  filter(species %in% top_species, !is.na(gender), !is.na(height), !is.na(mass))
+
+ggplot(starwars_sub2, aes(x = height, y = mass, color = species)) +
+  geom_point() +
+  facet_wrap(~ gender) +
+  labs(title = "Height vs Mass by Species, faceted by Gender",
+       x = "Height (cm)", y = "Mass (kg)", color = "Species")
+```
+
+
+This visualization combines four variables at once: height and mass on the x/y axes, species encoded by color, and gender used to create separate figure panels (facetting). 
+
+- We can see that most characters cluster at lower mass values with a wide range of heights, except for a few very high-mass outliers
+
+- The faceting by gender allows us to compare whether the height-mass relationship differs between masculine and feminine characters — what do you see from the created visual ? 
+
+- This kind of multi-variable plot is powerful for spotting patterns across several dimensions at the same time, however a care must be taken not to overcrowd the plot with too many categories! (this was the motivation of looking at top5 species only here)
+
+Follow up:For further iteration, consider adding `size = 3, alpha = 0.8` inside of the `geom_point()` function and examine their impact. Look at the meaning of these two input arguments again from help documentation. How about the use of `facet_grid()`
