@@ -2,7 +2,7 @@
 title: "Effective Data Visualisation"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -67,8 +67,10 @@ ggplot(data = d, mapping = aes(x = "", y = value, fill = category)) +
 
 ##  Let's have a discussion
 
+Which one seems better do you think, why ? **TPSA**
+
 .pull-left[
-```{r echo = FALSE, out.width="100%", fig.align='center'}
+```{r echo = FALSE, out.width="80%", fig.align='center'}
 d %>%
   mutate(category = str_replace(category, " ", "\n")) %>%
   ggplot(aes(x = category, y = value, fill = category)) +
@@ -80,7 +82,7 @@ d %>%
 ]
 
 .pull-right[
-```{r echo = FALSE, out.width="100%", fig.align='center'}
+```{r echo = FALSE, out.width="80%", fig.align='center'}
 ggplot(d, aes(x = fct_reorder(category, value), y = value, fill = category)) +
   geom_col() +
   theme_minimal() +
@@ -204,7 +206,7 @@ ggplot(brexit, aes(x = region,
 ```
 ]
 
-Are we done? Can we do any better?
+Are we done? Can we do any better? 
 
 
 ---
@@ -265,9 +267,7 @@ ggplot(brexit, aes(y = region,  #<<
 
 ---
 
-## Is there a better ording
-
-
+## Is there a better ordering
 
 ```{r plot-6, echo = FALSE, fig.show='hide', message = FALSE, warning=FALSE}
 brexit <- brexit %>%
@@ -500,14 +500,15 @@ ggplot(brexit, aes(y = opinion,
 
 ## Selection of colours
 
-```{r echo = FALSE, out.width = "80%",fig.align='center'}
+```{r echo = FALSE, out.width = "60%",fig.align='center'}
 knitr::include_graphics("img/color-pallet.png")
 ```
 
+[colorbrewer2.org](https://colorbrewer2.org/) - Help with selecting a colour pallette
 
-[colorbrewer2.org](https://colorbrewer2.org/) - Help with selecting a colour pallet
+[Color Palette Finder](https://r-graph-gallery.com/color-palette-finder) - Getting help for choosing right colors. 
 
-
+[Working with colours in R](https://nrennie.rbind.io/blog/colours-in-r/) - some use cases to explore
 
 ---
 
@@ -604,3 +605,53 @@ Are people's opinion about Brexit the same or different for each region?
 ```
 ]
 
+---
+
+## Some data viz related stories to explore
+
+Have a look at these interesting examples 
+
+- [One Dataset, Visualized 25 Ways](https://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways)
+
+- [Why are K-pop groups so big?](https://pudding.cool/2020/10/kpop/)
+
+- [Visualise, Optimise, Parameterise!](https://www.cararthompson.com/talks/visualise-optimise-parameterise/)
+
+- [Waffle chart for evolution of energy mix](https://r-graph-gallery.com/web-waffle-chart-for-evolution-of-energy-mix.html)
+
+---
+
+## Glossary Summary I 
+
+| Term | In plain words |
+|:-----|:---------------|
+| **function** | A command that does a job, written with parentheses, e.g. `glimpse()`, `ggplot()` |
+| **argument** | A setting you give a function inside its parentheses, e.g. `binwidth = 100` |
+| **aesthetic (`aes()`)** | A visual property of the plot (x, y, `color`, `fill`, `shape`, `size`) that a variable is *mapped* to |
+| **geom layer** | The shape that draws the data: `geom_bar()`, `geom_histogram()`, `geom_point()`, `geom_boxplot()` |
+| **bar plot** | Bars showing how many observations fall in each category |
+| **histogram** | Bars showing how many numeric values fall in each range (**bin**); **binwidth** = how wide each range is |
+
+---
+
+## Glossary Summary II 
+
+| Term | In plain words |
+|:-----|:---------------|
+| **boxplot** | Summarizes a numeric variable with a box (middle 50%), a line (median), whiskers and outlier dots |
+| **median** | The middle value when values are sorted; half are below, half above |
+| **Q1 / Q3** | Quartiles: 25% of values are below Q1; 75% are below Q3 |
+| **IQR** | Interquartile range = Q3 − Q1, the width of the box (the middle 50% of data) |
+| **whiskers / outlier** | Whiskers reach out to 1.5 × IQR beyond the box; points past that are possible **outliers** (unusually large or small) |
+
+---
+
+## Glossary Summary III  
+
+| Term | In plain words |
+|:-----|:---------------|
+| **stacked bar plot** | Each bar is split into colored pieces by a second categorical variable |
+| **standardized stacked** | Stacked bars stretched to the same height so you compare *proportions* (`position = "fill"`) |
+| **scatterplot** | One dot per observation, showing the relationship between two numeric variables |
+| **legend** | The key that explains what each color, shape or size stands for |
+| **color palette** | A set of colors mapped to data variables or applied to geometric elements (like points, lines, bars, and fill areas) |
