@@ -2,7 +2,7 @@
 title: "Types of visualisations"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -21,17 +21,30 @@ library(xaringanExtra)
 xaringanExtra::use_panelset()
 ```
 
+# Midsemester feedback so far
+
+* Thank you so much for sharing your feedback, much appreciated. Today is the last day so please give us some time for more successful further iterations of IDS.
+* What we get so far;
+
+  1. Clarification of GenAI usage? - [IDS GenAI guidance](https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html)
+  2. Extra exercises? - **More hands-on exercises** are coming for lab materials for further practice.
+  3. Some explanations on technical terms? - Adding glossary summary at the end of slides whenever need it. 
+
+---
+
 class: middle
 
 # Understanding your data
 
-* There are many types of data visualisation, each designed with a particular purpose.
+* There are **many types of data visualisation**, each designed with a particular purpose.
 * To determine which visualisation style is appropriate, consider:
 
   1. What are the properties of variables?
   2. How many variables to include in the data visualisation?
   3. What aspect of the data do you want to explore, investigate and communicate?
 
+If you do not know where to start, this is always a good illustrative guidance;
+[From Data to Viz](https://www.data-to-viz.com/)
 
 ---
 
@@ -95,6 +108,7 @@ ggplot(data = [dataset],                                         # Data
 
 - Today we will examine many of the commonly used features.
 - More information can be found on the [ggplot2 cheat sheet](https://www.rstudio.com/resources/cheatsheets/)
+- If you do not where to start, this is a good illustrative guidance to explore, [From Data to Viz](https://www.data-to-viz.com/)
 
 
 ---
@@ -149,6 +163,7 @@ ggplot(data = bat_data,
        mapping = aes(x = body_mass)) +
   geom_histogram()
 ```
+
 * Message specifies the use of default/assumed values
 
 ---
@@ -204,13 +219,17 @@ ggplot(data = bat_data,
        mapping = aes(x = body_mass)) +
   geom_histogram(bins = 10) #<<
 ```
+
+- The impact of `binwidth` is mentioned in lab-04 exercises as well. Please see those examples alongside this one.
+
 ]
+
 ]
 ]
 
 ---
 
-## Customizing options
+## Some customizing examples
 
 .panelset[
 
@@ -303,6 +322,8 @@ class: middle
 ```{r ref.label = "density", echo = FALSE, warning = FALSE, out.width = "80%"}
 ```
 
+- Probably this is a mixture of different distribution, that is why we have multiple peak points look like this. 
+
 ]
 .pull-right[
 ```{r density, fig.show = "hide", warning = FALSE}
@@ -312,7 +333,7 @@ ggplot(data = bat_data,
 ```
 
 
-Construction:
+Construction Example with three normal case:
 ```{r eg_den, warning = FALSE, fig.width = 6, fig.height = 3, fig.align='center', echo = FALSE}
 data <- tibble(
   x = seq(-3,3,by=0.01),
@@ -336,10 +357,6 @@ ggplot() +
 ```
 
 ]
-
-
-
-
 
 
 ---
@@ -378,7 +395,7 @@ class: middle
 
 ---
 
-## Box plot
+## Box plot (Whisker Plot)
 
 .pull-left[
 ```{r ref.label = "boxplot", echo = FALSE, warning = FALSE, out.width = "80%"}
@@ -399,6 +416,7 @@ ggplot(data = bat_data,
 
 
 Construction:
+
 ```{r boxplot_description, echo = FALSE, fig.align='center', fig.width=8, fig.height=3}
 ggplot() +
   geom_polygon(data = data.frame(x = c(-1,-1,1,1), y=c(0,1,1,0)),
@@ -407,8 +425,8 @@ ggplot() +
   geom_segment(mapping = aes(x = 1, y = 0.5, xend = 2.5, yend = 0.5)) + 
   geom_segment(mapping = aes(x = -1, y = 0.5, xend = -2.5, yend = 0.5)) +
   geom_text(mapping = aes(x = 0, y = 17/16, label = "Median"), size=5) + 
-  geom_text(mapping = aes(x = 1, y = 13/16, label = "Upper Quartile"), nudge_x = 0.55, size=5)  + 
-  geom_text(mapping = aes(x = -1, y = 13/16, label = "Lower Quartile"), nudge_x = -0.55, size=5) + 
+  geom_text(mapping = aes(x = 1, y = 13/16, label = "Q3: Upper Quartile"), nudge_x = 0.55, size=5)  + 
+  geom_text(mapping = aes(x = -1, y = 13/16, label = "Q1: Lower Quartile"), nudge_x = -0.55, size=5) + 
   geom_text(mapping = aes(x = -2.5, y = 7/16, label = "Minimum"), nudge_x = 0.35, size=5) + 
   geom_text(mapping = aes(x = 2.5, y = 7/16, label = "Maximum"), nudge_x = -0.35, size=5)  +
     geom_text(mapping = aes(x = 0, y = -1/16, label = "<-------------- IQR -------------->"), size=5)  +
@@ -687,6 +705,7 @@ class: middle
 ```
 ]
 .pull-right[
+
 ```{r scatter1, fig.show = "hide", warning = FALSE}
 ggplot(data = bat_data, 
        mapping = aes(
@@ -700,6 +719,70 @@ ggplot(data = bat_data,
     title = "Forearm & Mass Relationship,",
     subtitle = "(2010-2017)" )  
 ```
+
+- What if we have the multiple observations land on the exact same location - `geom_jitter()`
+
+- What if we have very large datasets where `geom_point()` turn into an unreadable black cloud - `geom_bin_2d()`
+
+]
+
+---
+
+## Scatterplot with jittering 
+
+.pull-left[
+```{r ref.label = "scatter-jitter", echo = FALSE, warning = FALSE, out.width = "70%"}
+```
+]
+
+.pull-right[
+```{r scatter-jitter, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes(
+         x = forearm,   #<<
+         y = body_mass #<<
+         )) +
+  geom_jitter() +   #<<
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+
+- `geom_jitter()` $\equiv$ `geom_point(position = "jitter")`, and adds a small random noise to the x and/or y coordinates. 
+- Useful for handling overplotting caused by discreteness in datasets, but suffers from the changed coordinate values. 
+
+]
+
+---
+
+## 2D histogram colour map
+
+.pull-left[
+
+```{r ref.label = "hist2d", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+
+.pull-right[
+```{r hist2d, fig.show = "hide", warning = FALSE}
+ggplot(data = bat_data, 
+       mapping = aes( 
+         x = forearm, 
+         y = body_mass
+         )) +
+  geom_bin_2d() +  #<<
+  labs(
+    x = "Forearm length (in mm)",
+    y = "Body mass (in grams)",
+    title = "Forearm & Mass Relationship,",
+    subtitle = "(2010-2017)" )  
+```
+
+- **Pros:** A 2d density plot is useful to study the relationship between 2 numeric variables if you have a huge number of points.
+- **Cons:** You lose individual visibility, and the visual appearance depends heavily on the chosen bin size/resolution.
+
 ]
 
 ---
@@ -783,30 +866,6 @@ ggplot(data = bat_data,
 
 ---
 
-## 2D histogram colour map
-
-.pull-left[
-```{r ref.label = "hist2d", echo = FALSE, warning = FALSE, out.width = "80%"}
-```
-]
-.pull-right[
-```{r hist2d, fig.show = "hide", warning = FALSE}
-ggplot(data = bat_data, 
-       mapping = aes( 
-         x = forearm, 
-         y = body_mass
-         )) +
-  geom_bin_2d() +  #<<
-  labs(
-    x = "Forearm length (in mm)",
-    y = "Body mass (in grams)",
-    title = "Forearm & Mass Relationship,",
-    subtitle = "(2010-2017)" )  
-```
-]
-
----
-
 class: middle
 
 # Bar plot - `geom_bar()`
@@ -883,7 +942,37 @@ ggplot(bat_data, aes(
     title = "Age proportion per bat species",
     subtitle = "(2010-2017)")
 ```
+
+- This is also called as **Percent stacked barchart**
+
 ]
+
+
+
+]
+
+.panel[.panel-name[Grouped barchart]
+
+.pull-left[
+```{r ref.label = "grouped_bar", echo = FALSE, warning = FALSE, out.width = "80%"}
+```
+]
+
+.pull-right[
+```{r grouped_bar, fig.show = "hide", warning = FALSE}
+ggplot(bat_data, aes(
+    y = species,  
+    fill = age      
+    )) +
+  geom_bar(position = "dodge") +   #<<
+  labs(
+    x = "Count",
+    y = "Species",
+    title = "Age proportion per bat species",
+    subtitle = "(2010-2017)")
+```
+]
+
 ]
 
 
@@ -907,6 +996,9 @@ ggplot(bat_data, aes(
     title = "Bat sepcies pie chart",
     subtitle = "(2010-2017)")
 ```
+
+- Do you think this is readable ? - **TPSA**
+
 ]
 ]
 
@@ -941,4 +1033,8 @@ ggplot(bat_data, aes(
 ```{r echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics("img/ggplot_plots_gallary.png")
 ```
+
+- Explore [gallery from here](https://r-graph-gallery.com/)
+- If you are not sure, [From Data to Viz](https://www.data-to-viz.com/)
+
 ]
