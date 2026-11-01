@@ -4,9 +4,9 @@
     <title>Ethics in Data Science - Algorithmic Bias</title>
     <meta charset="utf-8" />
     <meta name="author" content="University of Edinburgh" />
-    <script src="libs/header-attrs-2.30/header-attrs.js"></script>
-    <link href="libs/panelset-0.3.0/panelset.css" rel="stylesheet" />
-    <script src="libs/panelset-0.3.0/panelset.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link href="libs/panelset-0.2.6/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.6/panelset.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -42,16 +42,29 @@ class: middle
 ## Amazon's experimental hiring algorithm
 
 - Used AI to give job candidates scores ranging from one to five stars -- much like shoppers rate products on Amazon
+- Trained on CVs submitted to Amazon over the previous 10 years, most of which came from men
 - Amazon's system was not rating candidates for software developer jobs and other technical posts in a gender-neutral way; it taught itself that male candidates were preferable
 
-.pull-left-wide[
-&gt;Gender bias was not the only issue. Problems with the data that underpinned the models’ judgments meant that unqualified candidates were often recommended for all manner of jobs, the people said.
-]
+&gt; Gender bias was not the only issue. Problems with the data that underpinned the models’ judgments meant that unqualified candidates were often recommended for all manner of jobs, the people said.
 
 .footnote[
-Jeffrey Dastin. [Amazon scraps secret AI recruiting tool that showed bias against women](https://reut.rs/2Od9fPr).  
+Jeffrey Dastin. [Amazon scraps secret AI recruiting tool that showed bias against women](https://reut.rs/2Od9fPr).
 Reuters. 10 Oct 2018.
 ]
+
+---
+
+## Removing gender doesn't remove bias
+
+* The model was never given the candidate's gender.
+* But it learned to penalise CVs that contained the word **"women's"** (e.g. "captain of the women's chess club") and to downgrade graduates of two all-women's colleges.
+* Amazon edited the model to ignore those terms, but could not guarantee it wouldn't find other **proxies**, and abandoned the project.
+
+.question[
+**Proxy variable**: a variable that is not itself a protected characteristic but is strongly associated with one (e.g. postcode and ethnicity, first name and gender, height and sex).
+]
+
+**Message**: "We didn't include race/gender in the model" is not evidence that the model is fair. You have to **measure** its behaviour across groups.
 
 ---
 
@@ -59,23 +72,37 @@ Reuters. 10 Oct 2018.
 
 &lt;img src="img/modelling-process.PNG" width="60%" style="display: block; margin: auto;" /&gt;
 
+---
+
+## Sources of bias in the modelling process
+
+* **Historical bias**: the world the data reflects is already unequal (e.g. who was hired in the past).
+* **Representation bias**: some groups are under-represented in the training data.
+* **Measurement bias**: the variable you can measure is a poor proxy for the thing you care about (e.g. _arrests_ instead of _crimes_, _healthcare cost_ instead of _health need_).
+* **Aggregation bias**: one model for everyone, when the relationship differs between groups.
+* **Evaluation bias**: the test data or benchmark doesn't represent the people the model will be used on.
+* **Deployment bias**: the model is used for a different purpose or population than it was built for.
+
+.footnote[
+Adapted from Suresh &amp; Guttag (2021). [A Framework for Understanding Sources of Harm throughout the Machine Learning Life Cycle](https://arxiv.org/abs/1901.10002).
+]
 
 ---
 
-## Modelling questions
+## Models learn the quirks of their training data
 
 .pull-left[
 
-![](w07-L14_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-2-1.png" width="1050" /&gt;
 
 
 ]
 .pull-right[
 
 Fit accuracy: (residual sum of squares)
-`\(\sum_{i=1}^n (y_i - \hat{y}_i)^2\)` 
-* Model 1: 0.0517701
-* Model 2: 0.0199961
+`\(\sum_{i=1}^n (y_i - \hat{y}_i)^2\)`
+* Model 1: 0.05
+* Model 2: 0.02
 
 .question[
 Q1: Which model gives a better fit to the data?
@@ -87,15 +114,15 @@ Q1: Which model gives a better fit to the data?
 
 ---
 
-## Specific vs Generalisable 
+## Specific vs Generalisable
 
 .pull-left[
 
-![](w07-L14_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-3-1.png" width="1050" /&gt;
 
 ]
 .pull-right[
-![](w07-L14_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+&lt;img src="w07-L14_files/figure-html/unnamed-chunk-4-1.png" width="1050" /&gt;
 ]
 
 .question[
@@ -117,7 +144,7 @@ class: middle
 ## Criminal Sentencing
 
 .center[
-"There’s software used across the country to predict future criminals.  
+"There’s software used across the country to predict future criminals.
 And it’s biased against blacks".
 ]
 
@@ -179,83 +206,92 @@ class: middle
 
 ---
 
-## Netflix recommendation algorithm
+## What can be inferred from your data?
 
-How Netflix's Recommendations System Works - [Source](https://help.netflix.com/en/node/100639).
-* Optionally 'jump start' with your own preferences
-* Preferences will be superseded once you start watching titles
-* Update to recommendations includes information from:
-  - your interaction with Netflix (history, ratings, etc.)
-  - other members with similar tastes/preferences
-  - information about titles (year, performers, genre, category)
-* Also account for other factors: time of day, device, attention duration, etc.
-* "... using algorithms and complex systems to provide a personalized experience."
-* "We take feedback from very visit ... and continually re-train our algorithms"
+Netflix's recommendations use ([source](https://help.netflix.com/en/node/100639)):
+* your interaction with Netflix (viewing history, ratings, how long you watch, time of day, device)
+* other members with similar tastes and preferences
+* information about titles (genre, year, cast)
 
 --
 
 **Netflix: How did it know I was bi before I did?** [BBC News](https://www.bbc.co.uk/news/technology-66472938), 13 Aug 2023.
 
+--
+
+* Recommender systems can infer **sensitive characteristics** (sexuality, health, religion, politics) that you never disclosed.
+* They also create **feedback loops**: you see what the model recommends, you watch it, and that becomes the next round of training data.
+
 ---
 
 class: middle
-# Understanding its purpose
-
-
----
-
-## Chat-GPT
-
-
-* ChatGPT is a language model
-
-* Designed for generating human-like text in response to user input
-
-* A powerful tool for automating text generation and answering a wide range of questions and prompts.
-
-* Trained on a large corpus of text and can generate coherent and contextually relevant responses.
+# Generative AI: understanding its purpose
 
 ---
 
-## Chat-GPT: About itself!
+## Large language models (LLMs)
 
-&lt;img src="img/chat-gpt-self.PNG" width="100%" style="display: block; margin: auto;" /&gt;
+* ChatGPT, Claude, Gemini, Copilot, etc. are built on **large language models**.
+* An LLM is trained on a very large collection of text to **predict the next word** (token), then further tuned to follow instructions and be helpful.
+* Many now also use **tools**: web search, running code, reading files.
+* They are very useful for drafting, explaining, summarising and writing code.
+
+But:
+
+* They generate _plausible_ text. Plausible is not the same as **true**.
+* They can **hallucinate**: produce confident, fluent and specific content (facts, numbers, references) that is fabricated.
+* They tend to **agree with you**, and can be steered by how a question is phrased.
+* They reflect the **biases** in their training data.
+* Even with search, they can misquote or misattribute sources.
+
+???
+
+Suggestion: a short live demo instead of screenshots.
+E.g. ask an LLM for "five peer-reviewed references on &lt;niche topic&gt; with DOIs", then check them in front of the class.
+Or ask it to analyse a small dataset, and compare its answer with the output of the R code.
 
 ---
 
-## Chat-GPT: Ethics in Data Science
+## Case Study: fabricated legal citations
 
-&lt;img src="img/chat-gpt-ethics.PNG" width="100%" style="display: block; margin: auto;" /&gt;
-
----
-
-## Chat-GPT: Another example
-
-&lt;img src="img/chat-gpt-mean-err.PNG" width="100%" style="display: block; margin: auto;" /&gt;
+**Mata v Avianca (New York, 2023)**
+* Roberto Mata sued an airline for an injury from a metal serving cart.
+* His lawyers submitted a brief citing several court decisions that **did not exist**. They had been generated by ChatGPT.
+* When asked, a lawyer said he thought ChatGPT was a search engine. The lawyers were fined $5,000.
 
 --
 
-... but it is wrong, the correct answer is 536.32!!!
+**It's not just a US problem, and it hasn't gone away.**
+
+* In [_Ayinde v London Borough of Haringey_ [2025] EWHC 1383 (Admin)](https://caselaw.nationalarchives.gov.uk/ewhc/admin/2025/1383), the High Court of England and Wales dealt with submissions that cited fictitious cases.
+* The court warned that lawyers who cite AI-generated material without checking it risk serious professional consequences, including referral to regulators.
+
+**Message**: You are responsible for everything you submit, whoever (or whatever) wrote the first draft.
 
 ---
 
-## Case Study: Mata vs Avianca Airline
+## Using AI tools responsibly as a data scientist
 
-* Roberto Mata sues airline for injury from metal serving cart.
-* Lawyers for Mr Mata submit a document citing many 'relevant' court decision for their case.
-* Neither judge or airline's lawyers were familiar with cases and sought copies of case notes.
-* Mr Mata lawyers replied stating that they cannot locate requested case notes.
+* **Verify**: check every fact, reference and number. Run and test any code it produces; read it and make sure you understand it.
+* **Protect data**: pasting personal or confidential data into a public chatbot may breach data protection law (and your employer's or the University's rules).
+* **Be transparent**: follow the course and University guidance on acknowledging the use of generative AI in your work.
+* **Know its limits**: an LLM is not a source. Cite the original paper, dataset or documentation.
 
---
+&lt;!-- TODO: add link to the University's / course's guidance on generative AI use in assessments. --&gt;
 
-The initial document was generated by Chat-GPT, which **fabricated the references!**
-* Judge: "... Do you cite cases without reading them?"
-* Lawyer: "No."
-* Judge: "What cause your departure here?"
-* Lawyer: "I thought Chat-GPT was a search engine."
+---
 
-Further information: [YouTube, Legal Eagle](https://www.youtube.com/watch?v=oqSYljRYDEM)
+## Wider ethical questions about generative AI
 
+* **Training data**: much was collected from the web without the creators' consent. Several copyright lawsuits are ongoing.
+* **Hidden labour**: models are refined using human feedback and content moderation, often outsourced to low-paid workers.
+* **Environmental cost**: training and running large models requires large amounts of electricity and water for cooling.
+* **Synthetic media**: realistic fake images, audio and video (deepfakes) used for fraud, harassment and disinformation.
+* **Concentration of power**: only a few organisations can afford to build the largest models.
+
+.question[
+Pick one of these. Who benefits, who bears the cost, and who gets to decide?
+]
 
 ---
 
@@ -264,6 +300,8 @@ Further information: [YouTube, Legal Eagle](https://www.youtube.com/watch?v=oqSY
 - At some point during your data science learning journey you will learn tools that can be used unethically
 
 - You might also be tempted to use your knowledge in a way that is ethically questionable either because of business goals or for the pursuit of further knowledge (or because your boss told you to do so)
+
+- Many of today's harms were not caused by bad intentions, but by not asking: _Who is in the data? What is really being measured? Who is affected by the errors? Can they challenge the decision?_
 
 .question[
 How do you train yourself to make the right decisions (or reduce the likelihood of accidentally making the wrong decisions) at those points?
@@ -283,7 +321,7 @@ How do you train yourself to make the right decisions (or reduce the likelihood 
 &lt;img src="img/propublica-machine-bias.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-[Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing)  
+[Machine Bias](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing)
 &lt;br&gt;
 by Julia Angwin, Jeff Larson, Surya Mattu, and Lauren Kirchner
 ]
@@ -297,7 +335,7 @@ by Julia Angwin, Jeff Larson, Surya Mattu, and Lauren Kirchner
 &lt;img src="img/ethics-data-science.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-[Ethics and Data Science](https://www.amazon.com/Ethics-Data-Science-Mike-Loukides-ebook/dp/B07GTC8ZN7)  
+[Ethics and Data Science](https://www.amazon.com/Ethics-Data-Science-Mike-Loukides-ebook/dp/B07GTC8ZN7)
 &lt;br&gt;
 by Mike Loukides, Hilary Mason, DJ Patil  
 (Free Kindle download)
@@ -311,8 +349,8 @@ by Mike Loukides, Hilary Mason, DJ Patil
 &lt;img src="img/weapons-of-math-destruction.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-[Weapons of Math Destruction](https://www.penguin.co.uk/books/304/304513/weapons-of-math-destruction/9780141985411.html)  
-How Big Data Increases Inequality and Threatens Democracy  
+[Weapons of Math Destruction](https://www.penguin.co.uk/books/304/304513/weapons-of-math-destruction/9780141985411.html)
+How Big Data Increases Inequality and Threatens Democracy
 &lt;br&gt;
 by Cathy O'Neil
 ]
@@ -324,8 +362,8 @@ by Cathy O'Neil
 &lt;img src="img/algorithms-of-oppression.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-[Algorithms of Oppression](https://nyupress.org/9781479837243/algorithms-of-oppression/)  
-How Search Engines Reinforce Racism  
+[Algorithms of Oppression](https://nyupress.org/9781479837243/algorithms-of-oppression/)
+How Search Engines Reinforce Racism
 &lt;br&gt;
 by Safiya Umoja Noble
 ]
@@ -345,7 +383,7 @@ by Safiya Umoja Noble
 .pull-right[
 The Alan Turing Institute
 
-[Understanding artificial intlligence ethics and safety](https://www.turing.ac.uk/sites/default/files/2019-06/understanding_artificial_intelligence_ethics_and_safety.pdf)  
+[Understanding artificial intelligence ethics and safety](https://www.turing.ac.uk/sites/default/files/2019-06/understanding_artificial_intelligence_ethics_and_safety.pdf)
 A guide for the responsible design and implementation of AI systems in the public sector
 &lt;br&gt;
 by David Leslie
@@ -359,10 +397,10 @@ by David Leslie
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
