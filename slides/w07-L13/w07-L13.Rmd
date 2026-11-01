@@ -2,7 +2,7 @@
 title: "Ethics in Data Science - Misrepresentation"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -22,6 +22,10 @@ library(xaringanExtra)
 library(Tmisc)
 library(dsbox)
 xaringanExtra::use_panelset()
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2, dpi = 150)
+theme_set(theme_minimal(base_size = 18))
 ```
 
 class: middle
@@ -71,7 +75,7 @@ _W. P. Treloar, The Times (London), July 26, 1895_
 ## Case Study: Exercise and Cancer
 
 
-```{r echo=FALSE, out.width = "100%"}
+```{r out.width = "100%"}
 knitr::include_graphics("img/exercise-cancer-time.png")
 ```
 
@@ -92,7 +96,7 @@ Methods:
   - "The median activity level was 8 MET-h/wk. This is equivalent to 150 minutes of moderate intensity activity (e.g. walking) per week, and comparable to the median activity level for the US population."
   - The hazard ratio for a range of cancers was evaluated by comparing the higher (top 20%) vs the lower (bottom 20%) groups of physical activity.
 
-Findings: 
+Findings:
   - "High vs low levels of leisure-time physical activity were associated with lower risks of **13 of 26** cancers." (no association in 13 other cancers.)
 
 
@@ -115,28 +119,101 @@ Acknowledgement of limitations:
 
 ## Absolute vs Relative Risk
 
-```{r absVrel, echo = FALSE, fig.align='center', fig.width = 12, fig.height=6}
+```{r absVrel, fig.align='center', fig.width = 12, fig.height=6}
 x1 <- 0.5
 x2 <- 0.05
 data.frame(
-    x = c(x1,x1*(1-0.2), x2, x2*(1-0.2))*100, 
-    grp = factor(c("before", "after", "before","after"), levels = c("before", "after")), 
+    x = c(x1,x1*(1-0.2), x2, x2*(1-0.2))*100,
+    grp = factor(c("before", "after", "before","after"), levels = c("before", "after")),
     eg = c("Example 1", "Example 1", "Example 2", "Example 2")
     ) %>%
 ggplot(mapping = aes(x = grp, y = x, fill = grp)) +
-  geom_col() + 
+  geom_col() +
   geom_text(aes(label = paste0(round(x),"%")), vjust = -0.5) +
   facet_wrap(~eg) +
-  coord_cartesian(ylim = c(0,max(x1,x2))*100) + 
-  labs(y = 'Absolute Risk', 
-       x = '', 
+  coord_cartesian(ylim = c(0,max(x1,x2))*100) +
+  labs(y = 'Absolute Risk',
+       x = '',
        title = 'Illustration of a relative risk reduction of 20%.')+
+  theme_grey(base_size = 11) +
   theme(legend.position="none")
 
 ```
 
 **Message**: Take care about the _meaning_ of statistics. Are you giving the full picture?
 
+
+---
+
+class: middle
+# Misleading visualisation
+
+---
+
+## Spot the problem
+
+```{r vis-data}
+votes <- tibble(option = c("Option A", "Option B"), pct = c(51, 49))
+
+p_votes <- ggplot(votes, aes(x = option, y = pct, fill = option)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(pct, "%")), vjust = -0.4, size = 6) +
+  scale_fill_manual(values = c("#1b9e77", "#7570b3")) +
+  labs(x = NULL, y = "Support (%)") +
+  theme(legend.position = "none")
+
+sales <- tibble(
+  month = 1:120,
+  index = 50 + 0.5 * month + 8 * sin(2 * pi * month / 24)
+)
+window <- filter(sales, month %in% 103:113)
+```
+
+.pull-left[
+```{r vis-bad-1, fig.height = 4.5, fig.width = 6}
+p_votes +
+  coord_cartesian(ylim = c(48, 52)) +
+  labs(title = '"A landslide for Option A!"')
+```
+]
+
+.pull-right[
+```{r vis-bad-2, fig.height = 4.5, fig.width = 6}
+ggplot(window, aes(month, index)) +
+  geom_line(linewidth = 1.5, colour = "#d95f02") +
+  geom_point(size = 2.5, colour = "#d95f02") +
+  labs(x = "Month", y = "Sales index", title = '"Sales are collapsing!"')
+```
+]
+
+.question[
+What is misleading about each chart?
+]
+
+---
+
+## What was wrong?
+
+.pull-left[
+```{r vis-good-1, fig.height = 4.5, fig.width = 6}
+p_votes +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(title = "Axis from 0% to 100%")
+```
+
+**Truncated axis.** With bars, length encodes the value, so the axis should start at zero. ]
+
+.pull-right[
+```{r vis-good-2, fig.height = 4.5, fig.width = 6}
+ggplot(sales, aes(month, index)) +
+  annotate("rect", xmin = 103, xmax = 113, ymin = -Inf, ymax = Inf,
+           fill = "#d95f02", alpha = 0.2) +
+  geom_line(linewidth = 1.2) +
+  labs(x = "Month", y = "Sales index", title = "The full 10 years")
+```
+
+**Cherry-picked time window.** Choosing where the chart starts and ends lets you tell almost any story. Ask: _why does it start and end there?_
+]
 
 ---
 
@@ -166,15 +243,15 @@ ggplot(mapping = aes(x = grp, y = x, fill = grp)) +
 
 * A lack of understanding of the data:
   - What is the context of the data?
-  - For what purpose was the data collected for?
+  - For what purpose was the data collected?
   - What do the variables mean?
 * Insufficient or unrepresentative data:
-  - Is there enough observations to conclude something meaningful?
-  - Has the data been collected in a way that represent the studied population?
+  - Are there enough observations to conclude something meaningful?
+  - Has the data been collected in a way that represents the studied population?
 * Problems with applying analysis:
   - Inappropriate use of data science tools
   - Blind application of methods without considering subtleties
-  - Cherry picking
+  - Cherry picking (of data, of time windows, of results)
 * Is the interpretation of findings fair and balanced:
   - Clarity on assumptions and limitations
   - Is there an over emphasis of the 'interesting' result?
@@ -188,13 +265,13 @@ ggplot(mapping = aes(x = grp, y = x, fill = grp)) +
 ## Themes & principles in ethical data science
 
 * **Seek to enhance the values of data science for society**
-  - Data science can be beneficial and detrimental. 
-  - Seek to understand the potential impact. 
+  - Data science can be beneficial and detrimental.
+  - Seek to understand the potential impact.
   - Strive to seek fairness
 * **Avoid harm**
   - Must adhere to laws around data protection and discrimination.
 * **Apply and maintain professional competence**
-  - Minimise uncertainty and risk by complying with professional best practices. 
+  - Minimise uncertainty and risk by complying with professional best practices.
 * **Seek to preserve or increase trustworthiness**
   - Work closely with the public and stakeholders to build trust and understanding.
   - Be open and truthful about the benefits and limitations of data and algorithms.
@@ -207,7 +284,7 @@ Source: [Institute and Faculty of Actuaries](https://actuaries.org.uk/standards/
 ---
 
 class: middle
-# Statistical principals
+# Statistical principles
 
 ---
 
@@ -216,15 +293,15 @@ class: middle
 .pull-left[
 
 .question[
-**Population**: The entire set of items (eg. people) from which you plan to investigate as part of a statistical study.
+**Population**: The entire set of items (eg. people) that you plan to investigate as part of a statistical study.
 
-**Sample**: A subset of items from the population from which measurements are collected from.
+**Sample**: A subset of items from the population from which measurements are collected.
 ]
 
 ]
 
 .pull-right[
-```{r echo=FALSE, out.width = "100%"}
+```{r out.width = "100%"}
 knitr::include_graphics("img/popVsample.PNG")
 ```
 
@@ -251,24 +328,30 @@ knitr::include_graphics("img/popVsample.PNG")
 ]
 
 .pull-right[
-```{r echo=FALSE, out.width = "40%"}
+```{r out.width = "40%"}
 knitr::include_graphics("img/Landon.jpg")
 knitr::include_graphics("img/Roosevelt.jpg")
 ```
 
 ]
 
-* Cause for the error - sampling bias!
+.midi[
+- Cause for the error - sampling bias!
   - Sampled from magazine subscribers, registered vehicle owners and telephone users.
   - Historical context: election happened during the 'Great Depression' (1929-1939)
   - Consequently, sample disproportionately polled higher-income voters.
+- **It still happens:** at the 2015 UK general election, polls pointed to a hung parliament; the Conservatives won a majority. The British Polling Council's inquiry concluded the main cause was **unrepresentative samples**.
+]
 
+???
+
+Reference for the 2015 inquiry: Sturgis et al. (2016), Report of the Inquiry into the 2015 British general election opinion polls.
 
 ---
 
 ## Sampling Methods
 
-```{r echo=FALSE, out.width = "70%", fig.align='center'}
+```{r out.width = "70%", fig.align='center'}
 knitr::include_graphics("img/sampling_methods.png")
 ```
 
@@ -295,7 +378,7 @@ knitr::include_graphics("img/sampling_methods.png")
 
 .pull-right[
 
-```{r echo=FALSE, out.width = "100%", fig.align='center'}
+```{r out.width = "100%", fig.align='center'}
 knitr::include_graphics("img/YouGov_bias_correction.png")
 ```
 
@@ -303,8 +386,67 @@ knitr::include_graphics("img/YouGov_bias_correction.png")
 
 
 * Unweighted (biased) overall opinion: $~~~20\%~\frac{948}{2110} + 75\%~\frac{1162}{2110} = 50.3\%$ in favour
-* Weighted (bias correced) overall opinion: $~~~20\%~\frac{1023}{2110} + 75\%~\frac{1087}{2110} = 48.3\%$ in favour
+* Weighted (bias corrected) overall opinion: $~~~20\%~\frac{1023}{2110} + 75\%~\frac{1087}{2110} = 48.3\%$ in favour
 
+
+---
+
+class: middle
+# Reproducibility and research integrity
+
+---
+
+## Look hard enough and you'll find something
+
+.center[
+<a href="https://xkcd.com/882/"><img src="img/xkcd.png" height="480px"></a>
+]
+
+.footnote[[xkcd #882: "Significant"](https://xkcd.com/882/), Randall Munroe, CC BY-NC 2.5]
+
+---
+
+## Case Study: Surgisphere (2020)
+
+* In May 2020, _The Lancet_ and _The New England Journal of Medicine_ published two high-profile COVID-19 studies, both based on a database of hospital records supplied by the company Surgisphere.
+* Researchers and journalists spotted implausible numbers (e.g. more COVID deaths in Australian hospitals than had been officially recorded in the whole country), and hospitals listed in the database said they had never heard of Surgisphere.
+* Surgisphere refused to give independent auditors access to the data, citing confidentiality agreements. Three of the four co-authors, who had never seen the raw data themselves, asked for the papers to be retracted. **Both were retracted in June 2020.**
+
+**Message**: If no one else can check your data and code, no one should trust your results. This is why we use **reproducible** workflows (R Markdown / Quarto, version control, shared data and code).
+---
+
+class: middle
+# Privacy and anonymisation
+
+---
+
+## "Anonymised" data often isn't
+
+* **Linking datasets**: in 1997, Latanya Sweeney re-identified the medical records of the Governor of Massachusetts from "anonymised" health insurance data on state employees, by linking them with a public voter register (bought for $20).
+  - She later estimated that **ZIP code + date of birth + sex** is enough to uniquely identify about 87% of the US population.
+* **The Netflix Prize (2006-2009)**: Netflix released "anonymised" movie ratings from about 500,000 subscribers for a competition.
+  - Narayanan & Shmatikov (2008) showed that knowing just a few of someone's ratings and roughly when they were made is enough to pick out their record.
+  - Matching against public IMDb reviews, they re-identified users and revealed **every** film those users had rated on Netflix, not just the public ones.
+  - A planned second competition was cancelled after a privacy lawsuit.
+
+.question[
+Removing names is **not** anonymisation. Any combination of attributes that is rare can act as a fingerprint.
+]
+
+---
+
+## Protecting privacy in practice
+
+* **Data minimisation**: only collect and keep what you need.
+* **Aggregation**: publish counts or summaries; suppress small cells (e.g. groups with fewer than 10 people).
+* **Pseudonymisation**: replace identifiers with codes, but remember this is still personal data under UK GDPR.
+* **Differential privacy**: add carefully calibrated random noise so that the output is almost the same whether or not any one person is in the data.
+  - Used by the US Census Bureau for the 2020 Census.
+  - Introduces a **trade-off**: more privacy means less accuracy, particularly for small areas and small groups.
+
+.question[
+Which is worse: publishing statistics that might reveal individuals, or publishing statistics that are deliberately less accurate?
+]
 
 ---
 
@@ -315,31 +457,42 @@ class: middle
 
 ## Case Study: Cambridge Analytica
 
+.pull-left[
+* 2014: a personality-quiz app on Facebook collected data from ~270,000 users _and their friends_, eventually about 87 million profiles.
+* The data was passed to Cambridge Analytica and used to build psychological profiles for political advertising.
+* 2018: revealed by _The Guardian_, _The Observer_ and _The New York Times_.
+* Facebook was fined £500,000 by the UK Information Commissioner (the maximum under pre-GDPR law).
 
-![](img/youtube_logo.png) [The Guardian - Cambridge Analytica whistleblower](https://www.youtube.com/watch?v=FXdYSQ6nu-M) 
+![](img/youtube_logo.png) [The Guardian - Cambridge Analytica whistleblower](https://www.youtube.com/watch?v=FXdYSQ6nu-M)
+]
 
-
-```{r echo=FALSE, out.width = "70%", fig.align='center'}
+.pull-right[
+```{r out.width = "100%", fig.align='center'}
 knitr::include_graphics("img/facebook-cambridge-analytica-scandal-explained-the-guardian-graphic.jpg")
 ```
-
+]
 
 ---
 
-## The UK General Data Protection Regulation (GDPR)
+## UK data protection law
 
-* Guidelines for the collection and processing of **personal information**.
+* **UK GDPR** + **Data Protection Act 2018**, amended by the **Data (Use and Access) Act 2025**.
 * **Personal data** - information that relates to an identified or identifiable individual.
-    - name, identification number, biometric data, digital identifiers, opinions & beliefs, etc.
-* **Informed consent** should be given for the collection and processing of personal data, including the right to withdrawal.
+    - name, identification number, location, biometric data, digital identifiers, opinions & beliefs, etc.
+* You need a **lawful basis** to process personal data. Consent is only one of them; where it is used, it must be informed, freely given, and can be withdrawn.
 * Personal data must be **stored securely**:
   - Limiting access 
   - Controls against malicious attacks
-  - To anonymize or de-identifying in case of breaches
-  - Case Study: [Police Service of Northern Ireland data breach](https://www.bbc.co.uk/news/uk-northern-ireland-66448442)
-
+  - Anonymising or de-identifying data to limit harm in case of breaches
+  - Case Study: [Police Service of Northern Ireland data breach](https://www.bbc.co.uk/news/uk-northern-ireland-66448442) (2023)
 
 See the University's website for further information and training on [Data Protection](https://www.ed.ac.uk/data-protection).
+
+???
+
+The Data (Use and Access) Act 2025 received Royal Assent on 19 June 2025 and is being commenced in stages.
+It relaxes some of the restrictions on automated decision-making (except where special category data is involved) but makes the safeguards above mandatory.
+It also adds "recognised legitimate interests" as a lawful basis. Check which provisions are in force before the lecture.
 
 ---
 
@@ -350,12 +503,9 @@ See the University's website for further information and training on [Data Prote
 * Different types of licenses control the use and distribution of copyrighted content.
 * License conditions include:
   - (BY) Credit must be given to the creator.
-  - (SA) Adaptations must be shared under the same licencing terms.
+  - (SA) Adaptations must be shared under the same licensing terms.
   - (NC) Derived products must be for non-commercial purposes.
   - (ND) Cannot adapt or produce any derivatives of the work.
 
-Source: [Creative Common](https://creativecommons.org/share-your-work/cclicenses/)
-
-
-
+Source: [Creative Commons](https://creativecommons.org/share-your-work/cclicenses/)
 
