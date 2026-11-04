@@ -230,7 +230,148 @@ knitr::include_graphics("img/propublica-results.png")
 - Algorithm was more likely to falsely flag African American defendants as future criminals, at almost twice the rate as White defendants
 - White defendants were mislabeled as low risk more often than African American defendants
 
+---
 
+## The company's response
+
+Northpointe (the company behind COMPAS) disputed ProPublica's conclusion:
+
+* Their analysis showed the scores were **equally predictive** in both groups: among defendants labelled high risk, Black and White defendants went on to reoffend at similar rates.
+* In other words, a "high risk" label (or a given score) "meant the same thing" whatever your race. This property is often called **calibration** or **predictive parity**.
+
+.question[
+ProPublica: the algorithm is unfair, because the **error rates** differ between groups.
+Northpointe: the algorithm is fair, because the **scores are calibrated** in both groups.
+
+Can both be right?
+]
+
+--
+
+.midi[
+**Yes.** And when the groups have different base rates (different proportions who reoffend), it is mathematically impossible to satisfy both definitions at once (Kleinberg et al., 2016; Chouldechova, 2017).
+]
+
+---
+
+## Defining fairness: the setup
+
+A classification model predicts an outcome from some information about a person.
+
+* $X$: the information used to make the prediction (e.g. criminal history, age)
+* $A$: a **sensitive attribute** we don't want to discriminate on (e.g. ethnicity, gender)
+* $Y$: the true outcome (e.g. did the person reoffend: 1 = yes, 0 = no)
+* $R$: the model's prediction (e.g. 1 = flagged as high risk)
+
+.question[
+Each fairness criterion asks: **does knowing someone's group $A$ change something it shouldn't?**
+]
+
+.footnote[
+Barocas, Hardt & Narayanan, [_Fairness and Machine Learning_](https://fairmlbook.org/) (free online); [Wikipedia: Fairness (machine learning)](https://en.wikipedia.org/wiki/Fairness_%28machine_learning%29).
+]
+
+---
+
+## Three group fairness criteria
+
+**Independence** (demographic parity): $\quad P(R=1 \mid A=a) = P(R=1 \mid A=b)$
+* Each group is flagged as high risk at the **same rate**.
+
+**Separation** (equalised odds): $\quad P(R=1 \mid Y=y, A=a) = P(R=1 \mid Y=y, A=b)$
+* Among people who **did** (or **did not**) reoffend, each group has the same chance of being flagged.
+* Equivalently: equal **false positive** and **false negative** rates. _ProPublica's criterion._
+
+**Sufficiency** (calibration): $\quad P(Y=1 \mid R=r, A=a) = P(Y=1 \mid R=r, A=b)$
+* Among people given the **same prediction**, the same share reoffend: a score means the same thing in every group. _Northpointe's criterion._
+
+???
+
+Read the conditions as "knowing which group you're in shouldn't change...":
+- Independence: ...your chance of being flagged.
+- Separation: ...your chance of being flagged, once we know what actually happened to you.
+- Sufficiency: ...what your score means about what will happen to you.
+Independence ignores the true outcome entirely, which is why it is often criticised: if groups genuinely differ in Y, forcing equal flag rates means making more errors in one group.
+
+---
+
+## You can't have them all
+
+.midi[
+* If the groups have **different base rates** (different proportions who actually reoffend), then, apart from trivial cases such as a perfect predictor:
+  - **Independence** and **separation** cannot both hold.
+  - **Separation** and **sufficiency** cannot both hold.
+  - So it is impossible to satisfy all three at once.
+* This is exactly the COMPAS dispute: the scores were roughly **calibrated** (sufficiency, Northpointe was right), _and therefore_ the error rates differed between groups (separation fails, ProPublica was right).
+]
+
+.question[
+.midi[
+**Which criterion should we choose?** It depends on the context and on who bears the cost of each type of mistake.
+* A defendant wrongly flagged as high risk may be kept in prison: what matters to them is the **false positive rate** (separation).
+* A judge wants a "high risk" label to mean the same thing for everyone (sufficiency).
+* Statistics can tell you what the trade-off is, but not which side of it to pick.
+]
+]
+
+.midi[
+Kleinberg, Mullainathan & Raghavan (2016); Chouldechova (2017).
+]
+
+---
+
+## Fairness definitions can conflict: a simulation
+
+```{r fairness-sim}
+set.seed(1)
+n <- 10000
+
+sim <- tibble(
+  group = rep(c("Group A", "Group B"), each = n),
+  high  = c(runif(n) < 0.6, runif(n) < 0.2)   # A: 60% high-risk, B: 20%
+) %>%
+  mutate(
+    risk      = if_else(high, runif(2 * n, 0.5, 0.7), runif(2 * n, 0.1, 0.3)),
+    reoffend  = rbinom(2 * n, 1, risk),       # outcome drawn from the true risk
+    high_risk = risk > 0.5                    # same threshold for everyone
+  )
+
+fair_tab <- sim %>%
+  group_by(group) %>%
+  summarise(
+    `Base rate` = mean(reoffend),
+    `Flagged as high risk` = mean(high_risk),
+    `Flagged who reoffend` = mean(reoffend[high_risk]),
+    `Not flagged who reoffend` = mean(reoffend[!high_risk]),
+    `False positive rate` = mean(high_risk[reoffend == 0]),
+    `False negative rate` = mean(!high_risk[reoffend == 1])
+  ) %>%
+  mutate(across(where(is.numeric), function(x) scales::percent(x, accuracy = 1)))
+
+# "Flagged" checks **independence**; false positive/negative rates check **separation**; "Flagged / Not flagged who reoffend" check **sufficiency**.
+```
+
+.midi[
+* Each person has a true risk; the score **is** that true risk, so it is perfectly calibrated in both groups.
+* In both groups, high-risk people have a risk score around 0.6 and low-risk people around 0.2. Group A simply has more high-risk people. The score is each person's true risk.
+* Everyone is flagged using the same threshold (score > 0.5).
+]
+
+.midi[
+```{r fairness-table}
+knitr::kable(fair_tab, format = "html", align = "lccccc")
+```
+]
+
+.midi[
+* Even a perfectly calibrated score, with one threshold for everyone, gives **different false positive and false negative rates** across groups.
+* Choosing which fairness definition matters is **not a purely technical decision**. It depends on context, values, and who bears the cost of each type of error.
+]
+
+???
+
+Run this live and change the threshold or base rates to show students that the gap in error rates doesn't go away.
+References: Kleinberg, Mullainathan & Raghavan (2016), "Inherent Trade-Offs in the Fair Determination of Risk Scores"; Chouldechova (2017), "Fair prediction with disparate impact", Big Data 5(2).
 
 ---
 
@@ -274,14 +415,8 @@ But:
 * They generate _plausible_ text. Plausible is not the same as **true**.
 * They can **hallucinate**: produce confident, fluent and specific content (facts, numbers, references) that is fabricated.
 * They tend to **agree with you**, and can be steered by how a question is phrased.
-* They reflect the **biases** in their training data.
+* They reflect the **biases** in their training data (e.g. stereotypes in image generation).
 * Even with search, they can misquote or misattribute sources.
-
-???
-
-Suggestion: a short live demo instead of screenshots.
-E.g. ask an LLM for "five peer-reviewed references on <niche topic> with DOIs", then check them in front of the class.
-Or ask it to analyse a small dataset, and compare its answer with the output of the R code.
 
 ---
 
@@ -321,10 +456,6 @@ Or ask it to analyse a small dataset, and compare its answer with the output of 
 * **Environmental cost**: training and running large models requires large amounts of electricity and water for cooling.
 * **Synthetic media**: realistic fake images, audio and video (deepfakes) used for fraud, harassment and disinformation.
 * **Concentration of power**: only a few organisations can afford to build the largest models.
-
-.question[
-Pick one of these. Who benefits, who bears the cost, and who gets to decide?
-]
 
 ---
 
@@ -413,6 +544,21 @@ by Safiya Umoja Noble
 ]
 
 
+.panel[.panel-name[Data Feminism]
+
+.pull-left[
+```{r out.width="50%", fig.align='center'}
+knitr::include_graphics("img/Data_Feminism.jpg")
+```
+]
+.pull-right[
+[Data Feminism](https://data-feminism.mitpress.mit.edu/)
+by Catherine D'Ignazio and Lauren F. Klein (MIT Press, 2020)
+Free to read online.
+]
+
+]
+
 
 .panel[.panel-name[AI]
 
@@ -434,5 +580,11 @@ by David Leslie
 
 ]
 
+]
+
+---
+
+.footnote[
+These slides were updated with the help of an AI assistant (Claude, Opus 5.5), used for suggesting content, drafting slides and R code. All facts, sources and code were checked by the lecturer.
 ]
 
