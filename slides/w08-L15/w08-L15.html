@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -71,10 +71,10 @@ class: middle
 - For now we will focus on **linear** models (but remember there are *many* *many* other types of models too!)
 
 .pull-left[
-&lt;img src="w08-L15_files/figure-html/chunk1-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk1-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-&lt;img src="w08-L15_files/figure-html/chunk2-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk2-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -101,7 +101,7 @@ pp &lt;- read_csv("data/paris-paintings.csv", na = c("n/a", "", "NA"))
 
 ## Paris auction market
 
-&lt;img src="img/auction-trend-paris.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/auction-trend-paris.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 .small[
@@ -121,7 +121,7 @@ Plot credit: Sandra van Ginhoven
 
 ## Auctions back in the day
 
-&lt;img src="img/old-auction.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/old-auction.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 .small[
@@ -133,14 +133,14 @@ Pierre-Antoine de Machy, Public Sale at the Hôtel Bullion, Musée Carnavalet, P
 
 ## Départ pour la chasse
 
-&lt;img src="img/depart-pour-la-chasse.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/depart-pour-la-chasse.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Auction catalog text
 
 .pull-left[
-&lt;img src="img/auction-catalogue.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/auction-catalogue.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 .small[
@@ -150,7 +150,7 @@ Two paintings very rich in composition, of a beautiful execution, and whose meri
 
 ---
 
-&lt;img src="img/painting1.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="img/painting2.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="img/painting3.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/painting1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="img/painting2.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="img/painting3.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -248,7 +248,7 @@ ggplot(data = pp, aes(x = Height_in)) +
   labs(x = "Height, in inches", y = NULL)
 ```
 
-&lt;img src="w08-L15_files/figure-html/height-dist-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/height-dist-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -263,7 +263,7 @@ ggplot(data = pp, aes(x = Width_in)) +
   labs(x = "Width, in inches", y = NULL)
 ```
 
-&lt;img src="w08-L15_files/figure-html/width-dist-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/width-dist-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -273,7 +273,7 @@ ggplot(data = pp, aes(x = Width_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/chunk13-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk13-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -308,7 +308,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/chunk15-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk15-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -335,7 +335,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/chunk17-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk17-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -363,7 +363,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/chunk20-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk20-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -402,7 +402,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 - **Predicted value:** Output of the **model function**
   - The model function gives the typical (expected) value of the response variable *conditioning* on the explanatory variables
   
-&lt;img src="w08-L15_files/figure-html/height-width-plot-02-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/height-width-plot-02-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -413,7 +413,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   - Residual = Observed value - Predicted value
   - Tells how far above/below the expected value each case is
 
-&lt;img src="w08-L15_files/figure-html/height-width-plot-03-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/height-width-plot-03-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -421,7 +421,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="w08-L15_files/figure-html/chunk24-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/chunk24-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
 .small[
@@ -462,7 +462,7 @@ ggplot(data = ht_wt_fit_aug) +
 
 Please don't do it.
 
-&lt;img src="img/xkcd_extrapolating.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/xkcd_extrapolating.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 Source: XKCD, [Extrapolating](https://xkcd.com/605/)
@@ -504,12 +504,12 @@ class: middle
 
 Linear model with one predictor: `$$\widehat{height}_{i} = \beta_0 + \beta_1 \times width_{i}$$`
 
-&lt;img src="w08-L15_files/figure-html/height-width-plot-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/height-width-plot-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-&lt;img src="img/tidymodels.png" width="98%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/tidymodels.png" alt="" width="98%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -634,7 +634,7 @@ linear_reg() %&gt;%
 
 Remember this when interpreting model coefficients
 
-&lt;img src="img/cell_phones.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/cell_phones.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 Source: XKCD, [Cell phones](https://xkcd.com/925/)
@@ -676,19 +676,19 @@ class: middle
 
 ## Visualizing residuals
 
-&lt;img src="w08-L15_files/figure-html/vis-res-1-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/vis-res-1-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Visualizing residuals (cont.)
 
-&lt;img src="w08-L15_files/figure-html/vis-res-2-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/vis-res-2-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Visualizing residuals (cont.)
 
-&lt;img src="w08-L15_files/figure-html/vis-res-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w08-L15_files/figure-html/vis-res-3-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
