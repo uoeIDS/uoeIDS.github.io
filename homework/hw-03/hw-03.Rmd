@@ -1,6 +1,6 @@
 ---
 title: "HW 03 - Modelling"
-subtitle: "Due: 21 November, 16:00 UK time"
+subtitle: "Due: 20 November, 16:00 UK time"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -45,11 +45,11 @@ You may need to use some of your data wrangling skills from earlier in the cours
 
 4. Add a name for your repository, for example, `hw-03`.
 
-5. **IMPORTANT**: Set the privacy of your repository to **Private**. If you make your repository public then anyone can see and copy your work. Failure to set your repository private risks incurring an academic misconduct case.
+5. **IMPORTANT**: Set the privacy of your repository to **PRIVATE**. *If you make your repository public then anyone can see and copy your work*. Failure to set your repository private risks incurring an academic misconduct case.
 
 6. Click on the green **Begin import** button
 
-NOTE: for this homework, you do <u>not</u> need to add the course GitHub account as a collaborator. Only in case of technical problems with your submission, we might reach out to ask that you add the course GitHub account as a collaborator to your homework repository. You do <u>not</u> have to do this as a default (invites sent before the submission deadline will not be monitored).
+**NOTE:** For this homework, you do <u>NOT</u> need to add the course GitHub account as a collaborator. Only in case of technical problems with your submission, we might reach out to ask that you add the course GitHub account as a collaborator to your homework repository. You do <u>not</u> have to do this as a default (invites sent before the submission deadline will not be monitored). *You can still write your GitHub account username on the Gradescope submission page.*
 
 <!-- Once you have created your repository, you will need to add the course GitHub account as a collaborator. This will be useful for the course team to help you if there are any major issues or problems with your homework. -->
 
@@ -110,7 +110,7 @@ The first thing you will need to do is to load the dataset into RStudio.
 gss16 <- read.csv("data/gss16.csv")
 ```
 
-For your information, the data is identical to the data set available from the `dsbox` package. You do not need to install/load this package, but you may want to review the [manual page](https://rdrr.io/github/rstudio-education/dsbox/man/gss16.html) for `gss16` to read the data dictionary.
+**NOTE:** For your information, the data is identical to the data set available from the `dsbox` package. You do not need to install/load this package, but you may want to review the [manual page](https://rdrr.io/github/rstudio-education/dsbox/man/gss16.html) for `gss16` to read the data dictionary.
 
 
 ## Data preparation before modelling
@@ -160,7 +160,7 @@ gss16_advfront <- gss16_advfront %>%
 You can do this in various ways. One option is to use the `str_detect()` function to detect the existence of words like liberal or conservative. Note that these sometimes show up with lowercase first letters and sometimes with upper case first letters. To detect either in the `str_detect()` function, you can use "[Ll]iberal" and "[Cc]onservative". But feel free to solve the problem however you like, this is just one option!
 ```
 
-The `polviews` variable contains information about the participant's political position within 7 categories ranging from `"Extremely liberal"` to `"Extrmly conservative"`. Here we wish to simplify the range of options to 3 categories - `"Conservative"` , `"Moderate"`, and `"Liberal"`. This is achieved via the following code:
+The `polviews` variable contains information about the participant's political position within 7 categories ranging from `"Extremely liberal"` to `"Extremely conservative"`. Here we wish to simplify the range of options to 3 categories - `"Conservative"` , `"Moderate"`, and `"Liberal"`. This is achieved via the following code:
 
 ```{r}
 gss16_advfront <- gss16_advfront %>%
@@ -196,7 +196,19 @@ b) Using appropriate model fit statistics, comment on the overall model performa
 
 ------------------------------------------------------------------
 
-## Exercise 2: Create a workflow to fit a model to the training data
+## Exercise 2: Compare two linear models
+
+Now consider the numerical variable `educ` and categorical variable `advfront` to create a model for `emailhr` from your new data set `gss16_advfront`.
+
+a) Fit a new linear regression model to predict `emailhr` based on the `educ` and `advfront`. From your output, give an interpretation of the `advfront` estimate. (2 pts)
+
+b) Using appropriate model fit statistics, comment on the overall model performance. Compare this new model with the previous simple linear model and explain which one is better based on suitable performance metric (3 pts).
+
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 2 knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
+
+------------------------------------------------------------------
+
+## Exercise 3: Create a workflow to fit a model to the training data
 
 In this part, we're going to build a model to predict whether someone agrees or doesn't agree with the following statement:
 
@@ -218,37 +230,56 @@ gss16_test  <- testing(gss16_split)
 We'll create one more recipe and workflow later, that's why we're naming these `_1`.
 ```
 
-a) Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_mod_1`). Name this workflow `gss16_wflow_1`. (2 pts)
+a) Build a workflow for the training data that consists of a recipe (`gss16_rec_1`) and a model (`gss16_mod_1`). Name this workflow `gss16_wflow_1`. Explain why you have chosen the model that you have selected. (2 pts)
     
 The recipe (named `gss16_rec_1`) should contain an appropriate formula for predicting `advfront` from `educ`.
 
 The model (named `gss16_mod_1`) should specify a model that is appropriate for the data as well as the computational engine.
 
-b) Explain why you have chosen the model that you have selected. (1 pt)
+b) Apply the workflow you defined earlier to the training dataset and named the model as `gss16_fit_1`. Use the fitted models to predict the test data, plot the ROC curve for the predictions. (3 pts)
 
-c) Apply the workflow you defined earlier to the training dataset and named the model as `gss16_fit_1`. Display the resulting tibble containing the fitted model parameters. (2 pts)
-
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise2 knit the document, commit your changes with a commit message that says "Completed Exercise 2", and push.*
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
 
 ------------------------------------------------------------------
 
-## Exercise 3: Performance of a logistic regression with single predictor
 
+## Exercise 4: Performance of a logistic regression 
 
-a) Use the fitted models to predict the test data, plot the ROC curve for the predictions. (3 pts)
+a) Consider the model fit in previous exercise, `gss16_fit_1`. Produce a table with the number of true positives, true negatives, false positives and false negatives on the *test data* when using a cutoff of 0.83 for the predictions. Then calculate the specificity and the sensitivity of the model (using the same cutoff). (2 pts)
 
 ```{marginfigure}
 Using a cutoff of 0.83 means that the model predicts $\hat{y}_i$ to be "Agree" (or `TRUE`, or 1) when $\hat{p}_i \geq 0.83$ and $\hat{y}_i$ equal to "Not agree" when $\hat{p}_i$ is less than 0.83.
 ```
 
-b) Produce a table with the number of true positives, true negatives, false positives and false negatives on the *test data* when using a cutoff of 0.83 for the predictions.
-Then calculate the specificity and the sensitivity of the model (using the same cutoff). (2 pts)
+We are now going to model `advfront` using the explanatory variables `polviews`, `wrkstat`, `emailhr`, and `educ`.
+
+Build a new workflow for the training data that consists of a recipe (`gss16_rec_2`) and a model (`gss16_mod_2`). Name this workflow `gss16_wflow_2`. You can simply **copy, paste and edit** the code from earlier.
+    
+Now the new recipe (named `gss16_rec_2`) should contain an appropriate formula for predicting `advfront` from `polviews`, `wrkstat`, `emailhr`, and `educ`, and should use:
+
+  - `step_dummy()` to create dummy variables for `all_nominal()` variables that are predictors, i.e. not "outcomes". You can select outcomes using `all_outcomes()`
+
+The model (named `gss16_mod_2`) should specify a model that is appropriate for the data as well as the computational engine.
+  
+```{marginfigure}
+Mainly, this exercise is an extension to the earlier model by adding `polviews`, `emailhr` and `wrkstat` as extra explanatory variables.
+```
+
+b) Apply the new workflow to the training dataset and create a new model fit named as `gss16_fit_2`. Then use the fitted model to predict the test data, plot the ROC curve for the predictions, and calculate the area under the ROC curves. (1 pts)
+
+Comment on which model performs better 
+
+  * the model only including `educ`, as model 1 (`gss16_fit_1`) 
+  * the model including `polviews`, `wrkstat`, `emailhr`, and `educ` with `gss16_split` as model 2 (`gss16_fit_2`)
+  
+Explain your reasoning. (2 pts)
 
 
-✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 3 knit the document, commit your changes with a commit message that says "Completed Exercise 3", and push.*
+✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4  knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
 
 ----------------------------------------------------------------
 
+<!--
 ## Exercise 4: Logistic regression modelling and interpretation
 
 We are now going to model `advfront` using the explanatory variables `polviews`, `wrkstat`, `emailhr`, and `educ`.
@@ -280,6 +311,7 @@ Explain your reasoning. (2 pts)
 
 ✏️️🧶 ✅ ⬆️ *Write your answer in your R Markdown document under Exercise 4 knit the document, commit your changes with a commit message that says "Completed Exercise 4", and push.*
 
+-->
 
 ------------------------------------------------------------------
 
@@ -305,7 +337,9 @@ To submit your homework:
 4.    In the question, provide your **GitHub username** and then click on **Select file(s)** to upload the knitted html document containing your answers. 
 Once done, press **Save Answer** and then **Submit & View Submissions**.
 
-**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**.
+**IMPORTANT**: You must _only_ upload the knitted html document! **Submitting the wrong file type risks receiving zero marks**. 
+
+**You must ensure that, after solving exercises and knitting your .Rmd file, the output as .html correctly covers all necessary details before making your submission.** 
 
 If you have uploaded the wrong file or have made some changes and want to resubmit before the deadline, then return to the assignment on Gradescope and click on the **Resubmit** button in the lower left corner. Select **Remove** and then press **Save Answer** to delete the old version, and re-do step 4 with the correct/updated html file.
 
@@ -320,4 +354,4 @@ The homework is grades out of a 25 where:
 
 ## Getting help
 
-If you have any questions about the assignment, please post them on [Piazza!](https://piazza.com/ed.ac.uk/fall2023/math0807720234ss1sem1/info)
+If you have any questions about the assignment, please post them on [EdStem!](https://edstem.org/eu/courses/3522/discussion)
