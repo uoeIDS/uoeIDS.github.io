@@ -1,5 +1,5 @@
 ---
-title: "Lab 07 - Modelling course evaluations"
+title: "Lab 07 - Modelling earnings and course evaluations"
 output: 
   tufte::tufte_html:
     css: ../lab.css
@@ -36,7 +36,7 @@ knitr::include_graphics("img/regr_relationship.png")
 
 The objective of this workshop is to:
 
-- Learn the basics of linear regression modeling with a data set.
+- Learn the basics of linear regression modeling with two different data sets.
 - Learn how to model and interpret linear regression modeling with numerical or categorical predictor variables.
 - See the difference between simple linear regression and multiple linear regression.
 
@@ -48,6 +48,7 @@ In this workshop you will be working individually. However, while working on you
 * Create a new version control project in RStudio that links to _your_ copy of today's template.
 * Open `lab-07.Rmd` and change the `author` at the top of the file to your name.
 * Verify that everything is set-up correctly: 🧶 _knit_ your document, ✅ _commit_ your changes and ⬆️ _push_ the commits to GitHub.
+* Feel free to discuss the questions in your group, while working individually at your own repository. 
 
 # Packages & Data
 
@@ -55,6 +56,49 @@ During the workshop we'll use the following packages:
 
 -   `tidyverse`: for data wrangling and visualisation
 -   `tidymodels`: for modelling
+-   `fivethirtyeight`: for using a different set to start with
+
+## Data set: college recent grads 
+
+As a warming up, let us look at some modeling possibilities for the available data set in `fivethirtyeight` R package, *college_recent_grads*. A data frame with 173 rows representing majors (recent graduates) and 21 variables. You can [explore further details of the data from here](https://github.com/fivethirtyeight/data/blob/master/college-majors/readme.md)
+
+To get know your data, look at the results of the following code chunk first.
+
+```{r, warning=FALSE, message=FALSE}
+library(fivethirtyeight)
+college_grad_df <- college_recent_grads
+# First look at your data set
+glimpse(college_grad_df)
+```
+# Exercise 1: Exploratory Data Analysis
+
+Make a histogram of median. Describe the shape of the distribution. Which major category has the highest median earnings? (You can consider the histogram with and without using `binwidth = 2500` to explore general pattern).
+
+**Hint:** You can add a frequency table to explore major details using the `major_category`
+
+```{r cartoon2, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Cartoon guide to Statistics by Larry Gonick"}
+knitr::include_graphics("img/regr_lineplot.png")
+```
+
+# Exercise 2: Exploring relationship
+
+We want to know: “Do majors with a higher share of women have lower median earnings?”
+
+a. Which variable is the response and which is the explanatory variable?
+b. Plot median against sharewomen. Add a linear smoother (method = "lm") by using `se=FALSE`. (You may get rid of the missing values before doing this, if there is any). Describe the obtained relationship based on its type, magnitude and direction.
+
+# Exercise 3: Fit and interpret a numerical predictor
+
+a.Fit a linear model predicting `median` from `sharewomen` and save it as `share_fit` new object. Write down the fitted model equation. Interpret the model coefficients that we estimated via linear model.
+b. Make a residual plot for share_fit: residuals on the y-axis, predicted values on the x-axis, and a horizontal dashed line at 0. Do you see any pattern? (**Hint:** You can use `augment()` function to gather both fitted and residuals from the model first)
+
+# Exercise 4: Consider a categorical variable instead 
+
+a. Create a new variable engineering with the values "Engineering" and "Other".
+b. Fit a model predicting median from engineering. Which level is the baseline?
+Interpret the intercept and the slope within this new setting. 
+
+---
 
 ## Data set: Beauty in the classroom
 
@@ -80,10 +124,6 @@ evals<-read.csv("data/evals.csv", row.names=1)
 ```
 
 # Exercise 1: Exploratory Data Analysis
-
-```{r cartoon2, fig.margin = TRUE, echo = FALSE, eval = TRUE, fig.cap = "Cartoon guide to Statistics by Larry Gonick"}
-knitr::include_graphics("img/regr_lineplot.png")
-```
 
 1.  Visualize the distribution of `score` in the dataframe `evals`. 
 
