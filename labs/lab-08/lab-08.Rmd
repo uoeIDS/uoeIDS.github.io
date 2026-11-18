@@ -44,6 +44,34 @@ During the workshop we'll use the following packages:
 
 -   `tidyverse`: for data wrangling and visualisation
 -   `tidymodels`: for modelling
+-   `openintro`: for warm up exercises
+
+
+## Warm up -  Spam or Not Spam?
+
+You explored some details on the **email** data from `openintro` package during the lectures,
+
+```{r, warning=FALSE, message=FALSE}
+library(openintro)
+glimpse(email)
+```
+
+The `email` data set from the **openintro** package contains 3,921 emails
+received by one account in early 2012. The outcome is **`spam`**
+(`0` = not spam, `1` = spam).
+
+Just to recall and do some different modeling initially, let us look at the below warm up exercises first. 
+
+1. What proportion of emails are spam? Calculate the proportion of spam separately for emails with and without the word “winner”.
+
+2. Fit a logistic regression of `spam` on `winner` and write down the fitted model. Use `predict(..., type = "prob")` to find the predicted probability of spam for each group. Compare them with your previously calculated proportions.  
+
+3. How about fitting a logistic regression of `spam` on `winner` and `num_char`? Calculate the confusion matrix of the fitted logistic model on this new model, and compare with the confusion matrix result of the previous model, relying on `winner` only. Explain the differences on confusion matrix.
+
+**Hint:** `augment()` adds the predicted class (`.pred_class`) to the data.
+It labels an email as spam when its predicted probability is above 0.5.
+
+---
 
 ## Data set: Rain in Australia
 
@@ -60,7 +88,7 @@ weather <- read.csv("data/weatherAUS.csv", header = TRUE)
 
 # Exercise 1: Exploratory Data Analysis
 
-We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and trasform them into factors.
+We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and transform them into factors.
 
 ```{r mutate-char}
 variables_to_transform = weather %>% 
@@ -216,13 +244,14 @@ We will now try to improve our fit by building a model using additional explanat
 
 1. Let us analyze the various variables in our dataset.
 
-- Is there any categorical variable which is very unbalanced? If so, remove it.
+- Is there any **categorical variable** which is very unbalanced? If so, remove it.
 
-- Is there any numerical variable that has a very small standard deviation for one of the two categories of `RainTomorrow`? If so, remove it.
+- Is there any **numerical variable** that has a very small standard deviation for one of the two categories of `RainTomorrow`? If so, remove it.
 
 2. Let's do some feature engineering: let us transform the variable `Date`. We will use `Ludbridate` again: extract the month and year.
 
 3. Let's now combine everything into recipes and workflows. Then fit the model on the training data and use the test data for calculating the AUC and plotting the ROC curve.
 
 4. Is this model better than the one we fitted in Exercise 3?
+
 
