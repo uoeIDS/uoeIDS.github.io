@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### University of Edinburgh
 ]
 .date[
-### <br> 2025/2026
+### <br> 2026/2027
 ]
 
 ---
@@ -69,7 +69,7 @@ class: middle
 ## Data
 
 
-``` r
+```r
 office_ratings &lt;- read_csv("data/office_ratings.csv")
 office_ratings
 ```
@@ -100,7 +100,7 @@ Source: The data come from [data.world](https://data.world/anujjain7/the-office-
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 ggplot(office_ratings, aes(x = imdb_rating)) +
   geom_histogram(binwidth = 0.25) +
   labs(
@@ -127,7 +127,7 @@ ggplot(office_ratings, aes(x = imdb_rating)) +
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 ggplot(office_ratings, aes(x = total_votes, y = imdb_rating, color = season)) +
   geom_jitter(alpha = 0.7) +
   labs(
@@ -156,7 +156,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating, color = season)) +
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 ggplot(office_ratings, aes(x = total_votes, y = imdb_rating)) +
   geom_jitter() +
   gghighlight(total_votes &gt; 4000, label_key = title) +
@@ -187,7 +187,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating)) +
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 ggplot(office_ratings, aes(x = factor(season), y = imdb_rating, color = season)) +
   geom_boxplot() +
   geom_jitter() +
@@ -223,7 +223,7 @@ class: middle
 - Create an initial split
 
 
-``` r
+```r
 set.seed(1122)
 office_split &lt;- initial_split(office_ratings) # prop = 3/4 by default
 ```
@@ -232,7 +232,7 @@ office_split &lt;- initial_split(office_ratings) # prop = 3/4 by default
 .pull-left[
 - Save training data
 
-``` r
+```r
 office_train &lt;- training(office_split)
 dim(office_train)
 ```
@@ -246,7 +246,7 @@ dim(office_train)
 .pull-right[
 - Save testing data
 
-``` r
+```r
 office_test  &lt;- testing(office_split)
 dim(office_test)
 ```
@@ -261,7 +261,7 @@ dim(office_test)
 ## Specify model
 
 
-``` r
+```r
 office_mod &lt;- linear_reg() %&gt;%
   set_engine("lm")
 
@@ -281,7 +281,7 @@ office_mod
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
   # title isn't a predictor, but keep around to ID
   update_role(title, new_role = "ID") %&gt;%
@@ -297,7 +297,7 @@ office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-``` r
+```r
 print(office_rec)
 ```
 ]
@@ -311,7 +311,7 @@ print(office_rec)
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 office_wflow &lt;- workflow() %&gt;%
   add_model(office_mod) %&gt;%
   add_recipe(office_rec)
@@ -320,7 +320,7 @@ office_wflow &lt;- workflow() %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-``` r
+```r
 office_wflow
 ```
 
@@ -353,7 +353,7 @@ office_wflow
 .panelset[
 .panel[.panel-name[Code]
 
-``` r
+```r
 office_fit &lt;- office_wflow %&gt;%
   fit(data = office_train)
 ```
@@ -361,7 +361,7 @@ office_fit &lt;- office_wflow %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-``` r
+```r
 tidy(office_fit) %&gt;%
   print(n = 12)
 ```
@@ -398,7 +398,7 @@ class: middle
 ## Make predictions for training data
 
 
-``` r
+```r
 office_train_pred &lt;- predict(office_fit, office_train) %&gt;%
   bind_cols(office_train %&gt;% select(imdb_rating, title))
 
@@ -427,7 +427,7 @@ office_train_pred
 Percentage of variability in the IMDB ratings explained by the model
 
 
-``` r
+```r
 rsq(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -465,7 +465,7 @@ $$ RMSE = \sqrt{\frac{\sum_{i = 1}^n (y_i - \hat{y}_i)^2}{n}} $$
 --
 
 
-``` r
+```r
 rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -499,7 +499,7 @@ Is this RMSE considered low or high?
 ]
 
 
-``` r
+```r
 rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -513,7 +513,7 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 --
 
 
-``` r
+```r
 office_train %&gt;%
   summarise(min = min(imdb_rating), max = max(imdb_rating))
 ```
@@ -540,7 +540,7 @@ but, really, who cares about predictions on .pink[training] data?
 ## Make predictions for testing data
 
 
-``` r
+```r
 office_test_pred &lt;- predict(office_fit, office_test) %&gt;%
   bind_cols(office_test %&gt;% select(imdb_rating, title))
 
@@ -567,7 +567,7 @@ office_test_pred
 - RMSE of model fit to testing data
 
 
-``` r
+```r
 rmse(office_test_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -581,7 +581,7 @@ rmse(office_test_pred, truth = imdb_rating, estimate = .pred)
 - `\(R^2\)` of model fit to testing data
 
 
-``` r
+```r
 rsq(office_test_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -662,7 +662,7 @@ You might also heard of this referred to as k-fold cross validation.
 
 .pull-left[
 
-``` r
+```r
 set.seed(345)
 
 folds &lt;- vfold_cv(office_train, v = 5)
@@ -691,7 +691,7 @@ folds
 
 .pull-left[
 
-``` r
+```r
 set.seed(456)
 
 office_fit_rs &lt;- office_wflow %&gt;%
@@ -706,11 +706,11 @@ office_fit_rs
 ## # A tibble: 5 × 4
 ##   splits           id    .metrics         .notes          
 ##   &lt;list&gt;           &lt;chr&gt; &lt;list&gt;           &lt;list&gt;          
-## 1 &lt;split [112/29]&gt; Fold1 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
-## 2 &lt;split [113/28]&gt; Fold2 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
-## 3 &lt;split [113/28]&gt; Fold3 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
-## 4 &lt;split [113/28]&gt; Fold4 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
-## 5 &lt;split [113/28]&gt; Fold5 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
+## 1 &lt;split [112/29]&gt; Fold1 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
+## 2 &lt;split [113/28]&gt; Fold2 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
+## 3 &lt;split [113/28]&gt; Fold3 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
+## 4 &lt;split [113/28]&gt; Fold4 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
+## 5 &lt;split [113/28]&gt; Fold5 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
 ```
 ]
 .pull-right[
@@ -722,16 +722,16 @@ office_fit_rs
 ## Collect CV metrics
 
 
-``` r
+```r
 collect_metrics(office_fit_rs)
 ```
 
 ```
 ## # A tibble: 2 × 6
-##   .metric .estimator  mean     n std_err .config        
-##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;          
-## 1 rmse    standard   0.403     5  0.0336 pre0_mod0_post0
-## 2 rsq     standard   0.413     5  0.0727 pre0_mod0_post0
+##   .metric .estimator  mean     n std_err .config             
+##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+## 1 rmse    standard   0.403     5  0.0336 Preprocessor1_Model1
+## 2 rsq     standard   0.413     5  0.0727 Preprocessor1_Model1
 ```
 
 ---
@@ -741,25 +741,25 @@ collect_metrics(office_fit_rs)
 .panelset[
 .panel[.panel-name[Raw]
 
-``` r
+```r
 collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
   print(n = 10)
 ```
 
 ```
 ## # A tibble: 10 × 5
-##    id    .metric .estimator .estimate .config        
-##    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;          
-##  1 Fold1 rmse    standard       0.430 pre0_mod0_post0
-##  2 Fold1 rsq     standard       0.134 pre0_mod0_post0
-##  3 Fold2 rmse    standard       0.368 pre0_mod0_post0
-##  4 Fold2 rsq     standard       0.496 pre0_mod0_post0
-##  5 Fold3 rmse    standard       0.452 pre0_mod0_post0
-##  6 Fold3 rsq     standard       0.501 pre0_mod0_post0
-##  7 Fold4 rmse    standard       0.289 pre0_mod0_post0
-##  8 Fold4 rsq     standard       0.529 pre0_mod0_post0
-##  9 Fold5 rmse    standard       0.475 pre0_mod0_post0
-## 10 Fold5 rsq     standard       0.403 pre0_mod0_post0
+##    id    .metric .estimator .estimate .config             
+##    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+##  1 Fold1 rmse    standard       0.430 Preprocessor1_Model1
+##  2 Fold1 rsq     standard       0.134 Preprocessor1_Model1
+##  3 Fold2 rmse    standard       0.368 Preprocessor1_Model1
+##  4 Fold2 rsq     standard       0.496 Preprocessor1_Model1
+##  5 Fold3 rmse    standard       0.452 Preprocessor1_Model1
+##  6 Fold3 rsq     standard       0.501 Preprocessor1_Model1
+##  7 Fold4 rmse    standard       0.289 Preprocessor1_Model1
+##  8 Fold4 rsq     standard       0.529 Preprocessor1_Model1
+##  9 Fold5 rmse    standard       0.475 Preprocessor1_Model1
+## 10 Fold5 rsq     standard       0.403 Preprocessor1_Model1
 ```
 ]
 .panel[.panel-name[Tidy]
@@ -804,16 +804,401 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 
 &lt;img src="img/post-cv-testing.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
 
+---
 
+class: middle
+
+# Model selection
+
+---
+
+## Which predictors should we keep?
+
+- Our model uses **every** predictor: `season`, `episode`, `total_votes` and 8 dummy variables for the month the episode aired: 11 terms in total
+
+- Adding a predictor **never** lowers `\(R^2\)` on the training data, so `\(R^2\)` on its own always favours the biggest model
+
+- **Occam's razor:** if two models perform about as well, choose the simpler one
+
+- Two ways of comparing models fairly:
+  - **Adjusted `\(R^2\)`** (on the training data): penalises extra predictors
+  - **Cross-validation RMSE**: measures performance on data the model hasn't seen
+
+---
+
+## Candidate models
+
+Each candidate is our recipe with some predictors removed by an extra `step_rm()`
+
+
+```r
+candidates &lt;- list(
+  "full (+ month)"           = character(0),
+  "votes + season + episode" = c("air_date"),
+  "votes + season"           = c("episode", "air_date"),
+  "votes"                    = c("season", "episode", "air_date")
+)
+```
+
+--
+
+- Each entry lists the predictors to **drop**, they will be passed as argument to `step_rm()`
+- `character(0)` means drop nothing
+- Each variable will enter the code using `starts_with()`, so that `starts_with("air_date")` removes all the month dummies at once (`air_date_month_Feb`, `air_date_month_Mar`, ...)
+
+
+---
+
+## Fit each candidate
+
+.panelset[
+.panel[.panel-name[Code]
+
+```r
+fit_candidate &lt;- function(drop) {
+  wflow &lt;- workflow() %&gt;%
+    add_model(office_mod) %&gt;%
+    add_recipe(office_rec %&gt;% step_rm(starts_with(drop)))
+
+  train_fit &lt;- fit(wflow, data = office_train)
+  cv_fit    &lt;- fit_resamples(wflow, folds)
+
+  tibble(
+    n_terms = nrow(tidy(train_fit)) - 1,  # minus the intercept
+    adj_rsq = glance(train_fit)$adj.r.squared,
+    cv_rmse = collect_metrics(cv_fit) %&gt;%
+      filter(.metric == "rmse") %&gt;%
+      pull(mean)
+  )
+}
+```
+]
+.panel[.panel-name[Notes]
+- `glance()` gives the adjusted `\(R^2\)` of the model fitted to the training data
+- `fit_resamples()` uses the **same** `folds` for every candidate, so the comparison is fair
+- The test data is **not** used anywhere
+]
+]
+
+---
+
+## Compare the candidates
+
+
+```r
+model_comparison &lt;- candidates %&gt;%
+  map(fit_candidate) %&gt;%
+  list_rbind(names_to = "model")
+
+model_comparison
+```
+
+```
+## # A tibble: 4 × 4
+##   model                    n_terms adj_rsq cv_rmse
+##   &lt;chr&gt;                      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 full (+ month)                11   0.458   0.403
+## 2 votes + season + episode       3   0.424   0.402
+## 3 votes + season                 2   0.391   0.413
+## 4 votes                          1   0.384   0.416
+```
+
+--
+
+.question[
+Which model would you choose?
+]
+
+---
+
+## Occam's razor
+
+
+|Model                    | Terms| Adjusted R²| CV RMSE|
+|:------------------------|-----:|-----------:|-------:|
+|full (+ month)           |    11|       0.458|   0.403|
+|votes + season + episode |     3|       0.424|   0.402|
+|votes + season           |     2|       0.391|   0.413|
+|votes                    |     1|       0.384|   0.416|
+
+&lt;br&gt;
+
+- Adjusted `\(R^2\)` prefers the **full** model
+- But the full model's CV RMSE is no better than the model with `total_votes`, `season` and `episode`
+
+--
+- The 3-term model predicts new episodes just as well with **8 fewer terms**, so we keep it
+
+---
+
+class: middle
+
+# Automatic model selection
+
+---
+
+## Stepwise selection
+
+With many predictors, trying every combination by hand isn't practical
+
+--
+
+**Backward elimination**
+- Start with all predictors
+- Try removing each one, and drop the one whose removal gives the lowest CV RMSE
+- Repeat until removing any predictor makes CV RMSE worse
+
+--
+
+**Forward selection**
+- Start with no predictors
+- Try adding each one, and add the one that gives the lowest CV RMSE
+- Repeat until adding any predictor makes CV RMSE worse
+
+---
+
+## A helper: CV RMSE for a set of dropped predictors
+
+
+```r
+cv_rmse &lt;- function(drop) {
+  workflow() %&gt;%
+    add_model(office_mod) %&gt;%
+    add_recipe(office_rec %&gt;% step_rm(starts_with(drop))) %&gt;%
+    fit_resamples(folds) %&gt;%
+    collect_metrics() %&gt;%
+    filter(.metric == "rmse") %&gt;%
+    pull(mean)
+}
+
+cv_rmse(character(0))   # full model
+```
+
+```
+## [1] 0.4028822
+```
+
+```r
+cv_rmse("air_date")     # without month
+```
+
+```
+## [1] 0.4015001
+```
+
+---
+
+## Backward elimination
+
+.panelset[
+.panel[.panel-name[Code]
+.small[
+
+```r
+vars    &lt;- c("season", "episode", "total_votes", "air_date")
+dropped &lt;- character(0)
+best    &lt;- cv_rmse(dropped)
+history &lt;- tibble()
+
+repeat {
+  remaining &lt;- setdiff(vars, dropped)
+  if (length(remaining) == 1) break
+  # CV RMSE after dropping the previously dropped vars with each remaining predictor
+  scores  &lt;- map_dbl(remaining, ~ cv_rmse(c(dropped, .x))) 
+  history &lt;- bind_rows(history,
+    tibble(round = length(dropped) + 1, drop = remaining, cv_rmse = scores))
+  # stop if no removal improves CV RMSE
+  if (min(scores) &gt;= best) break
+  dropped &lt;- c(dropped, remaining[which.min(scores)])
+  best    &lt;- min(scores)
+}
+```
+]
+]
+.panel[.panel-name[Each round]
+
+```r
+print(history, n = 7)
+```
+
+```
+## # A tibble: 7 × 3
+##   round drop        cv_rmse
+##   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;
+## 1     1 season        0.422
+## 2     1 episode       0.418
+## 3     1 total_votes   0.479
+## 4     1 air_date      0.402
+## 5     2 season        0.410
+## 6     2 episode       0.413
+## 7     2 total_votes   0.481
+```
+]
+.panel[.panel-name[Result]
+
+```r
+dropped
+```
+
+```
+## [1] "air_date"
+```
+
+```r
+best
+```
+
+```
+## [1] 0.4015001
+```
+]
+]
+
+---
+
+## Forward selection
+
+.panelset[
+.panel[.panel-name[Code]
+.small[
+
+```r
+vars    &lt;- c("season", "episode", "total_votes", "air_date")
+added &lt;- character(0)
+best  &lt;- Inf
+history &lt;- tibble()
+
+repeat {
+  remaining &lt;- setdiff(vars, added)
+  if (length(remaining) == 0) break
+  # CV RMSE after adding each remaining predictor
+  scores &lt;- map_dbl(remaining, ~ cv_rmse(setdiff(vars, c(added, .x))))
+  history &lt;- bind_rows(history,
+    tibble(round = length(added) + 1, add = remaining, cv_rmse = scores))
+  # stop if no addition improves CV RMSE
+  if (min(scores) &gt;= best) break
+  added &lt;- c(added, remaining[which.min(scores)])
+  best  &lt;- min(scores)
+}
+```
+]
+]
+.panel[.panel-name[Each round]
+.small[
+
+```r
+print(history, n = 10)
+```
+
+```
+## # A tibble: 10 × 3
+##    round add         cv_rmse
+##    &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;
+##  1     1 season        0.495
+##  2     1 episode       0.524
+##  3     1 total_votes   0.416
+##  4     1 air_date      0.533
+##  5     2 season        0.413
+##  6     2 episode       0.410
+##  7     2 air_date      0.427
+##  8     3 season        0.402
+##  9     3 air_date      0.422
+## 10     4 air_date      0.403
+```
+]
+]
+.panel[.panel-name[Result]
+
+```r
+added
+```
+
+```
+## [1] "total_votes" "episode"     "season"
+```
+
+```r
+best
+```
+
+```
+## [1] 0.4015001
+```
+]
+]
+
+--
+
+Both directions agree: keep `total_votes`, `season` and `episode`.
+
+---
+
+## Things to keep in mind
+
+- Stepwise selection is **greedy**: it makes the best single move at each step, so it can miss the best overall combination
+
+- Backward and forward selection don't always agree
+
+- The selection uses only the **training data** (through cross-validation). The test set is used **once**, at the very end
+
+- Base R has a `step()` function that does this automatically, but it uses a different criterion (AIC)
+
+---
+
+## Final model on the test data
+
+.panelset[
+.panel[.panel-name[Code]
+
+```r
+final_fit &lt;- workflow() %&gt;%
+  add_model(office_mod) %&gt;%
+  add_recipe(office_rec %&gt;% step_rm(starts_with(dropped))) %&gt;%
+  last_fit(office_split) # fit the final best model to the training set
+```
+]
+.panel[.panel-name[Test metrics]
+
+```r
+collect_metrics(final_fit)
+```
+
+```
+## # A tibble: 2 × 4
+##   .metric .estimator .estimate .config             
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+## 1 rmse    standard       0.416 Preprocessor1_Model1
+## 2 rsq     standard       0.512 Preprocessor1_Model1
+```
+]
+.panel[.panel-name[Coefficients]
+
+```r
+final_fit %&gt;%
+  extract_workflow() %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 4 × 5
+##   term         estimate std.error statistic  p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  7.51     0.154         48.7  2.24e-88
+## 2 season      -0.0343   0.0155        -2.21 2.87e- 2
+## 3 episode      0.0146   0.00494        2.97 3.57e- 3
+## 4 total_votes  0.000350 0.0000441      7.93 6.96e-13
+```
+]
+]
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightLines": true,
-  "highlightStyle": "solarized-light",
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightLines": true,
+"highlightStyle": "solarized-light",
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

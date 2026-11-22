@@ -2,7 +2,7 @@
 title: "Cross Validation"
 subtitle: "<br><br> Introduction to Data Science"
 author: "University of Edinburgh"
-date: "<br> 2025/2026"
+date: "<br> 2026/2027"
 output:
   xaringan::moon_reader:
     css: ["./xaringan-themer.css", "./slides.css"]
@@ -645,5 +645,284 @@ office_train %>%
 knitr::include_graphics("img/post-cv-testing.png")
 ```
 
+---
 
+class: middle
+
+# Model selection
+
+---
+
+## Which predictors should we keep?
+
+- Our model uses **every** predictor: `season`, `episode`, `total_votes` and 8 dummy variables for the month the episode aired: 11 terms in total
+
+- Adding a predictor **never** lowers $R^2$ on the training data, so $R^2$ on its own always favours the biggest model
+
+- **Occam's razor:** if two models perform about as well, choose the simpler one
+
+- Two ways of comparing models fairly:
+  - **Adjusted $R^2$** (on the training data): penalises extra predictors
+  - **Cross-validation RMSE**: measures performance on data the model hasn't seen
+
+---
+
+## Candidate models
+
+Each candidate is our recipe with some predictors removed by an extra `step_rm()`
+
+```{r}
+candidates <- list(
+  "full (+ month)"           = character(0),
+  "votes + season + episode" = c("air_date"),
+  "votes + season"           = c("episode", "air_date"),
+  "votes"                    = c("season", "episode", "air_date")
+)
+```
+
+--
+
+- Each entry lists the predictors to **drop**, they will be passed as argument to `step_rm()`
+- `character(0)` means drop nothing
+- Each variable will enter the code using `starts_with()`, so that `starts_with("air_date")` removes all the month dummies at once (`air_date_month_Feb`, `air_date_month_Mar`, ...)
+
+
+---
+
+## Fit each candidate
+
+.panelset[
+.panel[.panel-name[Code]
+```{r}
+fit_candidate <- function(drop) {
+  wflow <- workflow() %>%
+    add_model(office_mod) %>%
+    add_recipe(office_rec %>% step_rm(starts_with(drop)))
+
+  train_fit <- fit(wflow, data = office_train)
+  cv_fit    <- fit_resamples(wflow, folds)
+
+  tibble(
+    n_terms = nrow(tidy(train_fit)) - 1,  # minus the intercept
+    adj_rsq = glance(train_fit)$adj.r.squared,
+    cv_rmse = collect_metrics(cv_fit) %>%
+      filter(.metric == "rmse") %>%
+      pull(mean)
+  )
+}
+```
+]
+.panel[.panel-name[Notes]
+- `glance()` gives the adjusted $R^2$ of the model fitted to the training data
+- `fit_resamples()` uses the **same** `folds` for every candidate, so the comparison is fair
+- The test data is **not** used anywhere
+]
+]
+
+---
+
+## Compare the candidates
+
+```{r}
+model_comparison <- candidates %>%
+  map(fit_candidate) %>%
+  list_rbind(names_to = "model")
+
+model_comparison
+```
+
+--
+
+.question[
+Which model would you choose?
+]
+
+---
+
+## Occam's razor
+
+```{r echo=FALSE}
+model_comparison %>%
+  kable(digits = 3, col.names = c("Model", "Terms", "Adjusted R²", "CV RMSE"))
+```
+
+<br>
+
+- Adjusted $R^2$ prefers the **full** model
+- But the full model's CV RMSE is no better than the model with `total_votes`, `season` and `episode`
+
+--
+- The 3-term model predicts new episodes just as well with **8 fewer terms**, so we keep it
+
+---
+
+class: middle
+
+# Automatic model selection
+
+---
+
+## Stepwise selection
+
+With many predictors, trying every combination by hand isn't practical
+
+--
+
+**Backward elimination**
+- Start with all predictors
+- Try removing each one, and drop the one whose removal gives the lowest CV RMSE
+- Repeat until removing any predictor makes CV RMSE worse
+
+--
+
+**Forward selection**
+- Start with no predictors
+- Try adding each one, and add the one that gives the lowest CV RMSE
+- Repeat until adding any predictor makes CV RMSE worse
+
+---
+
+## A helper: CV RMSE for a set of dropped predictors
+
+```{r}
+cv_rmse <- function(drop) {
+  workflow() %>%
+    add_model(office_mod) %>%
+    add_recipe(office_rec %>% step_rm(starts_with(drop))) %>%
+    fit_resamples(folds) %>%
+    collect_metrics() %>%
+    filter(.metric == "rmse") %>%
+    pull(mean)
+}
+
+cv_rmse(character(0))   # full model
+cv_rmse("air_date")     # without month
+```
+
+---
+
+## Backward elimination
+
+.panelset[
+.panel[.panel-name[Code]
+.small[
+```{r}
+vars    <- c("season", "episode", "total_votes", "air_date")
+dropped <- character(0)
+best    <- cv_rmse(dropped)
+history <- tibble()
+
+repeat {
+  remaining <- setdiff(vars, dropped)
+  if (length(remaining) == 1) break
+  # CV RMSE after dropping the previously dropped vars with each remaining predictor
+  scores  <- map_dbl(remaining, ~ cv_rmse(c(dropped, .x))) 
+  history <- bind_rows(history,
+    tibble(round = length(dropped) + 1, drop = remaining, cv_rmse = scores))
+  # stop if no removal improves CV RMSE
+  if (min(scores) >= best) break
+  dropped <- c(dropped, remaining[which.min(scores)])
+  best    <- min(scores)
+}
+```
+]
+]
+.panel[.panel-name[Each round]
+```{r}
+print(history, n = 7)
+```
+]
+.panel[.panel-name[Result]
+```{r}
+dropped
+best
+```
+]
+]
+
+---
+
+## Forward selection
+
+.panelset[
+.panel[.panel-name[Code]
+.small[
+```{r}
+vars    <- c("season", "episode", "total_votes", "air_date")
+added <- character(0)
+best  <- Inf
+history <- tibble()
+
+repeat {
+  remaining <- setdiff(vars, added)
+  if (length(remaining) == 0) break
+  # CV RMSE after adding each remaining predictor
+  scores <- map_dbl(remaining, ~ cv_rmse(setdiff(vars, c(added, .x))))
+  history <- bind_rows(history,
+    tibble(round = length(added) + 1, add = remaining, cv_rmse = scores))
+  # stop if no addition improves CV RMSE
+  if (min(scores) >= best) break
+  added <- c(added, remaining[which.min(scores)])
+  best  <- min(scores)
+}
+```
+]
+]
+.panel[.panel-name[Each round]
+.small[
+```{r}
+print(history, n = 10)
+```
+]
+]
+.panel[.panel-name[Result]
+```{r}
+added
+best
+```
+]
+]
+
+--
+
+Both directions agree: keep `total_votes`, `season` and `episode`.
+
+---
+
+## Things to keep in mind
+
+- Stepwise selection is **greedy**: it makes the best single move at each step, so it can miss the best overall combination
+
+- Backward and forward selection don't always agree
+
+- The selection uses only the **training data** (through cross-validation). The test set is used **once**, at the very end
+
+- Base R has a `step()` function that does this automatically, but it uses a different criterion (AIC)
+
+---
+
+## Final model on the test data
+
+.panelset[
+.panel[.panel-name[Code]
+```{r}
+final_fit <- workflow() %>%
+  add_model(office_mod) %>%
+  add_recipe(office_rec %>% step_rm(starts_with(dropped))) %>%
+  last_fit(office_split) # fit the final best model to the training set
+```
+]
+.panel[.panel-name[Test metrics]
+```{r}
+collect_metrics(final_fit)
+```
+]
+.panel[.panel-name[Coefficients]
+```{r}
+final_fit %>%
+  extract_workflow() %>%
+  tidy()
+```
+]
+]
 
