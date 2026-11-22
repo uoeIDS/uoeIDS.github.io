@@ -52,7 +52,8 @@ University of Edinburgh
 - RMSE
 - Training set vs test set
 - Cross validation
-
+- Extra: model selection
+- Extra: automatic model selection
 
 ---
 class: middle
@@ -69,7 +70,7 @@ class: middle
 ## Data
 
 
-```r
+``` r
 office_ratings &lt;- read_csv("data/office_ratings.csv")
 office_ratings
 ```
@@ -100,7 +101,7 @@ Source: The data come from [data.world](https://data.world/anujjain7/the-office-
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(office_ratings, aes(x = imdb_rating)) +
   geom_histogram(binwidth = 0.25) +
   labs(
@@ -115,7 +116,7 @@ ggplot(office_ratings, aes(x = imdb_rating)) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="w10-L19_files/figure-html/unnamed-chunk-2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L19_files/figure-html/unnamed-chunk-2-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ]
 ]
@@ -127,7 +128,7 @@ ggplot(office_ratings, aes(x = imdb_rating)) +
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(office_ratings, aes(x = total_votes, y = imdb_rating, color = season)) +
   geom_jitter(alpha = 0.7) +
   labs(
@@ -144,7 +145,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating, color = season)) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="w10-L19_files/figure-html/unnamed-chunk-3-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L19_files/figure-html/unnamed-chunk-3-1.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
 
 ]
 ]
@@ -156,7 +157,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating, color = season)) +
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(office_ratings, aes(x = total_votes, y = imdb_rating)) +
   geom_jitter() +
   gghighlight(total_votes &gt; 4000, label_key = title) +
@@ -173,7 +174,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating)) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="w10-L19_files/figure-html/unnamed-chunk-4-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L19_files/figure-html/unnamed-chunk-4-1.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
 
 ]
 ]
@@ -187,7 +188,7 @@ ggplot(office_ratings, aes(x = total_votes, y = imdb_rating)) +
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(office_ratings, aes(x = factor(season), y = imdb_rating, color = season)) +
   geom_boxplot() +
   geom_jitter() +
@@ -205,7 +206,7 @@ ggplot(office_ratings, aes(x = factor(season), y = imdb_rating, color = season))
 
 .panel[.panel-name[Plot]
 
-&lt;img src="w10-L19_files/figure-html/unnamed-chunk-5-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L19_files/figure-html/unnamed-chunk-5-1.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
 
 ]
 ]
@@ -223,7 +224,7 @@ class: middle
 - Create an initial split
 
 
-```r
+``` r
 set.seed(1122)
 office_split &lt;- initial_split(office_ratings) # prop = 3/4 by default
 ```
@@ -232,7 +233,7 @@ office_split &lt;- initial_split(office_ratings) # prop = 3/4 by default
 .pull-left[
 - Save training data
 
-```r
+``` r
 office_train &lt;- training(office_split)
 dim(office_train)
 ```
@@ -246,7 +247,7 @@ dim(office_train)
 .pull-right[
 - Save testing data
 
-```r
+``` r
 office_test  &lt;- testing(office_split)
 dim(office_test)
 ```
@@ -261,7 +262,7 @@ dim(office_test)
 ## Specify model
 
 
-```r
+``` r
 office_mod &lt;- linear_reg() %&gt;%
   set_engine("lm")
 
@@ -281,7 +282,7 @@ office_mod
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
   # title isn't a predictor, but keep around to ID
   update_role(title, new_role = "ID") %&gt;%
@@ -297,7 +298,7 @@ office_rec &lt;- recipe(imdb_rating ~ ., data = office_train) %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-```r
+``` r
 print(office_rec)
 ```
 ]
@@ -311,7 +312,7 @@ print(office_rec)
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 office_wflow &lt;- workflow() %&gt;%
   add_model(office_mod) %&gt;%
   add_recipe(office_rec)
@@ -320,7 +321,7 @@ office_wflow &lt;- workflow() %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-```r
+``` r
 office_wflow
 ```
 
@@ -353,7 +354,7 @@ office_wflow
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 office_fit &lt;- office_wflow %&gt;%
   fit(data = office_train)
 ```
@@ -361,7 +362,7 @@ office_fit &lt;- office_wflow %&gt;%
 .panel[.panel-name[Output]
 .small[
 
-```r
+``` r
 tidy(office_fit) %&gt;%
   print(n = 12)
 ```
@@ -398,7 +399,7 @@ class: middle
 ## Make predictions for training data
 
 
-```r
+``` r
 office_train_pred &lt;- predict(office_fit, office_train) %&gt;%
   bind_cols(office_train %&gt;% select(imdb_rating, title))
 
@@ -427,7 +428,7 @@ office_train_pred
 Percentage of variability in the IMDB ratings explained by the model
 
 
-```r
+``` r
 rsq(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -465,7 +466,7 @@ $$ RMSE = \sqrt{\frac{\sum_{i = 1}^n (y_i - \hat{y}_i)^2}{n}} $$
 --
 
 
-```r
+``` r
 rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -499,7 +500,7 @@ Is this RMSE considered low or high?
 ]
 
 
-```r
+``` r
 rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -513,7 +514,7 @@ rmse(office_train_pred, truth = imdb_rating, estimate = .pred)
 --
 
 
-```r
+``` r
 office_train %&gt;%
   summarise(min = min(imdb_rating), max = max(imdb_rating))
 ```
@@ -540,7 +541,7 @@ but, really, who cares about predictions on .pink[training] data?
 ## Make predictions for testing data
 
 
-```r
+``` r
 office_test_pred &lt;- predict(office_fit, office_test) %&gt;%
   bind_cols(office_test %&gt;% select(imdb_rating, title))
 
@@ -567,7 +568,7 @@ office_test_pred
 - RMSE of model fit to testing data
 
 
-```r
+``` r
 rmse(office_test_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -581,7 +582,7 @@ rmse(office_test_pred, truth = imdb_rating, estimate = .pred)
 - `\(R^2\)` of model fit to testing data
 
 
-```r
+``` r
 rsq(office_test_pred, truth = imdb_rating, estimate = .pred)
 ```
 
@@ -654,7 +655,7 @@ You might also heard of this referred to as k-fold cross validation.
 
 ## Cross validation
 
-&lt;img src="img/cross-validation.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/cross-validation.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -662,7 +663,7 @@ You might also heard of this referred to as k-fold cross validation.
 
 .pull-left[
 
-```r
+``` r
 set.seed(345)
 
 folds &lt;- vfold_cv(office_train, v = 5)
@@ -682,7 +683,7 @@ folds
 ```
 ]
 .pull-right[
-&lt;img src="img/cross-validation.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+&lt;img src="img/cross-validation.png" alt="" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
 
 ---
@@ -691,7 +692,7 @@ folds
 
 .pull-left[
 
-```r
+``` r
 set.seed(456)
 
 office_fit_rs &lt;- office_wflow %&gt;%
@@ -706,15 +707,15 @@ office_fit_rs
 ## # A tibble: 5 × 4
 ##   splits           id    .metrics         .notes          
 ##   &lt;list&gt;           &lt;chr&gt; &lt;list&gt;           &lt;list&gt;          
-## 1 &lt;split [112/29]&gt; Fold1 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
-## 2 &lt;split [113/28]&gt; Fold2 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
-## 3 &lt;split [113/28]&gt; Fold3 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
-## 4 &lt;split [113/28]&gt; Fold4 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
-## 5 &lt;split [113/28]&gt; Fold5 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 3]&gt;
+## 1 &lt;split [112/29]&gt; Fold1 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
+## 2 &lt;split [113/28]&gt; Fold2 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
+## 3 &lt;split [113/28]&gt; Fold3 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
+## 4 &lt;split [113/28]&gt; Fold4 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
+## 5 &lt;split [113/28]&gt; Fold5 &lt;tibble [2 × 4]&gt; &lt;tibble [0 × 4]&gt;
 ```
 ]
 .pull-right[
-&lt;img src="img/cross-validation-animated.gif" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+&lt;img src="img/cross-validation-animated.gif" alt="" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
 ]
 
 ---
@@ -722,16 +723,16 @@ office_fit_rs
 ## Collect CV metrics
 
 
-```r
+``` r
 collect_metrics(office_fit_rs)
 ```
 
 ```
 ## # A tibble: 2 × 6
-##   .metric .estimator  mean     n std_err .config             
-##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-## 1 rmse    standard   0.403     5  0.0336 Preprocessor1_Model1
-## 2 rsq     standard   0.413     5  0.0727 Preprocessor1_Model1
+##   .metric .estimator  mean     n std_err .config        
+##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;          
+## 1 rmse    standard   0.403     5  0.0336 pre0_mod0_post0
+## 2 rsq     standard   0.413     5  0.0727 pre0_mod0_post0
 ```
 
 ---
@@ -741,25 +742,25 @@ collect_metrics(office_fit_rs)
 .panelset[
 .panel[.panel-name[Raw]
 
-```r
+``` r
 collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
   print(n = 10)
 ```
 
 ```
 ## # A tibble: 10 × 5
-##    id    .metric .estimator .estimate .config             
-##    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-##  1 Fold1 rmse    standard       0.430 Preprocessor1_Model1
-##  2 Fold1 rsq     standard       0.134 Preprocessor1_Model1
-##  3 Fold2 rmse    standard       0.368 Preprocessor1_Model1
-##  4 Fold2 rsq     standard       0.496 Preprocessor1_Model1
-##  5 Fold3 rmse    standard       0.452 Preprocessor1_Model1
-##  6 Fold3 rsq     standard       0.501 Preprocessor1_Model1
-##  7 Fold4 rmse    standard       0.289 Preprocessor1_Model1
-##  8 Fold4 rsq     standard       0.529 Preprocessor1_Model1
-##  9 Fold5 rmse    standard       0.475 Preprocessor1_Model1
-## 10 Fold5 rsq     standard       0.403 Preprocessor1_Model1
+##    id    .metric .estimator .estimate .config        
+##    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;          
+##  1 Fold1 rmse    standard       0.430 pre0_mod0_post0
+##  2 Fold1 rsq     standard       0.134 pre0_mod0_post0
+##  3 Fold2 rmse    standard       0.368 pre0_mod0_post0
+##  4 Fold2 rsq     standard       0.496 pre0_mod0_post0
+##  5 Fold3 rmse    standard       0.452 pre0_mod0_post0
+##  6 Fold3 rsq     standard       0.501 pre0_mod0_post0
+##  7 Fold4 rmse    standard       0.289 pre0_mod0_post0
+##  8 Fold4 rsq     standard       0.529 pre0_mod0_post0
+##  9 Fold5 rmse    standard       0.475 pre0_mod0_post0
+## 10 Fold5 rsq     standard       0.403 pre0_mod0_post0
 ```
 ]
 .panel[.panel-name[Tidy]
@@ -802,13 +803,13 @@ collect_metrics(office_fit_rs, summarize = FALSE) %&gt;%
 
 ## What's next?
 
-&lt;img src="img/post-cv-testing.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+&lt;img src="img/post-cv-testing.png" alt="" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
 
 ---
 
 class: middle
 
-# Model selection
+# Extra: model selection
 
 ---
 
@@ -831,7 +832,7 @@ class: middle
 Each candidate is our recipe with some predictors removed by an extra `step_rm()`
 
 
-```r
+``` r
 candidates &lt;- list(
   "full (+ month)"           = character(0),
   "votes + season + episode" = c("air_date"),
@@ -839,8 +840,6 @@ candidates &lt;- list(
   "votes"                    = c("season", "episode", "air_date")
 )
 ```
-
---
 
 - Each entry lists the predictors to **drop**, they will be passed as argument to `step_rm()`
 - `character(0)` means drop nothing
@@ -854,7 +853,7 @@ candidates &lt;- list(
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 fit_candidate &lt;- function(drop) {
   wflow &lt;- workflow() %&gt;%
     add_model(office_mod) %&gt;%
@@ -874,6 +873,7 @@ fit_candidate &lt;- function(drop) {
 ```
 ]
 .panel[.panel-name[Notes]
+- The argument of this function is a vector of variable names to drop from the recipe
 - `glance()` gives the adjusted `\(R^2\)` of the model fitted to the training data
 - `fit_resamples()` uses the **same** `folds` for every candidate, so the comparison is fair
 - The test data is **not** used anywhere
@@ -884,8 +884,10 @@ fit_candidate &lt;- function(drop) {
 
 ## Compare the candidates
 
+`map` applies `fit_candidate()` to each element of `candidates`, and `list_rbind()` combines the results into a single data frame:
 
-```r
+
+``` r
 model_comparison &lt;- candidates %&gt;%
   map(fit_candidate) %&gt;%
   list_rbind(names_to = "model")
@@ -933,7 +935,7 @@ Which model would you choose?
 
 class: middle
 
-# Automatic model selection
+# Extra: automatic model selection
 
 ---
 
@@ -960,7 +962,7 @@ With many predictors, trying every combination by hand isn't practical
 ## A helper: CV RMSE for a set of dropped predictors
 
 
-```r
+``` r
 cv_rmse &lt;- function(drop) {
   workflow() %&gt;%
     add_model(office_mod) %&gt;%
@@ -978,7 +980,7 @@ cv_rmse(character(0))   # full model
 ## [1] 0.4028822
 ```
 
-```r
+``` r
 cv_rmse("air_date")     # without month
 ```
 
@@ -994,7 +996,7 @@ cv_rmse("air_date")     # without month
 .panel[.panel-name[Code]
 .small[
 
-```r
+``` r
 vars    &lt;- c("season", "episode", "total_votes", "air_date")
 dropped &lt;- character(0)
 best    &lt;- cv_rmse(dropped)
@@ -1017,7 +1019,7 @@ repeat {
 ]
 .panel[.panel-name[Each round]
 
-```r
+``` r
 print(history, n = 7)
 ```
 
@@ -1036,7 +1038,7 @@ print(history, n = 7)
 ]
 .panel[.panel-name[Result]
 
-```r
+``` r
 dropped
 ```
 
@@ -1044,7 +1046,7 @@ dropped
 ## [1] "air_date"
 ```
 
-```r
+``` r
 best
 ```
 
@@ -1062,7 +1064,7 @@ best
 .panel[.panel-name[Code]
 .small[
 
-```r
+``` r
 vars    &lt;- c("season", "episode", "total_votes", "air_date")
 added &lt;- character(0)
 best  &lt;- Inf
@@ -1086,7 +1088,7 @@ repeat {
 .panel[.panel-name[Each round]
 .small[
 
-```r
+``` r
 print(history, n = 10)
 ```
 
@@ -1109,7 +1111,7 @@ print(history, n = 10)
 ]
 .panel[.panel-name[Result]
 
-```r
+``` r
 added
 ```
 
@@ -1117,19 +1119,21 @@ added
 ## [1] "total_votes" "episode"     "season"
 ```
 
-```r
+``` r
 best
 ```
 
 ```
 ## [1] 0.4015001
 ```
-]
-]
 
 --
 
 Both directions agree: keep `total_votes`, `season` and `episode`.
+
+]
+]
+
 
 ---
 
@@ -1150,7 +1154,7 @@ Both directions agree: keep `total_votes`, `season` and `episode`.
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 final_fit &lt;- workflow() %&gt;%
   add_model(office_mod) %&gt;%
   add_recipe(office_rec %&gt;% step_rm(starts_with(dropped))) %&gt;%
@@ -1159,21 +1163,21 @@ final_fit &lt;- workflow() %&gt;%
 ]
 .panel[.panel-name[Test metrics]
 
-```r
+``` r
 collect_metrics(final_fit)
 ```
 
 ```
 ## # A tibble: 2 × 4
-##   .metric .estimator .estimate .config             
-##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-## 1 rmse    standard       0.416 Preprocessor1_Model1
-## 2 rsq     standard       0.512 Preprocessor1_Model1
+##   .metric .estimator .estimate .config        
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;          
+## 1 rmse    standard       0.416 pre0_mod0_post0
+## 2 rsq     standard       0.512 pre0_mod0_post0
 ```
 ]
 .panel[.panel-name[Coefficients]
 
-```r
+``` r
 final_fit %&gt;%
   extract_workflow() %&gt;%
   tidy()
@@ -1195,10 +1199,10 @@ final_fit %&gt;%
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightLines": true,
-"highlightStyle": "solarized-light",
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightLines": true,
+  "highlightStyle": "solarized-light",
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

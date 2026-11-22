@@ -192,7 +192,6 @@ elmhurst_fit <- linear_reg() %>%
   set_engine("lm") %>%
   fit(gift_aid ~ family_income, data = elmhurst) %>%
   tidy() 
-
 elmhurst_slope_obs <- elmhurst_fit %>%
   filter(term == "family_income") %>%
   pull(estimate) %>%
@@ -660,7 +659,7 @@ class: middle
 
 ---
 
-## A courtroom analogy `r emoji::emoji("balance_scale")`
+## A courtroom analogy `r emoji::emoji("balance scale")`
 
 - A defendant is **presumed innocent** until proven guilty
 - The prosecution brings **evidence**
@@ -1137,15 +1136,3 @@ Good practice: **report both**.
 - **Decision:** reject $H_0$ if p-value $< \alpha$, where $\alpha$ is the maximum probability of a Type 1 error that we accept (usually 0.05)
 
 - **Errors:** Type 1 = rejecting a true $H_0$; Type 2 = not rejecting a false $H_0$
-
----
-
-## Recap 
-
-- Sample statistic $\ne$ population parameter, but if the sample is good, it can be a good estimate
-- We report the estimate with a confidence interval, and the width of this interval depends on the variability of sample statistics from different samples from the population
-- Since we can't continue sampling from the population, we bootstrap from the one sample we have to estimate sampling variability
-- We can do this for any sample statistic:
-  - For a mean: `calculate(stat = "mean")`
-  - Learn about calculating bootstrap intervals for other statistics in the quiz
-

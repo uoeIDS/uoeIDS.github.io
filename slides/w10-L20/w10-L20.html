@@ -67,7 +67,7 @@ class: middle
 - Family income and gift aid data from a random sample of fifty students in the freshman class of Elmhurst College in Illinois, USA
 - Gift aid is financial aid that does not need to be paid back, as opposed to a loan
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-1-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 .small[
@@ -82,7 +82,7 @@ The data come from the openintro package: [`elmhurst`](http://openintrostat.gith
 .pull-left[
 .small[
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(gift_aid ~ family_income, data = elmhurst) %&gt;%
@@ -99,7 +99,7 @@ linear_reg() %&gt;%
 ]
 ]
 .pull-right[
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-3-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -117,13 +117,13 @@ Is it exactly $43.10 for all students at this school?
 
 ## Observed sample
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-5-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Bootstrap population
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-6-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 Generated assuming there are more students like the ones in the observed sample...
 
@@ -152,71 +152,71 @@ of the bootstrap distribution
 ## Bootstrap sample 1
 
 
-```r
+``` r
 elmhurtst_boot_1 &lt;- elmhurst %&gt;%
   slice_sample(n = 50, replace = TRUE)
 ```
 
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-8-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Bootstrap sample 2
 
 
-```r
+``` r
 elmhurtst_boot_2 &lt;- elmhurst %&gt;%
   slice_sample(n = 50, replace = TRUE)
 ```
 
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-10-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Bootstrap sample 3
 
 
-```r
+``` r
 elmhurtst_boot_3 &lt;- elmhurst %&gt;%
   slice_sample(n = 50, replace = TRUE)
 ```
 
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-12-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-12-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Bootstrap sample 4
 
 
-```r
+``` r
 elmhurtst_boot_4 &lt;- elmhurst %&gt;%
   slice_sample(n = 50, replace = TRUE)
 ```
 
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-14-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-14-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Bootstrap samples 1 - 4
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-15-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-15-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Many many samples...
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-16-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Code
 
 
-```r
+``` r
 library(tidyverse)
 library(rsample)
 library(broom)
@@ -246,7 +246,7 @@ int_pctl(elmhurst_models, coef_info)
 ## Slopes of bootstrap samples
 
 
-```r
+``` r
 elmhurst_coefs %&gt;%
   filter(term == "family_income") %&gt;%
   ggplot(aes(estimate)) +
@@ -254,20 +254,20 @@ elmhurst_coefs %&gt;%
   labs(title = "Slopes of bootstrap samples")
 ```
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-18-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-18-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## 95% confidence interval
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-19-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Interpreting the slope, take two
 
 
-```r
+``` r
 int_pctl(elmhurst_models, coef_info)
 ```
 
@@ -298,7 +298,7 @@ class: middle
 
 --
 
-&lt;img src="img/ci-1.gif" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/ci-1.gif" alt="" width="30%" style="display: block; margin: auto;" /&gt;
 
 .footnote[
 .small[
@@ -314,7 +314,7 @@ Source: Minitab blog [Understanding Hypothesis Tests: Confidence Intervals and C
 Which line represents which confidence level? (between 99%, 95% and 90% confidence).
 ]
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-22-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-22-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -326,7 +326,7 @@ If we want to be very certain that we capture the population slope, should we us
 
 --
 
-&lt;img src="img/garfield.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="img/garfield.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -340,7 +340,7 @@ How to get a 90% or 99% confidence interval for the slope?
 ]
 
 
-```r
+``` r
 alpha &lt;- 0.10
 int_pctl(elmhurst_models, coef_info, alpha = alpha)
 ```
@@ -348,7 +348,7 @@ int_pctl(elmhurst_models, coef_info, alpha = alpha)
 Or, equivalently, starting from the bootstrap slopes:
 
 
-```r
+``` r
 elmhurst_coefs %&gt;%
   filter(term == "family_income") %&gt;%
   summarize(lower = quantile(estimate, alpha/2),
@@ -494,42 +494,42 @@ The values of `gift_aid` are the same, but they are now assigned to students **a
 ## Permuted sample 1
 
 
-```r
+``` r
 elmhurst_perm_1 &lt;- elmhurst %&gt;%
   mutate(gift_aid = sample(gift_aid))
 ```
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-32-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-32-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Permuted sample 2
 
 
-```r
+``` r
 elmhurst_perm_2 &lt;- elmhurst %&gt;%
   mutate(gift_aid = sample(gift_aid))
 ```
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-34-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-34-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Permuted sample 3
 
 
-```r
+``` r
 elmhurst_perm_3 &lt;- elmhurst %&gt;%
   mutate(gift_aid = sample(gift_aid))
 ```
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-36-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-36-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ## Many many permuted samples...
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-37-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-37-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -539,7 +539,7 @@ elmhurst_perm_3 &lt;- elmhurst %&gt;%
 
 The distribution of slopes from 1000 permuted samples: what slopes look like **if `\(H_0\)` is true**.
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-39-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-39-1.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
 
 The null distribution is centred at 0 and our observed slope is **far out in the tail**.
 
@@ -565,7 +565,7 @@ In a simulation: the **proportion of permuted samples** whose slope is at least 
 The shaded areas on the right show the p-value for a *hypothetical* observed slope (red line).
 ]
 .pull-right[
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-40-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-40-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -666,7 +666,7 @@ class: middle
 ## Generate the null distribution
 
 
-```r
+``` r
 library(infer)
 set.seed(1234)
 
@@ -693,7 +693,7 @@ Compare with the bootstrap code from week 4:
 ## Calculate the observed slope and the p-value
 
 
-```r
+``` r
 obs_slope &lt;- elmhurst %&gt;%
   specify(gift_aid ~ family_income) %&gt;%
   calculate(stat = "slope")
@@ -702,10 +702,11 @@ null_dist %&gt;%
 ```
 
 ```
-## Warning: Please be cautious in reporting a p-value of 0. This
-## result is an approximation based on the number of `reps` chosen
-## in the `generate()` step. See `?get_p_value()` for more
-## information.
+## Warning: Please be cautious in reporting a p-value of 0. This result is
+## an approximation based on the number of `reps` chosen in the
+## `generate()` step.
+## ℹ See `get_p_value()` (`?infer::get_p_value()`) for more
+##   information.
 ```
 
 ```
@@ -725,12 +726,12 @@ null_dist %&gt;%
 ## Visualise the p-value
 
 
-```r
+``` r
 visualize(null_dist) +
   shade_p_value(obs_stat = obs_slope, direction = "two-sided")
 ```
 
-&lt;img src="w10-L20_files/figure-html/unnamed-chunk-43-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="w10-L20_files/figure-html/unnamed-chunk-43-1.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
 
 The observed slope is so extreme that the shaded area is not visible.
 
@@ -777,25 +778,13 @@ Good practice: **report both**.
 - **Decision:** reject `\(H_0\)` if p-value `\(&lt; \alpha\)`, where `\(\alpha\)` is the maximum probability of a Type 1 error that we accept (usually 0.05)
 
 - **Errors:** Type 1 = rejecting a true `\(H_0\)`; Type 2 = not rejecting a false `\(H_0\)`
-
----
-
-## Recap 
-
-- Sample statistic `\(\ne\)` population parameter, but if the sample is good, it can be a good estimate
-- We report the estimate with a confidence interval, and the width of this interval depends on the variability of sample statistics from different samples from the population
-- Since we can't continue sampling from the population, we bootstrap from the one sample we have to estimate sampling variability
-- We can do this for any sample statistic:
-  - For a mean: `calculate(stat = "mean")`
-  - Learn about calculating bootstrap intervals for other statistics in the quiz
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightLines": true,
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightLines": true,
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

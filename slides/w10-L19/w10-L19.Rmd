@@ -110,7 +110,8 @@ University of Edinburgh
 - RMSE
 - Training set vs test set
 - Cross validation
-
+- Extra: model selection
+- Extra: automatic model selection
 
 ---
 class: middle
@@ -649,7 +650,7 @@ knitr::include_graphics("img/post-cv-testing.png")
 
 class: middle
 
-# Model selection
+# Extra: model selection
 
 ---
 
@@ -679,8 +680,6 @@ candidates <- list(
   "votes"                    = c("season", "episode", "air_date")
 )
 ```
-
---
 
 - Each entry lists the predictors to **drop**, they will be passed as argument to `step_rm()`
 - `character(0)` means drop nothing
@@ -713,6 +712,7 @@ fit_candidate <- function(drop) {
 ```
 ]
 .panel[.panel-name[Notes]
+- The argument of this function is a vector of variable names to drop from the recipe
 - `glance()` gives the adjusted $R^2$ of the model fitted to the training data
 - `fit_resamples()` uses the **same** `folds` for every candidate, so the comparison is fair
 - The test data is **not** used anywhere
@@ -722,6 +722,8 @@ fit_candidate <- function(drop) {
 ---
 
 ## Compare the candidates
+
+`map` applies `fit_candidate()` to each element of `candidates`, and `list_rbind()` combines the results into a single data frame:
 
 ```{r}
 model_comparison <- candidates %>%
@@ -758,7 +760,7 @@ model_comparison %>%
 
 class: middle
 
-# Automatic model selection
+# Extra: automatic model selection
 
 ---
 
@@ -880,12 +882,14 @@ print(history, n = 10)
 added
 best
 ```
-]
-]
 
 --
 
 Both directions agree: keep `total_votes`, `season` and `episode`.
+
+]
+]
+
 
 ---
 
