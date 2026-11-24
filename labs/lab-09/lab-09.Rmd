@@ -219,8 +219,9 @@ The report should be a summary of the investigation that you have performed. It 
 
 **References / Acknowledgment** – Create your reference list based on the sources you used and follow the guidance on GenAI usage citation. 
 
-{{% notice warning %}} Note that, our report.md file in the template can be adapted based on this setting! {{% /notice %}}
-
+<div class="notice-tip">
+Note that, our report.md file in the template can be adapted based on this setting!
+</div>
 
 Make sure to also check these technical aspects:
 
