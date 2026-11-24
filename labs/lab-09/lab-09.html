@@ -51,7 +51,7 @@ ul.task-list{list-style: none;}
 
 
 
-<link rel="stylesheet" href="../lab.css" type="text/css" />
+<style type="text/css">.notice-tip {background-color: #e6f7ff;border-left: 4px solid #1890ff;padding: 10px 15px;margin: 15px 0;}.notice-tip,.notice-warning,.notice-note {box-sizing: border-box;width: 100%;max-width: 100%;clear: both;margin: 1.5em 0;padding: 12px 18px;border-radius: 4px;font-size: 1rem;line-height: 1.5;}.notice-tip {background-color: #e6f7ff;border-left: 4px solid #1890ff;}.notice-warning {background-color: #fff3e0;border-left: 4px solid #fb8c00;}.notice-note {background-color: #f5f5f5;border-left: 4px solid #9e9e9e;}</style>
 
 
 
@@ -67,7 +67,7 @@ ul.task-list{list-style: none;}
 
 
 
-<p>This week you’ll be working on your projects.</p>
+<p>This week you’ll be working on your projects, including our second check-in.</p>
 <div id="before-we-start" class="section level1">
 <h1>Before we start…</h1>
 <p>To assist with the evaluation of the reproducibility and organization of your repository, please make sure to <ins>include the name, student ID and Github username of each team member</ins> in the <code>README.md</code> file of your project repository.
@@ -78,40 +78,130 @@ To do so, please include a text like the one provided below in your <code>README
 - Arya Stark (s1122334), thefaceless
 - Daenerys Targaryen (s4433221), dragon_queen
 - Tyrion Lannister (s1111111), t.lannister</code></pre>
+<p>Let me start with specific reminders, by highlighting important details.</p>
+</div>
+<div id="reminders" class="section level1">
+<h1>Reminders</h1>
+<p>As we shared earlier,</p>
+<blockquote>
+<p>In your second check-in, it will be kind of rehearsal for your original presentation. This means, you need to make a real progress and then get your draft until week 10.</p>
+</blockquote>
+<p>we will be doing your second check-in to make sure that the project progress going well and do some small marking. Additionally, it is important to follow specific guidance on any GenAI usage disclosure statement, if you need it.</p>
+<div id="project-template" class="section level2">
+<h2>Project template</h2>
+<p>One member of your team should be responsible for managing the repository of your group project. This team member should clone the <a id="project_template_repo">project template repository</a> from the course GitHub account and add each of the team members as collaborators. Also if you have not done yet, please follow the note below;</p>
+<div class="notice-tip">
+<p><strong>Tip:</strong> You must add the course GitHub account (<code>uoeIDS</code>) as a collaborator to your GitHub repository, for future communication.</p>
+</div>
+</div>
+<div id="genai-disclosure-for-the-report" class="section level2">
+<h2>GenAI disclosure for the report</h2>
+<p>In your project, if you used GenAI tools for some reason (as it is mentioned and allowed for some aspects before), you need to add a specific section about its usage.</p>
+<blockquote>
+<p>If you choose to use generative AI for permitted aspects of an assessment, it is important to be transparent about how you have done so</p>
+</blockquote>
+<p>For that purpose, you can refer to <a href="https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html">its general usage for your learning from here</a></p>
+<p>In your final project, it has been mentioned that,</p>
+<div class="notice-note">
+<p>AI tools (e.g., chatGPT, ELM) should not be used to generate content for this assessment. However, you are allowed to use these tools to identify ideas, help organize your thoughts, and plan your assessment.</p>
+</div>
+<div class="notice-note">
+<p>You may also use it to improve the clarity of your writing, but you should not use it in the final wording of your work. In particular, you should not copy-paste entire sentences produced by genAI.</p>
+</div>
+<p>In principle, within its permitted usage for the project, an acknowledgement should say which platform/tool you used, and what for.</p>
+<div class="notice-tip">
+<p>You can create another section after the references in a similar format, and declare how you used Gen-AI in your case, based on given examples or their variations below.</p>
+</div>
+<p>Please see the below examples for our IDS that we can imagine;</p>
+<ul>
+<li><p><em>I used ELM/ChatGPT to suggest alternative modeling ideas and interpretation of model results for my project. All suggestions were verified, and all final decision made by authors.</em></p></li>
+<li><p><em>I used ELM/Claude with IDS-sidekick prompt to discuss wrangling and explain certain tidyverse R code workflow for my project development. I did not copy any code directly, and verified any advice through my own R coding and interpretation.</em></p></li>
+<li><p><em>I used ELM/ChatGPT to brainstorm possible research questions and approaches at the start of the project. The final research question and direction were decided by the authors.</em></p></li>
+</ul>
+<div class="notice-warning">
+<p>If you did not use at all, you can simply say “I did not use ELM/ChatGPT or any other generative AI tool at any stage of this project.”</p>
+</div>
+<div class="notice-tip">
+<p>If you are not sure still how to write it, please communicate wiht Ozan Evkaya as CO, for writing your acknowledgement in your report</p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Previously, in the report template, the reference section says:</p>
+<blockquote>
+<p>List any references here. You should, at a minimum, list your data source.</p>
+</blockquote>
+<p>You can image adding some related research paper or any suitable formatted information you used. You can stick to one specific style such as <a href="https://apastyle.apa.org/style-grammar-guidelines/references">APA</a> or <a href="https://university.open.ac.uk/library/referencing-and-plagiarism/quick-guide-to-harvard-referencing-cite-them-right">Harvard</a> and use it consistently for the report.</p>
+<p>Please see some examples below to adapt for your case;</p>
+<ol style="list-style-type: decimal">
+<li><strong>Journal Article</strong></li>
+</ol>
+<ul>
+<li>Format: Author, A. A. (Year). Title of article. Title of Journal, Volume(Issue), page range. <a href="https://doi.org/xxxx" class="uri">https://doi.org/xxxx</a></li>
+<li>Example: Smith, J. K., &amp; Lee, H. (2023). Exploring student engagement in online learning. Journal of Educational Psychology, 45(3), 212–229. <a href="https://doi.org/10.1037/edu0000456" class="uri">https://doi.org/10.1037/edu0000456</a></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Book</strong></li>
+</ol>
+<ul>
+<li>Format: Author, A. A. (Year). Title of work: Capital letter also for subtitle. Publisher.</li>
+<li>Example: Carey, N. (2019). The epigenetics revolution: How modern biology is rewriting our understanding of genetics. Columbia University Press.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Website/Webpage</strong></li>
+</ol>
+<ul>
+<li>Format: Author/Institution. Title of page. Retrieved (Month Day, Year) from (URL)</li>
+<li>Example: U.S. Census Bureau. U.S. and world population clock. U.S. Department of Commerce. Retrieved January 9, 2020, from <a href="https://www.census.gov/popclock/" class="uri">https://www.census.gov/popclock/</a></li>
+</ul>
+<div class="notice-tip">
+<p>You can see other cases from above links, <a href="https://apastyle.apa.org/style-grammar-guidelines/references">APA</a> or <a href="https://university.open.ac.uk/library/referencing-and-plagiarism/quick-guide-to-harvard-referencing-cite-them-right">Harvard</a></p>
+</div>
+</div>
 </div>
 <div id="logistics" class="section level1">
 <h1>Logistics</h1>
 <p><strong>Review evaluation criteria:</strong> When evaluating your project, we will consider the following questions:</p>
 <p><strong>Presentation (50 points)</strong></p>
 <ul>
-<li><p>Content: Is the research question well designed and are the data being used relevant to the research question?</p></li>
-<li><p>Statistical Knowledge: Did the team use appropriate plots and statistical procedures. Are results interpreted accurately?</p></li>
-<li><p>Slides: Are the slides well organised, readable, not full of text, featuring figures with legible labels, legends, etc.?</p></li>
-<li><p>Professionalism: How well did the team present? Does the presentation appear to be well practised? Did everyone get a chance to say something meaningful about the project? Did the team divide the time well among themselves or got cut off going over time?</p></li>
-<li><p>Teamwork: Did the team present a unified story, or did it seem like independent pieces of work patched together?</p></li>
+<li><p><strong>Content:</strong> Is the research question well designed and are the data being used relevant to the research question?</p></li>
+<li><p><strong>Statistical Knowledge:</strong> Did the team use appropriate plots and statistical procedures. Are results interpreted accurately?</p></li>
+<li><p><strong>Slides:</strong> Are the slides well organised, readable, not full of text, featuring figures with legible labels, legends, etc.?</p></li>
+<li><p><strong>Professionalism:</strong> How well did the team present? Does the presentation appear to be well practised? Did everyone get a chance to say something meaningful about the project? Did the team divide the time well among themselves or got cut off going over time?</p></li>
+<li><p><strong>Teamwork:</strong> Did the team present a unified story, or did it seem like independent pieces of work patched together?</p></li>
 </ul>
 <p><strong>Write-up (40 points)</strong></p>
 <ul>
-<li><p>Clarity of aim: The work’s aim is stated in a simple manner, questions are concrete and testable.</p></li>
-<li><p>Methodology: Accurately describes the data and use of data science techniques to meet the aim(s) of the project. Data science techniques chosen are appropriate.</p></li>
-<li><p>Interpretation: Addresses the project questions or hypothesis, conclusions are supported by the data and results.</p></li>
-<li><p>Creativity and Critical Thought: Is the project carefully thought out? Are the limitations carefully considered? Does the project demonstrate originality of thought or approach?</p></li>
-<li><p>Concise/use of language: Is it concise but detailed enough (e.g. avoids repetition and wordiness)? Is it understandable for people not familiar with the data? Does it clearly communicate thoughts and concepts whilst utilizing an appropriate language and style?</p></li>
+<li><p><strong>Clarity of aim:</strong> The work’s aim is stated in a simple manner, questions are concrete and testable.</p></li>
+<li><p><strong>Methodology:</strong> Accurately describes the data and use of data science techniques to meet the aim(s) of the project. Data science techniques chosen are appropriate.</p></li>
+<li><p><strong>Interpretation:</strong> Addresses the project questions or hypothesis, conclusions are supported by the data and results.</p></li>
+<li><p><strong>Creativity and Critical Thought:</strong> Is the project carefully thought out? Are the limitations carefully considered? Does the project demonstrate originality of thought or approach?</p></li>
+<li><p><strong>Concise/use of language:</strong> Is it concise but detailed enough (e.g. avoids repetition and wordiness)? Is it understandable for people not familiar with the data? Does it clearly communicate thoughts and concepts whilst utilizing an appropriate language and style?</p></li>
 </ul>
-<p><strong>Reproducibility and Organization (10 points)</strong></p>
+<p><strong>Second check-in (5 points)</strong></p>
 <ul>
-<li><p>Repository Organisation: Are files well named and in sensible locations?</p></li>
-<li><p>Effort: Does it appear that time and effort went into the planning and implementation of the project? (i.e. files in extra folder)</p></li>
-<li><p>Code style: Is the code easy to follow, does it have a consistent style? Is the code well organised with clear variables and function names?</p></li>
-<li><p>Reproduciblility/Replicability: Does the code appear to be able to be run by others (e.g. no specific paths like “/cloud/project”), will they get the same results (e.g. seed set?).</p></li>
+<li><p>Be ready to give a brief 3–4-minute walk through of your draft project to your tutor, covering your research question, progress on exploratory and main analysis, your chosen modeling tools and why they fit your data, any plausible results and what they mean so far.</p></li>
+<li><p>We will be looking at your draft report or presentation before the presentation day on week 11, including remaining plans that you need to act on.</p></li>
+<li><p>Tutors will interact you while that check-in by asking specific related questions and would like to see some walk through with group members about what you have done so far.</p></li>
+</ul>
+<p><strong>Reproducibility and Organization (5 points)</strong></p>
+<ul>
+<li><p><strong>Repository Organisation:</strong> Are files well named and in sensible locations?</p></li>
+<li><p><strong>Effort:</strong> Does it appear that time and effort went into the planning and implementation of the project? (i.e. files in extra folder)</p></li>
+<li><p><strong>Code style:</strong> Is the code easy to follow, does it have a consistent style? Is the code well organised with clear variables and function names?</p></li>
+<li><p><strong>Reproduciblility/Replicability:</strong> Does the code appear to be able to be run by others (e.g. no specific paths like “/cloud/project”), will they get the same results (e.g. seed set?).</p></li>
 </ul>
 <p><strong>Team peer evaluation</strong></p>
 <ul>
 <li><p>You will need to complete an evaluation of the input of your teammates. This is to check that everyone contributed equally. This will be used to calculate an individual mark for each team member, so that it reflects their contribution to the project.</p></li>
-<li><p>Note: the peer-evaluation score will be based on <em>WebPA</em>. This is a transparent system for assigning individual marks, based on each student’s contribution to the group; you can find out more, together with a worked example <a href="https://webpaproject.lboro.ac.uk/WorkedExample">here</a>. The peer-evaluation score calculated by WebPA will affect 30% of the report mark, multiplicatively.</p></li>
-<li><p>If you do not completethis peer feedback for all members of your team, you will receive a penalty of 20% off your mark.</p></li>
-<li><p>You will need to provide explanation for each score, but it is especially important that you provide justification and explanation for any score of “No contribution” or “Very poor”. Note that the teaching team will be able to use your project’s commit history to assess the accuracy and validity of any strong statements made in the peer assessement.</p></li>
+<li><p>Note: the peer-evaluation score will be based on <em>WebPA</em>. This is a transparent system for assigning individual marks, based on each student’s contribution to the group; you can find out more, together with a worked example <a href="https://webpaproject.lboro.ac.uk/WorkedExample">here</a>.</p></li>
+<li><p>The peer-evaluation score calculated by WebPA will affect 30% of the report mark, multiplicatively. Please <a href="https://uoe-ids.netlify.app/assessments/project/#marking">see the illustrative example from here</a></p></li>
+<li><p>You will need to provide explanation for each score, but it is especially important that you provide justification and explanation for any score of “No contribution” or “Very poor”.</p></li>
 </ul>
+<div class="notice-warning">
+<p>If you do not complete this peer feedback for all members of your team, you will receive a penalty of 20% off your mark.
+Note that the teaching team will be able to use your project’s commit history to assess the accuracy and validity of any strong statements made in the peer assessment.</p>
+</div>
 </div>
 <div id="project-progress" class="section level1">
 <h1>Project progress</h1>
@@ -119,7 +209,7 @@ To do so, please include a text like the one provided below in your <code>README
 <ol style="list-style-type: decimal">
 <li><p><strong>Craft your to-do list:</strong> Discuss your plan for your project as a team, review existing issues and open new ones as needed. Not every issue needs to have a checklist, but you might want to include checklists in some of them to remind yourselves the exact steps you discussed to tackle the issue. Then assign <strong>at least one</strong> issue to each team member.</p></li>
 <li><p><strong>Cite your data:</strong> Now is the time to fix up those citations! In your project summary there is a link to a resource for properly citing data. Develop a citation for your dataset and add it under the data section using this guidance. If you have questions, ask a tutor for help!</p></li>
-<li><p><strong>Strongly recommended:</strong> Get a hold of a tutor and run your ideas by them. Give them a 30 second version of your presentation and ask for their feedback.</p></li>
+<li><p><strong>Second check-in:</strong> Get a hold of a tutor and run your ideas by them during the check-in today. Give them a draft version of your project and ask for their feedback, to make sure that you have a clear plan for the rest of the project.</p></li>
 </ol>
 <hr />
 <p>The following might be useful when writing your report.</p>
@@ -140,10 +230,12 @@ To do so, please include a text like the one provided below in your <code>README
 <div id="report-structure" class="section level2">
 <h2>Report structure</h2>
 <p>The report should be a summary of the investigation that you have performed. It is suggested that you follow the standard IMRD structure (Introduction, Methods, Results, Discussion). Use headings and subheadings for clarity if you need in your Rmd file. The type of questions/points that you should try to address in each section are:</p>
-<p><em>Introduction</em> – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?</p>
-<p><em>Methods</em> – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.</p>
-<p><em>Results</em> – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.</p>
-<p><em>Discussion</em> – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings?</p>
+<p><strong>Introduction</strong> – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?</p>
+<p><strong>Methods</strong> – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.</p>
+<p><strong>Results</strong> – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.</p>
+<p><strong>Discussion</strong> – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings?</p>
+<p><strong>References / Acknowledgment</strong> – Create your reference list based on the sources you used and follow the guidance on GenAI usage citation.</p>
+<p>{{% notice warning %}} Note that, our report.md file in the template can be adapted based on this setting! {{% /notice %}}</p>
 <p>Make sure to also check these technical aspects:</p>
 <ul>
 <li><p><em>Proofreading and Editing</em>: Check for grammatical errors, typos, and formatting inconsistencies while creating your report. A well-edited report is easier to read and appears more professional. Good to make regular checks after adding new content into your report.</p></li>
@@ -153,6 +245,9 @@ To do so, please include a text like the one provided below in your <code>README
 </div>
 <div id="general-presentation-tips" class="section level2">
 <h2>General Presentation Tips</h2>
+<div class="notice-tip">
+<p>In addition to below suggestions, if you need some extra guidance or resources to explore let us know during the second check-in.</p>
+</div>
 <ul>
 <li><p><em>Engaging Opening</em>: Start with an interesting fact, question, or story coming from your analysis to grab the audience’s attention and set the tone for your presentation.</p></li>
 <li><p><em>Clear and Logical Flow</em>: Structure your presentation logically. Start with an introduction, follow with the main content, and conclude with a summary or call to action.</p></li>

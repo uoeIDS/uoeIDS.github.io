@@ -1,0 +1,40 @@
+.notice-tip {
+  background-color: #e6f7ff;
+  border-left: 4px solid #1890ff;
+  padding: 10px 15px;
+  margin: 15px 0;
+}
+
+
+/* Notice box base styling */
+.notice-tip,
+.notice-warning,
+.notice-note {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  clear: both;
+  margin: 1.5em 0;
+  padding: 12px 18px;
+  border-radius: 4px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Tip box - blue */
+.notice-tip {
+  background-color: #e6f7ff;
+  border-left: 4px solid #1890ff;
+}
+
+/* Warning box - amber/red */
+.notice-warning {
+  background-color: #fff3e0;
+  border-left: 4px solid #fb8c00;
+}
+
+/* Note box - grey/neutral */
+.notice-note {
+  background-color: #f5f5f5;
+  border-left: 4px solid #9e9e9e;
+}

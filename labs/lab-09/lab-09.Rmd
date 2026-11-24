@@ -12,7 +12,7 @@ link-citations: yes
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This week you'll be working on your projects.
+This week you'll be working on your projects, including our second check-in. 
 
 # Before we start...
 
@@ -28,7 +28,90 @@ To do so, please include a text like the one provided below in your `README.md` 
 - Tyrion Lannister (s1111111), t.lannister
 ```
 
+Let me start with specific reminders, by highlighting important details. 
 
+# Reminders
+
+As we shared earlier, 
+
+> In your second check-in, it will be kind of rehearsal for your original presentation. This means, you need to make a real progress and then get your draft until week 10.
+
+we will be doing your second check-in to make sure that the project progress going well and do some small marking. Additionally, it is important to follow specific guidance on any GenAI usage disclosure statement, if you need it.  
+
+## Project template
+
+One member of your team should be responsible for managing the repository of your group project. This team member should clone the <a id="project_template_repo">project template repository</a> from the course GitHub account and add each of the team members as collaborators. Also if you have not done yet, please follow the note below;
+
+<div class="notice-tip">
+**Tip:** You must add the course GitHub account (`uoeIDS`) as a collaborator to your GitHub repository, for future communication.
+</div>
+
+## GenAI disclosure for the report
+
+In your project, if you used GenAI tools for some reason (as it is mentioned and allowed for some aspects before), you need to add a specific section about its usage.
+
+> If you choose to use generative AI for permitted aspects of an assessment, it is important to be transparent about how you have done so
+
+For that purpose, you can refer to [its general usage for your learning from here](https://uoeids.github.io/labs/lab-GenAI/IDS-GenAI.html)
+
+In your final project, it has been mentioned that, 
+
+<div class="notice-note">
+AI tools (e.g., chatGPT, ELM) should not be used to generate content for this assessment. However, you are allowed to use these tools to identify ideas, help organize your thoughts, and plan your assessment.
+</div>
+ 
+<div class="notice-note">
+You may also use it to improve the clarity of your writing, but you should not use it in the final wording of your work. In particular, you should not copy-paste entire sentences produced by genAI.
+</div>
+
+In principle, within its permitted usage for the project, an acknowledgement should say which platform/tool you used, and what for. 
+
+<div class="notice-tip">
+You can create another section after the references in a similar format, and declare how you used Gen-AI in your case, based on given examples or their variations below.
+</div>
+
+Please see the below examples for our IDS that we can imagine;
+
+- *I used ELM/ChatGPT to suggest alternative modeling ideas and interpretation of model results for my project. All suggestions were verified, and all final decision made by authors.*
+
+- *I used ELM/Claude with IDS-sidekick prompt to discuss wrangling and explain certain tidyverse R code workflow for my project development. I did not copy any code directly, and verified any advice through my own R coding and interpretation.*
+
+- *I used ELM/ChatGPT to brainstorm possible research questions and approaches at the start of the project. The final research question and direction were decided by the authors.*
+
+<div class="notice-warning">
+If you did not use at all, you can simply say "I did not use ELM/ChatGPT or any other generative AI tool at any stage of this project." 
+</div>
+
+<div class="notice-tip">
+If you are not sure still how to write it, please communicate wiht Ozan Evkaya as CO, for writing your acknowledgement in your report
+</div>
+
+
+## References 
+
+Previously, in the report template, the reference section says: 
+
+> List any references here. You should, at a minimum, list your data source.
+
+You can image adding some related research paper or any suitable formatted information you used. You can stick to one specific style such as [APA](https://apastyle.apa.org/style-grammar-guidelines/references) or [Harvard](https://university.open.ac.uk/library/referencing-and-plagiarism/quick-guide-to-harvard-referencing-cite-them-right) and use it consistently for the report. 
+
+Please see some examples below to adapt for your case;
+
+1. **Journal Article**
+  - Format: Author, A. A. (Year). Title of article. Title of Journal, Volume(Issue), page range. https://doi.org/xxxx
+  - Example: Smith, J. K., & Lee, H. (2023). Exploring student engagement in online learning. Journal of Educational Psychology, 45(3), 212–229. https://doi.org/10.1037/edu0000456
+
+2. **Book**
+  - Format: Author, A. A. (Year). Title of work: Capital letter also for subtitle. Publisher.
+  - Example: Carey, N. (2019). The epigenetics revolution: How modern biology is rewriting our understanding of genetics. Columbia University Press.
+
+3. **Website/Webpage**
+  - Format: Author/Institution. Title of page. Retrieved (Month Day, Year) from (URL)
+  - Example: U.S. Census Bureau. U.S. and world population clock. U.S. Department of Commerce. Retrieved January 9, 2020, from https://www.census.gov/popclock/
+
+<div class="notice-tip">
+You can see other cases from above links,  [APA](https://apastyle.apa.org/style-grammar-guidelines/references) or [Harvard](https://university.open.ac.uk/library/referencing-and-plagiarism/quick-guide-to-harvard-referencing-cite-them-right)
+</div>
 
 # Logistics
 
@@ -36,47 +119,63 @@ To do so, please include a text like the one provided below in your `README.md` 
 
 **Presentation (50 points)**
 
-- Content: Is the research question well designed and are the data being used relevant to the research question?
+- **Content:** Is the research question well designed and are the data being used relevant to the research question?
 
-- Statistical Knowledge: Did the team use appropriate plots and statistical procedures. Are results interpreted accurately?
+- **Statistical Knowledge:** Did the team use appropriate plots and statistical procedures. Are results interpreted accurately?
 
-- Slides: Are the slides well organised, readable, not full of text, featuring figures with legible labels, legends, etc.?
+- **Slides:** Are the slides well organised, readable, not full of text, featuring figures with legible labels, legends, etc.?
 
-- Professionalism: How well did the team present? Does the presentation appear to be well practised? Did everyone get a chance to say something meaningful about the project? Did the team divide the time well among themselves or got cut off going over time?
+- **Professionalism:** How well did the team present? Does the presentation appear to be well practised? Did everyone get a chance to say something meaningful about the project? Did the team divide the time well among themselves or got cut off going over time?
 
-- Teamwork: Did the team present a unified story, or did it seem like independent pieces of work patched together?
+- **Teamwork:** Did the team present a unified story, or did it seem like independent pieces of work patched together?
 
 **Write-up (40 points)**
 
-- Clarity of aim: The work’s aim is stated in a simple manner, questions are concrete and testable.
+- **Clarity of aim:** The work’s aim is stated in a simple manner, questions are concrete and testable.
 
-- Methodology: Accurately describes the data and use of data science techniques to meet the aim(s) of the project. Data science techniques chosen are appropriate. 
+- **Methodology:** Accurately describes the data and use of data science techniques to meet the aim(s) of the project. Data science techniques chosen are appropriate. 
 
-- Interpretation: Addresses the project questions or hypothesis, conclusions are supported by the data and results.
+- **Interpretation:** Addresses the project questions or hypothesis, conclusions are supported by the data and results.
 
-- Creativity and Critical Thought: Is the project carefully thought out? Are the limitations carefully considered? Does the project demonstrate originality of thought or approach?
+- **Creativity and Critical Thought:** Is the project carefully thought out? Are the limitations carefully considered? Does the project demonstrate originality of thought or approach?
 
-- Concise/use of language: Is it concise but detailed enough (e.g. avoids repetition and wordiness)? Is it understandable for people not familiar with the data? Does it clearly communicate thoughts and concepts whilst utilizing an appropriate language and style?
+- **Concise/use of language:** Is it concise but detailed enough (e.g. avoids repetition and wordiness)? Is it understandable for people not familiar with the data? Does it clearly communicate thoughts and concepts whilst utilizing an appropriate language and style?
 
-**Reproducibility and Organization (10 points)**
+**Second check-in (5 points)**
 
-- Repository Organisation: Are files well named and in sensible locations?
+- Be ready to give a brief 3–4-minute walk through of your draft project to your tutor, covering your research question, progress on exploratory and main analysis, your chosen modeling tools and why they fit your data, any plausible results and what they mean so far.
+ 
+- We will be looking at your draft report or presentation before the presentation day on week 11, including remaining plans that you need to act on. 
 
-- Effort: Does it appear that time and effort went into the planning and implementation of the project? (i.e. files in extra folder)
+- Tutors will interact you while that check-in by asking specific related questions and would like to see some walk through with group members about what you have done so far.
 
-- Code style: Is the code easy to follow, does it have a consistent style? Is the code well organised with clear variables and function names?
 
-- Reproduciblility/Replicability: Does the code appear to be able to be run by others (e.g. no specific paths like "/cloud/project"), will they get the same results (e.g. seed set?).
+**Reproducibility and Organization (5 points)**
+
+- **Repository Organisation:** Are files well named and in sensible locations?
+
+- **Effort:** Does it appear that time and effort went into the planning and implementation of the project? (i.e. files in extra folder)
+
+- **Code style:** Is the code easy to follow, does it have a consistent style? Is the code well organised with clear variables and function names?
+
+- **Reproduciblility/Replicability:** Does the code appear to be able to be run by others (e.g. no specific paths like "/cloud/project"), will they get the same results (e.g. seed set?).
 
 **Team peer evaluation**
 
 - You will need to complete an evaluation of the input of your teammates. This is to check that everyone contributed equally. This will be used to calculate an individual mark for each team member, so that it reflects their contribution to the project.
 
-- Note: the peer-evaluation score will be based on *WebPA*. This is a transparent system for assigning individual marks, based on each student's contribution to the group; you can find out more, together with a worked example [here](https://webpaproject.lboro.ac.uk/WorkedExample). The peer-evaluation score calculated by WebPA will affect 30% of the report mark, multiplicatively. 
+- Note: the peer-evaluation score will be based on *WebPA*. This is a transparent system for assigning individual marks, based on each student's contribution to the group; you can find out more, together with a worked example [here](https://webpaproject.lboro.ac.uk/WorkedExample). 
 
-- If you do not completethis peer feedback for all members of your team, you will receive a penalty of 20% off your mark. 
+- The peer-evaluation score calculated by WebPA will affect 30% of the report mark, multiplicatively. Please [see the illustrative example from here](https://uoe-ids.netlify.app/assessments/project/#marking)
 
-- You will need to provide explanation for each score, but it is especially important that you provide justification and explanation for any score of "No contribution" or "Very poor". Note that the teaching team will be able to use your project's commit history to assess the accuracy and validity of any strong statements made in the peer assessement.
+- You will need to provide explanation for each score, but it is especially important that you provide justification and explanation for any score of "No contribution" or "Very poor".
+
+<div class="notice-warning">
+If you do not complete this peer feedback for all members of your team, you will receive a penalty of 20% off your mark. 
+\br
+\br
+Note that the teaching team will be able to use your project's commit history to assess the accuracy and validity of any strong statements made in the peer assessment.
+</div>
 
 # Project progress
 
@@ -86,7 +185,7 @@ Now back to your project...
 
 2. **Cite your data:** Now is the time to fix up those citations! In your project summary there is a link to a resource for properly citing data. Develop a citation for your dataset and add it under the data section using this guidance. If you have questions, ask a tutor for help!
 
-3. **Strongly recommended:** Get a hold of a tutor and run your ideas by them. Give them a 30 second version of your presentation and ask for their feedback.
+3. **Second check-in:** Get a hold of a tutor and run your ideas by them during the check-in today. Give them a draft version of your project and ask for their feedback, to make sure that you have a clear plan for the rest of the project.
 
 ----------------
 
@@ -110,13 +209,18 @@ It is not expected that each individual person to demonstrate their own skills i
 
 The report should be a summary of the investigation that you have performed. It is suggested that you follow the standard IMRD structure (Introduction, Methods, Results, Discussion). Use headings and subheadings for clarity if you need in your Rmd file. The type of questions/points that you should try to address in each section are:
 
-*Introduction* – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?
+**Introduction** – What is your data? What the research question(s) you are investigating? Is there any relevant background information/literature that can help give context to your data/questions?
 
-*Methods* – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.
+**Methods** – Summarise what cleaning/pre-processing you have done to your data. Brief description of data science techniques you have used in your investigation.
 
-*Results* – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.
+**Results** – Tables, figures and summary values from your exploratory investigation. Summary of a fitted statistical model, such as estimates, plots and fit statistic. A brief explanation of what the results mean in the given context of your data.
 
-*Discussion* – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings?
+**Discussion** – Answers your research question(s). What are the advantages/limitations of the investigation you have performed? If applicable, are there any ethical considerations in relation to your investigation/findings?
+
+**References / Acknowledgment** – Create your reference list based on the sources you used and follow the guidance on GenAI usage citation. 
+
+{{% notice warning %}} Note that, our report.md file in the template can be adapted based on this setting! {{% /notice %}}
+
 
 Make sure to also check these technical aspects:
 
@@ -128,6 +232,10 @@ Make sure to also check these technical aspects:
 
 
 ## General Presentation Tips
+
+<div class="notice-tip">
+In addition to below suggestions, if you need some extra guidance or resources to explore let us know during the second check-in.
+</div>
 
 - *Engaging Opening*: Start with an interesting fact, question, or story coming from your analysis to grab the audience’s attention and set the tone for your presentation.
 
